@@ -19,7 +19,7 @@ interface HeaderBarProps {
     onToggle: () => void;
 }
 
-const HeaderBar: React.FC<HeaderBarProps> = ({collapsed, onToggle}) => {
+const AppHeader: React.FC<HeaderBarProps> = ({collapsed, onToggle}) => {
     return (
         <Header style={headerStyle}>
             <Button
@@ -30,11 +30,10 @@ const HeaderBar: React.FC<HeaderBarProps> = ({collapsed, onToggle}) => {
                     fontSize: '16px',
                     width: 64,
                     height: 64,
-                    borderRadius: '0px'
                 }}
             />
         </Header>
     );
 };
 
-export default HeaderBar;
+export default AppHeader;
