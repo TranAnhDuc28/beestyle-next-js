@@ -1,8 +1,7 @@
 import React from 'react';
 import {Menu, MenuProps} from 'antd';
 import {
-    UserOutlined, VideoCameraOutlined, UploadOutlined, BarChartOutlined, CloudOutlined,
-    AppstoreOutlined, TeamOutlined, ShopOutlined, PieChartOutlined, ShoppingCartOutlined, ProductOutlined, GiftOutlined,
+    UserOutlined, PieChartOutlined, ShoppingCartOutlined, ProductOutlined, GiftOutlined,
 } from '@ant-design/icons';
 import Sider from "antd/es/layout/Sider";
 import Link from "next/link";
@@ -47,6 +46,7 @@ const items: MenuItem[] = [
             {key: '6.2', label: 'Nhân viên'},
         ],
     },
+    {key: '7', label: <Link href={"/test"}>Test</Link>, icon: <UserOutlined/>}
 ];
 
 

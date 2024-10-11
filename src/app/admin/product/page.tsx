@@ -8,7 +8,7 @@ const { Title } = Typography;
 function Product() {
 
     return (
-        <Flex align={"center"} justify={"center"} style={{ height: '100vh' }}>
+        <Flex align={'center'} justify={'center'} style={{ height: '100vh' }}>
             <Title>Product</Title>
         </Flex>
     );
