@@ -1,9 +1,9 @@
 "use client";
 import "./globals.css";
-import {ReactNode, useEffect, useState} from "react";
-import {AntdRegistry} from "@ant-design/nextjs-registry";
-import Loader from "@/components/Loader/Loader";
+import React, {ReactNode, Suspense, useEffect, useState} from "react";
 import AppLayout from "@/components/Layout/AppLayout";
+import Loader from "@/components/Loader/Loader";
+import {AntdRegistry} from "@ant-design/nextjs-registry";
 
 
 export default function RootLayout({children,}: Readonly<{ children: ReactNode; }>) {
@@ -16,15 +16,21 @@ export default function RootLayout({children,}: Readonly<{ children: ReactNode; 
     }, []);
 
     return (
+
         <html lang="en">
         <body>
-        {
-            loading ? <Loader/> :
-            <AppLayout>
-                <AntdRegistry>{children}</AntdRegistry>
-            </AppLayout>
-        }
+        {loading ? (
+            <Loader/>
+        ) : (
+            <AntdRegistry>
+                <AppLayout>
+                    {children}
+                </AppLayout>
+            </AntdRegistry>
+        )}
+
         </body>
         </html>
+
     );
 }

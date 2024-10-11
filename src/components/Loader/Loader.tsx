@@ -1,11 +1,12 @@
-import {Flex, Spin} from "antd";
-import {LoadingOutlined} from "@ant-design/icons";
-
 const Loader = () => {
     return (
-        <Flex align={"center"} justify={"center"} style={{ height: '100vh' }}>
-            <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
-        </Flex>
+        <div className="flex h-screen items-center justify-center">
+            <div
+                className="h-16 w-16 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent"
+            >
+            </div>
+        </div>
+
     );
 };
 

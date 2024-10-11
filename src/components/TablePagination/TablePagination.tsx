@@ -34,28 +34,29 @@ const TablePagination: React.FC<TablePaginationProps> = (
         <>
             <div>
                 <Table
-                    style={{borderRadius: 0}}
+                    style={{borderRadius: 0,}}
                     rowSelection={rowSelection}
                     columns={columns}
                     dataSource={data}
                     pagination={false}
                     scroll={{x: true, y: 'calc(100vh - 270px)'}}
                 />
+
+                <Flex justify={"flex-end"}>
+                    <Pagination
+                        style={{
+                            margin: '20px 10px 10px 10px'
+                        }}
+                        total={total}
+                        showTotal={(total) => `Total ${total} items`}
+                        defaultPageSize={pageSize}
+                        defaultCurrent={currentPage}
+                        onChange={handlePageChange}
+                        showSizeChanger
+                        pageSizeOptions={[10, 25, 35, 50]}
+                    />
+                </Flex>
             </div>
-            <Flex justify={"flex-end"}>
-                <Pagination
-                    style={{
-                        margin: '20px 10px 10px 10px'
-                    }}
-                    total={total}
-                    showTotal={(total) => `Total ${total} items`}
-                    defaultPageSize={pageSize}
-                    defaultCurrent={currentPage}
-                    onChange={handlePageChange}
-                    showSizeChanger
-                    pageSizeOptions={[10, 25, 35, 50]}
-                />
-            </Flex>
         </>
     );
 }

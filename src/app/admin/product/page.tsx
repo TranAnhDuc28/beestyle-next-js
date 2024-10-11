@@ -9,8 +9,9 @@ import {
     theme,
     Typography
 } from "antd";
-import React, {useState} from "react";
+import React, {Suspense, useState} from "react";
 import TablePagination from "@/components/TablePagination/TablePagination";
+import Loading from "@/app/loading";
 
 const {Content} = Layout;
 const {Title} = Typography;
@@ -112,32 +113,14 @@ const Product = () =>  {
                         mode="inline"
                         items={items}
                     />
-                    <Menu
-                        style={{
-                            width: '100%',
-                            backgroundColor: colorBgContainer,
-                            borderRadius: borderRadiusLG,
-                            boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)'
-                        }}
-                        mode="inline"
-                        items={items}
-                    />
-                    <Menu
-                        style={{
-                            width: '100%',
-                            backgroundColor: colorBgContainer,
-                            borderRadius: borderRadiusLG,
-                            boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)'
-                        }}
-                        mode="inline"
-                        items={items}
-                    />
                 </Space>
 
                 <Content
                     style={{
                         background: colorBgContainer,
-                        boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)'
+                        boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
+                        flex: 1,
+                        minWidth: 0
                     }}
                 >
                     <TablePagination
