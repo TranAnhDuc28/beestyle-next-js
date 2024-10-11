@@ -3,7 +3,7 @@ import "./globals.css";
 import {ReactNode, useEffect, useState} from "react";
 import {AntdRegistry} from "@ant-design/nextjs-registry";
 import Loader from "@/components/Loader/Loader";
-import AppLayout from "@/components/DefaultLayout/AppLayout";
+import AppLayout from "@/components/Layout/AppLayout";
 
 
 export default function RootLayout({children,}: Readonly<{ children: ReactNode; }>) {

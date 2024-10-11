@@ -15,6 +15,7 @@ const siderStyle: React.CSSProperties = {
     bottom: 0,
     scrollbarWidth: 'thin',
     scrollbarColor: 'unset',
+    boxShadow: '2px 0 8px rgba(0,0,0,0.15)'
 };
 
 
@@ -27,11 +28,11 @@ const items: MenuItem[] = [
     {key: '4', label: 'Quản lý sản phẩm', icon: <ProductOutlined/>,
         children: [
             {key: '4.1', label: <Link href={"/admin/product"}>Sản phẩm</Link>},
-            {key: '4.2', label: <Link href={"/admin/product"}>Danh mục</Link>},
-            {key: '4.3', label: <Link href={"/admin/product"}>Thương hiệu</Link>},
-            {key: '4.4', label: <Link href={"/admin/product"}>Chất liệu</Link>},
-            {key: '4.5', label: <Link href={"/admin/product"}>Màu sắc</Link>},
-            {key: '4.6', label: <Link href={"/admin/product"}>Kích cỡ</Link>},
+            {key: '4.2', label: <Link href={"/admin/category"}>Danh mục</Link>},
+            {key: '4.3', label: <Link href={"/admin/brand"}>Thương hiệu</Link>},
+            {key: '4.4', label: <Link href={"/admin/material"}>Chất liệu</Link>},
+            {key: '4.5', label: <Link href={"/admin/color"}>Màu sắc</Link>},
+            {key: '4.6', label: <Link href={"/admin/size"}>Kích cỡ</Link>},
         ],
     },
     {key: '5', label: 'Giảm giá', icon: <GiftOutlined/>,
@@ -58,7 +59,8 @@ const AppSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
             collapsed={collapsed}
             style={siderStyle}
             theme={'light'}
-            width={'230px'}
+            width={230}
+            aria-label="Main navigation"
         >
             <Menu
                 theme="light"

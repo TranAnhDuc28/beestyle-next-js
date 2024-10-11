@@ -9,7 +9,6 @@ const {Content} = Layout;
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const [collapsed, setCollapsed] = useState(false);
-    const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
 
     const toggleCollapsed = () => setCollapsed(!collapsed);
 
@@ -20,11 +19,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
                 <AppHeader collapsed={collapsed} onToggle={toggleCollapsed}/>
                 <Content
                     style={{
-                        margin: '10px',
+                        margin: '10px 0px 10px 10px',
                         padding: 10,
-                        minHeight: 500,
-                        background: colorBgContainer,
-                        borderRadius: borderRadiusLG,
+                        overflow: 'auto'
                     }}
                 >
                     {children}
