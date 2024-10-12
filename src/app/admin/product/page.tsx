@@ -9,9 +9,12 @@ import {
     theme,
     Typography
 } from "antd";
-import React, {Suspense, useState} from "react";
+import React, {useState} from "react";
 import TablePagination from "@/components/TablePagination/TablePagination";
-import Loading from "@/app/loading";
+import ColorButton from "@/components/Button/ColorButton";
+import Search from "antd/es/input/Search";
+import {SearchProps} from "antd/lib/input";
+import {PlusOutlined} from "@ant-design/icons";
 
 const {Content} = Layout;
 const {Title} = Typography;
@@ -64,7 +67,9 @@ const data: DataType[] = [
     {key: '17', name: 'Disabled User', age: 99, address: 'Sydney No. 1 Lake Park',},
 ];
 
-const Product = () =>  {
+const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
+
+const Product = () => {
     const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
 
     const [dataState, setDataState] = useState<DataType[]>(data);
@@ -78,35 +83,50 @@ const Product = () =>  {
 
     return (
         <>
-            <Flex align={'flex-start'} justify={'flex-start'} gap={'small'}>
-                <Title level={2} style={{width: 256, margin: '0px 0px 20px 12px'}}>Sản phẩm</Title>
-                <Space direction="vertical">
-                </Space>
+            <Flex align={"flex-start"} justify={"flex-start"} gap={"small"}>
+                <Title level={3} style={{margin: '0px 0px 20px 12px', minWidth: 256, flexGrow: 1}}>Sản phẩm</Title>
+                <div className="w-full">
+                    <Flex justify={'space-between'} align={'center'}>
+                        <div className="flex-grow max-w-96">
+                            <Search
+                                placeholder="input search text"
+                                allowClear
+                                onSearch={onSearch}
+                                style={{width: '100%'}}/>
+                        </div>
+                        <div>
+                            <ColorButton
+                                bgColor="#00b96b"
+                                type="primary"
+                                icon={<PlusOutlined/>}
+                            >
+                                Thêm sản phẩm
+                            </ColorButton>
+                        </div>
+                    </Flex>
+                </div>
             </Flex>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                <Space direction="vertical" style={{ width: 256}}>
+                <Space direction="vertical" style={{width: 256}}>
                     <div
+                        className="w-full p-2.5 bg-white  border-solid border-gray"
                         style={{
-                            width: '100%',
-                            padding: '10px',
-                            backgroundColor: colorBgContainer,
                             borderRadius: borderRadiusLG,
                             boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)'
                         }}
                     >
                         <Title level={5} style={{width: 256, margin: '0px 0px 10px 0px'}}>Tiêu đề</Title>
                         <Select
+                            className="w-full"
                             size="middle"
-                            style={{ width: '100%'}}
                             allowClear
-                            options={[{ value: 'lucy', label: 'Lucy' }]}
+                            options={[{value: 'lucy', label: 'Lucy'}]}
                             placeholder="select it"
                         />
                     </div>
                     <Menu
+                        className="w-full bg-white"
                         style={{
-                            width: '100%',
-                            backgroundColor: colorBgContainer,
                             borderRadius: borderRadiusLG,
                             boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)'
                         }}
@@ -115,13 +135,11 @@ const Product = () =>  {
                     />
                 </Space>
 
-                <Content
-                    style={{
-                        background: colorBgContainer,
-                        boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
-                        flex: 1,
-                        minWidth: 0
-                    }}
+                <Content className="min-w-0 bg-white"
+                         style={{
+                             boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
+                             flex: 1,
+                         }}
                 >
                     <TablePagination
                         columns={columns}

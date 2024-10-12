@@ -45,7 +45,7 @@ const TablePagination: React.FC<TablePaginationProps> = (
                 <Flex justify={"flex-end"}>
                     <Pagination
                         style={{
-                            margin: '20px 10px 10px 10px'
+                            margin: '20px 20px 10px 10px'
                         }}
                         total={total}
                         showTotal={(total) => `Total ${total} items`}
