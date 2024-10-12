@@ -155,6 +155,7 @@ const Product = () => {
 
                 <Content className="min-w-0 bg-white"
                          style={{
+                             borderRadius: borderRadiusLG,
                              boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
                              flex: 1,
                          }}

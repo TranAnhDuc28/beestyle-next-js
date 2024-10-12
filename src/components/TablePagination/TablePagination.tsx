@@ -20,7 +20,6 @@ const rowSelection: TableProps<any>['rowSelection'] = {
 const TablePagination: React.FC<TablePaginationProps> = (
     {columns, data, total, onPageChange}
 ) => {
-
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
@@ -34,7 +33,6 @@ const TablePagination: React.FC<TablePaginationProps> = (
         <>
             <div>
                 <Table
-                    style={{borderRadius: 0,}}
                     rowSelection={rowSelection}
                     columns={columns}
                     dataSource={data}

@@ -18,7 +18,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
             <AppSideMenu collapsed={collapsed}/>
             <Layout>
                 <AppHeader collapsed={collapsed} onToggle={toggleCollapsed}/>
-                <Content className="pt-5 pr-2.5 pb-2.5 pl-5 overflow-auto">
+                <Content
+                    className="pt-5 pr-2.5 pb-2.5 pl-5 overflow-auto"
+                >
                     <Suspense fallback={<Loader/>}>
                         {children}
                     </Suspense>
