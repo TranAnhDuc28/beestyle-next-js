@@ -5,7 +5,6 @@ import {
 } from '@ant-design/icons';
 import Sider from "antd/es/layout/Sider";
 import Link from "next/link";
-import styles from "./AppSideMenu.module.css";
 
 const siderStyle: React.CSSProperties = {
     overflow: 'auto',

@@ -1,5 +1,6 @@
 "use client"
 import {
+    Dropdown,
     Flex,
     Layout,
     Menu,
@@ -14,14 +15,14 @@ import TablePagination from "@/components/TablePagination/TablePagination";
 import ColorButton from "@/components/Button/ColorButton";
 import Search from "antd/es/input/Search";
 import {SearchProps} from "antd/lib/input";
-import {PlusOutlined} from "@ant-design/icons";
+import {CaretDownOutlined, DownOutlined, MenuOutlined, PlusOutlined} from "@ant-design/icons";
 
 const {Content} = Layout;
 const {Title} = Typography;
 
 type MenuItem = Required<MenuProps>['items'][number];
 
-const items: MenuItem[] = [
+const menuItems: MenuItem[] = [
     {
         key: '1',
         label: 'Navigation One',
@@ -67,6 +68,12 @@ const data: DataType[] = [
     {key: '17', name: 'Disabled User', age: 99, address: 'Sydney No. 1 Lake Park',},
 ];
 
+const items: MenuProps['items'] = [
+    {label: '1st menu item', key: '0',},
+    {label: '2st menu item', key: '1',},
+    {label: '3rd menu item', key: '3',},
+];
+
 const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
 
 const Product = () => {
@@ -95,13 +102,24 @@ const Product = () => {
                                 style={{width: '100%'}}/>
                         </div>
                         <div>
-                            <ColorButton
-                                bgColor="#00b96b"
-                                type="primary"
-                                icon={<PlusOutlined/>}
-                            >
-                                Thêm sản phẩm
-                            </ColorButton>
+                            <Space>
+                                <ColorButton
+                                    bgColor="#00b96b"
+                                    type="primary"
+                                    icon={<PlusOutlined/>}
+                                >
+                                    Thêm sản phẩm
+                                </ColorButton>
+                                <Dropdown menu={{items}} trigger={['click']}>
+                                        <ColorButton
+                                            bgColor="#00b96b"
+                                            type="primary"
+                                            icon={<MenuOutlined/>}
+                                        >
+                                            <CaretDownOutlined/>
+                                        </ColorButton>
+                                </Dropdown>
+                            </Space>
                         </div>
                     </Flex>
                 </div>
@@ -131,7 +149,7 @@ const Product = () => {
                             boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)'
                         }}
                         mode="inline"
-                        items={items}
+                        items={menuItems}
                     />
                 </Space>
 
