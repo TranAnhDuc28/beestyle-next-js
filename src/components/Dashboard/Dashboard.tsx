@@ -20,7 +20,7 @@ const Dashboard: React.FC = () => {
     }
 
     return (
-        <Flex vertical align="center" justify="center" style={{height: '100vh'}}>
+        <Flex vertical align="center" justify="center">
             <Space direction="vertical" size="large" align="center">
                 <Title>Dashboard</Title>
                 <Space>

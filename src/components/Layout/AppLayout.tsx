@@ -1,15 +1,15 @@
 "use client"
 
-import React, {useState} from 'react';
+import React, {Suspense, useState} from 'react';
 import {Layout, theme} from 'antd';
 import AppSideMenu from '../SideBar/AppSideMenu';
 import AppHeader from '../Header/AppHeader';
+import Loader from "@/components/Loader/Loader";
 
 const {Content} = Layout;
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const [collapsed, setCollapsed] = useState(false);
-    const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
 
     const toggleCollapsed = () => setCollapsed(!collapsed);
 
@@ -19,15 +19,11 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
             <Layout>
                 <AppHeader collapsed={collapsed} onToggle={toggleCollapsed}/>
                 <Content
-                    style={{
-                        margin: '10px',
-                        padding: 10,
-                        minHeight: 500,
-                        background: colorBgContainer,
-                        borderRadius: borderRadiusLG,
-                    }}
+                    className="pt-5 pr-2.5 pb-2.5 pl-5 overflow-auto"
                 >
-                    {children}
+                    <Suspense fallback={<Loader/>}>
+                        {children}
+                    </Suspense>
                 </Content>
             </Layout>
         </Layout>
