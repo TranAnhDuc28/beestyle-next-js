@@ -72,7 +72,6 @@ const AppSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
                         (<div className="text-3xl font-bold">BeeStyle</div>)
                     }
                 </div>
-
                 <Menu
                     mode="inline"
                     defaultSelectedKeys={['1']}
@@ -81,7 +80,6 @@ const AppSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
                 />
             </Sider>
         </>
-
     );
 };
 
