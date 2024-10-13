@@ -1,16 +1,17 @@
 "use client"
 import React from "react";
-import {Button, Flex, Space, Spin, Typography} from "antd";
-import {showNotification} from "@/utils/notificationUtils";
+import {Button, Flex, notification, Space, Typography} from "antd";
+import {showNotification} from "@/utils/NotificationUtils";
 
 const {Title} = Typography;
 
 const Dashboard: React.FC = () => {
     const messageSuccess = () => {
-        showNotification.success('Thông báo', 'SUCCESS.')
+        showNotification.success('Thông báo', 'SUCCESS.', 'bottomRight')
     }
     const messageWarning = () => {
-        showNotification.warning('Thông báo', 'WARNING.')
+        // showNotification.warning('Thông báo', 'WARNING.', 'topRight')
+        notification.warning({message: "ABC", placement: "topRight"})
     }
     const messageError = () => {
         showNotification.error('Thông báo', 'ERROR.')

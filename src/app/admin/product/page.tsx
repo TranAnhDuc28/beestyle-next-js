@@ -7,15 +7,13 @@ import {
     MenuProps,
     Select,
     Space, TableColumnsType,
-    theme,
     Typography
 } from "antd";
-import React, {useState} from "react";
 import TablePagination from "@/components/TablePagination/TablePagination";
 import ColorButton from "@/components/Button/ColorButton";
 import Search from "antd/es/input/Search";
 import {SearchProps} from "antd/lib/input";
-import {CaretDownOutlined, DownOutlined, MenuOutlined, PlusOutlined} from "@ant-design/icons";
+import {CaretDownOutlined, MenuOutlined, PlusOutlined} from "@ant-design/icons";
 
 const {Content} = Layout;
 const {Title} = Typography;
@@ -36,7 +34,7 @@ const menuItems: MenuItem[] = [
 ];
 
 interface DataType {
-    key: React.Key;
+    id: React.Key;
     name: string;
     age: number;
     address: string;
@@ -49,23 +47,23 @@ const columns: TableColumnsType<DataType> = [
 ];
 
 const data: DataType[] = [
-    {key: '1', name: 'John Brown', age: 32, address: 'New York No. 1 Lake Park',},
-    {key: '2', name: 'Jim Green', age: 42, address: 'London No. 1 Lake Park',},
-    {key: '3', name: 'Joe Black', age: 32, address: 'Sydney No. 1 Lake Park',},
-    {key: '4', name: 'Disabled User', age: 99, address: 'Sydney No. 1 Lake Park',},
-    {key: '5', name: 'John Brown', age: 32, address: 'New York No. 1 Lake Park',},
-    {key: '6', name: 'Jim Green', age: 42, address: 'London No. 1 Lake Park',},
-    {key: '7', name: 'Joe Black', age: 32, address: 'Sydney No. 1 Lake Park',},
-    {key: '8', name: 'Disabled User', age: 99, address: 'Sydney No. 1 Lake Park',},
-    {key: '9', name: 'John Brown', age: 32, address: 'New York No. 1 Lake Park',},
-    {key: '10', name: 'Jim Green', age: 42, address: 'London No. 1 Lake Park',},
-    {key: '11', name: 'Joe Black', age: 32, address: 'Sydney No. 1 Lake Park',},
-    {key: '12', name: 'Disabled User', age: 99, address: 'Sydney No. 1 Lake Park',},
-    {key: '13', name: 'Disabled User', age: 99, address: 'Sydney No. 1 Lake Park',},
-    {key: '14', name: 'John Brown', age: 32, address: 'New York No. 1 Lake Park',},
-    {key: '15', name: 'Jim Green', age: 42, address: 'London No. 1 Lake Park',},
-    {key: '16', name: 'Joe Black', age: 32, address: 'Sydney No. 1 Lake Park',},
-    {key: '17', name: 'Disabled User', age: 99, address: 'Sydney No. 1 Lake Park',},
+    {id: '1', name: 'John Brown', age: 32, address: 'New York No. 1 Lake Park',},
+    {id: '2', name: 'Jim Green', age: 42, address: 'London No. 1 Lake Park',},
+    {id: '3', name: 'Joe Black', age: 32, address: 'Sydney No. 1 Lake Park',},
+    {id: '4', name: 'Disabled User', age: 99, address: 'Sydney No. 1 Lake Park',},
+    {id: '5', name: 'John Brown', age: 32, address: 'New York No. 1 Lake Park',},
+    {id: '6', name: 'Jim Green', age: 42, address: 'London No. 1 Lake Park',},
+    {id: '7', name: 'Joe Black', age: 32, address: 'Sydney No. 1 Lake Park',},
+    {id: '8', name: 'Disabled User', age: 99, address: 'Sydney No. 1 Lake Park',},
+    {id: '9', name: 'John Brown', age: 32, address: 'New York No. 1 Lake Park',},
+    {id: '10', name: 'Jim Green', age: 42, address: 'London No. 1 Lake Park',},
+    {id: '11', name: 'Joe Black', age: 32, address: 'Sydney No. 1 Lake Park',},
+    {id: '12', name: 'Disabled User', age: 99, address: 'Sydney No. 1 Lake Park',},
+    {id: '13', name: 'Disabled User', age: 99, address: 'Sydney No. 1 Lake Park',},
+    {id: '14', name: 'John Brown', age: 32, address: 'New York No. 1 Lake Park',},
+    {id: '15', name: 'Jim Green', age: 42, address: 'London No. 1 Lake Park',},
+    {id: '16', name: 'Joe Black', age: 32, address: 'Sydney No. 1 Lake Park',},
+    {id: '17', name: 'Disabled User', age: 99, address: 'Sydney No. 1 Lake Park',},
 ];
 
 const items: MenuProps['items'] = [
@@ -77,16 +75,8 @@ const items: MenuProps['items'] = [
 const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
 
 const Product = () => {
-    const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
 
-    const [dataState, setDataState] = useState<DataType[]>(data);
-    const total = data.length; // Tổng số item
-
-
-    const handlePageChange = (page: number, pageSize: number) => {
-        console.log(`Page: ${page}, PageSize: ${pageSize}`);
-        // Gọi API hoặc cập nhật dữ liệu ở đây nếu cần
-    };
+    // const [dataState, setDataState] = useState<DataType[]>(data);
 
     return (
         <>
@@ -129,7 +119,7 @@ const Product = () => {
                     <div
                         className="w-full p-2.5 bg-white  border-solid border-gray"
                         style={{
-                            borderRadius: borderRadiusLG,
+                            borderRadius: 6,
                             boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)'
                         }}
                     >
@@ -145,7 +135,7 @@ const Product = () => {
                     <Menu
                         className="w-full bg-white"
                         style={{
-                            borderRadius: borderRadiusLG,
+                            borderRadius: 4,
                             boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)'
                         }}
                         mode="inline"
@@ -153,18 +143,18 @@ const Product = () => {
                     />
                 </Space>
 
-                <Content className="min-w-0 bg-white"
+                <Content className="bg-white"
                          style={{
-                             borderRadius: borderRadiusLG,
+                             borderRadius: 4,
                              boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
                              flex: 1,
                          }}
                 >
                     <TablePagination
                         columns={columns}
-                        data={dataState}
-                        total={total}
-                        onPageChange={handlePageChange}
+                        data={data}
+                        // total={total}
+                        // onChange={onChange}
                     />
                 </Content>
             </Flex>
