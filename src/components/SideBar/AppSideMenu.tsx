@@ -1,8 +1,6 @@
 import React from 'react';
 import {Menu, MenuProps,} from 'antd';
-import {
-    UserOutlined, PieChartOutlined, ShoppingCartOutlined, ProductOutlined, GiftOutlined,
-} from '@ant-design/icons';
+import {UserOutlined, PieChartOutlined, ShoppingCartOutlined, ProductOutlined, GiftOutlined,} from '@ant-design/icons';
 import Sider from "antd/es/layout/Sider";
 import Link from "next/link";
 
@@ -17,43 +15,42 @@ const siderStyle: React.CSSProperties = {
     scrollbarColor: 'unset',
     backgroundColor: '#ffffff',
     border: '1px solid #E6EBF1',
+    transition: 'all 0.4s ease',
 };
 
 
 type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
-    {key: '1', label: <Link href={"/"}>Tổng quan</Link>, icon: <PieChartOutlined/>,},
-    {key: '2', label: <Link href={"/"}>Bán hàng tại quầy</Link>, icon: <ShoppingCartOutlined/>,},
-    {key: '3', label: <Link href={"/"}>Quản lý đơn hàng</Link>, icon: <ShoppingCartOutlined/>,},
+    {key: 'tong-quan', label: <Link href={"/"}>Tổng quan</Link>, icon: <PieChartOutlined/>,},
+    {key: 'ban-hang-tai-quay', label: <Link href={"/"}>Bán hàng tại quầy</Link>, icon: <ShoppingCartOutlined/>,},
+    {key: 'don-hang', label: <Link href={"/"}>Quản lý đơn hàng</Link>, icon: <ShoppingCartOutlined/>,},
     {
-        key: '4', label: 'Quản lý sản phẩm', icon: <ProductOutlined/>,
+        key: 'quan-li-san-pham', label: 'Quản lý sản phẩm', icon: <ProductOutlined/>,
         children: [
-            {key: '4.1', label: <Link href={"/admin/product"}>Sản phẩm</Link>},
-            {key: '4.2', label: <Link href={"/admin/category"}>Danh mục</Link>},
-            {key: '4.3', label: <Link href={"/admin/brand"}>Thương hiệu</Link>},
-            {key: '4.4', label: <Link href={"/admin/material"}>Chất liệu</Link>},
-            {key: '4.5', label: <Link href={"/admin/color"}>Màu sắc</Link>},
-            {key: '4.6', label: <Link href={"/admin/size"}>Kích cỡ</Link>},
+            {key: 'san-pham', label: <Link href={"/admin/product"}>Sản phẩm</Link>},
+            {key: 'danh-muc', label: <Link href={"/admin/category"}>Danh mục</Link>},
+            {key: 'thuong-hieu', label: <Link href={"/admin/brand"}>Thương hiệu</Link>},
+            {key: 'chat-lieu', label: <Link href={"/admin/material"}>Chất liệu</Link>},
+            {key: 'mau-sac', label: <Link href={"/admin/color"}>Màu sắc</Link>},
+            {key: 'kich-thuoc', label: <Link href={"/admin/size"}>Kích cỡ</Link>},
         ],
     },
     {
-        key: '5', label: 'Giảm giá', icon: <GiftOutlined/>,
+        key: 'giam-gia', label: 'Giảm giá', icon: <GiftOutlined/>,
         children: [
-            {key: '5.1', label: 'Quản lý voucher'},
-            {key: '5.2', label: 'Quản lý khuyến mại'},
+            {key: 'voucher', label: 'Quản lý voucher'},
+            {key: 'khuyen-mai', label: 'Quản lý khuyến mại'},
         ],
     },
     {
-        key: '6', label: 'Tài khoản', icon: <UserOutlined/>,
+        key: 'tai-khoan', label: 'Tài khoản', icon: <UserOutlined/>,
         children: [
-            {key: '6.1', label:<Link href={'/admin/customer'}>Khách hàng</Link> },
+            {key: '6.1', label: <Link href={'/admin/customer'}>Khách hàng</Link>},
             {key: '6.2', label: 'Nhân viên'},
         ],
-    },
-    {key: '7', label: <Link href={"/test"}>Test</Link>, icon: <UserOutlined/>}
+    }
 ];
-
 
 const AppSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
     return (
@@ -66,11 +63,10 @@ const AppSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
                 width={250}
                 aria-label="Main navigation"
             >
-                <div className="flex justify-center items-center h-16 w-full">
-                    {collapsed ?
-                        (<div className="text-xs font-black">BeeStyle</div>) :
-                        (<div className="text-3xl font-bold">BeeStyle</div>)
-                    }
+                <div className="flex justify-center items-center h-16 w-full du">
+                    <div className={`transition-all duration-500 ${collapsed ? 'text-xs font-black' : 'text-3xl font-bold'}`}>
+                        BeeStyle
+                    </div>
                 </div>
 
                 <Menu

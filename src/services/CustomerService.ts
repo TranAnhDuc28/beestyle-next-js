@@ -8,6 +8,6 @@ export const getCustomers = async () => {
     const {data: {items} } = result
     return items
    } catch (error) {
-     return null
+      throw new Error('Fetch data failed');
    }
 }
