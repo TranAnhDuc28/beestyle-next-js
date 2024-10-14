@@ -1,8 +1,10 @@
 "use client"
-import {Table, TableColumnsType, TableProps} from "antd";
+import {Table, TableColumnsType, TableProps, Typography } from "antd";
 import React from "react";
 import "./TablePagination.css";
-import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+const { Title } = Typography;
 
 export interface ITablePaginationProps {
     columns?: TableColumnsType<any>,
@@ -12,7 +14,6 @@ export interface ITablePaginationProps {
     total?: number,
     loading?: boolean
 }
-
 
 // rowSelection object indicates the need for row selection
 const rowSelection: TableProps<any>['rowSelection'] = {
@@ -26,11 +27,10 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
 
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const {replace} = useRouter()
+    const { replace } = useRouter()
 
     const onChange = (pagination: any, filters: any, sorter: any, extra: any) => {
-        // Kiểm tra xem đối tượng pagination có tồn tại và có thuộc tính current không
-        if (pagination?.current) { // nếu có
+        if (pagination?.current) {
             const params = new URLSearchParams(searchParams);  // Tạo một đối tượng URLSearchParams từ các tham số tìm kiếm hiện tại
             params.set("page", pagination.current); // Thay thế URL hiện tại bằng URL mới với các tham số đã cập nhật
             params.set("size", pagination.pageSize);
@@ -38,7 +38,6 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
             replace(`${pathname}?${params.toString()}`); // Thay thế URL hiện tại bằng URL mới với các tham số đã cập nhật
         }
     };
-
 
     return (
         <>
@@ -57,10 +56,10 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
                         showSizeChanger: true,
                         pageSizeOptions: [10, 25, 35, 50],
                         responsive: true,
-                        style: {marginRight: 10},
+                        style: { marginRight: 10 },
                         showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
                     }}
-                    scroll={{x: true, y: 'calc(100vh - 270px)'}}
+                    scroll={{ x: true, y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true }}
                 />
             </div>
         </>
