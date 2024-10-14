@@ -1,3 +1,4 @@
+"use client"
 import { notification } from 'antd';
 import {ArgsProps, GlobalConfigProps, NotificationPlacement} from 'antd/es/notification/interface';
 
@@ -18,7 +19,7 @@ type NotificationFunction = (
   message?: string,
   description?: string,
   placement?: NotificationPlacement,
-  options?: Omit<ArgsProps, 'message' | 'description' | 'placement' | 'type'>
+  options?: Omit<ArgsProps, 'message' | 'description' | 'placement' | 'type' | 'showProgress' | 'duration'>
 ) => void;
 
 const createNotificationFunction = (type: NotificationType): NotificationFunction => {
@@ -43,5 +44,5 @@ export const showNotification = {
 export const configureNotification = (config: Partial<GlobalConfigProps>) => {
   const newConfig: GlobalConfigProps = { ...defaultConfig, ...config };
   notification.config(newConfig);
-  Object.assign(defaultConfig, newConfig); // Cập nhật defaultConfig
+  Object.assign(defaultConfig, newConfig);
 };

@@ -40,7 +40,7 @@ const items: MenuItem[] = [
     {
         key: '5', label: 'Giảm giá', icon: <GiftOutlined/>,
         children: [
-            {key: '5.1', label: <Link href={"/admin/voucher"}>Quản lý voucher</Link>},
+            {key: '5.1', label: 'Quản lý voucher'},
             {key: '5.2', label: 'Quản lý khuyến mại'},
         ],
     },
@@ -72,6 +72,7 @@ const AppSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
                         (<div className="text-3xl font-bold">BeeStyle</div>)
                     }
                 </div>
+
                 <Menu
                     mode="inline"
                     defaultSelectedKeys={['1']}
@@ -80,6 +81,7 @@ const AppSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
                 />
             </Sider>
         </>
+
     );
 };
 
