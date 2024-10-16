@@ -21,6 +21,7 @@ const CreateMaterial = (props: IProps) => {
     };
 
     const onFinish = async (value: IMaterial) => {
+        // console.log('Success:', value);
         try {
             const result = await createMaterial(value);
             mutate();
@@ -35,7 +36,6 @@ const CreateMaterial = (props: IProps) => {
 
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
-
             if (errorMessage && typeof errorMessage === 'object') {
                 Object.entries(errorMessage).forEach(([field, message]) => {
                     api.error({
