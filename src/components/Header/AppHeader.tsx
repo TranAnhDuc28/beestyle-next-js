@@ -3,6 +3,16 @@ import {Button} from 'antd';
 import {MenuFoldOutlined, MenuUnfoldOutlined} from '@ant-design/icons';
 import {Header} from "antd/es/layout/layout";
 
+const headerStyle: React.CSSProperties = {
+    position: 'sticky',
+    border: '1px solid #E6EBF1', 
+    borderLeft: 'none', 
+    zIndex: 1, 
+    background: 'white',
+    padding: 0
+}
+
+
 interface HeaderBarProps {
     collapsed: boolean;
     onToggle: () => void;
@@ -10,10 +20,7 @@ interface HeaderBarProps {
 
 const AppHeader: React.FC<HeaderBarProps> = ({collapsed, onToggle}) => {
     return (
-        <Header
-            style={{border: '1px solid #E6EBF1', borderLeft: 'none', zIndex: 1}}
-            className="sticky top-0 w-full p-0 flex items-center bg-white"
-        >
+        <Header style={headerStyle} >
             <Button
                 type="text"
                 icon={collapsed ? <MenuUnfoldOutlined/> : <MenuFoldOutlined/>}
