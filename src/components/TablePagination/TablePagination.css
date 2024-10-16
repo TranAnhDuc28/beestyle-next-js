@@ -1,9 +1,3 @@
 .ant-table-thead .ant-table-cell {
     background-color: #BAE0FF !important;
 }
-
-.ant-table-body {
-    scrollbar-width: thin;
-    scrollbar-color: unset;
-    overflow: auto;
-}

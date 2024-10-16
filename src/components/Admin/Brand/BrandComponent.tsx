@@ -1,15 +1,14 @@
 "use client"
-
-import {Flex, Layout, Menu, MenuProps, Space, TableColumnsType, Typography} from "antd";
-import {PlusOutlined} from "@ant-design/icons";
-import Search from "antd/es/input/Search";
-
-import type {IMaterial} from "@/types/IMaterial";
-import TablePagination from "@/components/TablePagination/TablePagination";
-import ColorButton from "@/components/Button/ColorButton";
-import {getMaterials, materialUrlEndpoint as cacheKey} from "@/services/MaterialService";
-import {OptionsParams} from "@/utils/HttpInstance";
+import { getBrands, brandUrlEndpoint as cacheKey } from "@/services/brand.service";
+import { OptionsParams } from "@/utils/HttpInstance";
+import { Flex, Layout, Menu, MenuProps, Space, TableColumnsType, Typography } from "antd";
 import useSWR from "swr";
+import { IBrand } from "@/types/IBrands";
+import { PlusOutlined } from "@ant-design/icons";
+import Search from "antd/es/input/Search";
+import ColorButton from "@/components/Button/ColorButton";
+import TablePagination from "@/components/TablePagination/TablePagination";
+
 
 const {Content} = Layout;
 const {Title} = Typography;
@@ -35,19 +34,19 @@ const menuItems: MenuItem[] = [
 //     {label: '3rd menu item', key: '3',},
 // ];
 
-const columns: TableColumnsType<IMaterial> = [
-    {title: 'Tên chất liệu', dataIndex: 'materialName', key: 'materialName'},
+const columns: TableColumnsType<IBrand> = [
+    {title: 'Tên thương liệu', dataIndex: 'brandName', key: 'brandName'},
     {title: 'Trạng thái', dataIndex: 'status', key: 'status'},
     {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
     {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
 ];
 
 
-const MaterialComponent: React.FC<any> = (props: any) =>{
+const BrandComponent = (props: any) =>{
     const options: OptionsParams = props.options;
     // console.log(options);
 
-    const { data, error, isLoading } = useSWR([cacheKey, options], () => getMaterials(options),
+    const { data, error, isLoading } = useSWR([cacheKey, options], () => getBrands(options),
         {
             revalidateIfStale: false,
             revalidateOnFocus: false,
@@ -72,7 +71,7 @@ const MaterialComponent: React.FC<any> = (props: any) =>{
     return (
         <>
             <Flex align={"flex-start"} justify={"flex-start"} gap={"small"}>
-                <Title level={3} style={{margin: '0px 0px 20px 12px', minWidth: 256, flexGrow: 1}}>Chất liệu</Title>
+                <Title level={3} style={{margin: '0px 0px 20px 12px', minWidth: 256, flexGrow: 1}}>Thương hiệu</Title>
                 <div className="w-full">
                     <Flex justify={'space-between'} align={'center'}>
                         <div className="flex-grow max-w-96">
@@ -89,7 +88,7 @@ const MaterialComponent: React.FC<any> = (props: any) =>{
                                     type="primary"
                                     icon={<PlusOutlined/>}
                                 >
-                                    Thêm chất liệu
+                                    Thêm thương hiệu
                                 </ColorButton>
                                 {/*<Dropdown menu={{items}} trigger={['click']}>*/}
                                 {/*    <ColorButton*/}
@@ -141,4 +140,4 @@ const MaterialComponent: React.FC<any> = (props: any) =>{
     )
 }
 
-export default MaterialComponent;
+export default BrandComponent;

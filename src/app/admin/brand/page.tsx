@@ -1,16 +1,26 @@
-"use client"
-import {Flex, Typography} from "antd";
-import React from "react";
+import BrandComponent from "@/components/Admin/Brand/BrandComponent";
+import Loader from "@/components/Loader/Loader";
+import { OptionsParams } from "@/utils/HttpInstance";
+import React, { Suspense } from "react";
 
-const { Title } = Typography;
+const BrandPage = (props: any) => {
+    const size: number = (props?.searchParams?.size && !isNaN(props.searchParams.size)) ?
+        Number(props.searchParams.size) : 10;
+    const page: number = (props?.searchParams?.page && !isNaN(props.searchParams.page)) ?
+        Number(props.searchParams.page) : 1;
 
-function Brand() {
+    const options: OptionsParams = {
+        params: {
+            page: page,
+            size: size
+        }
+    };
 
     return (
-        <Flex align={'center'} justify={'center'}>
-            <Title>Brand</Title>
-        </Flex>
+        <Suspense fallback={<Loader />}>
+            <BrandComponent options={options} />
+        </Suspense>
     );
 }
 
-export default Brand;
+export default BrandPage;
