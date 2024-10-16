@@ -10,7 +10,12 @@ export const getMaterials = async (options: OptionsParams = {}) => {
     return response.data;
 }
 
-export const createMaterial = async (value: IMaterial) => {
-    const response = await httpInstance.post(`admin/${materialUrlEndpoint}/create`, value);
+export const createMaterial = async (data: IMaterial) => {
+    const response = await httpInstance.post(`admin/${materialUrlEndpoint}/create`, data);
+    return response.data;
+}
+
+export const updateMaterial = async (data: IMaterial) => {
+    const response = await httpInstance.put(`admin/${materialUrlEndpoint}/update/${data.id}`, data);
     return response.data;
 }

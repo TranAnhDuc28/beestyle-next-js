@@ -1,6 +1,6 @@
 export interface IMaterial {
     id: number;
-    brandName?: string;
+    materialName?: string;
     status: string;
     createAt?: string;
     updateAt?: string;

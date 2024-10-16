@@ -1,5 +1,5 @@
 "use client"
-import { Flex, Layout, Menu, MenuProps, notification, Space, TableColumnsType, Tooltip, Typography } from "antd";
+import { Flex, Layout, Menu, MenuProps, notification, Space, TableColumnsType, Tag, Tooltip, Typography } from "antd";
 import { EditTwoTone, PlusOutlined } from "@ant-design/icons";
 import Search from "antd/es/input/Search";
 import type { IMaterial } from "@/types/IMaterial";
@@ -10,6 +10,8 @@ import { OptionsParams } from "@/utils/HttpInstance";
 import useSWR from "swr";
 import { useCallback, useEffect, useState } from "react";
 import CreateMaterial from "./CreateMaterial";
+import UpdateMaterial from "./UpdateMaterial";
+import { STATUS } from "@/constants/Status";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -28,49 +30,57 @@ const menuItems: MenuItem[] = [
     }
 ];
 
-
-// const items: MenuProps['items'] = [
-//     {label: '1st menu item', key: '0',},
-//     {label: '2st menu item', key: '1',},
-//     {label: '3rd menu item', key: '3',},
-// ];
-
-const columns: TableColumnsType<IMaterial> = [
-    { title: 'Tên chất liệu', dataIndex: 'materialName', key: 'materialName' },
-    { title: 'Trạng thái', dataIndex: 'status', key: 'status' },
-    { title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt' },
-    { title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt' },
-    {
-        title: 'Hành động', align: 'center', render: (value, record, index) => {
-            return (
-                <>
-                    <Tooltip placement="top" title="Chỉnh sửa">
-                        <EditTwoTone
-                            twoToneColor={"#f57800"}
-                            style={{
-                                cursor: "pointer",
-                                padding: "5px",
-                                border: "1px solid #f57800",
-                                borderRadius: "5px"
-                            }}
-                        />
-                    </Tooltip>
-                </>
-            )
-        }
-    },
-];
-
-
 const MaterialComponent = (props: any) => {
     console.log("Render component");
     const options: OptionsParams = props.options;
     const [api, contextHolder] = notification.useNotification();
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+
     const { data, error, isLoading, mutate } =
         useSWR([`admin/${materialUrlEndpoint}`, options], () => getMaterials(options),
             { revalidateOnFocus: false, revalidateOnReconnect: false, }
         );
+
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
+    const [dataUpdate, setDataUpdate] = useState<any>(null);
+
+    const columns: TableColumnsType<IMaterial> = [
+        { title: 'Tên chất liệu', dataIndex: 'materialName', key: 'materialName' },
+        {
+            title: 'Trạng thái', dataIndex: 'status', key: 'status',
+            render(value: keyof typeof STATUS, record, index) {
+                let color = value === 'ACTIVE' ? 'green' : 'default';
+                return (
+                    <Tag color={color}>{STATUS[value]}</Tag>
+                );
+            },
+        },
+        { title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt' },
+        { title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt' },
+        {
+            title: 'Hành động', align: 'center', render: (record) => {
+                return (
+                    <>
+                        <Tooltip placement="top" title="Chỉnh sửa">
+                            <EditTwoTone
+                                twoToneColor={"#f57800"}
+                                style={{
+                                    cursor: "pointer",
+                                    padding: "5px",
+                                    border: "1px solid #f57800",
+                                    borderRadius: "5px"
+                                }}
+                                onClick={() => {
+                                    setIsUpdateModalOpen(true);
+                                    setDataUpdate(record);
+                                }}
+                            />
+                        </Tooltip>
+                    </>
+                )
+            }
+        },
+    ];
 
     let result: any;
     useEffect(() => {
@@ -177,6 +187,15 @@ const MaterialComponent = (props: any) => {
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 mutate={mutate}
             />
+
+            <UpdateMaterial
+                isUpdateModalOpen={isUpdateModalOpen}
+                setIsUpdateModalOpen={setIsUpdateModalOpen}
+                mutate={mutate}
+                dataUpdate={dataUpdate}
+                setDataUpdate={setDataUpdate}
+            />
+
 
         </>
     )
