@@ -95,7 +95,7 @@ const PromotionComponent: React.FC<any> = (props: any) => {
                 }
             }
         },
-        { title: 'Mô tả', dataIndex: 'description', key: 'description' },
+        { title: 'Mô tả', dataIndex: 'description', key: 'description', width: 200},
         {
             title: "Hành động", key: "actions", width: 180,
             render: (text: any, record: any) => (
@@ -306,7 +306,7 @@ const PromotionComponent: React.FC<any> = (props: any) => {
                         loading={isLoading}
                         columns={columns}
                         data={result?.items ? result.items : []}
-                        current={result?.pageNo - 1}
+                        current={result?.pageNo}
                         pageSize={result?.pageSize}
                         total={result?.totalElements}
                     />

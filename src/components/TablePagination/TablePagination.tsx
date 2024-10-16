@@ -32,12 +32,12 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
     const onChange = (pagination: any, filters: any, sorter: any, extra: any) => {
         if (pagination?.current) {
             const params = new URLSearchParams(searchParams);  // Tạo một đối tượng URLSearchParams từ các tham số tìm kiếm hiện tại
-            params.set("page", pagination.current); 
+            params.set("page", (pagination.current - 1).toString());  // Trừ 1 từ trang hiện tại
             params.set("size", pagination.pageSize);
-            // console.log("pagination", pagination);
-            replace(`${pathname}?${params.toString()}`); // Thay thế URL hiện tại bằng URL mới với các tham số đã cập nhật
+            replace(`${pathname}?${params.toString()}`);  // Thay thế URL hiện tại bằng URL mới với các tham số đã cập nhật
         }
     };
+    
 
     return (
         <>
