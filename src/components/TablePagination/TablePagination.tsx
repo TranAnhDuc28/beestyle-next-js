@@ -32,7 +32,7 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
     const onChange = (pagination: any, filters: any, sorter: any, extra: any) => {
         if (pagination?.current) {
             const params = new URLSearchParams(searchParams);  // Tạo một đối tượng URLSearchParams từ các tham số tìm kiếm hiện tại
-            params.set("page", pagination.current); // Thay thế URL hiện tại bằng URL mới với các tham số đã cập nhật
+            params.set("page", pagination.current); 
             params.set("size", pagination.pageSize);
             // console.log("pagination", pagination);
             replace(`${pathname}?${params.toString()}`); // Thay thế URL hiện tại bằng URL mới với các tham số đã cập nhật
@@ -59,7 +59,7 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
                         style: { marginRight: 10 },
                         showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
                     }}
-                    scroll={{ x: true, y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true }}
+                    scroll={{ y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true }}
                 />
             </div>
         </>

@@ -1,11 +1,14 @@
 "use client";
 import "./globals.css";
-import React, { ReactNode, Suspense, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useMemo, useState } from "react";
 import DefaultLayout from "@/components/Layout/DefaultLayout";
 import Loader from "@/components/Loader/Loader";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 
+const Context = React.createContext({ name: 'Default' });
+
 export default function RootLayout({ children, }: Readonly<{ children: ReactNode; }>) {
+    const contextValue = useMemo(() => ({ name: 'Default' }), []);
     const [loading, setLoading] = useState<boolean>(true);
     console.log(loading);
 
@@ -24,20 +27,13 @@ export default function RootLayout({ children, }: Readonly<{ children: ReactNode
                         )
                         :
                         (
-                            <AntdRegistry>
-                                <DefaultLayout>{children}</DefaultLayout>
-                            </AntdRegistry>
+                            <Context.Provider value={contextValue}>
+                                <AntdRegistry>
+                                    <DefaultLayout>{children}</DefaultLayout>
+                                </AntdRegistry>
+                            </Context.Provider>
                         )
                 }
-
-                {/* {
-                    loading ?
-                        (<Spin spinning={loading} size="large" fullscreen />) :
-                        (<AntdRegistry>
-                            <DefaultLayout>{children}</DefaultLayout>
-                        </AntdRegistry>)
-                } */}
-
             </body>
         </html >
     );

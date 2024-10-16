@@ -2,14 +2,13 @@
 import { Flex, Layout, Menu, MenuProps, notification, Space, TableColumnsType, Tooltip, Typography } from "antd";
 import { EditTwoTone, PlusOutlined } from "@ant-design/icons";
 import Search from "antd/es/input/Search";
-
 import type { IMaterial } from "@/types/IMaterial";
 import TablePagination from "@/components/TablePagination/TablePagination";
 import ColorButton from "@/components/Button/ColorButton";
-import { getMaterials, materialUrlEndpoint as cacheKey } from "@/services/material.service";
+import { getMaterials, materialUrlEndpoint } from "@/services/MaterialService";
 import { OptionsParams } from "@/utils/HttpInstance";
 import useSWR from "swr";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CreateMaterial from "./CreateMaterial";
 
 const { Content } = Layout;
@@ -64,35 +63,32 @@ const columns: TableColumnsType<IMaterial> = [
 
 
 const MaterialComponent = (props: any) => {
-    const options: OptionsParams = props.options;
-    // console.log(options);
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
-    const { data, error, isLoading } = useSWR([cacheKey, options], () => getMaterials(options),
-        {
-            revalidateIfStale: false,
-            revalidateOnFocus: false,
-            revalidateOnReconnect: false,
-            dedupingInterval: 60000
-        }
-    );
-
     console.log("Render component");
+    const options: OptionsParams = props.options;
+    const [api, contextHolder] = notification.useNotification();
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+    const { data, error, isLoading, mutate } =
+        useSWR([`admin/${materialUrlEndpoint}`, options], () => getMaterials(options),
+            { revalidateOnFocus: false, revalidateOnReconnect: false, }
+        );
+
     let result: any;
     useEffect(() => {
         if (error) {
-            notification.error({
+            console.log(error);
+            api.error({
                 message: error?.message || "Error fetching materials",
-                placement: "topRight",
-                showProgress: true
+                description: error?.response?.data?.message,
+                showProgress: true,
+                duration: 2
             });
         }
     }, [error]);
 
     if (!isLoading && data) {
-        console.log(data);
         result = data?.data;
+        console.log(result);
     }
-
 
     const renderHeader = () => {
         return (
@@ -152,6 +148,7 @@ const MaterialComponent = (props: any) => {
 
     return (
         <>
+            {contextHolder}
             {renderHeader()}
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
                 {renderSidebar()}
@@ -178,6 +175,7 @@ const MaterialComponent = (props: any) => {
             <CreateMaterial
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
+                mutate={mutate}
             />
 
         </>

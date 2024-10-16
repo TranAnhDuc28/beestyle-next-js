@@ -1,34 +1,63 @@
 "use client"
-import { memo, useState } from 'react';
-import { Button, Form, Input, Modal } from 'antd';
+import { memo } from 'react';
+import { Form, Input, Modal, notification } from 'antd';
+import { IMaterial } from '@/types/IMaterial';
+import { createMaterial} from '@/services/MaterialService';
 
 interface IProps {
     isCreateModalOpen: boolean;
-    setIsCreateModalOpen: (v: boolean) => void;
+    setIsCreateModalOpen: (value: boolean) => void;
+    mutate: any
 }
 
-
 const CreateMaterial = (props: IProps) => {
-    // console.log("CreateMaterial Component");
-    const { isCreateModalOpen, setIsCreateModalOpen } = props;
+    const [api, contextHolder] = notification.useNotification();
+    const { isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
-
-    // const handleOk = () => {
-    //     setIsModalOpen(false);
-    // };
 
     const handleCloseCreateModal = () => {
         form.resetFields();
         setIsCreateModalOpen(false);
     };
 
-    const onFinish = async (value: any) => {
-        console.log("Form value: ", value);
-        
+    const onFinish = async (value: IMaterial) => {
+        try {
+            const result = await createMaterial(value);
+            mutate();
+            if (result.data) {
+                handleCloseCreateModal();
+                api.success({
+                    message: result.message,
+                    showProgress: true,
+                    duration: 2
+                });
+            }
+
+        } catch (error: any) {
+            const errorMessage = error?.response?.data?.message;
+
+            if (errorMessage && typeof errorMessage === 'object') {
+                Object.entries(errorMessage).forEach(([field, message]) => {
+                    api.error({
+                        message: String(message), 
+                        showProgress: true,
+                        duration: 2
+                    });
+                });
+            } else {
+                api.error({
+                    message: error?.message,
+                    description: errorMessage,
+                    showProgress: true,
+                    duration: 2
+                });
+            }
+        }
     }
 
     return (
         <>
+            {contextHolder}
             <Modal
                 title="Thêm mới chất liệu"
                 open={isCreateModalOpen}
@@ -37,7 +66,7 @@ const CreateMaterial = (props: IProps) => {
                 cancelText="Hủy"
                 okText="Lưu"
                 okButtonProps={{
-                    style: {background: "#00b96b"}
+                    style: { background: "#00b96b" }
                 }}
             >
                 <Form
