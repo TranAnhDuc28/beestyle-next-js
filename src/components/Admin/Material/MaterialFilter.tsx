@@ -38,7 +38,7 @@ const MaterialFilter = () => {
                 items={[
                     {
                         key: 'status',
-                        label: <Title level={5} style={{ margin: 0 }}>Trạng thái</Title>,
+                        label: <Title level={5} style={{ margin: '0px 10px' }}>Trạng thái</Title>,
                         children: (
                             <Checkbox.Group onChange={onChange}>
                                 <Row>

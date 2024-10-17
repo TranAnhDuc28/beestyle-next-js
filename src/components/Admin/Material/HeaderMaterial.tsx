@@ -3,22 +3,42 @@ import Search from "antd/es/input/Search";
 import ColorButton from "@/components/Button/ColorButton";
 import {PlusOutlined} from "@ant-design/icons";
 import {memo} from "react";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {param} from "ts-interface-checker";
+import {URL_API_MATERIAL} from "@/services/MaterialService";
 
 type SearchProps = GetProps<typeof Input.Search>;
 const {Title} = Typography;
-
-const onSearch: SearchProps['onSearch'] =
-    (value, _e, info) => {
-    console.log(info?.source, value);
-}
 
 interface IProps {
     setIsCreateModalOpen: (value: boolean) => void;
 }
 
 const HeaderMaterial = (props: IProps) => {
-    console.log("HeaderMaterial render");
+    // console.log("HeaderMaterial render");
     const {setIsCreateModalOpen} = props;
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const { replace } = useRouter();
+
+    const params = new URLSearchParams(searchParams);
+
+    const onSearch: SearchProps['onSearch'] =
+        (value, _e, info) => {
+            if (value) {
+                params.set("name", value);
+                params.set("page", "1");
+                replace(`${pathname}?${params.toString()}`);
+            }
+        }
+
+    const onChange: SearchProps['onChange'] = (e ) => {
+        let value = e.target.value;
+        if (!value) {
+            params.delete("name");
+            replace(URL_API_MATERIAL.get);
+        }
+    }
 
     return (
         <Flex align={"flex-start"} justify={"flex-start"} gap={"small"}>
@@ -27,9 +47,10 @@ const HeaderMaterial = (props: IProps) => {
                 <Flex justify={'space-between'} align={'center'}>
                     <div className="flex-grow max-w-96">
                         <Search
-                            placeholder="Nhập tên chất liệu"
+                            placeholder="Theo tên chất liệu"
                             allowClear
                             onSearch={onSearch}
+                            onChange={onChange}
                             style={{width: '100%'}}
                         />
                     </div>
