@@ -1,5 +1,4 @@
 "use client"
-import { getBrands, brandUrlEndpoint as cacheKey } from "@/services/brand.service";
 import { OptionsParams } from "@/utils/HttpInstance";
 import { Flex, Layout, Menu, MenuProps, Space, TableColumnsType, Typography } from "antd";
 import useSWR from "swr";
@@ -7,7 +6,8 @@ import { IBrand } from "@/types/IBrands";
 import { PlusOutlined } from "@ant-design/icons";
 import Search from "antd/es/input/Search";
 import ColorButton from "@/components/Button/ColorButton";
-import TablePagination from "@/components/TablePagination/TablePagination";
+import TablePagination from "@/components/Table/TablePagination";
+import {getBrands, URL_API_BRAND} from "@/services/BrandService";
 
 
 const {Content} = Layout;
@@ -28,12 +28,6 @@ const menuItems: MenuItem[] = [
 ];
 
 
-// const items: MenuProps['items'] = [
-//     {label: '1st menu item', key: '0',},
-//     {label: '2st menu item', key: '1',},
-//     {label: '3rd menu item', key: '3',},
-// ];
-
 const columns: TableColumnsType<IBrand> = [
     {title: 'Tên thương liệu', dataIndex: 'brandName', key: 'brandName'},
     {title: 'Trạng thái', dataIndex: 'status', key: 'status'},
@@ -46,12 +40,11 @@ const BrandComponent = (props: any) =>{
     const options: OptionsParams = props.options;
     // console.log(options);
 
-    const { data, error, isLoading } = useSWR([cacheKey, options], () => getBrands(options),
+    const { data, error, isLoading } = useSWR([URL_API_BRAND.get, options], () => getBrands(options),
         {
             revalidateIfStale: false,
             revalidateOnFocus: false,
             revalidateOnReconnect: false,
-            dedupingInterval: 60000
         }
     );
 

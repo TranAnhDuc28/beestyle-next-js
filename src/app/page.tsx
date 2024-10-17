@@ -5,7 +5,7 @@ import Loader from "@/components/Loader/Loader";
 
 export const metadata: Metadata = {
     title: "Dashboard",
-    description: "Dashboard app",
+    description: "Dashboard",
 };
 
 export default function Home() {
