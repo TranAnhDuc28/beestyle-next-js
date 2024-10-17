@@ -1,12 +1,11 @@
 "use client"
-import { Flex, Input, Layout, notification, TableColumnsType, Tag, Tooltip, Typography
-} from "antd";
-import {EditTwoTone, PlusOutlined} from "@ant-design/icons";
+import {Flex, Layout, notification, TableColumnsType, Tag, Tooltip,} from "antd";
+import {EditTwoTone} from "@ant-design/icons";
 import type {IMaterial} from "@/types/IMaterial";
 import TablePagination from "@/components/Table/TablePagination";
 import {getMaterials, URL_API_MATERIAL} from "@/services/MaterialService";
 import useSWR from "swr";
-import {useEffect, useLayoutEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import CreateMaterial from "./CreateMaterial";
 import UpdateMaterial from "./UpdateMaterial";
 import {STATUS} from "@/constants/Status";
@@ -15,7 +14,6 @@ import {useSearchParams} from "next/navigation";
 import HeaderMaterial from "@/components/Admin/Material/HeaderMaterial";
 
 const {Content} = Layout;
-const {Title} = Typography;
 
 const MaterialComponent = () => {
     const [api, contextHolder] = notification.useNotification();
@@ -42,7 +40,7 @@ const MaterialComponent = () => {
         {
             title: 'Trạng thái', dataIndex: 'status', key: 'status',
             render(value: keyof typeof STATUS, record, index) {
-                let color = value === 'ACTIVE' ? 'green' : 'default';
+                let color: string = value === 'ACTIVE' ? 'green' : 'default';
                 return (
                     <Tag color={color} key={record.id}>{STATUS[value]}</Tag>
                 );
@@ -97,13 +95,14 @@ const MaterialComponent = () => {
             <HeaderMaterial setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
                 <MaterialFilter/>
-                <Content className="min-w-0 bg-white"
-                         style={{
-                             boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
-                             flex: 1,
-                             minWidth: 700,
-                             borderRadius: '8px 8px 0px 0px'
-                         }}
+                <Content
+                    className="min-w-0 bg-white"
+                    style={{
+                        boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
+                        flex: 1,
+                        minWidth: 700,
+                        borderRadius: '8px 8px 0px 0px'
+                    }}
                 >
                     <TablePagination
                         loading={isLoading}

@@ -1,8 +1,8 @@
 import { STATUS } from "@/constants/Status";
-import { updateMaterial } from "@/services/MaterialService";
-import { IMaterial } from "@/types/IMaterial";
 import { Form, Input, Modal, notification, Radio } from "antd";
 import { memo, useEffect } from "react";
+import {IBrand} from "@/types/IBrand";
+import {updateBrand} from "@/services/BrandService";
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -12,7 +12,7 @@ interface IProps {
     setDataUpdate: any;
 }
 
-const UpdateMaterial = (props: IProps) => {
+const UpdateBrand = (props: IProps) => {
     // console.log("Update Material render");
     const [api, contextHolder] = notification.useNotification();
     const { isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate } = props;
@@ -21,7 +21,7 @@ const UpdateMaterial = (props: IProps) => {
     useEffect(() => {
         if (dataUpdate) {
             form.setFieldsValue({
-                materialName: dataUpdate.materialName,
+                brandName: dataUpdate.brandName,
                 status: dataUpdate.status,
             });
         }
@@ -33,7 +33,7 @@ const UpdateMaterial = (props: IProps) => {
         setDataUpdate(null);
     }
 
-    const onFinish = async (value: IMaterial) => {
+    const onFinish = async (value: IBrand) => {
         console.log(value);
         try {
             if (dataUpdate) {
@@ -41,7 +41,7 @@ const UpdateMaterial = (props: IProps) => {
                     ...value,
                     id: dataUpdate.id
                 }
-                const result = await updateMaterial(data);
+                const result = await updateBrand(data);
                 mutate();
                 if (result.data) {
                     handleCloseUpdateModal();
@@ -90,14 +90,14 @@ const UpdateMaterial = (props: IProps) => {
             >
                 <Form
                     form={form}
-                    name="updateMaterial"
+                    name="updateBrand"
                     layout="vertical"
                     onFinish={onFinish}
                 >
                     <Form.Item
                         name="materialName"
-                        label="Tên chất liệu"
-                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}>
+                        label="Tên thương hiệu"
+                        rules={[{ required: true, message: "Vui lòng nhập tên thương liệu!" }]}>
                         <Input />
                     </Form.Item>
                     <Form.Item
@@ -119,4 +119,4 @@ const UpdateMaterial = (props: IProps) => {
     )
 }
 
-export default memo(UpdateMaterial);
+export default memo(UpdateBrand);

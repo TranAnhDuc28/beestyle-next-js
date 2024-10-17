@@ -5,7 +5,7 @@ import {memo} from "react";
 
 const { Title } = Typography;
 
-const MaterialFilter = () => {
+const BrandFilter = () => {
     // console.log("Material Filter render");
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -57,4 +57,4 @@ const MaterialFilter = () => {
     );
 };
 
-export default memo(MaterialFilter);
+export default memo(BrandFilter);
