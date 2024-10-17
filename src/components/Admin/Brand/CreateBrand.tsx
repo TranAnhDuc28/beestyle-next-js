@@ -1,33 +1,90 @@
-import React, { useState } from 'react';
-import { Button, Modal } from 'antd';
+import React, {memo} from 'react';
+import {Form, Input, Modal, notification} from 'antd';
+import {IBrand} from "@/types/IBrand";
+import {createBrand} from "@/services/BrandService";
 
-const App: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+interface IProps {
+    isCreateModalOpen: boolean;
+    setIsCreateModalOpen: (value: boolean) => void;
+    mutate: any
+}
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
+const CreateBrand = (props: IProps) => {
+    // console.log("Create Material render");
+    const [api, contextHolder] = notification.useNotification();
+    const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
+    const [form] = Form.useForm();
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
+    const handleCloseCreateModal = () => {
+        form.resetFields();
+        setIsCreateModalOpen(false);
+    };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+    const onFinish = async (value: IBrand) => {
+        // console.log('Success:', value);
+        try {
+            const result = await createBrand(value);
+            mutate();
+            if (result.data) {
+                handleCloseCreateModal();
+                api.success({
+                    message: result.message,
+                    showProgress: true,
+                    duration: 2
+                });
+            }
 
-  return (
-    <>
-      <Button type="primary" onClick={showModal}>
-        Open Modal
-      </Button>
-      <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-      </Modal>
-    </>
-  );
+        } catch (error: any) {
+            const errorMessage = error?.response?.data?.message;
+            if (errorMessage && typeof errorMessage === 'object') {
+                Object.entries(errorMessage).forEach(([field, message]) => {
+                    api.error({
+                        message: String(message),
+                        showProgress: true,
+                        duration: 2
+                    });
+                });
+            } else {
+                api.error({
+                    message: error?.message,
+                    description: errorMessage,
+                    showProgress: true,
+                    duration: 2
+                });
+            }
+        }
+    }
+
+    return (
+        <>
+            {contextHolder}
+            <Modal
+                title="Thêm mới thương hiệu"
+                open={isCreateModalOpen}
+                onOk={() => form.submit()}
+                onCancel={() => handleCloseCreateModal()}
+                cancelText="Hủy"
+                okText="Lưu"
+                okButtonProps={{
+                    style: {background: "#00b96b"}
+                }}
+            >
+                <Form
+                    form={form}
+                    name="createBrand"
+                    layout="vertical"
+                    onFinish={onFinish}
+                >
+                    <Form.Item
+                        name="brandName"
+                        label="Tên thương hiệu"
+                        rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}>
+                        <Input/>
+                    </Form.Item>
+                </Form>
+            </Modal>
+        </>
+    );
 };
 
-export default App;
+export default memo(CreateBrand);

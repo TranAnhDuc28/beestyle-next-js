@@ -1,125 +1,106 @@
 "use client"
-import { OptionsParams } from "@/utils/HttpInstance";
-import { Flex, Layout, Menu, MenuProps, Space, TableColumnsType, Typography } from "antd";
+import {Flex, Layout, notification, TableColumnsType, Tag, Tooltip} from "antd";
 import useSWR from "swr";
-import { IBrand } from "@/types/IBrands";
-import { PlusOutlined } from "@ant-design/icons";
-import Search from "antd/es/input/Search";
-import ColorButton from "@/components/Button/ColorButton";
+import {IBrand} from "@/types/IBrand";
+import {EditTwoTone} from "@ant-design/icons";
 import TablePagination from "@/components/Table/TablePagination";
 import {getBrands, URL_API_BRAND} from "@/services/BrandService";
-
+import {useEffect, useState} from "react";
+import {useSearchParams} from "next/navigation";
+import {STATUS} from "@/constants/Status";
+import CreateBrand from "@/components/Admin/Brand/CreateBrand";
+import UpdateBrand from "@/components/Admin/Brand/UpdateBrand";
 
 const {Content} = Layout;
-const {Title} = Typography;
-type MenuItem = Required<MenuProps>['items'][number];
 
-const menuItems: MenuItem[] = [
-    {
-        key: '1',
-        label: 'Trạng thái',
-        children: [
-            {key: '1.1', label: 'Item 1',},
-            {key: '1.2', label: 'Item 1',},
-            {key: '1.3', label: 'Item 1',},
-            {key: '1.4', label: 'Item 1',},
-        ]
-    }
-];
+const BrandComponent = () => {
+    const [api, contextHolder] = notification.useNotification();
 
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
+    const [dataUpdate, setDataUpdate] = useState<any>(null);
 
-const columns: TableColumnsType<IBrand> = [
-    {title: 'Tên thương liệu', dataIndex: 'brandName', key: 'brandName'},
-    {title: 'Trạng thái', dataIndex: 'status', key: 'status'},
-    {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
-    {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
-];
+    const searchParams = useSearchParams();
+    const params = new URLSearchParams(searchParams);
 
-
-const BrandComponent = (props: any) =>{
-    const options: OptionsParams = props.options;
-    // console.log(options);
-
-    const { data, error, isLoading } = useSWR([URL_API_BRAND.get, options], () => getBrands(options),
-        {
-            revalidateIfStale: false,
-            revalidateOnFocus: false,
-            revalidateOnReconnect: false,
-        }
-    );
-
-    if(error) {
-        return (
-            <div>
-                {error?.response?.data?.message || "Error fetching materials"}
-            </div>
+    const {data, error, isLoading, mutate} =
+        useSWR(
+            `${URL_API_BRAND.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
+            getBrands,
+            {revalidateOnFocus: false, revalidateOnReconnect: false,}
         );
-    }
+
+    const columns: TableColumnsType<IBrand> = [
+        {title: 'Tên thương hiệu', dataIndex: 'brandName', key: 'brandName'},
+        {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
+        {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
+        {
+            title: 'Trạng thái', dataIndex: 'status', key: 'status',
+            render(value: keyof typeof STATUS, record, index) {
+                let color: string = value === 'ACTIVE' ? 'green' : 'default';
+                return (
+                    <Tag color={color} key={record.id}>{STATUS[value]}</Tag>
+                );
+            },
+        },
+        {
+            title: 'Hành động', align: 'center', render: (record) => {
+                return (
+                    <>
+                        <Tooltip placement="top" title="Chỉnh sửa">
+                            <EditTwoTone
+                                twoToneColor={"#f57800"}
+                                style={{
+                                    cursor: "pointer",
+                                    padding: "5px",
+                                    border: "1px solid #f57800",
+                                    borderRadius: "5px"
+                                }}
+                                onClick={() => {
+                                    setIsUpdateModalOpen(true);
+                                    setDataUpdate(record);
+                                }}
+                            />
+                        </Tooltip>
+                    </>
+                )
+            }
+        },
+    ];
+
+    useEffect(() => {
+        if (error) {
+            api.error({
+                message: error?.message || "Error fetching materials",
+                description: error?.response?.data?.message,
+                showProgress: true,
+                duration: 2,
+                placement: "bottomRight"
+            });
+        }
+    }, [error]);
 
     let result: any;
-    if(!isLoading) result = data?.data;
+    if (!isLoading && data) {
+        result = data?.data;
+        console.log(result);
+    }
 
-    console.log(result?.items);
-    
     return (
         <>
-            <Flex align={"flex-start"} justify={"flex-start"} gap={"small"}>
-                <Title level={3} style={{margin: '0px 0px 20px 12px', minWidth: 256, flexGrow: 1}}>Thương hiệu</Title>
-                <div className="w-full">
-                    <Flex justify={'space-between'} align={'center'}>
-                        <div className="flex-grow max-w-96">
-                            <Search
-                                placeholder="input search text"
-                                allowClear
-                                // onSearch={() => {console.log("a")}}
-                                style={{width: '100%'}}/>
-                        </div>
-                        <div>
-                            <Space>
-                                <ColorButton
-                                    bgColor="#00b96b"
-                                    type="primary"
-                                    icon={<PlusOutlined/>}
-                                >
-                                    Thêm thương hiệu
-                                </ColorButton>
-                                {/*<Dropdown menu={{items}} trigger={['click']}>*/}
-                                {/*    <ColorButton*/}
-                                {/*        bgColor="#00b96b"*/}
-                                {/*        type="primary"*/}
-                                {/*        icon={<MenuOutlined/>}*/}
-                                {/*    >*/}
-                                {/*        <CaretDownOutlined/>*/}
-                                {/*    </ColorButton>*/}
-                                {/*</Dropdown>*/}
-                            </Space>
-                        </div>
-                    </Flex>
-                </div>
-            </Flex>
+            {contextHolder}
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                <Space direction="vertical" style={{minWidth: 256}}>
-                    <Menu
-                        className="w-full bg-white"
-                        style={{
-                            borderRadius: 8,
-                            boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)'
-                        }}
-                        mode="inline"
-                        items={menuItems}
-                    />
-                </Space>
-
-                <Content className="min-w-0 bg-white"
-                         style={{
-                             boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
-                             flex: 1,
-                             minWidth: 700,
-                             borderRadius: '8px 8px 0px 0px'
-                         }}
+                <Content
+                    className="min-w-0 bg-white"
+                    style={{
+                        boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
+                        flex: 1,
+                        minWidth: 700,
+                        borderRadius: '8px 8px 0px 0px'
+                    }}
                 >
                     <TablePagination
-                        loading = {isLoading}
+                        loading={isLoading}
                         columns={columns}
                         data={result?.items ? result.items : []}
                         current={result?.pageNo}
@@ -129,6 +110,20 @@ const BrandComponent = (props: any) =>{
                     </TablePagination>
                 </Content>
             </Flex>
+
+            <CreateBrand
+                isCreateModalOpen={isCreateModalOpen}
+                setIsCreateModalOpen={setIsCreateModalOpen}
+                mutate={mutate}
+            />
+
+            <UpdateBrand
+                isUpdateModalOpen={isUpdateModalOpen}
+                setIsUpdateModalOpen={setIsUpdateModalOpen}
+                mutate={mutate}
+                dataUpdate={dataUpdate}
+                setDataUpdate={setDataUpdate}
+            />
         </>
     )
 }

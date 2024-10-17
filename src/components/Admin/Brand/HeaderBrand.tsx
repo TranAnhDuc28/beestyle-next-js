@@ -14,8 +14,8 @@ interface IProps {
     setIsCreateModalOpen: (value: boolean) => void;
 }
 
-const HeaderMaterial = (props: IProps) => {
-    // console.log("HeaderMaterial render");
+const HeaderBrand = (props: IProps) => {
+    // console.log("HeaderBrand render");
     const {setIsCreateModalOpen} = props;
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -74,4 +74,4 @@ const HeaderMaterial = (props: IProps) => {
     );
 }
 
-export default memo(HeaderMaterial);
+export default memo(HeaderBrand);

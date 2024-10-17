@@ -1,5 +1,5 @@
 import { IMaterial } from "@/types/IMaterial";
-import httpInstance, {OptionsParams} from "@/utils/HttpInstance";
+import httpInstance from "@/utils/HttpInstance";
 
 const delay = () => new Promise<void>(res => setTimeout(() => res(), 1000));
 
