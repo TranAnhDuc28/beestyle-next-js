@@ -2,7 +2,7 @@
 import { memo } from 'react';
 import { Form, Input, Modal, notification } from 'antd';
 import { IMaterial } from '@/types/IMaterial';
-import { createMaterial} from '@/services/MaterialService';
+import {createMaterial} from '@/services/MaterialService';
 
 interface IProps {
     isCreateModalOpen: boolean;
@@ -11,6 +11,7 @@ interface IProps {
 }
 
 const CreateMaterial = (props: IProps) => {
+    // console.log("Create Material render");
     const [api, contextHolder] = notification.useNotification();
     const { isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
@@ -71,7 +72,7 @@ const CreateMaterial = (props: IProps) => {
             >
                 <Form
                     form={form}
-                    name="create"
+                    name="createMaterial"
                     layout="vertical"
                     onFinish={onFinish}
                 >

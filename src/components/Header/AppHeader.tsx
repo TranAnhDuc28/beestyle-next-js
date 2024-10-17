@@ -5,13 +5,15 @@ import {Header} from "antd/es/layout/layout";
 
 const headerStyle: React.CSSProperties = {
     position: 'sticky',
+    top: 0,
+    zIndex: 1,
+    width: '100%',
+    display: 'flex',
     border: '1px solid #E6EBF1', 
-    borderLeft: 'none', 
-    zIndex: 1, 
+    borderLeft: 'none',
     background: 'white',
     padding: 0
 }
-
 
 interface HeaderBarProps {
     collapsed: boolean;

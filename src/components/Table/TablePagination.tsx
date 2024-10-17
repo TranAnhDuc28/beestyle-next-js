@@ -1,10 +1,8 @@
 "use client"
-import {Table, TableColumnsType, TableProps, Typography } from "antd";
+import {Table, TableColumnsType, TableProps } from "antd";
 import React from "react";
 import "./TablePagination.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
-const { Title } = Typography;
 
 export interface ITablePaginationProps {
     columns?: TableColumnsType<any>,
@@ -15,7 +13,6 @@ export interface ITablePaginationProps {
     loading?: boolean
 }
 
-// rowSelection object indicates the need for row selection
 const rowSelection: TableProps<any>['rowSelection'] = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
@@ -34,7 +31,6 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
             const params = new URLSearchParams(searchParams);  // Tạo một đối tượng URLSearchParams từ các tham số tìm kiếm hiện tại
             params.set("page", pagination.current); 
             params.set("size", pagination.pageSize);
-            // console.log("pagination", pagination);
             replace(`${pathname}?${params.toString()}`); // Thay thế URL hiện tại bằng URL mới với các tham số đã cập nhật
         }
     };

@@ -6,8 +6,7 @@ const httpInstance = axios.create({
 
 export type OptionsParams = {
   params?: {
-      page?: number,
-      size?: number,
+      [key: string]: string | number | undefined;
   }
 }
 

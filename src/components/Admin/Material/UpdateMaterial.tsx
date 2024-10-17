@@ -13,6 +13,7 @@ interface IProps {
 }
 
 const UpdateMaterial = (props: IProps) => {
+    // console.log("Update Material render");
     const [api, contextHolder] = notification.useNotification();
     const { isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate } = props;
     const [form] = Form.useForm();
@@ -91,7 +92,7 @@ const UpdateMaterial = (props: IProps) => {
             >
                 <Form
                     form={form}
-                    name="create"
+                    name="updateMaterial"
                     layout="vertical"
                     onFinish={onFinish}
                 >
@@ -109,7 +110,7 @@ const UpdateMaterial = (props: IProps) => {
                         <Radio.Group>
                             {(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
                                 (key) => (
-                                    <Radio value={key}>{STATUS[key]}</Radio>
+                                    <Radio value={key} key={key}>{STATUS[key]}</Radio>
                                 )
                             )}
                         </Radio.Group>
