@@ -1,4 +1,4 @@
-import VoucherComponent from "@/components/Admin/VoucherComponent"; // Đường dẫn tới component Voucher
+import VoucherComponent from "@/components/Admin/Voucher/VoucherComponent"; // Đường dẫn tới component Voucher
 import { OptionsParams } from "@/utils/HttpInstance";
 import { Suspense } from "react";
 import Loader from "@/components/Loader/Loader";
