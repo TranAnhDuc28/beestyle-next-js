@@ -30,7 +30,9 @@ const MaterialComponent = () => {
     const {data, error, isLoading, mutate} =
         useSWR(`${URL_API_MATERIAL.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
             getMaterials,
-            {revalidateOnFocus: false, revalidateOnReconnect: false,}
+            {
+                revalidateOnFocus: false,
+            }
         );
 
     const columns: TableColumnsType<IMaterial> = [

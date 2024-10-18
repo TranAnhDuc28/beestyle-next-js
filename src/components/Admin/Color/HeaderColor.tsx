@@ -4,7 +4,7 @@ import ColorButton from "@/components/Button/ColorButton";
 import {PlusOutlined} from "@ant-design/icons";
 import {memo} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {URL_API_BRAND} from "@/services/BrandService";
+import {URL_API_COLOR} from "@/services/ColorService";
 
 type SearchProps = GetProps<typeof Input.Search>;
 const {Title} = Typography;
@@ -13,7 +13,7 @@ interface IProps {
     setIsCreateModalOpen: (value: boolean) => void;
 }
 
-const HeaderBrand = (props: IProps) => {
+const HeaderColor = (props: IProps) => {
     const {setIsCreateModalOpen} = props;
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -35,12 +35,12 @@ const HeaderBrand = (props: IProps) => {
 
     return (
         <Flex align={"flex-start"} justify={"flex-start"} gap={"small"}>
-            <Title level={3} style={{margin: '0px 0px 20px 10px', minWidth: 256, flexGrow: 1}}>Thương hiệu</Title>
+            <Title level={3} style={{margin: '0px 0px 20px 10px', minWidth: 256, flexGrow: 1}}>Màu sắc</Title>
             <div className="w-full">
                 <Flex justify={'space-between'} align={'center'}>
                     <div className="flex-grow max-w-96">
                         <Search
-                            placeholder="Theo tên thương hiệu"
+                            placeholder="Theo mã, tên màu"
                             allowClear
                             onSearch={onSearch}
                             style={{width: '100%'}}
@@ -54,7 +54,7 @@ const HeaderBrand = (props: IProps) => {
                                 icon={<PlusOutlined/>}
                                 onClick={() => setIsCreateModalOpen(true)}
                             >
-                                Thêm thương hiệu
+                                Thêm màu sắc
                             </ColorButton>
                             {/*<Dropdown menu={{items}} trigger={['click']}>*/}
                             {/*    <ColorButton*/}
@@ -73,4 +73,4 @@ const HeaderBrand = (props: IProps) => {
     );
 }
 
-export default memo(HeaderBrand);
+export default memo(HeaderColor);

@@ -30,7 +30,8 @@ const HeaderMaterial = (props: IProps) => {
                 params.set("page", "1");
                 replace(`${pathname}?${params.toString()}`);
             } else {
-                replace(URL_API_MATERIAL.get);
+                params.delete("name")
+                replace(`${pathname}?${params.toString()}`);
             }
         }
 

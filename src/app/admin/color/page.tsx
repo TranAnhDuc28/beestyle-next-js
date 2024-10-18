@@ -1,16 +1,18 @@
-"use client"
-import {Flex, Typography} from "antd";
-import React from "react";
+import Loader from "@/components/Loader/Loader";
+import ColorComponent from "@/components/Admin/Color/ColorComponent";
+import { Suspense } from "react";
+import {Metadata} from "next";
 
-const { Title } = Typography;
+export const metadata: Metadata = {
+    title: "Màu Sắc",
+    description: "Product - Color service",
+};
 
 function Color() {
-
     return (
-        <Flex align={'center'} justify={'center'}>
-            <Title>Color</Title>
-        </Flex>
+        <Suspense fallback={<Loader />}>
+            <ColorComponent/>
+        </Suspense>
     );
 }
-
 export default Color;
