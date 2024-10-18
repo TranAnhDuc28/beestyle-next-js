@@ -1,23 +1,22 @@
 "use client"
 import {Flex, Layout, notification, TableColumnsType, Tag, Tooltip} from "antd";
 import useSWR from "swr";
-import {EditTwoTone} from "@ant-design/icons";
+import {IBrand} from "@/types/IBrand";
+import {DeleteTwoTone, EditTwoTone} from "@ant-design/icons";
 import TablePagination from "@/components/Table/TablePagination";
 import {getBrands} from "@/services/BrandService";
 import {useEffect, useState} from "react";
 import {useSearchParams} from "next/navigation";
 import {STATUS} from "@/constants/Status";
-import {URL_API_COLOR} from "@/services/ColorService";
-import {IColor} from "@/types/IColor";
-import CreateColor from "@/components/Admin/Color/CreateColor";
-import UpdateColor from "@/components/Admin/Color/UpdateColor";
-import HeaderMaterial from "@/components/Admin/Material/HeaderMaterial";
-import HeaderColor from "@/components/Admin/Color/HeaderColor";
-import ColorFilter from "@/components/Admin/Color/ColorFilter";
+import {URL_API_CATEGORY} from "@/services/CategoryService";
+import HeaderCategory from "@/components/Admin/Category/HeaderCategory";
+import CreateCategory from "@/components/Admin/Category/CreateCategory";
+import UpdateCategory from "@/components/Admin/Category/UpdateCategory";
+import CategoryFilter from "@/components/Admin/Category/CategoryFilter";
 
 const {Content} = Layout;
 
-const ColorComponent = () => {
+const CategoryComponent = () => {
     const [api, contextHolder] = notification.useNotification();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
@@ -29,7 +28,7 @@ const ColorComponent = () => {
 
     const {data, error, isLoading, mutate} =
         useSWR(
-            `${URL_API_COLOR.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
+            `${URL_API_CATEGORY.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
             getBrands,
             {
                 revalidateOnFocus: false,
@@ -37,8 +36,10 @@ const ColorComponent = () => {
             }
         );
 
-    const columns: TableColumnsType<IColor> = [
-        {title: 'Màu', dataIndex: 'colorName', key: 'colorName'},
+    const columns: TableColumnsType<IBrand> = [
+        {title: 'Tên danh mục', dataIndex: 'categoryName', key: 'categoryName'},
+        {title: 'Slug', dataIndex: 'slug', key: 'slug'},
+        {title: 'Danh mục cha', dataIndex: 'parentCategoryName', key: 'parentCategoryName'},
         {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
         {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
         {
@@ -56,16 +57,23 @@ const ColorComponent = () => {
                     <>
                         <Tooltip placement="top" title="Chỉnh sửa">
                             <EditTwoTone
-                                twoToneColor={"#f57800"}
+                                twoToneColor={"#FAAD14"}
                                 style={{
-                                    cursor: "pointer",
-                                    padding: "5px",
-                                    border: "1px solid #f57800",
-                                    borderRadius: "5px"
+                                    cursor: "pointer", padding: "5px", border: "1px solid #FAAD14",
+                                    borderRadius: "5px", marginRight: 10
                                 }}
                                 onClick={() => {
                                     setIsUpdateModalOpen(true);
                                     setDataUpdate(record);
+                                }}
+                            />
+                        </Tooltip>
+                        <Tooltip placement="top" title="Xóa">
+                            <DeleteTwoTone
+                                twoToneColor={"#FF4D4F"}
+                                style={{
+                                    cursor: "pointer", padding: "5px", border: "1px solid #FF4D4F",
+                                    borderRadius: "5px"
                                 }}
                             />
                         </Tooltip>
@@ -78,7 +86,7 @@ const ColorComponent = () => {
     useEffect(() => {
         if (error) {
             api.error({
-                message: error?.message || "Error fetching colors",
+                message: error?.message || "Error fetching brands",
                 description: error?.response?.data?.message,
                 showProgress: true,
                 duration: 2,
@@ -95,9 +103,9 @@ const ColorComponent = () => {
     return (
         <>
             {contextHolder}
-            <HeaderColor setIsCreateModalOpen={setIsCreateModalOpen}/>
+            <HeaderCategory setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                <ColorFilter/>
+                <CategoryFilter />
                 <Content
                     className="min-w-0 bg-white"
                     style={{
@@ -119,13 +127,13 @@ const ColorComponent = () => {
                 </Content>
             </Flex>
 
-            <CreateColor
+            <CreateCategory
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 mutate={mutate}
             />
 
-            <UpdateColor
+            <UpdateCategory
                 isUpdateModalOpen={isUpdateModalOpen}
                 setIsUpdateModalOpen={setIsUpdateModalOpen}
                 mutate={mutate}
@@ -136,4 +144,4 @@ const ColorComponent = () => {
     )
 }
 
-export default ColorComponent;
+export default CategoryComponent;

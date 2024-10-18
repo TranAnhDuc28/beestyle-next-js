@@ -32,6 +32,7 @@ const MaterialComponent = () => {
             getMaterials,
             {
                 revalidateOnFocus: false,
+                revalidateOnReconnect: false
             }
         );
 
