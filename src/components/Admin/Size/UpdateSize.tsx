@@ -1,8 +1,8 @@
 import { STATUS } from "@/constants/Status";
-import { updateMaterial } from "@/services/MaterialService";
-import { IMaterial } from "@/types/IMaterial";
 import { Form, Input, Modal, notification, Radio } from "antd";
 import { memo, useEffect } from "react";
+import {ISize} from "@/types/ISize";
+import {updateSize} from "@/services/SizeService";
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -12,8 +12,7 @@ interface IProps {
     setDataUpdate: any;
 }
 
-const UpdateMaterial = (props: IProps) => {
-    // console.log("Update Material render");
+const UpdateSize = (props: IProps) => {
     const [api, contextHolder] = notification.useNotification();
     const { isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate } = props;
     const [form] = Form.useForm();
@@ -21,7 +20,7 @@ const UpdateMaterial = (props: IProps) => {
     useEffect(() => {
         if (dataUpdate) {
             form.setFieldsValue({
-                materialName: dataUpdate.materialName,
+                sizeName: dataUpdate.sizeName,
                 status: dataUpdate.status,
             });
         }
@@ -33,7 +32,7 @@ const UpdateMaterial = (props: IProps) => {
         setDataUpdate(null);
     }
 
-    const onFinish = async (value: IMaterial) => {
+    const onFinish = async (value: ISize) => {
         console.log(value);
         try {
             if (dataUpdate) {
@@ -41,7 +40,7 @@ const UpdateMaterial = (props: IProps) => {
                     ...value,
                     id: dataUpdate.id
                 }
-                const result = await updateMaterial(data);
+                const result = await updateSize(data);
                 mutate();
                 if (result.data) {
                     handleCloseUpdateModal();
@@ -71,14 +70,13 @@ const UpdateMaterial = (props: IProps) => {
                 });
             }
         }
-
     };
 
     return (
         <>
             {contextHolder}
             <Modal
-                title="Chỉnh sửa chất liệu"
+                title="Chỉnh sửa kích thước"
                 open={isUpdateModalOpen}
                 onOk={() => form.submit()}
                 onCancel={() => handleCloseUpdateModal()}
@@ -90,14 +88,14 @@ const UpdateMaterial = (props: IProps) => {
             >
                 <Form
                     form={form}
-                    name="updateMaterial"
+                    name="updateSize"
                     layout="vertical"
                     onFinish={onFinish}
                 >
                     <Form.Item
-                        name="materialName"
-                        label="Tên chất liệu"
-                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}>
+                        name="sizeName"
+                        label="Tên kích thước"
+                        rules={[{ required: true, message: "Vui lòng nhập tên kích thước!" }]}>
                         <Input />
                     </Form.Item>
                     <Form.Item
@@ -119,4 +117,4 @@ const UpdateMaterial = (props: IProps) => {
     )
 }
 
-export default memo(UpdateMaterial);
+export default memo(UpdateSize);

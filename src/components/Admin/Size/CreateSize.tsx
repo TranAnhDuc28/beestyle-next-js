@@ -1,7 +1,10 @@
-import React, {memo} from 'react';
-import {Form, Input, Modal, notification} from 'antd';
-import {IBrand} from "@/types/IBrand";
-import {createBrand} from "@/services/BrandService";
+"use client"
+import { memo } from 'react';
+import { Form, Input, Modal, notification } from 'antd';
+import { IMaterial } from '@/types/IMaterial';
+import {createMaterial} from '@/services/MaterialService';
+import {ISize} from "@/types/ISize";
+import {createSize} from "@/services/SizeService";
 
 interface IProps {
     isCreateModalOpen: boolean;
@@ -9,9 +12,9 @@ interface IProps {
     mutate: any
 }
 
-const CreateBrand = (props: IProps) => {
+const CreateSize = (props: IProps) => {
     const [api, contextHolder] = notification.useNotification();
-    const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
+    const { isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
 
     const handleCloseCreateModal = () => {
@@ -19,10 +22,10 @@ const CreateBrand = (props: IProps) => {
         setIsCreateModalOpen(false);
     };
 
-    const onFinish = async (value: IBrand) => {
+    const onFinish = async (value: ISize) => {
         // console.log('Success:', value);
         try {
-            const result = await createBrand(value);
+            const result = await createSize(value);
             mutate();
             if (result.data) {
                 handleCloseCreateModal();
@@ -38,7 +41,7 @@ const CreateBrand = (props: IProps) => {
             if (errorMessage && typeof errorMessage === 'object') {
                 Object.entries(errorMessage).forEach(([field, message]) => {
                     api.error({
-                        message: String(message),
+                        message: String(message), 
                         showProgress: true,
                         duration: 2
                     });
@@ -58,27 +61,27 @@ const CreateBrand = (props: IProps) => {
         <>
             {contextHolder}
             <Modal
-                title="Thêm mới thương hiệu"
+                title="Thêm mới kích thước"
                 open={isCreateModalOpen}
                 onOk={() => form.submit()}
                 onCancel={() => handleCloseCreateModal()}
                 cancelText="Hủy"
                 okText="Lưu"
                 okButtonProps={{
-                    style: {background: "#00b96b"}
+                    style: { background: "#00b96b" }
                 }}
             >
                 <Form
                     form={form}
-                    name="createBrand"
+                    name="createSize"
                     layout="vertical"
                     onFinish={onFinish}
                 >
                     <Form.Item
-                        name="brandName"
-                        label="Tên thương hiệu"
-                        rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}>
-                        <Input/>
+                        name="sizeName"
+                        label="Tên kích thước"
+                        rules={[{ required: true, message: "Vui lòng nhập tên kích thước!" }]}>
+                        <Input />
                     </Form.Item>
                 </Form>
             </Modal>
@@ -86,4 +89,4 @@ const CreateBrand = (props: IProps) => {
     );
 };
 
-export default memo(CreateBrand);
+export default memo(CreateSize);

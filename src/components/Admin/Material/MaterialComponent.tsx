@@ -1,62 +1,53 @@
 "use client"
-import { Flex, Layout, Menu, MenuProps, notification, Space, TableColumnsType, Tag, Tooltip, Typography } from "antd";
-import { EditTwoTone, PlusOutlined } from "@ant-design/icons";
-import Search from "antd/es/input/Search";
-import type { IMaterial } from "@/types/IMaterial";
-import TablePagination from "@/components/TablePagination/TablePagination";
-import ColorButton from "@/components/Button/ColorButton";
-import { getMaterials, materialUrlEndpoint } from "@/services/MaterialService";
-import { OptionsParams } from "@/utils/HttpInstance";
+import {Flex, Layout, notification, TableColumnsType, Tag, Tooltip,} from "antd";
+import {EditTwoTone} from "@ant-design/icons";
+import type {IMaterial} from "@/types/IMaterial";
+import TablePagination from "@/components/Table/TablePagination";
+import {getMaterials, URL_API_MATERIAL} from "@/services/MaterialService";
 import useSWR from "swr";
-import { useCallback, useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import CreateMaterial from "./CreateMaterial";
 import UpdateMaterial from "./UpdateMaterial";
-import { STATUS } from "@/constants/Status";
+import {STATUS} from "@/constants/Status";
+import MaterialFilter from "@/components/Admin/Material/MaterialFilter";
+import {useSearchParams} from "next/navigation";
+import HeaderMaterial from "@/components/Admin/Material/HeaderMaterial";
 
-const { Content } = Layout;
-const { Title } = Typography;
-type MenuItem = Required<MenuProps>['items'][number];
+const {Content} = Layout;
 
-const menuItems: MenuItem[] = [
-    {
-        key: '1',
-        label: 'Trạng thái',
-        children: [
-            { key: '1.1', label: 'Item 1', },
-            { key: '1.2', label: 'Item 1', },
-            { key: '1.3', label: 'Item 1', },
-            { key: '1.4', label: 'Item 1', },
-        ]
-    }
-];
-
-const MaterialComponent = (props: any) => {
-    console.log("Render component");
-    const options: OptionsParams = props.options;
+const MaterialComponent = () => {
     const [api, contextHolder] = notification.useNotification();
-
-    const { data, error, isLoading, mutate } =
-        useSWR([`admin/${materialUrlEndpoint}`, options], () => getMaterials(options),
-            { revalidateOnFocus: false, revalidateOnReconnect: false, }
-        );
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
     const [dataUpdate, setDataUpdate] = useState<any>(null);
 
+    const searchParams = useSearchParams();
+    const params = new URLSearchParams(searchParams);
+    // console.log(params.size);
+    // console.log(`${URL_API_MATERIAL.get}${params.size !== 0 ? `?${params.toString()}` : ''}`);
+
+    const {data, error, isLoading, mutate} =
+        useSWR(`${URL_API_MATERIAL.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
+            getMaterials,
+            {
+                revalidateOnFocus: false,
+            }
+        );
+
     const columns: TableColumnsType<IMaterial> = [
-        { title: 'Tên chất liệu', dataIndex: 'materialName', key: 'materialName' },
+        {title: 'Tên chất liệu', dataIndex: 'materialName', key: 'materialName'},
+        {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
+        {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
         {
             title: 'Trạng thái', dataIndex: 'status', key: 'status',
             render(value: keyof typeof STATUS, record, index) {
-                let color = value === 'ACTIVE' ? 'green' : 'default';
+                let color: string = value === 'ACTIVE' ? 'green' : 'default';
                 return (
-                    <Tag color={color}>{STATUS[value]}</Tag>
+                    <Tag color={color} key={record.id}>{STATUS[value]}</Tag>
                 );
             },
         },
-        { title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt' },
-        { title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt' },
         {
             title: 'Hành động', align: 'center', render: (record) => {
                 return (
@@ -82,87 +73,32 @@ const MaterialComponent = (props: any) => {
         },
     ];
 
-    let result: any;
     useEffect(() => {
         if (error) {
-            console.log(error);
             api.error({
                 message: error?.message || "Error fetching materials",
                 description: error?.response?.data?.message,
                 showProgress: true,
-                duration: 2
+                duration: 2,
+                placement: "bottomRight"
             });
         }
     }, [error]);
 
+    let result: any;
     if (!isLoading && data) {
         result = data?.data;
         console.log(result);
     }
 
-    const renderHeader = () => {
-        return (
-            <Flex align={"flex-start"} justify={"flex-start"} gap={"small"}>
-                <Title level={3} style={{ margin: '0px 0px 20px 12px', minWidth: 256, flexGrow: 1 }}>Chất liệu</Title>
-                <div className="w-full">
-                    <Flex justify={'space-between'} align={'center'}>
-                        <div className="flex-grow max-w-96">
-                            <Search
-                                placeholder="input search text"
-                                allowClear
-                                // onSearch={() => {console.log("a")}}
-                                style={{ width: '100%' }} />
-                        </div>
-                        <div>
-                            <Space>
-                                <ColorButton
-                                    bgColor="#00b96b"
-                                    type="primary"
-                                    icon={<PlusOutlined />}
-                                    onClick={() => setIsCreateModalOpen(true)}
-                                >
-                                    Thêm chất liệu
-                                </ColorButton>
-                                {/*<Dropdown menu={{items}} trigger={['click']}>*/}
-                                {/*    <ColorButton*/}
-                                {/*        bgColor="#00b96b"*/}
-                                {/*        type="primary"*/}
-                                {/*        icon={<MenuOutlined/>}*/}
-                                {/*    >*/}
-                                {/*        <CaretDownOutlined/>*/}
-                                {/*    </ColorButton>*/}
-                                {/*</Dropdown>*/}
-                            </Space>
-                        </div>
-                    </Flex>
-                </div>
-            </Flex>
-        )
-    }
-
-    const renderSidebar = () => {
-        return (
-            <Space direction="vertical" style={{ minWidth: 256 }}>
-                <Menu
-                    className="w-full bg-white"
-                    style={{
-                        borderRadius: 8,
-                        boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)'
-                    }}
-                    mode="inline"
-                    items={menuItems}
-                />
-            </Space>
-        );
-    }
-
     return (
         <>
             {contextHolder}
-            {renderHeader()}
+            <HeaderMaterial setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                {renderSidebar()}
-                <Content className="min-w-0 bg-white"
+                <MaterialFilter/>
+                <Content
+                    className="min-w-0 bg-white"
                     style={{
                         boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
                         flex: 1,
@@ -195,10 +131,7 @@ const MaterialComponent = (props: any) => {
                 dataUpdate={dataUpdate}
                 setDataUpdate={setDataUpdate}
             />
-
-
         </>
     )
 }
-
 export default MaterialComponent;

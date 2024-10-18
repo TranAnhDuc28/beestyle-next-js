@@ -1,8 +1,9 @@
 import { STATUS } from "@/constants/Status";
-import { updateMaterial } from "@/services/MaterialService";
-import { IMaterial } from "@/types/IMaterial";
 import { Form, Input, Modal, notification, Radio } from "antd";
 import { memo, useEffect } from "react";
+import {updateBrand} from "@/services/BrandService";
+import {IColor} from "@/types/IColor";
+import {updateColor} from "@/services/ColorService";
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -12,8 +13,7 @@ interface IProps {
     setDataUpdate: any;
 }
 
-const UpdateMaterial = (props: IProps) => {
-    // console.log("Update Material render");
+const UpdateColor = (props: IProps) => {
     const [api, contextHolder] = notification.useNotification();
     const { isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate } = props;
     const [form] = Form.useForm();
@@ -21,7 +21,7 @@ const UpdateMaterial = (props: IProps) => {
     useEffect(() => {
         if (dataUpdate) {
             form.setFieldsValue({
-                materialName: dataUpdate.materialName,
+                colorName: dataUpdate.colorName,
                 status: dataUpdate.status,
             });
         }
@@ -33,7 +33,7 @@ const UpdateMaterial = (props: IProps) => {
         setDataUpdate(null);
     }
 
-    const onFinish = async (value: IMaterial) => {
+    const onFinish = async (value: IColor) => {
         console.log(value);
         try {
             if (dataUpdate) {
@@ -41,7 +41,7 @@ const UpdateMaterial = (props: IProps) => {
                     ...value,
                     id: dataUpdate.id
                 }
-                const result = await updateMaterial(data);
+                const result = await updateColor(data);
                 mutate();
                 if (result.data) {
                     handleCloseUpdateModal();
@@ -78,7 +78,7 @@ const UpdateMaterial = (props: IProps) => {
         <>
             {contextHolder}
             <Modal
-                title="Chỉnh sửa chất liệu"
+                title="Chỉnh sửa màu sắc"
                 open={isUpdateModalOpen}
                 onOk={() => form.submit()}
                 onCancel={() => handleCloseUpdateModal()}
@@ -90,14 +90,14 @@ const UpdateMaterial = (props: IProps) => {
             >
                 <Form
                     form={form}
-                    name="updateMaterial"
+                    name="updateColor"
                     layout="vertical"
                     onFinish={onFinish}
                 >
                     <Form.Item
-                        name="materialName"
-                        label="Tên chất liệu"
-                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}>
+                        name="colorName"
+                        label="Tên màu sắc"
+                        rules={[{ required: true, message: "Vui lòng nhập tên màu sắc!" }]}>
                         <Input />
                     </Form.Item>
                     <Form.Item
@@ -119,4 +119,4 @@ const UpdateMaterial = (props: IProps) => {
     )
 }
 
-export default memo(UpdateMaterial);
+export default memo(UpdateColor);

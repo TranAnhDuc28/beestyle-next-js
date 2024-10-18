@@ -9,7 +9,7 @@ import {
     Space, TableColumnsType,
     Typography
 } from "antd";
-import TablePagination from "@/components/TablePagination/TablePagination";
+import TablePagination from "@/components/Table/TablePagination";
 import ColorButton from "@/components/Button/ColorButton";
 import Search from "antd/es/input/Search";
 import {SearchProps} from "antd/lib/input";

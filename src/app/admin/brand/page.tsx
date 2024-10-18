@@ -1,26 +1,18 @@
 import BrandComponent from "@/components/Admin/Brand/BrandComponent";
 import Loader from "@/components/Loader/Loader";
-import { OptionsParams } from "@/utils/HttpInstance";
 import React, { Suspense } from "react";
+import {Metadata} from "next";
 
-const BrandPage = (props: any) => {
-    const size: number = (props?.searchParams?.size && !isNaN(props.searchParams.size)) ?
-        Number(props.searchParams.size) : 10;
-    const page: number = (props?.searchParams?.page && !isNaN(props.searchParams.page)) ?
-        Number(props.searchParams.page) : 1;
+export const metadata: Metadata = {
+    title: "Thương hiệu",
+    description: "Product - Brand service",
+};
 
-    const options: OptionsParams = {
-        params: {
-            page: page,
-            size: size
-        }
-    };
-
+function BrandPage() {
     return (
         <Suspense fallback={<Loader />}>
-            <BrandComponent options={options} />
+            <BrandComponent/>
         </Suspense>
     );
 }
-
 export default BrandPage;
