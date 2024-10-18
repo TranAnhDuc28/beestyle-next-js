@@ -1,8 +1,8 @@
 import { STATUS } from "@/constants/Status";
 import { Form, Input, Modal, notification, Radio } from "antd";
 import { memo, useEffect } from "react";
-import {IBrand} from "@/types/IBrand";
-import {updateBrand} from "@/services/BrandService";
+import {ISize} from "@/types/ISize";
+import {updateSize} from "@/services/SizeService";
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -12,7 +12,7 @@ interface IProps {
     setDataUpdate: any;
 }
 
-const UpdateBrand = (props: IProps) => {
+const UpdateSize = (props: IProps) => {
     const [api, contextHolder] = notification.useNotification();
     const { isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate } = props;
     const [form] = Form.useForm();
@@ -20,7 +20,7 @@ const UpdateBrand = (props: IProps) => {
     useEffect(() => {
         if (dataUpdate) {
             form.setFieldsValue({
-                brandName: dataUpdate.brandName,
+                sizeName: dataUpdate.sizeName,
                 status: dataUpdate.status,
             });
         }
@@ -32,7 +32,7 @@ const UpdateBrand = (props: IProps) => {
         setDataUpdate(null);
     }
 
-    const onFinish = async (value: IBrand) => {
+    const onFinish = async (value: ISize) => {
         console.log(value);
         try {
             if (dataUpdate) {
@@ -40,7 +40,7 @@ const UpdateBrand = (props: IProps) => {
                     ...value,
                     id: dataUpdate.id
                 }
-                const result = await updateBrand(data);
+                const result = await updateSize(data);
                 mutate();
                 if (result.data) {
                     handleCloseUpdateModal();
@@ -70,14 +70,13 @@ const UpdateBrand = (props: IProps) => {
                 });
             }
         }
-
     };
 
     return (
         <>
             {contextHolder}
             <Modal
-                title="Chỉnh sửa thương hiệu"
+                title="Chỉnh sửa kích thước"
                 open={isUpdateModalOpen}
                 onOk={() => form.submit()}
                 onCancel={() => handleCloseUpdateModal()}
@@ -89,14 +88,14 @@ const UpdateBrand = (props: IProps) => {
             >
                 <Form
                     form={form}
-                    name="updateBrand"
+                    name="updateSize"
                     layout="vertical"
                     onFinish={onFinish}
                 >
                     <Form.Item
-                        name="brandName"
-                        label="Tên thương hiệu"
-                        rules={[{ required: true, message: "Vui lòng nhập tên thương liệu!" }]}>
+                        name="sizeName"
+                        label="Tên kích thước"
+                        rules={[{ required: true, message: "Vui lòng nhập tên kích thước!" }]}>
                         <Input />
                     </Form.Item>
                     <Form.Item
@@ -118,4 +117,4 @@ const UpdateBrand = (props: IProps) => {
     )
 }
 
-export default memo(UpdateBrand);
+export default memo(UpdateSize);

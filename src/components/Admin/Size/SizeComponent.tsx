@@ -1,22 +1,26 @@
 "use client"
-import {Flex, Layout, notification, TableColumnsType, Tag, Tooltip} from "antd";
-import useSWR from "swr";
-import {IBrand} from "@/types/IBrand";
+import {Flex, Layout, notification, TableColumnsType, Tag, Tooltip,} from "antd";
 import {EditTwoTone} from "@ant-design/icons";
+import type {IMaterial} from "@/types/IMaterial";
 import TablePagination from "@/components/Table/TablePagination";
-import {getBrands, URL_API_BRAND} from "@/services/BrandService";
+import {getMaterials, URL_API_MATERIAL} from "@/services/MaterialService";
+import useSWR from "swr";
 import {useEffect, useState} from "react";
-import {useSearchParams} from "next/navigation";
+import CreateMaterial from "./CreateSize";
+import UpdateMaterial from "./UpdateSize";
 import {STATUS} from "@/constants/Status";
-import CreateBrand from "@/components/Admin/Brand/CreateBrand";
-import UpdateBrand from "@/components/Admin/Brand/UpdateBrand";
+import MaterialFilter from "@/components/Admin/Material/MaterialFilter";
+import {useSearchParams} from "next/navigation";
 import HeaderMaterial from "@/components/Admin/Material/HeaderMaterial";
-import HeaderBrand from "@/components/Admin/Brand/HeaderBrand";
-import BrandFilter from "@/components/Admin/Brand/BrandFilter";
+import {getSizes, URL_API_SIZE} from "@/services/SizeService";
+import HeaderSize from "@/components/Admin/Size/HeaderSize";
+import SizeFilter from "@/components/Admin/Size/SizeFilter";
+import CreateSize from "./CreateSize";
+import UpdateSize from "./UpdateSize";
 
 const {Content} = Layout;
 
-const BrandComponent = () => {
+const SizeComponent = () => {
     const [api, contextHolder] = notification.useNotification();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
@@ -27,16 +31,15 @@ const BrandComponent = () => {
     const params = new URLSearchParams(searchParams);
 
     const {data, error, isLoading, mutate} =
-        useSWR(
-            `${URL_API_BRAND.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
-            getBrands,
+        useSWR(`${URL_API_SIZE.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
+            getSizes,
             {
                 revalidateOnFocus: false,
             }
         );
 
-    const columns: TableColumnsType<IBrand> = [
-        {title: 'Tên thương hiệu', dataIndex: 'brandName', key: 'brandName'},
+    const columns: TableColumnsType<IMaterial> = [
+        {title: 'Tên kích thước', dataIndex: 'sizeName', key: 'sizeName'},
         {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
         {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
         {
@@ -76,7 +79,7 @@ const BrandComponent = () => {
     useEffect(() => {
         if (error) {
             api.error({
-                message: error?.message || "Error fetching brands",
+                message: error?.message || "Error fetching sizes",
                 description: error?.response?.data?.message,
                 showProgress: true,
                 duration: 2,
@@ -93,9 +96,9 @@ const BrandComponent = () => {
     return (
         <>
             {contextHolder}
-            <HeaderBrand setIsCreateModalOpen={setIsCreateModalOpen}/>
+            <HeaderSize setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                <BrandFilter/>
+                <SizeFilter/>
                 <Content
                     className="min-w-0 bg-white"
                     style={{
@@ -117,13 +120,13 @@ const BrandComponent = () => {
                 </Content>
             </Flex>
 
-            <CreateBrand
+            <CreateSize
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 mutate={mutate}
             />
 
-            <UpdateBrand
+            <UpdateSize
                 isUpdateModalOpen={isUpdateModalOpen}
                 setIsUpdateModalOpen={setIsUpdateModalOpen}
                 mutate={mutate}
@@ -133,5 +136,4 @@ const BrandComponent = () => {
         </>
     )
 }
-
-export default BrandComponent;
+export default SizeComponent;

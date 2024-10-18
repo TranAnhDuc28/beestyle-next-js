@@ -1,15 +1,18 @@
-"use client"
-import {Flex, Typography} from "antd";
-import React from "react";
+import React, {Suspense} from "react";
+import Loader from "@/components/Loader/Loader";
+import {Metadata} from "next";
+import SizeComponent from "@/components/Admin/Size/SizeComponent";
 
-const { Title } = Typography;
+export const metadata: Metadata = {
+    title: "Kích thước",
+    description: "Product - Size service",
+};
 
 function Size() {
-
     return (
-        <Flex align={'center'} justify={'center'} style={{ height: '100vh' }}>
-            <Title>Size</Title>
-        </Flex>
+        <Suspense fallback={<Loader />}>
+            <SizeComponent/>
+        </Suspense>
     );
 }
 

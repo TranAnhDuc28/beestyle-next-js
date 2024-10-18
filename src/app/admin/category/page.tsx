@@ -1,4 +1,3 @@
-"use client"
 import {Flex, Typography} from "antd";
 import React from "react";
 

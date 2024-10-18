@@ -2,6 +2,8 @@ import React, {memo} from 'react';
 import {Form, Input, Modal, notification} from 'antd';
 import {IBrand} from "@/types/IBrand";
 import {createBrand} from "@/services/BrandService";
+import {IColor} from "@/types/IColor";
+import {createColor} from "@/services/ColorService";
 
 interface IProps {
     isCreateModalOpen: boolean;
@@ -9,7 +11,7 @@ interface IProps {
     mutate: any
 }
 
-const CreateBrand = (props: IProps) => {
+const CreateColor = (props: IProps) => {
     const [api, contextHolder] = notification.useNotification();
     const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
@@ -19,10 +21,10 @@ const CreateBrand = (props: IProps) => {
         setIsCreateModalOpen(false);
     };
 
-    const onFinish = async (value: IBrand) => {
+    const onFinish = async (value: IColor) => {
         // console.log('Success:', value);
         try {
-            const result = await createBrand(value);
+            const result = await createColor(value);
             mutate();
             if (result.data) {
                 handleCloseCreateModal();
@@ -58,7 +60,7 @@ const CreateBrand = (props: IProps) => {
         <>
             {contextHolder}
             <Modal
-                title="Thêm mới thương hiệu"
+                title="Thêm mới màu sắc"
                 open={isCreateModalOpen}
                 onOk={() => form.submit()}
                 onCancel={() => handleCloseCreateModal()}
@@ -70,14 +72,14 @@ const CreateBrand = (props: IProps) => {
             >
                 <Form
                     form={form}
-                    name="createBrand"
+                    name="createColor"
                     layout="vertical"
                     onFinish={onFinish}
                 >
                     <Form.Item
-                        name="brandName"
-                        label="Tên thương hiệu"
-                        rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}>
+                        name="colorName"
+                        label="Tên màu sắc"
+                        rules={[{required: true, message: "Vui lòng nhập tên màu sắc!"}]}>
                         <Input/>
                     </Form.Item>
                 </Form>
@@ -86,4 +88,4 @@ const CreateBrand = (props: IProps) => {
     );
 };
 
-export default memo(CreateBrand);
+export default memo(CreateColor);

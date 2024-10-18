@@ -5,7 +5,7 @@ import {memo} from "react";
 
 const { Title } = Typography;
 
-const BrandFilter = () => {
+const SizeFilter = () => {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
@@ -56,4 +56,4 @@ const BrandFilter = () => {
     );
 };
 
-export default memo(BrandFilter);
+export default memo(SizeFilter);

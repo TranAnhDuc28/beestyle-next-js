@@ -10,22 +10,18 @@ const Context = React.createContext({ name: 'Default' });
 export default function RootLayout({ children, }: Readonly<{ children: ReactNode; }>) {
     const contextValue = useMemo(() => ({ name: 'Default' }), []);
     const [loading, setLoading] = useState<boolean>(true);
-    console.log(loading);
 
     useEffect(() => {
         const timer = setTimeout(() => setLoading(false), 2000);
         return () => clearTimeout(timer);
-    }, []);
+    }, [loading]);
 
     return (
         <html lang="en">
             <body>
                 {
                     loading ?
-                        (
-                            <Loader />
-                        )
-                        :
+                        (<Loader />) :
                         (
                             <Context.Provider value={contextValue}>
                                 <AntdRegistry>

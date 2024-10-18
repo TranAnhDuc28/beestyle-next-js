@@ -1,22 +1,23 @@
 "use client"
 import {Flex, Layout, notification, TableColumnsType, Tag, Tooltip} from "antd";
 import useSWR from "swr";
-import {IBrand} from "@/types/IBrand";
 import {EditTwoTone} from "@ant-design/icons";
 import TablePagination from "@/components/Table/TablePagination";
-import {getBrands, URL_API_BRAND} from "@/services/BrandService";
+import {getBrands} from "@/services/BrandService";
 import {useEffect, useState} from "react";
 import {useSearchParams} from "next/navigation";
 import {STATUS} from "@/constants/Status";
-import CreateBrand from "@/components/Admin/Brand/CreateBrand";
-import UpdateBrand from "@/components/Admin/Brand/UpdateBrand";
+import {URL_API_COLOR} from "@/services/ColorService";
+import {IColor} from "@/types/IColor";
+import CreateColor from "@/components/Admin/Color/CreateColor";
+import UpdateColor from "@/components/Admin/Color/UpdateColor";
 import HeaderMaterial from "@/components/Admin/Material/HeaderMaterial";
-import HeaderBrand from "@/components/Admin/Brand/HeaderBrand";
-import BrandFilter from "@/components/Admin/Brand/BrandFilter";
+import HeaderColor from "@/components/Admin/Color/HeaderColor";
+import ColorFilter from "@/components/Admin/Color/ColorFilter";
 
 const {Content} = Layout;
 
-const BrandComponent = () => {
+const ColorComponent = () => {
     const [api, contextHolder] = notification.useNotification();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
@@ -28,15 +29,15 @@ const BrandComponent = () => {
 
     const {data, error, isLoading, mutate} =
         useSWR(
-            `${URL_API_BRAND.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
+            `${URL_API_COLOR.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
             getBrands,
             {
                 revalidateOnFocus: false,
             }
         );
 
-    const columns: TableColumnsType<IBrand> = [
-        {title: 'Tên thương hiệu', dataIndex: 'brandName', key: 'brandName'},
+    const columns: TableColumnsType<IColor> = [
+        {title: 'Màu', dataIndex: 'colorName', key: 'colorName'},
         {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
         {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
         {
@@ -76,7 +77,7 @@ const BrandComponent = () => {
     useEffect(() => {
         if (error) {
             api.error({
-                message: error?.message || "Error fetching brands",
+                message: error?.message || "Error fetching colors",
                 description: error?.response?.data?.message,
                 showProgress: true,
                 duration: 2,
@@ -93,9 +94,9 @@ const BrandComponent = () => {
     return (
         <>
             {contextHolder}
-            <HeaderBrand setIsCreateModalOpen={setIsCreateModalOpen}/>
+            <HeaderColor setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                <BrandFilter/>
+                <ColorFilter/>
                 <Content
                     className="min-w-0 bg-white"
                     style={{
@@ -117,13 +118,13 @@ const BrandComponent = () => {
                 </Content>
             </Flex>
 
-            <CreateBrand
+            <CreateColor
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 mutate={mutate}
             />
 
-            <UpdateBrand
+            <UpdateColor
                 isUpdateModalOpen={isUpdateModalOpen}
                 setIsUpdateModalOpen={setIsUpdateModalOpen}
                 mutate={mutate}
@@ -134,4 +135,4 @@ const BrandComponent = () => {
     )
 }
 
-export default BrandComponent;
+export default ColorComponent;
