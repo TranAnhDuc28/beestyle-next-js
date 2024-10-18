@@ -18,7 +18,6 @@ const siderStyle: React.CSSProperties = {
     transition: 'all 0.4s ease',
 };
 
-
 type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [

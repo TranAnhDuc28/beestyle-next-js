@@ -2,24 +2,17 @@ import MaterialComponent from "@/components/Admin/Material/MaterialComponent";
 import { OptionsParams } from "@/utils/HttpInstance";
 import { Suspense } from "react";
 import Loader from "@/components/Loader/Loader";
+import {Metadata} from "next";
 
-const MaterialPage = (props: any) => {
-    let size: any = props?.searchParams?.size;
-    size = (!isNaN(size) && Number(size) > 0) ? Number(size) : 10;
+export const metadata: Metadata = {
+    title: "Chất liệu",
+    description: "Product - Material service",
+};
 
-    let page: any = props?.searchParams?.page;
-    page = (!isNaN(page) && Number(page) > 0) ? Number(page) : 1;
-
-    const options: OptionsParams = {
-        params: {
-            size: size,
-            page: page,
-        }
-    };
-
+const MaterialPage = () => {
     return (
         <Suspense fallback={<Loader />}>
-            <MaterialComponent options={options} />
+            <MaterialComponent/>
         </Suspense>
     );
 }
