@@ -97,7 +97,7 @@ const MaterialComponent = () => {
             {contextHolder}
             <HeaderMaterial setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                <MaterialFilter/>
+                <MaterialFilter error={error}/>
                 <Content
                     className="min-w-0 bg-white"
                     style={{

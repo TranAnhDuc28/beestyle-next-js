@@ -34,7 +34,7 @@ const HeaderCategory = (props: IProps) => {
 
     return (
         <Flex align={"flex-start"} justify={"flex-start"} gap={"small"}>
-            <Title level={3} style={{margin: '0px 0px 20px 10px', minWidth: 256, flexGrow: 1}}>Thương hiệu</Title>
+            <Title level={3} style={{margin: '0px 0px 20px 10px', minWidth: 256, flexGrow: 1}}>Danh mục</Title>
             <div className="w-full">
                 <Flex justify={'space-between'} align={'center'}>
                     <div className="flex-grow max-w-96">
