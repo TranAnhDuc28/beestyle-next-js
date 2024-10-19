@@ -96,7 +96,7 @@ const BrandComponent = () => {
             {contextHolder}
             <HeaderBrand setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                <BrandFilter/>
+                <BrandFilter error={error}/>
                 <Content
                     className="min-w-0 bg-white"
                     style={{

@@ -97,7 +97,7 @@ const ColorComponent = () => {
             {contextHolder}
             <HeaderColor setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                <ColorFilter/>
+                <ColorFilter error={error}/>
                 <Content
                     className="min-w-0 bg-white"
                     style={{

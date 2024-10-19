@@ -99,7 +99,7 @@ const SizeComponent = () => {
             {contextHolder}
             <HeaderSize setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                <SizeFilter/>
+                <SizeFilter error={error}/>
                 <Content
                     className="min-w-0 bg-white"
                     style={{

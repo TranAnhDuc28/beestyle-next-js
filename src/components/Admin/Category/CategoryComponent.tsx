@@ -59,8 +59,8 @@ const CategoryComponent = () => {
                             <EditTwoTone
                                 twoToneColor={"#FAAD14"}
                                 style={{
-                                    cursor: "pointer", padding: "5px", border: "1px solid #FAAD14",
-                                    borderRadius: "5px", marginRight: 10
+                                    cursor: "pointer", padding: "5px", border: "1px solid #FAAD14", borderRadius: "5px",
+                                    marginRight: 10
                                 }}
                                 onClick={() => {
                                     setIsUpdateModalOpen(true);
@@ -72,8 +72,7 @@ const CategoryComponent = () => {
                             <DeleteTwoTone
                                 twoToneColor={"#FF4D4F"}
                                 style={{
-                                    cursor: "pointer", padding: "5px", border: "1px solid #FF4D4F",
-                                    borderRadius: "5px"
+                                    cursor: "pointer", padding: "5px", border: "1px solid #FF4D4F", borderRadius: "5px"
                                 }}
                             />
                         </Tooltip>
@@ -86,26 +85,21 @@ const CategoryComponent = () => {
     useEffect(() => {
         if (error) {
             api.error({
-                message: error?.message || "Error fetching brands",
-                description: error?.response?.data?.message,
-                showProgress: true,
-                duration: 2,
-                placement: "bottomRight"
+                message: error?.message || "Error fetching brands", description: error?.response?.data?.message,
+                showProgress: true, duration: 2, placement: "bottomRight",
             });
         }
     }, [error]);
 
     let result: any;
-    if (!isLoading && data) {
-        result = data?.data;
-    }
+    if (!isLoading && data) result = data?.data;
 
     return (
         <>
             {contextHolder}
             <HeaderCategory setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                <CategoryFilter />
+                <CategoryFilter error={error}/>
                 <Content
                     className="min-w-0 bg-white"
                     style={{
