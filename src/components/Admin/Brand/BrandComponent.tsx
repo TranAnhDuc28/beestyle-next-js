@@ -32,6 +32,7 @@ const BrandComponent = () => {
             getBrands,
             {
                 revalidateOnFocus: false,
+                revalidateOnReconnect: false
             }
         );
 

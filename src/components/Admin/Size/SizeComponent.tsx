@@ -35,6 +35,7 @@ const SizeComponent = () => {
             getSizes,
             {
                 revalidateOnFocus: false,
+                revalidateOnReconnect: false
             }
         );
 
