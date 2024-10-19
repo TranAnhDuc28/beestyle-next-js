@@ -1,63 +1,44 @@
 "use client";
 
-import {DatePicker, Space, Typography, Select, Layout} from "antd";
+import {Flex, Layout, notification, TableColumnsType, Tooltip} from "antd";
+import {EditTwoTone} from "@ant-design/icons";
+import type {IVoucher} from "@/types/IVoucher";
+import TablePagination from "@/components/Table/TablePagination";
+import {getVouchers, URL_API_VOUCHER} from "@/services/VoucherService";
+import useSWR from "swr";
+import {useEffect, useState} from "react";
+import CreateVoucher from "./CreateVoucher";
+import UpdateVoucher from "./UpdateVoucher";
+import VoucherFilter from "@/components/Admin/Voucher/VoucherFilter";
+import {useSearchParams} from "next/navigation";
+import HeaderVoucher from "@/components/Admin/Voucher/HeaderVoucher";
+import {DatePicker, Space, Typography, Select} from "antd";
 import {PlusOutlined} from "@ant-design/icons";
 import Search from "antd/es/input/Search";
-import useSWR from "swr";
-// import { getVoucher } from "@/services/VoucherService";
-import {getVoucher, vuocherUrlEndpoint as cacheKey} from "@/services/VoucherService";
-import TablePagination from "@/components/TablePagination/TablePagination";
 import ColorButton from "@/components/Button/ColorButton";
-import {OptionsParams} from "@/utils/HttpInstance";
 import React from "react";
 
 const {Content} = Layout;
 const {Title} = Typography;
 const {RangePicker} = DatePicker;
 
-interface Voucher {
-    key: string;
-    voucherCode: string;
-    voucherName: string;
-    discountType: string;
-    discountValue: number;
-    maxDiscount: number;
-    minOrderValue: number;
-    startDate: string;
-    endDate: string;
-    usageLimit: number;
-    usagePerUser: number;
-    status: number;
-}
+const VoucherComponent = () => {
+    const [api, contextHolder] = notification.useNotification();
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
+    const [dataUpdate, setDataUpdate] = useState<IVoucher | null>(null);
 
+    const searchParams = useSearchParams();
+    const params = new URLSearchParams(searchParams);
 
-const VoucherPage: React.FC<any> = (props: any) => {
-    const options: OptionsParams = props.options || {};
-
-    const {data, error, isLoading} = useSWR([cacheKey, options], () => getVoucher(options), {
-        revalidateIfStale: false,
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false,
-        dedupingInterval: 60000,
-    });
-
-    if (error) {
-        return <div>{error?.response?.data?.message || "Error fetching vouchers"}</div>;
-    }
-
-    if (isLoading) {
-        return <div>Loading..</div>;
-    }
-
-// Truy xuất items từ dữ liệu trả về
-    const vouchers = data?.data?.items || [];
-    const total = vouchers.length;
-
-    console.log("Vouchers:", vouchers);
-    const handlePageChange = (page: number, pageSize: number) => {
-        console.log(`Page: ${page}, PageSize: ${pageSize}`);
-    };
-
+    const {data, error, isLoading, mutate} =
+        useSWR(`${URL_API_VOUCHER.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
+            getVouchers,
+            {
+                revalidateOnFocus: false,
+            }
+        );
+    console.log("Dữ liệu trả về:", data);
     const onSearch = (value: string) => {
         console.log("Tìm kiếm:", value);
     };
@@ -66,131 +47,115 @@ const VoucherPage: React.FC<any> = (props: any) => {
         console.log("Lọc với các giá trị:", filters);
     };
 
-    return (
-        <div>
+    useEffect(() => {
+        if (error) {
+            api.error({
+                message: error?.message || "Error fetching vouchers",
+                description: error?.response?.data?.message,
+                showProgress: true,
+                duration: 2,
+                placement: "bottomRight"
+            });
+        }
+    }, [error]);
 
-            <Space direction="vertical" style={{width: '100%'}}>
-                <Title level={3}>Phiếu giảm giá</Title>
-                <Space direction="horizontal" style={{width: '100%'}} align="center">
+    let result: any;
+    if (!isLoading && data) {
+        result = data?.data;
+    }
 
-                    <Search
-                        placeholder="Tìm kiếm theo mã hoặc tên"
-                        allowClear
-                        onSearch={onSearch}
-                        style={{width: 300}}
-                    />
-
-
-                    <Select
-                        placeholder="Chọn kiểu"
-                        style={{width: 120}}
-                        allowClear
-                        options={[
-                            {value: 'personal', label: 'Cá nhân'},
-                            {value: 'public', label: 'Công khai'}
-                        ]}
-                    />
-
-
-                    <Select
-                        placeholder="Chọn loại giảm giá"
-                        style={{width: 150}}
-                        allowClear
-                        options={[
-                            {value: 'percent', label: 'Phần trăm'},
-                            {value: 'amount', label: 'Số tiền'}
-                        ]}
-                    />
-
-
-                    <Select
-                        placeholder="Chọn trạng thái"
-                        style={{width: 150}}
-                        allowClear
-                        options={[
-                            {value: 'ongoing', label: 'Đang diễn ra'},
-                            {value: 'ended', label: 'Kết thúc'}
-                        ]}
-                    />
-
-
-                    <RangePicker
-                        placeholder={['Từ ngày', 'Đến ngày']}
-                        style={{width: 250}}
-                        onChange={(dates, dateStrings) => {
-                            console.log('Ngày bắt đầu:', dateStrings[0], 'Ngày kết thúc:', dateStrings[1]);
-                        }}
-                    />
-
-
-                    <ColorButton
-                        bgColor="#00b96b"
-                        type="primary"
-                        icon={<PlusOutlined/>}
-                    >
-                        Thêm phiếu giảm giá
-                    </ColorButton>
-                </Space>
-            </Space>
-
-
-            <Content style={{marginTop: 20}}>
-                <TablePagination
-                    columns={[
-                        {
-                            title: 'STT',
-                            dataIndex: 'key',
-                            render: (text: string, record: Voucher, index: number) => (index + 1)
-                        },
-                        {
-                            title: 'Mã',
-                            dataIndex: 'voucherCode',
-                            render: (text: string) => <a>{text}</a>
-                        },
-                        {
-                            title: 'Tên',
-                            dataIndex: 'voucherName'
-                        },
-                        {
-                            title: 'Loại giảm',
-                            render: (text: string, record: Voucher) => (
-                                `${record.discountValue} ${record.discountType}`
-                            )
-                        },
-
-                        {
-                            title: 'Số lượng',
-                            dataIndex: 'usageLimit'
-                        },
-
-                        {
-                            title: 'Ngày bắt đầu',
-                            dataIndex: 'startDate',
-                            render: (value: string) => new Date(value).toLocaleDateString('vi-VN')
-                        },
-                        {
-                            title: 'Ngày kết thúc',
-                            dataIndex: 'endDate',
-                            render: (value: string) => new Date(value).toLocaleDateString('vi-VN')
-                        },
-                        {
-                            title: 'Trạng thái',
-                            dataIndex: 'status',
-                            render: (status: number) => (
-                                <span style={{color: status === 1 ? 'green' : 'red'}}>
+    const columns: TableColumnsType<IVoucher> = [
+        {
+            title: 'STT',
+            dataIndex: 'key',
+            render: (text: string, record: IVoucher, index: number) => (index + 1)
+        },
+        {
+            title: 'Mã',
+            dataIndex: 'voucherCode',
+            render: (text: string) => <a>{text}</a>
+        },
+        {
+            title: 'Tên',
+            dataIndex: 'voucherName'
+        },
+        {
+            title: 'Loại giảm',
+            render: (text: string, record: IVoucher) => (
+                `${record.discountValue} ${record.discountType}`
+            )
+        },
+        {
+            title: 'Số lượng',
+            dataIndex: 'usageLimit'
+        },
+        {
+            title: 'Ngày bắt đầu',
+            dataIndex: 'startDate',
+            render: (value: string) => new Date(value).toLocaleDateString('vi-VN')
+        },
+        {
+            title: 'Ngày kết thúc',
+            dataIndex: 'endDate',
+            render: (value: string) => new Date(value).toLocaleDateString('vi-VN')
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'status',
+            render: (status: number) => (
+                <span style={{color: status === 1 ? 'green' : 'red'}}>
                     {status === 1 ? 'Đang diễn ra' : 'Kết thúc'}
                 </span>
-                            )
-                        }
-                    ]}
-                    data={vouchers}
-                    total={total}
-                    onPageChange={handlePageChange}
-                />
+            )
+        },
+        {
+            title: 'Hành động',
+            align: 'center',
+            render: (record: IVoucher) => {
+                return (
+                    <Tooltip placement="top" title="Chỉnh sửa">
+                        <EditTwoTone
+                            twoToneColor={"#f57800"}
+                            style={{
+                                cursor: "pointer",
+                                padding: "5px",
+                                border: "1px solid #f57800",
+                                borderRadius: "5px"
+                            }}
+                            onClick={() => {
+                                setIsUpdateModalOpen(true);
+                                setDataUpdate(record);
+                            }}
+                        />
+                    </Tooltip>
+                );
+            }
+        }
+    ];
 
+    return (
+        <>
+            {contextHolder}
+            <Content
+                className="min-w-0 bg-white"
+                style={{
+                    boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
+                    flex: 1,
+                    minWidth: 700,
+                    borderRadius: '8px 8px 0px 0px',
+                }}
+            >
+                <TablePagination
+                    loading={isLoading}
+                    columns={columns}
+                    data={result?.items ? result.items : []}
+                    current={result?.pageNo}
+                    pageSize={result?.pageSize}
+                    total={result?.totalElements}
+                />
             </Content>
-        </div>
+        </>
     );
 };
 
-export default VoucherPage;
+export default VoucherComponent;

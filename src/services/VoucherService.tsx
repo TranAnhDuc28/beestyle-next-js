@@ -12,25 +12,31 @@
 //     }
 // }
 import httpInstance, {OptionsParams} from "@/utils/HttpInstance";
-import {materialUrlEndpoint} from "./MaterialService";
+import {IVoucher} from "@/types/IVoucher";
 
-export const vuocherUrlEndpoint = "/voucher";
-export const getVoucher = async (options: OptionsParams = {}) => {
-    try {
-        const response = await httpInstance.get("admin" + vuocherUrlEndpoint + "/vouchers", options);
-        console.log("Response from API:", response.data); // Kiểm tra dữ liệu từ API
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching vouchers:", error.response || error.message);
-        throw error;
-    }
+export const URL_API_VOUCHER = {
+    get: '/admin/voucher/vouchers',
+    create: '/admin/voucher/create',
+    update: '/admin/voucher/update',
+    delete: '/admin/voucher/delete',
 };
-export const createVoucher = async (data: IMaterial) => {
-    const response = await httpInstance.post(`admin/${materialUrlEndpoint}/create`, data);
+
+export const getVouchers = async (url: string) => {
+    const response = await httpInstance.get(url);
     return response.data;
 }
 
-export const updateVoucher = async (data: IMaterial) => {
-    const response = await httpInstance.put(`admin/${materialUrlEndpoint}/update/${data.id}`, data);
+export const createVoucher = async (data: IVoucher) => {
+    const response = await httpInstance.post(URL_API_VOUCHER.create, data);
+    return response.data;
+}
+
+export const updateVoucher = async (data: IVoucher) => {
+    const response = await httpInstance.put(`${URL_API_VOUCHER.update}/${data.key}`, data);
+    return response.data;
+}
+
+export const deleteVoucher = async (id: string) => {
+    const response = await httpInstance.delete(`${URL_API_VOUCHER.delete}/${id}`);
     return response.data;
 }
