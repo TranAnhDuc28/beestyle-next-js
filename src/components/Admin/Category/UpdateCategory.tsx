@@ -26,7 +26,6 @@ const UpdateCategory = (props: IProps) => {
     const [api, contextHolder] = notification.useNotification();
     const { isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate } = props;
     const [form] = Form.useForm();
-
     const {dataTreeSelectCategory, error, isLoading} = useTreeSelectCategory(isUpdateModalOpen);
 
     useEffect(() => {
@@ -104,12 +103,10 @@ const UpdateCategory = (props: IProps) => {
                         rules={[{ required: true, message: "Vui lòng nhập tên danh mục!" }]}>
                         <Input />
                     </Form.Item>
-
                     <Form.Item name="slug" label="Slug"
                                rules={[{ required: true, message: "Vui lòng nhập slug cho danh mục!"}]}>
                         <Input />
                     </Form.Item>
-
                     <Form.Item name="parentCategoryId" label="Danh mục cha">
                         <TreeSelect
                             placeholder={isLoading ? "Đang tải..." : "---Lựa chọn---"}
@@ -125,7 +122,6 @@ const UpdateCategory = (props: IProps) => {
                             }}
                         />
                     </Form.Item>
-
                     <Form.Item name="status" label="Trạng thái"
                         rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
                     >
