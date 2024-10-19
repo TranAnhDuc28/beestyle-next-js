@@ -8,6 +8,7 @@ interface CustomerModalProps {
   onClose: () => void;
   customer: ICustomer | null;
   modalType: "detail" | "update";
+  onMutate:any
 }
 
 const ModalCustomer = ({
@@ -15,6 +16,7 @@ const ModalCustomer = ({
   onClose,
   customer,
   modalType,
+  onMutate
 }: CustomerModalProps) => {
   return (
     <>
@@ -29,7 +31,7 @@ const ModalCustomer = ({
             <DetailCustomer param={customer} />
           )}
           {customer && modalType === "update" && (
-            <UpdateCustomer param={customer} onClose={onClose} />
+            <UpdateCustomer param={customer} onClose={onClose} onMutate={onMutate} />
           )}
         </div>
       </Modal>

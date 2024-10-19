@@ -1,20 +1,28 @@
 "use client";
 
-import { getCustomers, updateCustomer } from "@/services/CustomerService";
-import { Button, Table } from "antd";
+import { getCustomer, URL_API_CUSTOMER } from "@/services/CustomerService";
+import { Button, Flex, notification, Table, Tooltip } from "antd";
 import { ColumnType } from "antd/es/table";
 import useSWR, { mutate } from "swr";
-import DetailCustomer from "./ModalCustomer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModalCustomer from "./ModalCustomer";
 import AddCustomer from "./AddCustomer";
+import TablePagination from "@/components/Table/TablePagination";
+import { Content } from "antd/es/layout/layout";
+import MaterialFilter from "../Material/MaterialFilter";
+import { EditTwoTone } from "@ant-design/icons";
+import { useSearchParams } from "next/navigation";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const TableCustomer = () => {
+  const [api, contextHolder] = notification.useNotification();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isModalCreateCustomer,setIsModalCreateCustomer] = useState(false)
+  const [isModalCreateCustomer, setIsModalCreateCustomer] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<ICustomer | null>(
     null
   );
+  const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams);
   const [modalType, setModalType] = useState<"detail" | "update">("detail");
 
   const handelDetail = (customer: ICustomer) => {
@@ -32,25 +40,26 @@ const TableCustomer = () => {
   const handleClose = () => {
     setIsModalVisible(false);
     setSelectedCustomer(null);
-    setIsModalCreateCustomer(false)
+    setIsModalCreateCustomer(false);
   };
 
   const handleCreate = () => {
-    setIsModalCreateCustomer(true)
-  }
+    setIsModalCreateCustomer(true);
+  };
 
-
-  
-
-  const { data, error, isLoading } = useSWR("api/customer", getCustomers, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    dedupingInterval: 60000,
-  });
+  const { data, error, isLoading, mutate } = useSWR(
+    `${URL_API_CUSTOMER.get}${
+      params.size !== 0 ? `?${params.toString()}` : ""
+    }`,
+    getCustomer,
+    { revalidateOnFocus: false, revalidateOnReconnect: false }
+  );
 
   if (error) return <div>{error.message}</div>;
   if (!data) return <div>Loading..</div>;
+
+  console.log(data);
+
   const columns: ColumnType<ICustomer>[] = [
     {
       title: "id",
@@ -81,28 +90,77 @@ const TableCustomer = () => {
     {
       title: "Thao tác",
       render: (text: any, record: ICustomer, index: number) => (
-       <div className="flex gap-3">
-        <Button className="max-w-30" onClick={() => handelDetail(record)}>Xem chi tiết</Button>
-        <Button className="max-w-30" onClick={() => handelUpdate(record)}>Cập nhật</Button>
-       </div>
+        <div className="flex gap-3">
+          <Tooltip placement="top" title="Xem chi tiết">
+            <EditTwoTone
+              twoToneColor={"#f57800"}
+              style={{
+                cursor: "pointer",
+                padding: "5px",
+                border: "1px solid #f57800",
+                borderRadius: "5px",
+              }}
+              onClick={() => handelDetail(record)}
+            />
+          </Tooltip>
+          <Tooltip placement="top" title="Cập nhật">
+            <EditTwoTone
+              twoToneColor={"#f57800"}
+              style={{
+                cursor: "pointer",
+                padding: "5px",
+                border: "1px solid #f57800",
+                borderRadius: "5px",
+              }}
+              onClick={() => handelUpdate(record)}
+            />
+          </Tooltip>
+        </div>
       ),
     },
   ];
+ 
+
+  let result: any;
+  if (!isLoading && data) {
+    result = data?.data;
+    console.log(result);
+  }
 
   return (
     <div>
       <div className="flex justify-end py-5 mx-5">
-        <Button onClick={()=>handleCreate()}>Thêm mới</Button>
+        <Button onClick={() => handleCreate()}>Thêm mới</Button>
       </div>
-      <Table dataSource={data} columns={columns} loading={isLoading} />
+      <Flex align={"flex-start"} justify={"flex-start"} gap={"middle"}>
+        <MaterialFilter />
+        <Content
+          className="min-w-0 bg-white"
+          style={{
+            boxShadow: "0 1px 8px rgba(0, 0, 0, 0.15)",
+            flex: 1,
+            minWidth: 700,
+            borderRadius: "8px 8px 0px 0px",
+          }}
+        >
+          <TablePagination
+            loading={isLoading}
+            columns={columns}
+            data={result?.items ? result.items : []}
+            current={result?.pageNo}
+            pageSize={result?.pageSize}
+            total={result?.totalElements}
+          ></TablePagination>
+        </Content>
+      </Flex>
       <ModalCustomer
         visible={isModalVisible}
         onClose={handleClose}
         customer={selectedCustomer}
         modalType={modalType}
-        
+        onMutate={mutate}
       />
-      <AddCustomer visible={isModalCreateCustomer} onClose={handleClose}/>
+      <AddCustomer visible={isModalCreateCustomer} onClose={handleClose} />
     </div>
   );
 };

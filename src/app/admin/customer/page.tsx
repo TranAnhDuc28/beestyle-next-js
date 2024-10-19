@@ -5,7 +5,7 @@ import Loader from "@/components/Loader/Loader";
 const CustomerPage = () => {
   return (
     <div>
-      <div className="text-center text-3xl font-bold mb-8">Customer</div>
+      <div className="text-center text-3xl font-bold">Customer</div>
       <Suspense fallback={<Loader />}>
         <TableCustomer />
       </Suspense>

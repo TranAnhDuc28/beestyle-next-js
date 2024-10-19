@@ -7,22 +7,27 @@ import { mutate } from "swr";
 const UpdateCustomer = ({
   param,
   onClose,
+  onMutate
 }: {
   param: ICustomer;
   onClose: () => void;
+  onMutate:any
 }) => {
   const [form] = Form.useForm();
 
   const handleSubmit = async (values: ICustomer) => {
     try {
-      form.setFieldValue(values.dateOfBirth,moment(values.dateOfBirth).format("YYYY-MM-DD"))
-      const result = await updateCustomer(param.id, values);
+      form.setFieldValue(
+        values.dateOfBirth,
+        moment(values.dateOfBirth).format("YYYY-MM-DD")
+      );
+      const result = await updateCustomer(values);
       console.log(result);
 
       if (result.code !== 201) {
         message.error(`Cập nhật thất bại, ${result.error}`);
       } else {
-        mutate("api/customer");
+       onMutate()
         message.success("Cập nhật thành công");
         onClose();
         console.log("Dữ liệu cập nhật: ", values);

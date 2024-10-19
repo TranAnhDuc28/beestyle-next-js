@@ -1,37 +1,24 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import httpInstance from "@/utils/HttpInstance"
 
-export const getCustomers = async () => {
-  try {
-    const response = await fetch(`${API_URL}/admin/customer`);
 
-    const result = await response.json();
-    const {
-      data: { items },
-    } = result;
-    return items;
-  } catch (error) {
-    throw new Error("Fetch data failed");
-  }
-};
+export const URL_API_CUSTOMER = {
+  get: '/admin/customer',
+  creat:'/admin/customer/create',
+  update:'/admin/customer/update',
+  delete:'/admin/customer/delete',
+}
 
-export const updateCustomer = async (id: number, item: any) => {
-  const response = await fetch(`${API_URL}/admin/customer/update/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(item),
-  });
-  return await response.json()
-};
+export const getCustomer = async (url:string) => {
+  const response = await httpInstance.get(url)
+  return response.data
+}
 
-export const createCustomer = async (item: any) => {
-  const response = await fetch(`${API_URL}/admin/customer/create`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(item),
-  });
-  return await response.json()
+export const createCustomer = async (data: ICustomer) => {
+  const response = await httpInstance.post(URL_API_CUSTOMER.creat,data)
+  return response.data
+}
+
+export const updateCustomer = async (data: ICustomer) => {
+  const response = await httpInstance.put(`${URL_API_CUSTOMER.update}/${data.id}`,data)
+  return response.data
 }
