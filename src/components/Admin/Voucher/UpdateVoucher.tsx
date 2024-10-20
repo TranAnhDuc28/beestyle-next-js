@@ -83,11 +83,12 @@ const UpdateVoucher = (props: IProps) => {
 
                 if (result.data) {
                     handleCloseUpdateModal();
-                    api.success({
-                        message: result.message,
-                        showProgress: true,
-                        duration: 2,
-                    });
+                    showNotification("success",{message: "Sửa thành công!",});
+                    // api.success({
+                    //     message: result.message,
+                    //     showProgress: true,
+                    //     duration: 2,
+                    // });
                 }
             }
         } catch (error: any) {
