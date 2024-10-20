@@ -1,7 +1,7 @@
 "use client";
 
 import { getCustomer, URL_API_CUSTOMER } from "@/services/CustomerService";
-import { Button, Flex, notification, Table, Tooltip } from "antd";
+import { Button, Flex, notification, Table, Tag, Tooltip, Typography } from "antd";
 import { ColumnType } from "antd/es/table";
 import useSWR, { mutate } from "swr";
 import { useEffect, useState } from "react";
@@ -13,6 +13,7 @@ import MaterialFilter from "../Material/MaterialFilter";
 import { EditTwoTone } from "@ant-design/icons";
 import { useSearchParams } from "next/navigation";
 
+const {Title} = Typography;
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const TableCustomer = () => {
   const [api, contextHolder] = notification.useNotification();
@@ -66,16 +67,24 @@ const TableCustomer = () => {
       dataIndex: "id",
     },
     {
-      title: "fullName",
+      title: "Họ và tên",
       dataIndex: "fullName",
     },
     {
-      title: "dateOfBirth",
+      title: "Ngày sinh",
       dataIndex: "dateOfBirth",
     },
     {
-      title: "gender",
+      title: "Giới tính",
       dataIndex: "gender",
+      render(value, record, index) {
+        let color: string = value === "MALE" ? "green" : "default";
+        return (
+          <Tag color={color} key={record.id}>
+            {[value]}
+          </Tag>
+        );
+      },
     },
     {
       title: "Ngày tạo",
@@ -91,18 +100,6 @@ const TableCustomer = () => {
       title: "Thao tác",
       render: (text: any, record: ICustomer, index: number) => (
         <div className="flex gap-3">
-          <Tooltip placement="top" title="Xem chi tiết">
-            <EditTwoTone
-              twoToneColor={"#f57800"}
-              style={{
-                cursor: "pointer",
-                padding: "5px",
-                border: "1px solid #f57800",
-                borderRadius: "5px",
-              }}
-              onClick={() => handelDetail(record)}
-            />
-          </Tooltip>
           <Tooltip placement="top" title="Cập nhật">
             <EditTwoTone
               twoToneColor={"#f57800"}
@@ -119,7 +116,6 @@ const TableCustomer = () => {
       ),
     },
   ];
- 
 
   let result: any;
   if (!isLoading && data) {
@@ -130,6 +126,7 @@ const TableCustomer = () => {
   return (
     <div>
       <div className="flex justify-end py-5 mx-5">
+      <Title level={3} style={{margin: '0px 0px 20px 10px', minWidth: 256, flexGrow: 1}}>Khách hàng</Title>
         <Button onClick={() => handleCreate()}>Thêm mới</Button>
       </div>
       <Flex align={"flex-start"} justify={"flex-start"} gap={"middle"}>
@@ -160,7 +157,11 @@ const TableCustomer = () => {
         modalType={modalType}
         onMutate={mutate}
       />
-      <AddCustomer visible={isModalCreateCustomer} onClose={handleClose} />
+      <AddCustomer
+        visible={isModalCreateCustomer}
+        onMutate={mutate}
+        onClose={handleClose}
+      />
     </div>
   );
 };

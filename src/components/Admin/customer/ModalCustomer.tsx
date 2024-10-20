@@ -22,6 +22,9 @@ const ModalCustomer = ({
     <>
       <Modal
         title={modalType == "detail" ? "Detail customer" : "Update customer"}
+        style={{
+          top:20
+        }}
         visible={visible}
         onCancel={onClose}
         footer={modalType === "update" ? null : ""}

@@ -1,5 +1,15 @@
+import useAppNotifications from "@/hooks/useAppNotifications";
 import { updateCustomer } from "@/services/CustomerService";
-import { Button, DatePicker, Form, Input, message, Radio } from "antd";
+import {
+  Button,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  message,
+  Radio,
+  Row,
+} from "antd";
 import moment from "moment";
 import { useEffect } from "react";
 import { mutate } from "swr";
@@ -7,12 +17,13 @@ import { mutate } from "swr";
 const UpdateCustomer = ({
   param,
   onClose,
-  onMutate
+  onMutate,
 }: {
   param: ICustomer;
   onClose: () => void;
-  onMutate:any
+  onMutate: any;
 }) => {
+  const { showNotification } = useAppNotifications();
   const [form] = Form.useForm();
 
   const handleSubmit = async (values: ICustomer) => {
@@ -25,15 +36,15 @@ const UpdateCustomer = ({
       console.log(result);
 
       if (result.code !== 201) {
-        message.error(`Cập nhật thất bại, ${result.error}`);
+        showNotification("error", { message: result.error });
       } else {
-       onMutate()
-        message.success("Cập nhật thành công");
+        onMutate();
+        showNotification("success", { message: result.message });
         onClose();
         console.log("Dữ liệu cập nhật: ", values);
       }
     } catch (error) {
-      message.error("Cập nhật thất bại");
+      showNotification("error", { message: error });
     }
 
     // Xử lý cập nhật khách hàng
@@ -52,29 +63,47 @@ const UpdateCustomer = ({
   }, [param, form]);
 
   return (
-    <Form form={form} onFinish={handleSubmit}>
-      <Form.Item label="Id" name="id">
-        <Input disabled />
-      </Form.Item>
+    <Form form={form} onFinish={handleSubmit} layout="vertical">
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="Id" name="id">
+            <Input disabled />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label="Họ tên" name="fullName">
+            <Input />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="Password" name="password">
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label="Sdt" name="phoneNumber">
+            <Input />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="Ngày sinh" name="dateOfBirth">
+            <DatePicker format={"YYYY-MM-DD"} />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label="Giới tính" name="gender">
+            <Radio.Group>
+              <Radio value="MALE">Nam</Radio>
+              <Radio value="FEMALE">Nữ</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Col>
+      </Row>
 
-      <Form.Item label="Họ tên" name="fullName">
-        <Input />
-      </Form.Item>
-      <Form.Item label="Password" name="password">
-        <Input />
-      </Form.Item>
-      <Form.Item label="Sdt" name="phoneNumber">
-        <Input />
-      </Form.Item>
-      <Form.Item label="Ngày sinh" name="dateOfBirth">
-        <DatePicker format={"YYYY-MM-DD"} />
-      </Form.Item>
-      <Form.Item label="Giới tính" name="gender">
-        <Radio.Group>
-          <Radio value="MALE">Nam</Radio>
-          <Radio value="FEMALE">Nữ</Radio>
-        </Radio.Group>
-      </Form.Item>
       <Button type="primary" htmlType="submit">
         Cập nhật
       </Button>
