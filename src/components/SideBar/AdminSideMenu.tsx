@@ -45,8 +45,8 @@ const items: MenuItem[] = [
     {
         key: 'tai-khoan', label: 'Tài khoản', icon: <UserOutlined/>,
         children: [
-            {key: 'khach-hang', label: 'Khách hàng'},
-            {key: 'nhan-vien', label: 'Nhân viên'},
+            {key: '6.1', label: <Link href={'/admin/customer'}>Khách hàng</Link>},
+            {key: '6.2', label: 'Nhân viên'},
         ],
     }
 ];
