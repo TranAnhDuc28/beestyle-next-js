@@ -1,8 +1,9 @@
 import { STATUS } from "@/constants/Status";
 import { updateMaterial } from "@/services/MaterialService";
 import { IMaterial } from "@/types/IMaterial";
-import { Form, Input, Modal, notification, Radio } from "antd";
+import {App, Form, Input, Modal, notification, Radio, Select} from "antd";
 import { memo, useEffect } from "react";
+import useAppNotifications from "@/hooks/useAppNotifications";
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -14,7 +15,7 @@ interface IProps {
 
 const UpdateMaterial = (props: IProps) => {
     // console.log("Update Material render");
-    const [api, contextHolder] = notification.useNotification();
+    const { showNotification } = useAppNotifications();
     const { isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate } = props;
     const [form] = Form.useForm();
 
@@ -45,30 +46,17 @@ const UpdateMaterial = (props: IProps) => {
                 mutate();
                 if (result.data) {
                     handleCloseUpdateModal();
-                    api.success({
-                        message: result.message,
-                        showProgress: true,
-                        duration: 2
-                    });
+                    showNotification("success", {message: result.message});
                 }
             }
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {
                 Object.entries(errorMessage).forEach(([field, message]) => {
-                    api.error({
-                        message: String(message),
-                        showProgress: true,
-                        duration: 2
-                    });
+                    showNotification("error", {message: String(message)});
                 });
             } else {
-                api.error({
-                    message: error?.message,
-                    description: errorMessage,
-                    showProgress: true,
-                    duration: 2
-                });
+                showNotification("error", {message: error?.message, description: errorMessage,});
             }
         }
 
@@ -76,42 +64,26 @@ const UpdateMaterial = (props: IProps) => {
 
     return (
         <>
-            {contextHolder}
-            <Modal
-                title="Chỉnh sửa chất liệu"
+            <Modal title="Chỉnh sửa chất liệu" cancelText="Hủy" okText="Lưu" style={{top: 20}}
                 open={isUpdateModalOpen}
                 onOk={() => form.submit()}
                 onCancel={() => handleCloseUpdateModal()}
-                cancelText="Hủy"
-                okText="Lưu"
-                okButtonProps={{
-                    style: { background: "#00b96b" }
-                }}
+                okButtonProps={{style: { background: "#00b96b" }}}
             >
-                <Form
-                    form={form}
-                    name="updateMaterial"
-                    layout="vertical"
-                    onFinish={onFinish}
-                >
-                    <Form.Item
-                        name="materialName"
-                        label="Tên chất liệu"
+                <Form form={form} name="updateMaterial" layout="vertical" onFinish={onFinish}>
+                    <Form.Item name="materialName" label="Tên chất liệu"
                         rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item
-                        name="status"
-                        label="Trạng thái"
-                        rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-                    >
-                        <Radio.Group>
-                            {(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
+                    <Form.Item name="status" label="Trạng thái"
+                        rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>
+                        <Select
+                            options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
                                 (key) => (
-                                    <Radio value={key} key={key}>{STATUS[key]}</Radio>
+                                    {value: key, label: STATUS[key]}
                                 )
                             )}
-                        </Radio.Group>
+                        />
                     </Form.Item>
                 </Form>
             </Modal>

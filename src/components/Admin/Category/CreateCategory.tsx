@@ -1,9 +1,10 @@
 import React, {memo, useEffect} from 'react';
-import {Form, Input, Modal, notification, Radio, TreeSelect} from 'antd';
-import {createCategory} from "@/services/CategoryService";
+import {App, Form, Input, Modal, TreeSelect} from 'antd';
+import {createCategory, URL_API_CATEGORY} from "@/services/CategoryService";
 import {ICategory} from "@/types/ICategory";
 import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
-import {STATUS} from "@/constants/Status";
+import useAppNotifications from "@/hooks/useAppNotifications";
+import {mutate} from "swr";
 
 interface IProps {
     isCreateModalOpen: boolean;
@@ -12,19 +13,16 @@ interface IProps {
 }
 
 const CreateCategory = (props: IProps) => {
-    const [api, contextHolder] = notification.useNotification();
-    const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
+    const { showNotification } = useAppNotifications();
+    const {isCreateModalOpen, setIsCreateModalOpen, mutate: mutateCategories} = props;
     const [form] = Form.useForm();
     const {dataTreeSelectCategory, error, isLoading} = useTreeSelectCategory(isCreateModalOpen);
 
     useEffect(() => {
-        if(error && isCreateModalOpen) {
-            api.error({
+        if (error && isCreateModalOpen) {
+            showNotification("error",{
                 message: error?.message || "Error fetching category input select",
                 description: error?.response?.data?.message,
-                showProgress: true,
-                duration: 2,
-                placement: "topRight"
             });
         }
     }, [isCreateModalOpen]);
@@ -35,54 +33,47 @@ const CreateCategory = (props: IProps) => {
     };
 
     const onFinish = async (value: ICategory) => {
-        // console.log('Success:', value);
+        console.log('Success:', value);
         try {
             const result = await createCategory(value);
-            mutate();
+            mutateCategories();
             if (result.data) {
                 handleCloseCreateModal();
-                api.success({message: result.message, showProgress: true, duration: 2});
+                showNotification("success", {message: result.message});
+                await mutate(URL_API_CATEGORY.options);
             }
-
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {
                 Object.entries(errorMessage).forEach(([field, message]) => {
-                    api.error({message: String(message), showProgress: true, duration: 2});
+                    showNotification("error", {message: String(message)});
                 });
             } else {
-                api.error({message: error?.message, description: errorMessage, showProgress: true, duration: 2});
+                showNotification("error", {message: error?.message, description: errorMessage});
             }
         }
     }
 
     return (
         <>
-            {contextHolder}
-            <Modal
-                title="Thêm mới danh mục"
-                open={isCreateModalOpen}
-                onOk={() => form.submit()}
-                onCancel={() => handleCloseCreateModal()}
-                cancelText="Hủy"
-                okText="Lưu"
-                okButtonProps={{
-                    style: {background: "#00b96b"}
-                }}
+            <Modal title="Thêm mới danh mục" okText="Lưu" cancelText="Hủy" style={{top: 20}}
+                   open={isCreateModalOpen}
+                   onOk={() => form.submit()}
+                   onCancel={() => handleCloseCreateModal()}
+                   okButtonProps={{style: {background: "#00b96b"}}}
             >
                 <Form form={form} name="createCategory" layout="vertical" onFinish={onFinish}>
                     <Form.Item name="categoryName" label="Tên danh mục"
-                        rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}>
+                               rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}>
                         <Input/>
                     </Form.Item>
-                    <Form.Item name="slug" label="Slug"
-                               rules={[{ required: true, message: "Vui lòng nhập slug cho danh mục!"}]}>
-                        <Input />
+                    <Form.Item name="slug" label="Slug">
+                        <Input placeholder="Tự động tạo theo tên danh mục nếu không nhập."/>
                     </Form.Item>
                     <Form.Item name="parentCategoryId" label="Danh mục cha">
                         <TreeSelect
                             placeholder={isLoading ? "Đang tải..." : "---Lựa chọn---"}
-                            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                            dropdownStyle={{maxHeight: 400, overflow: 'auto'}}
                             treeData={dataTreeSelectCategory}
                             loading={isLoading}
                             showSearch
@@ -94,21 +85,9 @@ const CreateCategory = (props: IProps) => {
                             }}
                         />
                     </Form.Item>
-                    <Form.Item name="status" label="Trạng thái"
-                               rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-                    >
-                        <Radio.Group>
-                            {(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
-                                (key) => (
-                                    <Radio value={key} key={key}>{STATUS[key]}</Radio>
-                                )
-                            )}
-                        </Radio.Group>
-                    </Form.Item>
                 </Form>
             </Modal>
         </>
     );
 };
-
 export default memo(CreateCategory);

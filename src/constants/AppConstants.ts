@@ -1,0 +1,1 @@
+export const MAX_CATEGORY_LEVEL: number = 3;

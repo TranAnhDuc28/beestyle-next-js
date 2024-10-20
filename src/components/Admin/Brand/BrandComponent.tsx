@@ -1,5 +1,5 @@
 "use client"
-import {Flex, Layout, notification, TableColumnsType, Tag, Tooltip} from "antd";
+import {App, Flex, Layout, notification, TableColumnsType, Tag, Tooltip} from "antd";
 import useSWR from "swr";
 import {IBrand} from "@/types/IBrand";
 import {EditTwoTone} from "@ant-design/icons";
@@ -13,12 +13,12 @@ import UpdateBrand from "@/components/Admin/Brand/UpdateBrand";
 import HeaderMaterial from "@/components/Admin/Material/HeaderMaterial";
 import HeaderBrand from "@/components/Admin/Brand/HeaderBrand";
 import BrandFilter from "@/components/Admin/Brand/BrandFilter";
+import useAppNotifications from "@/hooks/useAppNotifications";
 
 const {Content} = Layout;
 
 const BrandComponent = () => {
-    const [api, contextHolder] = notification.useNotification();
-
+    const {showNotification} = useAppNotifications();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
     const [dataUpdate, setDataUpdate] = useState<any>(null);
@@ -56,12 +56,7 @@ const BrandComponent = () => {
                         <Tooltip placement="top" title="Chỉnh sửa">
                             <EditTwoTone
                                 twoToneColor={"#f57800"}
-                                style={{
-                                    cursor: "pointer",
-                                    padding: "5px",
-                                    border: "1px solid #f57800",
-                                    borderRadius: "5px"
-                                }}
+                                style={{cursor: "pointer", padding: "5px", border: "1px solid #f57800", borderRadius: "5px"}}
                                 onClick={() => {
                                     setIsUpdateModalOpen(true);
                                     setDataUpdate(record);
@@ -76,12 +71,8 @@ const BrandComponent = () => {
 
     useEffect(() => {
         if (error) {
-            api.error({
-                message: error?.message || "Error fetching brands",
-                description: error?.response?.data?.message,
-                showProgress: true,
-                duration: 2,
-                placement: "bottomRight"
+            showNotification("error",{
+                message: error?.message || "Error fetching brands", description: error?.response?.data?.message,
             });
         }
     }, [error]);
@@ -93,7 +84,6 @@ const BrandComponent = () => {
 
     return (
         <>
-            {contextHolder}
             <HeaderBrand setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
                 <BrandFilter error={error}/>

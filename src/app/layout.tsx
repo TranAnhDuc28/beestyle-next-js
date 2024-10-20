@@ -1,14 +1,12 @@
 "use client";
 import "./globals.css";
 import React, { ReactNode, useEffect, useMemo, useState } from "react";
-import DefaultLayout from "@/components/Layout/DefaultLayout";
+import AdminLayout from "@/components/Layout/AdminLayout";
 import Loader from "@/components/Loader/Loader";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-
-const Context = React.createContext({ name: 'Default' });
+import {App} from "antd";
 
 export default function RootLayout({ children, }: Readonly<{ children: ReactNode; }>) {
-    const contextValue = useMemo(() => ({ name: 'Default' }), []);
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -23,11 +21,11 @@ export default function RootLayout({ children, }: Readonly<{ children: ReactNode
                     loading ?
                         (<Loader />) :
                         (
-                            <Context.Provider value={contextValue}>
+                            <App>
                                 <AntdRegistry>
-                                    <DefaultLayout>{children}</DefaultLayout>
+                                    <AdminLayout>{children}</AdminLayout>
                                 </AntdRegistry>
-                            </Context.Provider>
+                            </App>
                         )
                 }
             </body>
