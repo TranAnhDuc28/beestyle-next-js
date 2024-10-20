@@ -4,7 +4,6 @@ import ColorButton from "@/components/Button/ColorButton";
 import {PlusOutlined} from "@ant-design/icons";
 import {memo} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {URL_API_COLOR} from "@/services/ColorService";
 
 type SearchProps = GetProps<typeof Input.Search>;
 const {Title} = Typography;
@@ -39,19 +38,11 @@ const HeaderColor = (props: IProps) => {
             <div className="w-full">
                 <Flex justify={'space-between'} align={'center'}>
                     <div className="flex-grow max-w-96">
-                        <Search
-                            placeholder="Theo mã, tên màu"
-                            allowClear
-                            onSearch={onSearch}
-                            style={{width: '100%'}}
-                        />
+                        <Search placeholder="Theo mã, tên màu" allowClear onSearch={onSearch} style={{width: '100%'}}/>
                     </div>
                     <div>
                         <Space>
-                            <ColorButton
-                                bgColor="#00b96b"
-                                type="primary"
-                                icon={<PlusOutlined/>}
+                            <ColorButton bgColor="#00b96b" type="primary" icon={<PlusOutlined/>}
                                 onClick={() => setIsCreateModalOpen(true)}
                             >
                                 Thêm màu sắc

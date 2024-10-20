@@ -4,7 +4,6 @@ import ColorButton from "@/components/Button/ColorButton";
 import {PlusOutlined} from "@ant-design/icons";
 import {memo} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {URL_API_BRAND} from "@/services/BrandService";
 
 type SearchProps = GetProps<typeof Input.Search>;
 const {Title} = Typography;

@@ -1,7 +1,7 @@
 import {Flex, GetProps, Input, Space, Typography} from "antd";
 import Search from "antd/es/input/Search";
 import ColorButton from "@/components/Button/ColorButton";
-import {PlusOutlined} from "@ant-design/icons";
+import {OrderedListOutlined, PlusOutlined} from "@ant-design/icons";
 import {memo} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 
@@ -10,13 +10,14 @@ const {Title} = Typography;
 
 interface IProps {
     setIsCreateModalOpen: (value: boolean) => void;
+    setIsCategoryDisplayOrderModalOpen: (value: boolean) => void;
 }
 
 const HeaderCategory = (props: IProps) => {
-    const {setIsCreateModalOpen} = props;
+    const {setIsCreateModalOpen, setIsCategoryDisplayOrderModalOpen} = props;
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const { replace } = useRouter();
+    const {replace} = useRouter();
 
     const params = new URLSearchParams(searchParams);
 
@@ -38,32 +39,22 @@ const HeaderCategory = (props: IProps) => {
             <div className="w-full">
                 <Flex justify={'space-between'} align={'center'}>
                     <div className="flex-grow max-w-96">
-                        <Search
-                            placeholder="Theo tên, slug danh mục"
-                            allowClear
-                            onSearch={onSearch}
-                            style={{width: '100%'}}
-                        />
+                        <Search placeholder="Theo tên, slug danh mục" allowClear onSearch={onSearch}
+                                style={{width: '100%'}}/>
                     </div>
                     <div>
                         <Space>
-                            <ColorButton
-                                bgColor="#00b96b"
-                                type="primary"
-                                icon={<PlusOutlined/>}
-                                // onClick={() => setIsCreateModalOpen(true)}
+                            <ColorButton bgColor="#00b96b" type="primary" icon={<PlusOutlined/>}
+                                         onClick={() => setIsCreateModalOpen(true)}
                             >
                                 Thêm danh mục
                             </ColorButton>
-                            {/*<Dropdown menu={{items}} trigger={['click']}>*/}
-                            {/*    <ColorButton*/}
-                            {/*        bgColor="#00b96b"*/}
-                            {/*        type="primary"*/}
-                            {/*        icon={<MenuOutlined/>}*/}
-                            {/*    >*/}
-                            {/*        <CaretDownOutlined/>*/}
-                            {/*    </ColorButton>*/}
-                            {/*</Dropdown>*/}
+
+                            <ColorButton bgColor="#00b96b" type="primary" icon={<OrderedListOutlined/>}
+                                         onClick={() => setIsCategoryDisplayOrderModalOpen(true)}
+                            >
+                                Quản lý thứ tự hiển thị
+                            </ColorButton>
                         </Space>
                     </div>
                 </Flex>

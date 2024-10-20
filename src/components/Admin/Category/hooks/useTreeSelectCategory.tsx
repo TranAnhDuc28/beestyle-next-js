@@ -11,18 +11,18 @@ const transformData = (data: any) => {
 };
 
 const useTreeSelectCategory = (isModalOpen: boolean) => {
+    let dataTreeSelectCategory: any = [];
+
     const {data, error, isLoading} = useSWR(
-        URL_API_CATEGORY.options,
+        isModalOpen ? URL_API_CATEGORY.options : null,
         getCategoryOptions,
         {
             revalidateIfStale:false,
             revalidateOnReconnect: false,
-            refreshInterval: 1200000,
             shouldRetryOnError: false,
         }
     );
 
-    let dataTreeSelectCategory: any = [];
     if (!isLoading && data) {
         dataTreeSelectCategory = data?.data ? transformData(data?.data) : [];
     }
