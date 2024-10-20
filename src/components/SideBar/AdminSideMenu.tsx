@@ -51,11 +51,16 @@ const items: MenuItem[] = [
     }
 ];
 
-const AdminSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
+const AppSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
     return (
         <>
-            <Sider trigger={null} collapsible collapsed={collapsed} style={siderStyle} width={250}
-                   aria-label="Main navigation"
+            <Sider
+                trigger={null}
+                collapsible
+                collapsed={collapsed}
+                style={siderStyle}
+                width={250}
+                aria-label="Main navigation"
             >
                 <div className="flex justify-center items-center h-16 w-full du">
                     <div className={`transition-all duration-500 ${collapsed ? 'text-xs font-black' : 'text-3xl font-bold'}`}>
@@ -63,11 +68,16 @@ const AdminSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
                     </div>
                 </div>
 
-                <Menu mode="inline" defaultSelectedKeys={['1']} items={items} style={{border: 0}}/>
+                <Menu
+                    mode="inline"
+                    defaultSelectedKeys={['1']}
+                    items={items}
+                    style={{border: 0}}
+                />
             </Sider>
         </>
 
     );
 };
 
-export default AdminSideMenu;
+export default AppSideMenu;

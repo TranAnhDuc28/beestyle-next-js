@@ -1,5 +1,4 @@
-import type {ProColumns} from '@ant-design/pro-components';
-import {DragSortTable} from '@ant-design/pro-components';
+
 import {App, Modal} from 'antd';
 import {memo, useState} from 'react';
 import React, { useContext, useMemo } from 'react';
