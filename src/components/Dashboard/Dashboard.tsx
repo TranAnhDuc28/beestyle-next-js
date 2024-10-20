@@ -1,35 +1,62 @@
 "use client"
 import React from "react";
-import {Button, Flex, notification, Space, Typography} from "antd";
+import {Button, Card, Col, Flex, notification, Row, Space, Statistic, Typography} from "antd";
+import {ArrowDownOutlined, ArrowUpOutlined} from "@ant-design/icons";
 
 const {Title} = Typography;
 
 const Dashboard: React.FC = () => {
-    const messageSuccess = () => {
-  
-    }
-    const messageWarning = () => {
-
-    }
-    const messageError = () => {
-       
-    }
-    const messageInfo = () => {
-
-    }
-
     return (
-        <Flex vertical align="center" justify="center">
-            <Space direction="vertical" size="large" align="center">
-                <Title>Dashboard</Title>
-                <Space>
-                    <Button type="primary" onClick={messageSuccess}>Success</Button>
-                    <Button type="primary" onClick={messageWarning}>Warning</Button>
-                    <Button type="primary" onClick={messageError}>Error</Button>
-                    <Button type="primary" onClick={messageInfo}>Info</Button>
-                </Space>
-            </Space>
-        </Flex>
+        <Row gutter={16}>
+            <Col span={6}>
+                <Card bordered={false}>
+                    <Statistic
+                        title="Active"
+                        value={11.28}
+                        precision={2}
+                        valueStyle={{ color: '#3f8600' }}
+                        prefix={<ArrowUpOutlined />}
+                        suffix="%"
+                    />
+                </Card>
+            </Col>
+            <Col span={6}>
+                <Card bordered={false}>
+                    <Statistic
+                        title="Idle"
+                        value={9.3}
+                        precision={2}
+                        valueStyle={{ color: '#cf1322' }}
+                        prefix={<ArrowDownOutlined />}
+                        suffix="%"
+                    />
+                </Card>
+            </Col>
+            <Col span={6}>
+                <Card bordered={false}>
+                    <Statistic
+                        title="Active"
+                        value={11.28}
+                        precision={2}
+                        valueStyle={{ color: '#3f8600' }}
+                        prefix={<ArrowUpOutlined />}
+                        suffix="%"
+                    />
+                </Card>
+            </Col>
+            <Col span={6}>
+                <Card bordered={false}>
+                    <Statistic
+                        title="Idle"
+                        value={9.3}
+                        precision={2}
+                        valueStyle={{ color: '#cf1322' }}
+                        prefix={<ArrowDownOutlined />}
+                        suffix="%"
+                    />
+                </Card>
+            </Col>
+        </Row>
     );
 }
 

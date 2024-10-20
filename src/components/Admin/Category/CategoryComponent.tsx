@@ -1,43 +1,47 @@
 "use client"
-import {App, Flex, Layout, notification, TableColumnsType, Tag, Tooltip,} from "antd";
-import {EditTwoTone} from "@ant-design/icons";
-import type {IMaterial} from "@/types/IMaterial";
-import TablePagination from "@/components/Table/TablePagination";
-import {getMaterials, URL_API_MATERIAL} from "@/services/MaterialService";
+import {App, Flex, Layout, TableColumnsType, Tag, Tooltip} from "antd";
 import useSWR from "swr";
+import {IBrand} from "@/types/IBrand";
+import {DeleteTwoTone, EditTwoTone} from "@ant-design/icons";
+import TablePagination from "@/components/Table/TablePagination";
+import {getBrands} from "@/services/BrandService";
 import {useEffect, useState} from "react";
-import CreateMaterial from "./CreateMaterial";
-import UpdateMaterial from "./UpdateMaterial";
-import {STATUS} from "@/constants/Status";
-import MaterialFilter from "@/components/Admin/Material/MaterialFilter";
 import {useSearchParams} from "next/navigation";
-import HeaderMaterial from "@/components/Admin/Material/HeaderMaterial";
+import {STATUS} from "@/constants/Status";
+import {URL_API_CATEGORY} from "@/services/CategoryService";
+import HeaderCategory from "@/components/Admin/Category/HeaderCategory";
+import CreateCategory from "@/components/Admin/Category/CreateCategory";
+import UpdateCategory from "@/components/Admin/Category/UpdateCategory";
+import CategoryFilter from "@/components/Admin/Category/CategoryFilter";
+import CategoryDisplayOrderModal from "@/components/Admin/Category/CategoryDisplayOrderModal";
 import useAppNotifications from "@/hooks/useAppNotifications";
 
 const {Content} = Layout;
 
-const MaterialComponent = () => {
+const CategoryComponent = () => {
     const { showNotification } = useAppNotifications();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
+    const [isCategoryDisplayOrderModalOpen, setIsCategoryDisplayOrderModalOpen] =
+        useState<boolean>(false);
     const [dataUpdate, setDataUpdate] = useState<any>(null);
 
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams);
-    // console.log(params.size);
-    // console.log(`${URL_API_MATERIAL.get}${params.size !== 0 ? `?${params.toString()}` : ''}`);
 
     const {data, error, isLoading, mutate} =
-        useSWR(`${URL_API_MATERIAL.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
-            getMaterials,
+        useSWR(
+            `${URL_API_CATEGORY.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
+            getBrands,
             {
                 revalidateOnFocus: false,
-                revalidateOnReconnect: false
             }
         );
 
-    const columns: TableColumnsType<IMaterial> = [
-        {title: 'Tên chất liệu', dataIndex: 'materialName', key: 'materialName'},
+    const columns: TableColumnsType<IBrand> = [
+        {title: 'Tên danh mục', dataIndex: 'categoryName', key: 'categoryName'},
+        {title: 'Slug', dataIndex: 'slug', key: 'slug'},
+        {title: 'Danh mục cha', dataIndex: 'parentCategoryName', key: 'parentCategoryName'},
         {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
         {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
         {
@@ -55,16 +59,22 @@ const MaterialComponent = () => {
                     <>
                         <Tooltip placement="top" title="Chỉnh sửa">
                             <EditTwoTone
-                                twoToneColor={"#f57800"}
+                                twoToneColor={"#FAAD14"}
                                 style={{
-                                    cursor: "pointer",
-                                    padding: "5px",
-                                    border: "1px solid #f57800",
-                                    borderRadius: "5px"
+                                    cursor: "pointer", padding: "5px", border: "1px solid #FAAD14", borderRadius: "5px",
+                                    marginRight: 10
                                 }}
                                 onClick={() => {
                                     setIsUpdateModalOpen(true);
                                     setDataUpdate(record);
+                                }}
+                            />
+                        </Tooltip>
+                        <Tooltip placement="top" title="Xóa">
+                            <DeleteTwoTone
+                                twoToneColor={"#FF4D4F"}
+                                style={{
+                                    cursor: "pointer", padding: "5px", border: "1px solid #FF4D4F", borderRadius: "5px"
                                 }}
                             />
                         </Tooltip>
@@ -77,22 +87,22 @@ const MaterialComponent = () => {
     useEffect(() => {
         if (error) {
             showNotification("error",{
-                message: error?.message || "Error fetching materials", description: error?.response?.data?.message,
+                message: error?.message || "Error fetching brands", description: error?.response?.data?.message,
             });
         }
     }, [error]);
 
     let result: any;
-    if (!isLoading && data) {
-        result = data?.data;
-        console.log(result);
-    }
+    if (!isLoading && data) result = data?.data;
 
     return (
         <>
-            <HeaderMaterial setIsCreateModalOpen={setIsCreateModalOpen}/>
+            <HeaderCategory
+                setIsCreateModalOpen={setIsCreateModalOpen}
+                setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}
+            />
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                <MaterialFilter error={error}/>
+                <CategoryFilter error={error}/>
                 <Content
                     className="min-w-0 bg-white"
                     style={{
@@ -114,20 +124,26 @@ const MaterialComponent = () => {
                 </Content>
             </Flex>
 
-            <CreateMaterial
+            <CreateCategory
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 mutate={mutate}
             />
 
-            <UpdateMaterial
+            <UpdateCategory
                 isUpdateModalOpen={isUpdateModalOpen}
                 setIsUpdateModalOpen={setIsUpdateModalOpen}
                 mutate={mutate}
                 dataUpdate={dataUpdate}
                 setDataUpdate={setDataUpdate}
             />
+
+            <CategoryDisplayOrderModal
+                isCategoryDisplayOrderModalOpen={isCategoryDisplayOrderModalOpen}
+                setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}
+            />
         </>
     )
 }
-export default MaterialComponent;
+
+export default CategoryComponent;

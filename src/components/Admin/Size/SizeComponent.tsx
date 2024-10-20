@@ -3,33 +3,30 @@ import {App, Flex, Layout, notification, TableColumnsType, Tag, Tooltip,} from "
 import {EditTwoTone} from "@ant-design/icons";
 import type {IMaterial} from "@/types/IMaterial";
 import TablePagination from "@/components/Table/TablePagination";
-import {getMaterials, URL_API_MATERIAL} from "@/services/MaterialService";
 import useSWR from "swr";
 import {useEffect, useState} from "react";
-import CreateMaterial from "./CreateMaterial";
-import UpdateMaterial from "./UpdateMaterial";
 import {STATUS} from "@/constants/Status";
-import MaterialFilter from "@/components/Admin/Material/MaterialFilter";
 import {useSearchParams} from "next/navigation";
-import HeaderMaterial from "@/components/Admin/Material/HeaderMaterial";
+import {getSizes, URL_API_SIZE} from "@/services/SizeService";
+import HeaderSize from "@/components/Admin/Size/HeaderSize";
+import SizeFilter from "@/components/Admin/Size/SizeFilter";
+import CreateSize from "./CreateSize";
+import UpdateSize from "./UpdateSize";
 import useAppNotifications from "@/hooks/useAppNotifications";
 
 const {Content} = Layout;
 
-const MaterialComponent = () => {
+const SizeComponent = () => {
     const { showNotification } = useAppNotifications();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
     const [dataUpdate, setDataUpdate] = useState<any>(null);
-
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams);
-    // console.log(params.size);
-    // console.log(`${URL_API_MATERIAL.get}${params.size !== 0 ? `?${params.toString()}` : ''}`);
 
     const {data, error, isLoading, mutate} =
-        useSWR(`${URL_API_MATERIAL.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
-            getMaterials,
+        useSWR(`${URL_API_SIZE.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
+            getSizes,
             {
                 revalidateOnFocus: false,
                 revalidateOnReconnect: false
@@ -37,7 +34,7 @@ const MaterialComponent = () => {
         );
 
     const columns: TableColumnsType<IMaterial> = [
-        {title: 'Tên chất liệu', dataIndex: 'materialName', key: 'materialName'},
+        {title: 'Tên kích thước', dataIndex: 'sizeName', key: 'sizeName'},
         {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
         {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
         {
@@ -76,8 +73,8 @@ const MaterialComponent = () => {
 
     useEffect(() => {
         if (error) {
-            showNotification("error",{
-                message: error?.message || "Error fetching materials", description: error?.response?.data?.message,
+            showNotification("error", {
+                message: error?.message || "Error fetching sizes", description: error?.response?.data?.message,
             });
         }
     }, [error]);
@@ -85,14 +82,13 @@ const MaterialComponent = () => {
     let result: any;
     if (!isLoading && data) {
         result = data?.data;
-        console.log(result);
     }
 
     return (
         <>
-            <HeaderMaterial setIsCreateModalOpen={setIsCreateModalOpen}/>
+            <HeaderSize setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                <MaterialFilter error={error}/>
+                <SizeFilter error={error}/>
                 <Content
                     className="min-w-0 bg-white"
                     style={{
@@ -114,13 +110,13 @@ const MaterialComponent = () => {
                 </Content>
             </Flex>
 
-            <CreateMaterial
+            <CreateSize
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 mutate={mutate}
             />
 
-            <UpdateMaterial
+            <UpdateSize
                 isUpdateModalOpen={isUpdateModalOpen}
                 setIsUpdateModalOpen={setIsUpdateModalOpen}
                 mutate={mutate}
@@ -130,4 +126,4 @@ const MaterialComponent = () => {
         </>
     )
 }
-export default MaterialComponent;
+export default SizeComponent;

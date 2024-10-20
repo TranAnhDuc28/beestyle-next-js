@@ -1,8 +1,8 @@
 "use client"
 import { memo } from 'react';
-import {App, Form, Input, Modal} from 'antd';
-import { IMaterial } from '@/types/IMaterial';
-import {createMaterial} from '@/services/MaterialService';
+import {App, Form, Input, Modal, notification} from 'antd';
+import {ISize} from "@/types/ISize";
+import {createSize} from "@/services/SizeService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 
 interface IProps {
@@ -11,8 +11,7 @@ interface IProps {
     mutate: any
 }
 
-const CreateMaterial = (props: IProps) => {
-    // console.log("Create Material render");
+const CreateSize = (props: IProps) => {
     const { showNotification } = useAppNotifications();
     const { isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
@@ -22,16 +21,15 @@ const CreateMaterial = (props: IProps) => {
         setIsCreateModalOpen(false);
     };
 
-    const onFinish = async (value: IMaterial) => {
+    const onFinish = async (value: ISize) => {
         // console.log('Success:', value);
         try {
-            const result = await createMaterial(value);
+            const result = await createSize(value);
             mutate();
             if (result.data) {
                 handleCloseCreateModal();
                 showNotification("success", {message: result.message});
             }
-
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {
@@ -46,7 +44,7 @@ const CreateMaterial = (props: IProps) => {
 
     return (
         <>
-            <Modal title="Thêm mới chất liệu" cancelText="Hủy" okText="Lưu" style={{top: 20}}
+            <Modal title="Thêm mới kích thước" cancelText="Hủy" okText="Lưu" style={{top: 20}}
                 open={isCreateModalOpen}
                 onOk={() => form.submit()}
                 onCancel={() => handleCloseCreateModal()}
@@ -54,14 +52,14 @@ const CreateMaterial = (props: IProps) => {
             >
                 <Form
                     form={form}
-                    name="createMaterial"
+                    name="createSize"
                     layout="vertical"
                     onFinish={onFinish}
                 >
                     <Form.Item
-                        name="materialName"
-                        label="Tên chất liệu"
-                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}>
+                        name="sizeName"
+                        label="Tên kích thước"
+                        rules={[{ required: true, message: "Vui lòng nhập tên kích thước!" }]}>
                         <Input />
                     </Form.Item>
                 </Form>
@@ -69,4 +67,4 @@ const CreateMaterial = (props: IProps) => {
         </>
     );
 };
-export default memo(CreateMaterial);
+export default memo(CreateSize);

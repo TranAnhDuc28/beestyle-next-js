@@ -1,15 +1,25 @@
 import {Checkbox, Col, Collapse, GetProp, Row, Space, Typography} from "antd";
 import { STATUS } from "@/constants/Status";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import {memo} from "react";
+import {memo, useEffect, useState} from "react";
 
 const { Title } = Typography;
 
-const MaterialFilter = () => {
-    // console.log("Material Filter render");
+interface IProps {
+    error?: Error;
+}
+
+const MaterialFilter = (props: IProps) => {
+    const [isErrorNetWork, setErrorNetWork] = useState(false);
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
+    const { error } = props;
+
+    useEffect(() => {
+        if (error) setErrorNetWork(true);
+        else setErrorNetWork(false);
+    }, [error]);
 
     const onChange: GetProp<typeof Checkbox.Group, 'onChange'> = (checkedValues: any[]) => {
         const params = new URLSearchParams(searchParams);
@@ -25,26 +35,20 @@ const MaterialFilter = () => {
 
     return (
         <Space direction="vertical" style={{ minWidth: 256 }}>
-            <Collapse
-                size="small"
-                className="w-full bg-white"
-                style={{
-                    borderRadius: 8,
-                    boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
-                    maxWidth: 256
-                }}
-                ghost
-                expandIconPosition="end"
+            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end"
+                style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256}}
                 items={[
                     {
                         key: 'status',
                         label: <Title level={5} style={{ margin: '0px 10px' }}>Trạng thái</Title>,
                         children: (
-                            <Checkbox.Group onChange={onChange}>
+                            <Checkbox.Group onChange={onChange} disabled={isErrorNetWork}>
                                 <Row>
                                     {Object.keys(STATUS).map((key) => (
                                         <Col key={key} span={24} style={{ marginBottom: 10 }}>
-                                            <Checkbox value={key}>{STATUS[key as keyof typeof STATUS]}</Checkbox>
+                                            <Checkbox value={key} style={{marginLeft: 10}}>
+                                                {STATUS[key as keyof typeof STATUS]}
+                                            </Checkbox>
                                         </Col>
                                     ))}
                                 </Row>
@@ -56,5 +60,4 @@ const MaterialFilter = () => {
         </Space>
     );
 };
-
 export default memo(MaterialFilter);

@@ -1,22 +1,24 @@
 "use client"
-import {App, Flex, Layout, notification, TableColumnsType, Tag, Tooltip,} from "antd";
-import {EditTwoTone} from "@ant-design/icons";
-import type {IMaterial} from "@/types/IMaterial";
-import TablePagination from "@/components/Table/TablePagination";
-import {getMaterials, URL_API_MATERIAL} from "@/services/MaterialService";
+import {App, Flex, Layout, notification, TableColumnsType, Tag, Tooltip} from "antd";
 import useSWR from "swr";
+import {EditTwoTone} from "@ant-design/icons";
+import TablePagination from "@/components/Table/TablePagination";
+import {getBrands} from "@/services/BrandService";
 import {useEffect, useState} from "react";
-import CreateMaterial from "./CreateMaterial";
-import UpdateMaterial from "./UpdateMaterial";
-import {STATUS} from "@/constants/Status";
-import MaterialFilter from "@/components/Admin/Material/MaterialFilter";
 import {useSearchParams} from "next/navigation";
+import {STATUS} from "@/constants/Status";
+import {URL_API_COLOR} from "@/services/ColorService";
+import {IColor} from "@/types/IColor";
+import CreateColor from "@/components/Admin/Color/CreateColor";
+import UpdateColor from "@/components/Admin/Color/UpdateColor";
 import HeaderMaterial from "@/components/Admin/Material/HeaderMaterial";
+import HeaderColor from "@/components/Admin/Color/HeaderColor";
+import ColorFilter from "@/components/Admin/Color/ColorFilter";
 import useAppNotifications from "@/hooks/useAppNotifications";
 
 const {Content} = Layout;
 
-const MaterialComponent = () => {
+const ColorComponent = () => {
     const { showNotification } = useAppNotifications();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
@@ -24,20 +26,19 @@ const MaterialComponent = () => {
 
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams);
-    // console.log(params.size);
-    // console.log(`${URL_API_MATERIAL.get}${params.size !== 0 ? `?${params.toString()}` : ''}`);
 
     const {data, error, isLoading, mutate} =
-        useSWR(`${URL_API_MATERIAL.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
-            getMaterials,
+        useSWR(
+            `${URL_API_COLOR.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
+            getBrands,
             {
                 revalidateOnFocus: false,
                 revalidateOnReconnect: false
             }
         );
 
-    const columns: TableColumnsType<IMaterial> = [
-        {title: 'Tên chất liệu', dataIndex: 'materialName', key: 'materialName'},
+    const columns: TableColumnsType<IColor> = [
+        {title: 'Màu', dataIndex: 'colorName', key: 'colorName'},
         {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
         {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
         {
@@ -77,7 +78,7 @@ const MaterialComponent = () => {
     useEffect(() => {
         if (error) {
             showNotification("error",{
-                message: error?.message || "Error fetching materials", description: error?.response?.data?.message,
+                message: error?.message || "Error fetching colors", description: error?.response?.data?.message,
             });
         }
     }, [error]);
@@ -85,14 +86,13 @@ const MaterialComponent = () => {
     let result: any;
     if (!isLoading && data) {
         result = data?.data;
-        console.log(result);
     }
 
     return (
         <>
-            <HeaderMaterial setIsCreateModalOpen={setIsCreateModalOpen}/>
+            <HeaderColor setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
-                <MaterialFilter error={error}/>
+                <ColorFilter error={error}/>
                 <Content
                     className="min-w-0 bg-white"
                     style={{
@@ -114,13 +114,13 @@ const MaterialComponent = () => {
                 </Content>
             </Flex>
 
-            <CreateMaterial
+            <CreateColor
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 mutate={mutate}
             />
 
-            <UpdateMaterial
+            <UpdateColor
                 isUpdateModalOpen={isUpdateModalOpen}
                 setIsUpdateModalOpen={setIsUpdateModalOpen}
                 mutate={mutate}
@@ -130,4 +130,5 @@ const MaterialComponent = () => {
         </>
     )
 }
-export default MaterialComponent;
+
+export default ColorComponent;

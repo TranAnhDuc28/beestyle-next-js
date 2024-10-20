@@ -1,8 +1,7 @@
-"use client"
-import { memo } from 'react';
-import {App, Form, Input, Modal} from 'antd';
-import { IMaterial } from '@/types/IMaterial';
-import {createMaterial} from '@/services/MaterialService';
+import React, {memo} from 'react';
+import {App, Form, Input, Modal, notification} from 'antd';
+import {IColor} from "@/types/IColor";
+import {createColor} from "@/services/ColorService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 
 interface IProps {
@@ -11,10 +10,9 @@ interface IProps {
     mutate: any
 }
 
-const CreateMaterial = (props: IProps) => {
-    // console.log("Create Material render");
+const CreateColor = (props: IProps) => {
     const { showNotification } = useAppNotifications();
-    const { isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
+    const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
 
     const handleCloseCreateModal = () => {
@@ -22,10 +20,10 @@ const CreateMaterial = (props: IProps) => {
         setIsCreateModalOpen(false);
     };
 
-    const onFinish = async (value: IMaterial) => {
+    const onFinish = async (value: IColor) => {
         // console.log('Success:', value);
         try {
-            const result = await createMaterial(value);
+            const result = await createColor(value);
             mutate();
             if (result.data) {
                 handleCloseCreateModal();
@@ -46,27 +44,28 @@ const CreateMaterial = (props: IProps) => {
 
     return (
         <>
-            <Modal title="Thêm mới chất liệu" cancelText="Hủy" okText="Lưu" style={{top: 20}}
+            <Modal title="Thêm mới màu sắc" cancelText="Hủy" okText="Lưu" style={{top: 20}}
                 open={isCreateModalOpen}
                 onOk={() => form.submit()}
                 onCancel={() => handleCloseCreateModal()}
-                okButtonProps={{style: { background: "#00b96b" }}}
+                okButtonProps={{style: {background: "#00b96b"}}}
             >
                 <Form
                     form={form}
-                    name="createMaterial"
+                    name="createColor"
                     layout="vertical"
                     onFinish={onFinish}
                 >
                     <Form.Item
-                        name="materialName"
-                        label="Tên chất liệu"
-                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}>
-                        <Input />
+                        name="colorName"
+                        label="Tên màu sắc"
+                        rules={[{required: true, message: "Vui lòng nhập tên màu sắc!"}]}>
+                        <Input/>
                     </Form.Item>
                 </Form>
             </Modal>
         </>
     );
 };
-export default memo(CreateMaterial);
+
+export default memo(CreateColor);

@@ -20,17 +20,16 @@ interface HeaderBarProps {
     onToggle: () => void;
 }
 
-const AppHeader: React.FC<HeaderBarProps> = ({collapsed, onToggle}) => {
+const AdminHeader: React.FC<HeaderBarProps> = ({collapsed, onToggle}) => {
     return (
         <Header style={headerStyle} >
             <Button
-                type="text"
+                type="text" onClick={onToggle}
                 icon={collapsed ? <MenuUnfoldOutlined/> : <MenuFoldOutlined/>}
-                onClick={onToggle}
                 style={{fontSize: '16px', width: 64, height: 64,}}
             />
         </Header>
     );
 };
 
-export default AppHeader;
+export default AdminHeader;

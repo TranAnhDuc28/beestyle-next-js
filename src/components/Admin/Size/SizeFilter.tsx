@@ -9,7 +9,7 @@ interface IProps {
     error?: Error;
 }
 
-const BrandFilter = (props: IProps) => {
+const SizeFilter = (props: IProps) => {
     const [isErrorNetWork, setErrorNetWork] = useState(false);
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -36,11 +36,7 @@ const BrandFilter = (props: IProps) => {
     return (
         <Space direction="vertical" style={{ minWidth: 256 }}>
             <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end"
-                style={{
-                    borderRadius: 8,
-                    boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
-                    maxWidth: 256
-                }}
+                style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256}}
                 items={[
                     {
                         key: 'status',
@@ -64,4 +60,4 @@ const BrandFilter = (props: IProps) => {
         </Space>
     );
 };
-export default memo(BrandFilter);
+export default memo(SizeFilter);

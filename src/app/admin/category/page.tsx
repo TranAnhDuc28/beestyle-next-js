@@ -1,15 +1,18 @@
-"use client"
-import {Flex, Typography} from "antd";
-import React from "react";
+import React, {Suspense} from "react";
+import Loader from "@/components/Loader/Loader";
+import {Metadata} from "next";
+import CategoryComponent from "@/components/Admin/Category/CategoryComponent";
 
-const { Title } = Typography;
+export const metadata: Metadata = {
+    title: "Danh mục sản phẩm",
+    description: "Product - Category service",
+};
 
 function Category() {
-
     return (
-        <Flex align={'center'} justify={'center'}>
-            <Title>Category</Title>
-        </Flex>
+        <Suspense fallback={<Loader/>}>
+            <CategoryComponent/>
+        </Suspense>
     );
 }
 
