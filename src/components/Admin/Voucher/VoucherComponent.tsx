@@ -1,7 +1,7 @@
 "use client";
 
-import {Flex, Layout, notification, TableColumnsType, Tooltip} from "antd";
-import {EditTwoTone} from "@ant-design/icons";
+import {Flex, Layout, notification, TableColumnsType, Tooltip, Modal} from "antd";
+import {EditTwoTone, DeleteTwoTone} from "@ant-design/icons";
 import type {IVoucher} from "@/types/IVoucher";
 import TablePagination from "@/components/Table/TablePagination";
 import {getVouchers, URL_API_VOUCHER} from "@/services/VoucherService";
@@ -17,6 +17,7 @@ import {PlusOutlined} from "@ant-design/icons";
 import Search from "antd/es/input/Search";
 import ColorButton from "@/components/Button/ColorButton";
 import React from "react";
+import {deleteVoucher} from '@/services/VoucherService';
 
 const {Content} = Layout;
 const {Title} = Typography;
@@ -39,14 +40,6 @@ const VoucherComponent = () => {
             }
         );
     console.log("Dữ liệu trả về:", data);
-    const onSearch = (value: string) => {
-        console.log("Tìm kiếm:", value);
-    };
-
-    const handleFilterChange = (filters: any) => {
-        console.log("Lọc với các giá trị:", filters);
-    };
-
     useEffect(() => {
         if (error) {
             api.error({
@@ -63,6 +56,46 @@ const VoucherComponent = () => {
     if (!isLoading && data) {
         result = data?.data;
     }
+    const handleDeleteVoucher = async (id: number) => {
+        try {
+            const result = await deleteVoucher(id);
+            console.log(result);
+            console.log('Đang xóa phiếu giảm giá với ID:', id);
+
+
+            if (result.code === 200) {
+                notification.success({
+                    message: 'Xóa thành công!',
+                    description: result.message,
+                });
+                mutate();
+            } else {
+                notification.error({
+                    message: 'Xóa không thành công!',
+                    description: result.message || 'Không có thông tin thêm.',
+                });
+            }
+        } catch (error) {
+            notification.error({
+                message: 'Có lỗi xảy ra!',
+                description: error.message,
+            });
+        }
+    };
+
+    const onDelete = (record: IVoucher) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa',
+            content: 'Bạn có chắc chắn muốn xóa phiếu giảm giá này?',
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk: () => {
+                console.log(`Đang xóa phiếu giảm giá với ID: ${record.id}`); // Kiểm tra ID
+                handleDeleteVoucher(record.id); // Gọi hàm xóa record
+            }
+        });
+    };
 
     const columns: TableColumnsType<IVoucher> = [
         {
@@ -113,29 +146,51 @@ const VoucherComponent = () => {
             align: 'center',
             render: (record: IVoucher) => {
                 return (
-                    <Tooltip placement="top" title="Chỉnh sửa">
-                        <EditTwoTone
-                            twoToneColor={"#f57800"}
-                            style={{
-                                cursor: "pointer",
-                                padding: "5px",
-                                border: "1px solid #f57800",
-                                borderRadius: "5px"
-                            }}
-                            onClick={() => {
-                                setIsUpdateModalOpen(true);
-                                setDataUpdate(record);
-                            }}
-                        />
-                    </Tooltip>
+                    <>
+                        {/* Nút chỉnh sửa */}
+                        <Tooltip placement="top" title="Chỉnh sửa">
+                            <EditTwoTone
+                                twoToneColor={"#f57800"}
+                                style={{
+                                    cursor: "pointer",
+                                    padding: "5px",
+                                    border: "1px solid #f57800",
+                                    borderRadius: "5px",
+                                    marginRight: "8px"
+                                }}
+                                onClick={() => {
+                                    setIsUpdateModalOpen(true);
+                                    setDataUpdate(record);
+                                }}
+                            />
+                        </Tooltip>
+
+                        {/* Nút xóa */}
+                        <Tooltip placement="top" title="Xóa">
+                            <DeleteTwoTone
+                                twoToneColor={"#ff4d4f"}
+                                style={{
+                                    cursor: "pointer",
+                                    padding: "5px",
+                                    border: "1px solid #ff4d4f",
+                                    borderRadius: "5px"
+                                }}
+                                onClick={() => onDelete(record)}
+                            />
+                        </Tooltip>
+                    </>
                 );
             }
         }
+
     ];
+
 
     return (
         <>
             {contextHolder}
+            <HeaderVoucher setIsCreateModalOpen={setIsCreateModalOpen} />
+
             <Content
                 className="min-w-0 bg-white"
                 style={{
@@ -152,10 +207,25 @@ const VoucherComponent = () => {
                     current={result?.pageNo}
                     pageSize={result?.pageSize}
                     total={result?.totalElements}
-                />
+                >
+                </TablePagination>
             </Content>
+            <CreateVoucher
+                isCreateModalOpen={isCreateModalOpen}
+                setIsCreateModalOpen={setIsCreateModalOpen}
+                mutate={mutate}
+            />
+
+            <UpdateVoucher
+                isUpdateModalOpen={isUpdateModalOpen}
+                setIsUpdateModalOpen={setIsUpdateModalOpen}
+                mutate={mutate}
+                dataUpdate={dataUpdate}
+                setDataUpdate={setDataUpdate}
+            />
         </>
     );
+
 };
 
 export default VoucherComponent;
