@@ -1,5 +1,5 @@
 "use client"
-import {Flex, Layout, notification, TableColumnsType, Tag, Tooltip} from "antd";
+import {App, Flex, Layout, TableColumnsType, Tag, Tooltip} from "antd";
 import useSWR from "swr";
 import {IBrand} from "@/types/IBrand";
 import {DeleteTwoTone, EditTwoTone} from "@ant-design/icons";
@@ -13,14 +13,17 @@ import HeaderCategory from "@/components/Admin/Category/HeaderCategory";
 import CreateCategory from "@/components/Admin/Category/CreateCategory";
 import UpdateCategory from "@/components/Admin/Category/UpdateCategory";
 import CategoryFilter from "@/components/Admin/Category/CategoryFilter";
+import CategoryDisplayOrderModal from "@/components/Admin/Category/CategoryDisplayOrderModal";
+import useAppNotifications from "@/hooks/useAppNotifications";
 
 const {Content} = Layout;
 
 const CategoryComponent = () => {
-    const [api, contextHolder] = notification.useNotification();
-
+    const { showNotification } = useAppNotifications();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
+    const [isCategoryDisplayOrderModalOpen, setIsCategoryDisplayOrderModalOpen] =
+        useState<boolean>(false);
     const [dataUpdate, setDataUpdate] = useState<any>(null);
 
     const searchParams = useSearchParams();
@@ -32,7 +35,6 @@ const CategoryComponent = () => {
             getBrands,
             {
                 revalidateOnFocus: false,
-                revalidateOnReconnect: false
             }
         );
 
@@ -84,9 +86,8 @@ const CategoryComponent = () => {
 
     useEffect(() => {
         if (error) {
-            api.error({
+            showNotification("error",{
                 message: error?.message || "Error fetching brands", description: error?.response?.data?.message,
-                showProgress: true, duration: 2, placement: "bottomRight",
             });
         }
     }, [error]);
@@ -96,8 +97,10 @@ const CategoryComponent = () => {
 
     return (
         <>
-            {contextHolder}
-            <HeaderCategory setIsCreateModalOpen={setIsCreateModalOpen}/>
+            <HeaderCategory
+                setIsCreateModalOpen={setIsCreateModalOpen}
+                setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}
+            />
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
                 <CategoryFilter error={error}/>
                 <Content
@@ -133,6 +136,11 @@ const CategoryComponent = () => {
                 mutate={mutate}
                 dataUpdate={dataUpdate}
                 setDataUpdate={setDataUpdate}
+            />
+
+            <CategoryDisplayOrderModal
+                isCategoryDisplayOrderModalOpen={isCategoryDisplayOrderModalOpen}
+                setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}
             />
         </>
     )

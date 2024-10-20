@@ -18,6 +18,7 @@ const BrandFilter = (props: IProps) => {
 
     useEffect(() => {
         if (error) setErrorNetWork(true);
+        else setErrorNetWork(false);
     }, [error]);
 
     const onChange: GetProp<typeof Checkbox.Group, 'onChange'> = (checkedValues: any[]) => {
@@ -34,16 +35,12 @@ const BrandFilter = (props: IProps) => {
 
     return (
         <Space direction="vertical" style={{ minWidth: 256 }}>
-            <Collapse
-                size="small"
-                className="w-full bg-white"
+            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end"
                 style={{
                     borderRadius: 8,
                     boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
                     maxWidth: 256
                 }}
-                ghost
-                expandIconPosition="end"
                 items={[
                     {
                         key: 'status',
@@ -53,7 +50,9 @@ const BrandFilter = (props: IProps) => {
                                 <Row>
                                     {Object.keys(STATUS).map((key) => (
                                         <Col key={key} span={24} style={{ marginBottom: 10 }}>
-                                            <Checkbox value={key}>{STATUS[key as keyof typeof STATUS]}</Checkbox>
+                                            <Checkbox value={key} style={{marginLeft: 10}}>
+                                                {STATUS[key as keyof typeof STATUS]}
+                                            </Checkbox>
                                         </Col>
                                     ))}
                                 </Row>
@@ -65,5 +64,4 @@ const BrandFilter = (props: IProps) => {
         </Space>
     );
 };
-
 export default memo(BrandFilter);

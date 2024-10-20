@@ -1,8 +1,9 @@
 "use client"
 import { memo } from 'react';
-import { Form, Input, Modal, notification } from 'antd';
+import {App, Form, Input, Modal} from 'antd';
 import { IMaterial } from '@/types/IMaterial';
 import {createMaterial} from '@/services/MaterialService';
+import useAppNotifications from "@/hooks/useAppNotifications";
 
 interface IProps {
     isCreateModalOpen: boolean;
@@ -12,7 +13,7 @@ interface IProps {
 
 const CreateMaterial = (props: IProps) => {
     // console.log("Create Material render");
-    const [api, contextHolder] = notification.useNotification();
+    const { showNotification } = useAppNotifications();
     const { isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
 
@@ -28,47 +29,28 @@ const CreateMaterial = (props: IProps) => {
             mutate();
             if (result.data) {
                 handleCloseCreateModal();
-                api.success({
-                    message: result.message,
-                    showProgress: true,
-                    duration: 2
-                });
+                showNotification("success", {message: result.message});
             }
 
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {
                 Object.entries(errorMessage).forEach(([field, message]) => {
-                    api.error({
-                        message: String(message), 
-                        showProgress: true,
-                        duration: 2
-                    });
+                    showNotification("error", {message: String(message)});
                 });
             } else {
-                api.error({
-                    message: error?.message,
-                    description: errorMessage,
-                    showProgress: true,
-                    duration: 2
-                });
+                showNotification("error", {message: error?.message, description: errorMessage,});
             }
         }
     }
 
     return (
         <>
-            {contextHolder}
-            <Modal
-                title="Thêm mới chất liệu"
+            <Modal title="Thêm mới chất liệu" cancelText="Hủy" okText="Lưu" style={{top: 20}}
                 open={isCreateModalOpen}
                 onOk={() => form.submit()}
                 onCancel={() => handleCloseCreateModal()}
-                cancelText="Hủy"
-                okText="Lưu"
-                okButtonProps={{
-                    style: { background: "#00b96b" }
-                }}
+                okButtonProps={{style: { background: "#00b96b" }}}
             >
                 <Form
                     form={form}
@@ -87,5 +69,4 @@ const CreateMaterial = (props: IProps) => {
         </>
     );
 };
-
 export default memo(CreateMaterial);

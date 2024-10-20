@@ -13,6 +13,7 @@ import HeaderVoucher from "@/components/Admin/Voucher/HeaderVoucher";
 import { DatePicker, Typography } from "antd";
 import { deleteVoucher } from '@/services/VoucherService';
 import { useSearchParams } from "next/navigation"; // Thêm dòng này
+import useAppNotifications from "../../../hooks/useAppNotifications";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -24,6 +25,7 @@ const VoucherComponent = () => {
     const [dataUpdate, setDataUpdate] = useState<IVoucher | null>(null);
     const [vouchers, setVouchers] = useState<any[]>([]);
 
+    const {showNotification} =useAppNotifications();
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams.toString());
     console.log("Params to be sent:", params.toString());
@@ -44,13 +46,9 @@ const VoucherComponent = () => {
     useEffect(() => {
         if (error) {
             console.error("Error fetching vouchers:", error);
-            api.error({
-                message: error?.message || "Error fetching vouchers",
-                description: error?.response?.data?.message || "Có lỗi xảy ra!",
-                showProgress: true,
-                duration: 2,
-                placement: "bottomRight"
-            });
+            showNotification("error",{message: error?.message || "Error fetching vouchers",
+                description: error?.response?.data?.message || "Có lỗi xảy ra!",});
+
         }
     }, [error]);
 
@@ -58,22 +56,16 @@ const VoucherComponent = () => {
         try {
             const result = await deleteVoucher(id);
             if (result.code === 200) {
-                notification.success({
-                    message: 'Xóa thành công!',
-                    description: result.message,
-                });
+                showNotification("success",{message: 'Xóa thành công!', description: result.message,});
+
                 mutate(); // Gọi lại dữ liệu sau khi xóa
             } else {
-                notification.error({
-                    message: 'Xóa không thành công!',
-                    description: result.message || 'Không có thông tin thêm.',
-                });
+                showNotification("error",{message: 'Xóa không thành công!',
+                    description: result.message || 'Không có thông tin thêm.',});
             }
         } catch (error) {
-            notification.error({
-                message: 'Có lỗi xảy ra!',
-                description: error.message,
-            });
+            showNotification("error",{message: 'Có lỗi xảy ra!',
+                description: error.message,});
         }
     };
 

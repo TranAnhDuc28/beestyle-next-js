@@ -1,5 +1,5 @@
 "use client"
-import {Flex, Layout, notification, TableColumnsType, Tag, Tooltip} from "antd";
+import {App, Flex, Layout, notification, TableColumnsType, Tag, Tooltip} from "antd";
 import useSWR from "swr";
 import {EditTwoTone} from "@ant-design/icons";
 import TablePagination from "@/components/Table/TablePagination";
@@ -14,12 +14,12 @@ import UpdateColor from "@/components/Admin/Color/UpdateColor";
 import HeaderMaterial from "@/components/Admin/Material/HeaderMaterial";
 import HeaderColor from "@/components/Admin/Color/HeaderColor";
 import ColorFilter from "@/components/Admin/Color/ColorFilter";
+import useAppNotifications from "@/hooks/useAppNotifications";
 
 const {Content} = Layout;
 
 const ColorComponent = () => {
-    const [api, contextHolder] = notification.useNotification();
-
+    const { showNotification } = useAppNotifications();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
     const [dataUpdate, setDataUpdate] = useState<any>(null);
@@ -77,12 +77,8 @@ const ColorComponent = () => {
 
     useEffect(() => {
         if (error) {
-            api.error({
-                message: error?.message || "Error fetching colors",
-                description: error?.response?.data?.message,
-                showProgress: true,
-                duration: 2,
-                placement: "bottomRight"
+            showNotification("error",{
+                message: error?.message || "Error fetching colors", description: error?.response?.data?.message,
             });
         }
     }, [error]);
@@ -94,7 +90,6 @@ const ColorComponent = () => {
 
     return (
         <>
-            {contextHolder}
             <HeaderColor setIsCreateModalOpen={setIsCreateModalOpen}/>
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
                 <ColorFilter error={error}/>
