@@ -38,7 +38,7 @@ const items: MenuItem[] = [
     {
         key: 'giam-gia', label: 'Giảm giá', icon: <GiftOutlined/>,
         children: [
-            {key: 'voucher', label: 'Quản lý voucher'},
+            {key: 'voucher', label: <Link href={"/admin/voucher"}>Quản lý voucher</Link>},
             {key: 'khuyen-mai', label: 'Quản lý khuyến mại'},
         ],
     },

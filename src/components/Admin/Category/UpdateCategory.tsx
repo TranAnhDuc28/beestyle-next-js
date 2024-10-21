@@ -92,8 +92,7 @@ const UpdateCategory = (props: IProps) => {
                         rules={[{ required: true, message: "Vui lòng nhập tên danh mục!" }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item name="slug" label="Slug"
-                               rules={[{ required: true, message: "Vui lòng nhập slug cho danh mục!"}]}>
+                    <Form.Item name="slug" label="Slug">
                         <Input />
                     </Form.Item>
                     <Form.Item name="parentCategoryId" label="Danh mục cha">
