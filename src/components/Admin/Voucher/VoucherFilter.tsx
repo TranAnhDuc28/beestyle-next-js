@@ -1,5 +1,5 @@
 import {Checkbox, Col, Collapse, Row, Space, Typography} from "antd";
-import {STATUS} from "@/constants/Status"; // Đảm bảo rằng STATUS có chứa thông tin trạng thái cho voucher
+import {STATUS} from "@/constants/Status"; // Đảm bảo rằng Status có chứa thông tin trạng thái cho voucher
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {memo} from "react";
 
