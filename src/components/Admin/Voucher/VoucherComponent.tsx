@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, Layout, notification, TableColumnsType, Tooltip, Modal } from "antd";
+import { Flex, Layout, notification, TableColumnsType, Tooltip, Modal, Tag } from "antd";
 import { EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
 import type { IVoucher } from "@/types/IVoucher";
 import TablePagination from "@/components/Table/TablePagination";
@@ -121,9 +121,9 @@ const VoucherComponent = () => {
             title: 'Trạng thái',
             dataIndex: 'status',
             render: (status: number) => (
-                <span style={{ color: status === 1 ? 'green' : 'red' }}>
+                <Tag style={{ color: status === 1 ? 'green' : 'red' }}>
                     {status === 1 ? 'Đang diễn ra' : 'Kết thúc'}
-                </span>
+                </Tag>
             )
         },
         {

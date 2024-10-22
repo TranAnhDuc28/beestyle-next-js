@@ -1,5 +1,4 @@
 import VoucherComponent from "@/components/Admin/Voucher/VoucherComponent";
-import { OptionsParams } from "@/utils/HttpInstance";
 import { Suspense } from "react";
 import Loader from "@/components/Loader/Loader";
 import { Metadata } from "next";
