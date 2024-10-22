@@ -18,14 +18,18 @@ import { Content } from "antd/es/layout/layout";
 import MaterialFilter from "../Material/MaterialFilter";
 import { EditTwoTone } from "@ant-design/icons";
 import { useSearchParams } from "next/navigation";
-import HeaderCustomer from "./HeaderCustomer";
-import AddCustomer from "./AddCustomer";
-import UpdateCustomer from "./UpdateCustomer";
+import HeaderCustomer from "./HeaderStaff";
+import AddCustomer from "./AddStaff";
+import UpdateCustomer from "./UpdateStaff";
 import { STATUS } from "@/constants/Status";
 import CustomerFilter from "./CustomerFilter";
+import { getStaff, URL_API_STAFF } from "@/services/StaffService";
+import AddStaff from "./AddStaff";
+import UpdateStaff from "./UpdateStaff";
+import HeaderStaff from "./HeaderStaff";
 
 const { Title } = Typography;
-const TableCustomer = () => {
+const TableStaff = () => {
   const [api, contextHolder] = notification.useNotification();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
@@ -33,13 +37,12 @@ const TableCustomer = () => {
 
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
-  const [modalType, setModalType] = useState<"detail" | "update">("detail");
 
   const { data, error, isLoading, mutate } = useSWR(
-    `${URL_API_CUSTOMER.get}${
+    `${URL_API_STAFF.get}${
       params.size !== 0 ? `?${params.toString()}` : ""
     }`,
-    getCustomer,
+    getStaff,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   );
 
@@ -48,7 +51,7 @@ const TableCustomer = () => {
 
   console.log(data);
 
-  const columns: ColumnType<ICustomer>[] = [
+  const columns: ColumnType<IStaff>[] = [
     {
       title: "Họ và tên",
       dataIndex: "fullName",
@@ -94,7 +97,7 @@ const TableCustomer = () => {
     },
     {
       title: "Thao tác",
-      render: (text: any, record: ICustomer, index: number) => (
+      render: (text: any, record: IStaff, index: number) => (
         <div className="flex gap-3">
           <Tooltip placement="top" title="Cập nhật">
             <EditTwoTone
@@ -124,7 +127,7 @@ const TableCustomer = () => {
 
   return (
     <div>
-      <HeaderCustomer setIsCreateModalOpen={setIsCreateModalOpen} />
+      <HeaderStaff setIsCreateModalOpen={setIsCreateModalOpen} />
       <Flex align={"flex-start"} justify={"flex-start"} gap={"middle"}>
         <CustomerFilter error={error} />
         <Content
@@ -146,12 +149,12 @@ const TableCustomer = () => {
           ></TablePagination>
         </Content>
       </Flex>
-      <AddCustomer
+      <AddStaff
         isCreateModalOpen={isCreateModalOpen}
         setIsCreateModalOpen={setIsCreateModalOpen}
         onMutate={mutate}
       />
-      <UpdateCustomer
+      <UpdateStaff
         isUpdateModalOpen={isUpdateModalOpen}
         setIsUpdateModalOpen={setIsUpdateModalOpen}
         mutate={mutate}
@@ -162,4 +165,4 @@ const TableCustomer = () => {
   );
 };
 
-export default TableCustomer;
+export default TableStaff;

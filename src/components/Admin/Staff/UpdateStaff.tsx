@@ -1,6 +1,7 @@
 import { STATUS } from "@/constants/Status";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { updateCustomer } from "@/services/CustomerService";
+import { updateStaff } from "@/services/StaffService";
 import {
   Button,
   Col,
@@ -23,7 +24,7 @@ interface IProps {
   setDataUpdate: any;
 }
 
-const UpdateCustomer = (props: IProps) => {
+const UpdateStaff = (props: IProps) => {
   const { showNotification } = useAppNotifications();
   const {
     isUpdateModalOpen,
@@ -44,6 +45,8 @@ const UpdateCustomer = (props: IProps) => {
     if (dataUpdate) {
       form.setFieldsValue({
         id: dataUpdate.id,
+        username: dataUpdate.username,
+        email: dataUpdate.email,
         fullName: dataUpdate.fullName,
         dateOfBirth: dataUpdate.dateOfBirth
           ? moment(dataUpdate.dateOfBirth).local()
@@ -53,11 +56,13 @@ const UpdateCustomer = (props: IProps) => {
         password: dataUpdate.password,
         status: dataUpdate.status,
       });
+      console.log(dataUpdate);
+      
     }
     // Cập nhật lại form khi param thay đổi
   }, [dataUpdate]);
 
-  const onFinish = async (value: ICustomer) => {
+  const onFinish = async (value: IStaff) => {
     console.log(value);
     try {
       if (dataUpdate) {
@@ -65,7 +70,7 @@ const UpdateCustomer = (props: IProps) => {
           ...value,
           id: dataUpdate.id,
         };
-        const result = await updateCustomer(data);
+        const result = await updateStaff(data);
         mutate();
         if (result.data) {
           handleCloseUpdateModal();
@@ -89,7 +94,7 @@ const UpdateCustomer = (props: IProps) => {
 
   return (
     <Modal
-      title="Chỉnh sửa khách hàng"
+      title="Chỉnh sửa nhân viên"
       cancelText="Hủy"
       okText="Lưu"
       style={{ top: 20 }}
@@ -115,6 +120,28 @@ const UpdateCustomer = (props: IProps) => {
             </Form.Item>
           </Col>
         </Row>
+        <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label="Username"
+                name="username"
+                rules={[
+                  { required: true, message: "Vui lòng nhập username!" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Email"
+                name="email"
+                rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+              >
+                <Input/>
+              </Form.Item>
+            </Col>
+          </Row>
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -175,4 +202,4 @@ const UpdateCustomer = (props: IProps) => {
   );
 };
 
-export default memo(UpdateCustomer);
+export default memo(UpdateStaff);
