@@ -3,7 +3,7 @@ import {App, Form, Input, Modal, notification, Radio, Select, TreeSelect} from "
 import {memo, useEffect} from "react";
 import {ICategory} from "@/types/ICategory";
 import {updateCategory, URL_API_CATEGORY} from "@/services/CategoryService";
-import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
+import useTreeSelectCategory from "@/hooks/useTreeSelectCategory";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {mutate} from "swr";
 import {MAX_CATEGORY_LEVEL} from "@/constants/AppConstants";
