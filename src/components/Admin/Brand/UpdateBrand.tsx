@@ -78,9 +78,7 @@ const UpdateBrand = (props: IProps) => {
                         rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}>
                         <Select
                             options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
-                                (key) => (
-                                    {value: key, label: STATUS[key]}
-                                )
+                                (key) => ({value: key, label: STATUS[key]})
                             )}
                         />
                     </Form.Item>
