@@ -1,4 +1,4 @@
-import {Checkbox, Col, Collapse, GetProp, Row, Space, Typography} from "antd";
+import {Col, Collapse, Radio, RadioChangeEvent, Row, Space, Typography} from "antd";
 import { STATUS } from "@/constants/Status";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {memo, useEffect, useState} from "react";
@@ -21,11 +21,11 @@ const BrandFilter = (props: IProps) => {
         else setErrorNetWork(false);
     }, [error]);
 
-    const onChange: GetProp<typeof Checkbox.Group, 'onChange'> = (checkedValues: any[]) => {
+    const onChange = (e: RadioChangeEvent) => {
         const params = new URLSearchParams(searchParams);
-        if (checkedValues.length === 1) {
-            // console.log(checkedValues);
-            params.set("status", checkedValues[0]);
+        const value = e.target.value;
+        if (value) {
+            params.set("status", value);
             params.set("page", "1");
         } else {
             params.delete("status");
@@ -46,17 +46,20 @@ const BrandFilter = (props: IProps) => {
                         key: 'status',
                         label: <Title level={5} style={{ margin: '0px 10px' }}>Trạng thái</Title>,
                         children: (
-                            <Checkbox.Group onChange={onChange} disabled={isErrorNetWork}>
+                            <Radio.Group onChange={onChange} disabled={isErrorNetWork}>
                                 <Row>
+                                    <Col key={"ALL"} span={24} style={{ marginBottom: 10 }}>
+                                        <Radio value={undefined} style={{marginLeft: 10}}>Tất cả</Radio>
+                                    </Col>
                                     {Object.keys(STATUS).map((key) => (
                                         <Col key={key} span={24} style={{ marginBottom: 10 }}>
-                                            <Checkbox value={key} style={{marginLeft: 10}}>
+                                            <Radio value={key} style={{marginLeft: 10}}>
                                                 {STATUS[key as keyof typeof STATUS]}
-                                            </Checkbox>
+                                            </Radio>
                                         </Col>
                                     ))}
                                 </Row>
-                            </Checkbox.Group>
+                            </Radio.Group>
                         ),
                     },
                 ]}
