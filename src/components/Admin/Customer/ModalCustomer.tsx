@@ -21,7 +21,7 @@ const ModalCustomer = ({
   return (
     <>
       <Modal
-        title={modalType == "detail" ? "Detail customer" : "Update customer"}
+        title={modalType == "detail" ? "Detail Customer" : "Update Customer"}
         style={{
           top:20
         }}
