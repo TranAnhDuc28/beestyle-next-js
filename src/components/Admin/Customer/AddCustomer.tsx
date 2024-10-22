@@ -13,7 +13,6 @@ import {
 import React, { memo } from "react";
 import moment from "moment";
 import { createCustomer } from "@/services/CustomerService";
-import { mutate } from "swr";
 import useAppNotifications from "@/hooks/useAppNotifications";
 
 interface ModalAdd {
