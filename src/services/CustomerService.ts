@@ -2,10 +2,10 @@ import httpInstance from "@/utils/HttpInstance"
 
 
 export const URL_API_CUSTOMER = {
-  get: '/admin/customer',
-  creat:'/admin/customer/create',
-  update:'/admin/customer/update',
-  delete:'/admin/customer/delete',
+  get: '/admin/Customer',
+  creat:'/admin/Customer/create',
+  update:'/admin/Customer/update',
+  delete:'/admin/Customer/delete',
 }
 
 export const getCustomer = async (url:string) => {

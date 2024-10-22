@@ -23,7 +23,7 @@ type MenuItem = Required<MenuProps>['items'][number];
 const items: MenuItem[] = [
     {key: 'tong-quan', label: <Link href={"/"}>Tổng quan</Link>, icon: <PieChartOutlined/>,},
     {key: 'ban-hang-tai-quay', label: <Link href={"/"}>Bán hàng tại quầy</Link>, icon: <ShoppingCartOutlined/>,},
-    {key: 'don-hang', label: <Link href={"/"}>Quản lý đơn hàng</Link>, icon: <ShoppingCartOutlined/>,},
+    {key: 'don-hang', label: <Link href={"/admin/order"}>Quản lý đơn hàng</Link>, icon: <ShoppingCartOutlined/>,},
     {
         key: 'quan-li-san-pham', label: 'Quản lý sản phẩm', icon: <ProductOutlined/>,
         children: [
@@ -45,7 +45,7 @@ const items: MenuItem[] = [
     {
         key: 'tai-khoan', label: 'Tài khoản', icon: <UserOutlined/>,
         children: [
-            {key: '6.1', label: <Link href={'/admin/customer'}>Khách hàng</Link>},
+            {key: '6.1', label: <Link href={'/admin/Customer'}>Khách hàng</Link>},
             {key: '6.2', label: 'Nhân viên'},
         ],
     }
@@ -63,7 +63,8 @@ const AppSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
                 aria-label="Main navigation"
             >
                 <div className="flex justify-center items-center h-16 w-full du">
-                    <div className={`transition-all duration-500 ${collapsed ? 'text-xs font-black' : 'text-3xl font-bold'}`}>
+                    <div
+                        className={`transition-all duration-500 ${collapsed ? 'text-xs font-black' : 'text-3xl font-bold'}`}>
                         BeeStyle
                     </div>
                 </div>
