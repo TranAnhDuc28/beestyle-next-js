@@ -11,4 +11,4 @@ export interface Voucher {
     usageLimit: number;
     usagePerUser: number;
     status: number;
-}I
+}

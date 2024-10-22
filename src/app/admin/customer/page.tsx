@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import TableCustomer from "../../../components/Admin/customer/TableCustomer";
+import TableCustomer from "../../../components/Admin/Customer/TableCustomer";
 import Loader from "@/components/Loader/Loader";
 import { Metadata } from "next";
 

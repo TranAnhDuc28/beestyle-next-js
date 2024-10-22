@@ -1,19 +1,39 @@
-import { Button, Col, DatePicker, Form, Input, message, Modal, Radio, Row } from "antd";
-import React from "react";
+"use client";
+import {
+  Button,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  message,
+  Modal,
+  Radio,
+  Row,
+} from "antd";
+import React, { memo } from "react";
 import moment from "moment";
 import { createCustomer } from "@/services/CustomerService";
 import { mutate } from "swr";
 import useAppNotifications from "@/hooks/useAppNotifications";
 
 interface ModalAdd {
-  visible: boolean;
-  onClose: () => void;
+  isCreateModalOpen: boolean;
+  setIsCreateModalOpen: (value: boolean) => void;
   onMutate: any;
 }
 
-const AddCustomer = ({ visible, onClose, onMutate }: ModalAdd) => {
+const AddCustomer = ({
+  isCreateModalOpen,
+  setIsCreateModalOpen,
+  onMutate,
+}: ModalAdd) => {
   const { showNotification } = useAppNotifications();
   const [form] = Form.useForm();
+
+  const handleCancelModal = () => {
+    form.resetFields();
+    setIsCreateModalOpen(false);
+  };
 
   const handleSubmit = async (values: ICustomer) => {
     try {
@@ -30,7 +50,7 @@ const AddCustomer = ({ visible, onClose, onMutate }: ModalAdd) => {
       } else {
         onMutate();
         showNotification("success", { message: result.message });
-        onClose();
+        handleCancelModal();
         form.resetFields();
         console.log("Dữ liệu Thêm mới: ", values);
       }
@@ -42,12 +62,13 @@ const AddCustomer = ({ visible, onClose, onMutate }: ModalAdd) => {
     <>
       <Modal
         title={"Thêm mới khách hàng"}
-        visible={visible}
-        onCancel={onClose}
-        footer={null}
-        style={{
-          top:20
-        }}
+        cancelText="Hủy"
+        okText="Lưu"
+        onOk={() => form.submit()}
+        style={{ top: 20 }}
+        open={isCreateModalOpen}
+        onCancel={() => handleCancelModal()}
+        okButtonProps={{ style: { background: "#00b96b" } }}
       >
         <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Row gutter={16}>
@@ -68,7 +89,7 @@ const AddCustomer = ({ visible, onClose, onMutate }: ModalAdd) => {
                 name="password"
                 rules={[{ required: true, message: "Vui lòng nhập password!" }]}
               >
-                <Input />
+                <Input.Password />
               </Form.Item>
             </Col>
           </Row>
@@ -104,19 +125,16 @@ const AddCustomer = ({ visible, onClose, onMutate }: ModalAdd) => {
                 ]}
               >
                 <Radio.Group>
-                  <Radio value="MALE">Nam</Radio>
-                  <Radio value="FEMALE">Nữ</Radio>
+                  <Radio value="0">Nam</Radio>
+                  <Radio value="1">Nữ</Radio>
                 </Radio.Group>
               </Form.Item>
             </Col>
           </Row>
-          <Button type="primary" htmlType="submit">
-            Thêm
-          </Button>
         </Form>
       </Modal>
     </>
   );
 };
 
-export default AddCustomer;
+export default memo(AddCustomer);

@@ -1,52 +1,38 @@
 "use client";
 
 import { getCustomer, URL_API_CUSTOMER } from "@/services/CustomerService";
-import { Button, Flex, notification, Table, Tag, Tooltip, Typography } from "antd";
+import {
+  Button,
+  Flex,
+  notification,
+  Table,
+  Tag,
+  Tooltip,
+  Typography,
+} from "antd";
 import { ColumnType } from "antd/es/table";
 import useSWR, { mutate } from "swr";
 import { useEffect, useState } from "react";
-import ModalCustomer from "./ModalCustomer";
-import AddCustomer from "./AddCustomer";
 import TablePagination from "@/components/Table/TablePagination";
 import { Content } from "antd/es/layout/layout";
 import MaterialFilter from "../Material/MaterialFilter";
 import { EditTwoTone } from "@ant-design/icons";
 import { useSearchParams } from "next/navigation";
+import HeaderCustomer from "./HeaderCustomer";
+import AddCustomer from "./AddCustomer";
+import UpdateCustomer from "./UpdateCustomer";
 
-const {Title} = Typography;
+const { Title } = Typography;
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const TableCustomer = () => {
   const [api, contextHolder] = notification.useNotification();
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isModalCreateCustomer, setIsModalCreateCustomer] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<ICustomer | null>(
-    null
-  );
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
+  const [dataUpdate, setDataUpdate] = useState<any>(null);
+
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
   const [modalType, setModalType] = useState<"detail" | "update">("detail");
-
-  const handelDetail = (customer: ICustomer) => {
-    setSelectedCustomer(customer);
-    setIsModalVisible(true);
-    setModalType("detail");
-  };
-
-  const handelUpdate = (customer: ICustomer) => {
-    setSelectedCustomer(customer);
-    setIsModalVisible(true);
-    setModalType("update");
-  };
-
-  const handleClose = () => {
-    setIsModalVisible(false);
-    setSelectedCustomer(null);
-    setIsModalCreateCustomer(false);
-  };
-
-  const handleCreate = () => {
-    setIsModalCreateCustomer(true);
-  };
 
   const { data, error, isLoading, mutate } = useSWR(
     `${URL_API_CUSTOMER.get}${
@@ -109,7 +95,10 @@ const TableCustomer = () => {
                 border: "1px solid #f57800",
                 borderRadius: "5px",
               }}
-              onClick={() => handelUpdate(record)}
+              onClick={() => {
+                setIsUpdateModalOpen(true);
+                setDataUpdate(record);
+              }}
             />
           </Tooltip>
         </div>
@@ -125,12 +114,9 @@ const TableCustomer = () => {
 
   return (
     <div>
-      <div className="flex justify-end py-5 mx-5">
-      <Title level={3} style={{margin: '0px 0px 20px 10px', minWidth: 256, flexGrow: 1}}>Khách hàng</Title>
-        <Button onClick={() => handleCreate()}>Thêm mới</Button>
-      </div>
+      <HeaderCustomer setIsCreateModalOpen={setIsCreateModalOpen} />
       <Flex align={"flex-start"} justify={"flex-start"} gap={"middle"}>
-        <MaterialFilter />
+        {/* <MaterialFilter /> */}
         <Content
           className="min-w-0 bg-white"
           style={{
@@ -150,17 +136,17 @@ const TableCustomer = () => {
           ></TablePagination>
         </Content>
       </Flex>
-      <ModalCustomer
-        visible={isModalVisible}
-        onClose={handleClose}
-        customer={selectedCustomer}
-        modalType={modalType}
+      <AddCustomer
+        isCreateModalOpen={isCreateModalOpen}
+        setIsCreateModalOpen={setIsCreateModalOpen}
         onMutate={mutate}
       />
-      <AddCustomer
-        visible={isModalCreateCustomer}
-        onMutate={mutate}
-        onClose={handleClose}
+      <UpdateCustomer
+        isUpdateModalOpen={isUpdateModalOpen}
+        setIsUpdateModalOpen={setIsUpdateModalOpen}
+        mutate={mutate}
+        dataUpdate={dataUpdate}
+        setDataUpdate={setDataUpdate}
       />
     </div>
   );
