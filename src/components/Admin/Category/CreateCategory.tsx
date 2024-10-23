@@ -2,7 +2,7 @@ import React, {memo, useEffect} from 'react';
 import {App, Form, Input, Modal, TreeSelect} from 'antd';
 import {createCategory, URL_API_CATEGORY} from "@/services/CategoryService";
 import {ICategory} from "@/types/ICategory";
-import useTreeSelectCategory from "@/hooks/useTreeSelectCategory";
+import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {mutate} from "swr";
 

@@ -46,7 +46,7 @@ const CreateMaterial = (props: IProps) => {
 
     return (
         <>
-            <Modal title="Thêm mới chất liệu" cancelText="Hủy" okText="Lưu" style={{top: 20}}
+            <Modal title="Thêm chất liệu" cancelText="Hủy" okText="Lưu" style={{top: 20}}
                 open={isCreateModalOpen}
                 onOk={() => form.submit()}
                 onCancel={() => handleCloseCreateModal()}

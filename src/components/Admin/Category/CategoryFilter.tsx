@@ -2,6 +2,7 @@ import {Checkbox, Col, Collapse, GetProp, Radio, RadioChangeEvent, Row, Space, T
 import {STATUS} from "@/constants/Status";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {memo, useEffect, useState} from "react";
+import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
 
 const {Title} = Typography;
 
@@ -16,11 +17,12 @@ interface IProps {
 }
 
 const CategoryFilter = (props: IProps) => {
+    const {error} = props;
     const [isErrorNetWork, setErrorNetWork] = useState(false);
+
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const {replace} = useRouter();
-    const {error} = props;
 
     useEffect(() => {
         if (error) setErrorNetWork(true);

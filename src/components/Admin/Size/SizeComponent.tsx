@@ -74,8 +74,7 @@ const SizeComponent = () => {
     useEffect(() => {
         if (error) {
             showNotification("error", {
-                message: error?.message,
-                description: error?.response?.data?.message || "Error fetching sizes",
+                message: error?.message, description: error?.response?.data?.message || "Error fetching sizes",
             });
         }
     }, [error]);

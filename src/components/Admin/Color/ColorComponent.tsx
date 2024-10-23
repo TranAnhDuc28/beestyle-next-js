@@ -78,7 +78,7 @@ const ColorComponent = () => {
     useEffect(() => {
         if (error) {
             showNotification("error",{
-                message: error?.message || "Error fetching colors", description: error?.response?.data?.message,
+                message: error?.message, description: error?.response?.data?.message || "Error fetching colors",
             });
         }
     }, [error]);
