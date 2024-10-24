@@ -1,4 +1,4 @@
-import {Col, Collapse, GetProp, Radio, RadioChangeEvent, Row, Space, Typography} from "antd";
+import {Checkbox, Col, Collapse, GetProp, Row, Space, Typography} from "antd";
 import { STATUS } from "@/constants/Status";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {memo, useEffect, useState} from "react";
@@ -9,7 +9,7 @@ interface IProps {
     error?: Error;
 }
 
-const MaterialFilter = (props: IProps) => {
+const OrderFilter = (props: IProps) => {
     const [isErrorNetWork, setErrorNetWork] = useState(false);
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -21,11 +21,11 @@ const MaterialFilter = (props: IProps) => {
         else setErrorNetWork(false);
     }, [error]);
 
-    const onChange = (e: RadioChangeEvent) => {
+    const onChange: GetProp<typeof Checkbox.Group, 'onChange'> = (checkedValues: any[]) => {
         const params = new URLSearchParams(searchParams);
-        const value = e.target.value;
-        if (value) {
-            params.set("status", value);
+        if (checkedValues.length === 1) {
+            // console.log(checkedValues);
+            params.set("status", checkedValues[0]);
             params.set("page", "1");
         } else {
             params.delete("status");
@@ -42,20 +42,17 @@ const MaterialFilter = (props: IProps) => {
                         key: 'status',
                         label: <Title level={5} style={{ margin: '0px 10px' }}>Trạng thái</Title>,
                         children: (
-                            <Radio.Group onChange={onChange} disabled={isErrorNetWork}>
+                            <Checkbox.Group onChange={onChange} disabled={isErrorNetWork}>
                                 <Row>
-                                    <Col key={"ALL"} span={24} style={{ marginBottom: 10 }}>
-                                        <Radio value={undefined} style={{marginLeft: 10}}>Tất cả</Radio>
-                                    </Col>
                                     {Object.keys(STATUS).map((key) => (
                                         <Col key={key} span={24} style={{ marginBottom: 10 }}>
-                                            <Radio value={key} style={{marginLeft: 10}}>
+                                            <Checkbox value={key} style={{marginLeft: 10}}>
                                                 {STATUS[key as keyof typeof STATUS]}
-                                            </Radio>
+                                            </Checkbox>
                                         </Col>
                                     ))}
                                 </Row>
-                            </Radio.Group>
+                            </Checkbox.Group>
                         ),
                     },
                 ]}
@@ -63,4 +60,4 @@ const MaterialFilter = (props: IProps) => {
         </Space>
     );
 };
-export default memo(MaterialFilter);
+export default memo(OrderFilter);

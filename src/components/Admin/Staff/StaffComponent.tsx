@@ -27,10 +27,12 @@ import { getStaff, URL_API_STAFF } from "@/services/StaffService";
 import AddStaff from "./AddStaff";
 import UpdateStaff from "./UpdateStaff";
 import HeaderStaff from "./HeaderStaff";
+import useAppNotifications from "@/hooks/useAppNotifications";
+import { GENDER } from "@/constants/Gender";
 
 const { Title } = Typography;
-const TableStaff = () => {
-  const [api, contextHolder] = notification.useNotification();
+const StaffComponent = () => {
+  const { showNotification } = useAppNotifications();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
   const [dataUpdate, setDataUpdate] = useState<any>(null);
@@ -46,10 +48,21 @@ const TableStaff = () => {
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   );
 
-  if (error) return <div>{error.message}</div>;
-  if (!data) return <div>Loading..</div>;
+  useEffect(() => {
+    if (error) {
+      showNotification("error", {
+        message: error?.message,
+        description:
+          error?.response?.data?.message || "Error fetching customers",
+      });
+    }
+  }, [error]);
 
-  console.log(data);
+  let result: any;
+  if (!isLoading && data) {
+    result = data?.data;
+  }
+
 
   const columns: ColumnType<IStaff>[] = [
     {
@@ -61,17 +74,13 @@ const TableStaff = () => {
       dataIndex: "dateOfBirth",
     },
     {
-      title: "Giới tính",
-      dataIndex: "gender",
-      render(value, record, index) {
-        let color: string = value === "MALE" ? "green" : "default";
+      title: 'Giới tính', dataIndex: 'gender', key: 'gender',width:100,
+      render(value: keyof typeof GENDER, record, index) {
         return (
-          <Tag color={color} key={record.id}>
-            {[value]}
-          </Tag>
+            <span key={record.id}>{GENDER[value]}</span>
         );
-      },
     },
+  },
     {
       title: "Ngày tạo",
       dataIndex: "createdAt",
@@ -82,6 +91,7 @@ const TableStaff = () => {
       dataIndex: "updatedAt",
       key: "updateAt",
     },
+   
     {
       title: "Trạng thái",
       dataIndex: "status",
@@ -96,7 +106,7 @@ const TableStaff = () => {
       },
     },
     {
-      title: "Thao tác",
+      title: "Hành động",
       render: (text: any, record: IStaff, index: number) => (
         <div className="flex gap-3">
           <Tooltip placement="top" title="Cập nhật">
@@ -119,11 +129,7 @@ const TableStaff = () => {
     },
   ];
 
-  let result: any;
-  if (!isLoading && data) {
-    result = data?.data;
-    console.log(result);
-  }
+
 
   return (
     <div>
@@ -152,7 +158,7 @@ const TableStaff = () => {
       <AddStaff
         isCreateModalOpen={isCreateModalOpen}
         setIsCreateModalOpen={setIsCreateModalOpen}
-        onMutate={mutate}
+        mutate={mutate}
       />
       <UpdateStaff
         isUpdateModalOpen={isUpdateModalOpen}
@@ -165,4 +171,4 @@ const TableStaff = () => {
   );
 };
 
-export default TableStaff;
+export default StaffComponent;

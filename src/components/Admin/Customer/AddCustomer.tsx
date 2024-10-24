@@ -1,11 +1,9 @@
 "use client";
 import {
-  Button,
   Col,
   DatePicker,
   Form,
   Input,
-  message,
   Modal,
   Radio,
   Row,
@@ -18,13 +16,13 @@ import useAppNotifications from "@/hooks/useAppNotifications";
 interface ModalAdd {
   isCreateModalOpen: boolean;
   setIsCreateModalOpen: (value: boolean) => void;
-  onMutate: any;
+  mutate: any;
 }
 
 const AddCustomer = ({
   isCreateModalOpen,
   setIsCreateModalOpen,
-  onMutate,
+  mutate,
 }: ModalAdd) => {
   const { showNotification } = useAppNotifications();
   const [form] = Form.useForm();
@@ -47,14 +45,21 @@ const AddCustomer = ({
       if (result.code !== 201) {
         showNotification("error", { message: result.error });
       } else {
-        onMutate();
+        mutate();
         showNotification("success", { message: result.message });
         handleCancelModal();
         form.resetFields();
         console.log("Dữ liệu Thêm mới: ", values);
       }
-    } catch (error) {
-      showNotification("error", { message: error });
+    } catch (error:any) {
+      const errorMessage = error?.response?.data?.message;
+            if (errorMessage && typeof errorMessage === 'object') {
+                Object.entries(errorMessage).forEach(([field, message]) => {
+                    showNotification("error", {message: String(message)});
+                });
+            } else {
+                showNotification("error", {message: error?.message, description: errorMessage,});
+            }
     }
   };
   return (

@@ -4,7 +4,7 @@ import React, { ReactNode, useEffect, useMemo, useState } from "react";
 import AdminLayout from "@/components/Layout/AdminLayout";
 import Loader from "@/components/Loader/Loader";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import {App} from "antd";
+import {App, FloatButton} from "antd";
 
 export default function RootLayout({ children, }: Readonly<{ children: ReactNode; }>) {
     const [loading, setLoading] = useState<boolean>(true);
@@ -25,9 +25,11 @@ export default function RootLayout({ children, }: Readonly<{ children: ReactNode
                                 <AntdRegistry>
                                     <AdminLayout>{children}</AdminLayout>
                                 </AntdRegistry>
+                                <FloatButton.BackTop />
                             </App>
                         )
                 }
+                <FloatButton.BackTop visibilityHeight={100}/>
             </body>
         </html >
     );

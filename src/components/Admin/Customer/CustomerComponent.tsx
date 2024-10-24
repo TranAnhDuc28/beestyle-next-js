@@ -15,7 +15,6 @@ import useSWR, { mutate } from "swr";
 import { useEffect, useState } from "react";
 import TablePagination from "@/components/Table/TablePagination";
 import { Content } from "antd/es/layout/layout";
-import MaterialFilter from "../Material/MaterialFilter";
 import { EditTwoTone } from "@ant-design/icons";
 import { useSearchParams } from "next/navigation";
 import HeaderCustomer from "./HeaderCustomer";
@@ -23,17 +22,18 @@ import AddCustomer from "./AddCustomer";
 import UpdateCustomer from "./UpdateCustomer";
 import { STATUS } from "@/constants/Status";
 import CustomerFilter from "./CustomerFilter";
+import useAppNotifications from "@/hooks/useAppNotifications";
+import { GENDER } from "@/constants/Gender";
 
 const { Title } = Typography;
-const TableCustomer = () => {
-  const [api, contextHolder] = notification.useNotification();
+const CustomerComponent = () => {
+  const { showNotification } = useAppNotifications();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
   const [dataUpdate, setDataUpdate] = useState<any>(null);
 
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
-  const [modalType, setModalType] = useState<"detail" | "update">("detail");
 
   const { data, error, isLoading, mutate } = useSWR(
     `${URL_API_CUSTOMER.get}${
@@ -43,32 +43,34 @@ const TableCustomer = () => {
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   );
 
-  if (error) return <div>{error.message}</div>;
-  if (!data) return <div>Loading..</div>;
+  useEffect(() => {
+    if (error) {
+      showNotification("error", {
+        message: error?.message,
+        description:
+          error?.response?.data?.message || "Error fetching customers",
+      });
+    }
+  }, [error]);
+
+  let result: any;
+  if (!isLoading && data) {
+    result = data?.data;
+  }
 
   console.log(data);
 
   const columns: ColumnType<ICustomer>[] = [
+    { title: "Họ và tên", dataIndex: "fullName", key: "fullName" },
+    { title: "Ngày sinh", dataIndex: "dateOfBirth", key: "dateOfBirth" },
     {
-      title: "Họ và tên",
-      dataIndex: "fullName",
-    },
-    {
-      title: "Ngày sinh",
-      dataIndex: "dateOfBirth",
-    },
-    {
-      title: "Giới tính",
-      dataIndex: "gender",
-      render(value, record, index) {
-        let color: string = value === "MALE" ? "green" : "default";
+      title: 'Giới tính', dataIndex: 'gender', key: 'gender',width:100,
+      render(value: keyof typeof GENDER, record, index) {
         return (
-          <Tag color={color} key={record.id}>
-            {[value]}
-          </Tag>
+            <span key={record.id}>{GENDER[value]}</span>
         );
-      },
     },
+  },
     {
       title: "Ngày tạo",
       dataIndex: "createdAt",
@@ -92,8 +94,9 @@ const TableCustomer = () => {
         );
       },
     },
+    
     {
-      title: "Thao tác",
+      title: "Hành động",
       render: (text: any, record: ICustomer, index: number) => (
         <div className="flex gap-3">
           <Tooltip placement="top" title="Cập nhật">
@@ -115,12 +118,6 @@ const TableCustomer = () => {
       ),
     },
   ];
-
-  let result: any;
-  if (!isLoading && data) {
-    result = data?.data;
-    console.log(result);
-  }
 
   return (
     <div>
@@ -149,7 +146,7 @@ const TableCustomer = () => {
       <AddCustomer
         isCreateModalOpen={isCreateModalOpen}
         setIsCreateModalOpen={setIsCreateModalOpen}
-        onMutate={mutate}
+        mutate={mutate}
       />
       <UpdateCustomer
         isUpdateModalOpen={isUpdateModalOpen}
@@ -162,4 +159,4 @@ const TableCustomer = () => {
   );
 };
 
-export default TableCustomer;
+export default CustomerComponent;

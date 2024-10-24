@@ -1,5 +1,5 @@
 "use client"
-import {App, Flex, Layout, notification, TableColumnsType, Tag, Tooltip,} from "antd";
+import {Flex, Layout, TableColumnsType, Tag, Tooltip,} from "antd";
 import {EditTwoTone} from "@ant-design/icons";
 import type {IMaterial} from "@/types/IMaterial";
 import TablePagination from "@/components/Table/TablePagination";
@@ -77,7 +77,7 @@ const MaterialComponent = () => {
     useEffect(() => {
         if (error) {
             showNotification("error",{
-                message: error?.message || "Error fetching materials", description: error?.response?.data?.message,
+                message: error?.message, description: error?.response?.data?.message || "Error fetching materials",
             });
         }
     }, [error]);

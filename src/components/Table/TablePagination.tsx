@@ -4,6 +4,7 @@ import React from "react";
 import "./TablePagination.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+
 export interface ITablePaginationProps {
     columns?: TableColumnsType<any>,
     data?: any[] | [],
@@ -39,6 +40,7 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
         <>
             <div>
                 <Table
+                    size="small"
                     loading={tbl.loading}
                     rowKey={"id"}
                     columns={tbl.columns}

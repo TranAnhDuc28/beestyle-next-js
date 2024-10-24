@@ -12,21 +12,17 @@ import {
 } from "antd";
 import React, { memo } from "react";
 import moment from "moment";
-import { createCustomer } from "@/services/CustomerService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { createStaff } from "@/services/StaffService";
 
-interface ModalAdd {
+interface IProps {
   isCreateModalOpen: boolean;
   setIsCreateModalOpen: (value: boolean) => void;
-  onMutate: any;
+  mutate:any;
 }
 
-const AddStaff = ({
-  isCreateModalOpen,
-  setIsCreateModalOpen,
-  onMutate,
-}: ModalAdd) => {
+const AddStaff = (props: IProps) => {
+  const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
   const { showNotification } = useAppNotifications();
   const [form] = Form.useForm();
 
@@ -48,14 +44,14 @@ const AddStaff = ({
       if (result.code !== 201) {
         showNotification("error", { message: result.error });
       } else {
-        onMutate();
+        mutate();
         showNotification("success", { message: result.message });
         handleCancelModal();
         form.resetFields();
         console.log("Dữ liệu Thêm mới: ", values);
       }
-    } catch (error) {
-      showNotification("error", { message: error });
+    } catch (error: any) {
+      showNotification("error", { message: error.message || String(error) });
     }
   };
   return (
@@ -98,9 +94,7 @@ const AddStaff = ({
               <Form.Item
                 label="Username"
                 name="username"
-                rules={[
-                  { required: true, message: "Vui lòng nhập username!" },
-                ]}
+                rules={[{ required: true, message: "Vui lòng nhập username!" }]}
               >
                 <Input />
               </Form.Item>
@@ -111,7 +105,7 @@ const AddStaff = ({
                 name="email"
                 rules={[{ required: true, message: "Vui lòng nhập email!" }]}
               >
-                <Input/>
+                <Input />
               </Form.Item>
             </Col>
           </Row>
@@ -133,7 +127,7 @@ const AddStaff = ({
                   { required: true, message: "Vui lòng nhập ngày sinh!" },
                 ]}
               >
-                <DatePicker format={"YYYY-MM-DD"} />
+                <DatePicker format={"YYYY-MM-DD"} style={{width:"100%"}}/>
               </Form.Item>
             </Col>
           </Row>
