@@ -1,19 +1,30 @@
-import {Checkbox, Col, Collapse, Row, Space, Typography} from "antd";
-import {STATUS} from "@/constants/Status"; // Đảm bảo rằng Status có chứa thông tin trạng thái cho voucher
+import {Checkbox, Col, Collapse, Radio, RadioChangeEvent, Row, Space, Typography} from "antd";
+import {STATUS} from "@/constants/Status";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {memo} from "react";
+import {memo, useEffect, useState} from "react";
 
 const {Title} = Typography;
+interface IProps {
+    error?: Error;
+}
 
-const VoucherFilter = () => {
+const VoucherFilter = (props: IProps) => {
+    const [isErrorNetWork, setErrorNetWork] = useState(false);
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const {replace} = useRouter();
+    const {error} = props;
 
-    const onChange = (checkedValues: any[]) => {
+    useEffect(() => {
+        if (error) setErrorNetWork(true);
+        else setErrorNetWork(false);
+    }, [error]);
+
+    const onChange = (e: RadioChangeEvent) => {
         const params = new URLSearchParams(searchParams);
-        if (checkedValues.length > 0) {
-            params.set("status", JSON.stringify(checkedValues)); // Giả sử bạn muốn lưu trữ nhiều giá trị trạng thái
+        const value = e.target.value;
+        if (value) {
+            params.set("status", value);
             params.set("page", "1");
         } else {
             params.delete("status");
@@ -21,31 +32,70 @@ const VoucherFilter = () => {
         replace(`${pathname}?${params.toString()}`);
     };
 
+    const onChangeDiscountType = (e: RadioChangeEvent) => {
+        const params = new URLSearchParams(searchParams);
+        const value = e.target.value;
+        console.log("Selected discount type:", value); // Debug log
+        if (value) {
+            params.set("discountType", value);
+            params.set("page", "1");
+        } else {
+            params.delete("discountType");
+        }
+        replace(`${pathname}?${params.toString()}`);
+    };
+
     return (
         <Space direction="vertical" style={{minWidth: 256}}>
-            <Collapse
-                size="small"
-                className="w-full bg-white"
-                style={{
-                    borderRadius: 8,
-                    boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
-                    maxWidth: 256
-                }}
-                ghost
-                expandIconPosition="end"
-            >
-                <Collapse.Panel header={<Title level={5} style={{margin: '0px 10px'}}>Trạng thái</Title>} key="status">
-                    <Checkbox.Group onChange={onChange}>
-                        <Row>
-                            {Object.keys(STATUS).map((key) => (
-                                <Col key={key} span={24} style={{marginBottom: 10}}>
-                                    <Checkbox value={key}>{STATUS[key as keyof typeof STATUS]}</Checkbox>
-                                </Col>
-                            ))}
-                        </Row>
-                    </Checkbox.Group>
-                </Collapse.Panel>
-            </Collapse>
+            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end"
+                      style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256}}
+                      items={[
+                          {
+                              key: 'status',
+                              label: <Title level={5} style={{margin: '0px 10px'}}>Trạng thái</Title>,
+                              children: (
+                                  <Radio.Group onChange={onChange} disabled={isErrorNetWork}>
+                                      <Row>
+                                          <Col key={"ALL"} span={24} style={{marginBottom: 10}}>
+                                              <Radio value={undefined} style={{marginLeft: 10}}>Tất cả</Radio>
+                                          </Col>
+                                          {Object.keys(STATUS).map((key) => (
+                                              <Col key={key} span={24} style={{marginBottom: 10}}>
+                                                  <Radio value={key} style={{marginLeft: 10}}>
+                                                      {STATUS[key as keyof typeof STATUS]}
+                                                  </Radio>
+                                              </Col>
+                                          ))}
+                                      </Row>
+                                  </Radio.Group>
+                              ),
+                          },
+                      ]}
+            />
+            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end"
+                      style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256}}
+                      items={[
+                          {
+                              key: 'discountType',
+                              label: <Title level={5} style={{margin: '0px 10px'}}>Loại giảm giá</Title>,
+                              children: (
+                                  <Radio.Group onChange={onChangeDiscountType} disabled={isErrorNetWork}>
+                                      <Row>
+                                          <Col key={"ALL"} span={24} style={{marginBottom: 10}}>
+                                              <Radio value={undefined} style={{marginLeft: 10}}>Tất cả</Radio>
+                                          </Col>
+                                          <Col key={"PERCENTAGE"} span={24} style={{marginBottom: 10}}>
+                                              <Radio value={"PERCENTAGE"} style={{marginLeft: 10}}>Phần trăm (%)</Radio>
+                                          </Col>
+                                          <Col key={"CASH"} span={24} style={{marginBottom: 10}}>
+                                              <Radio value={"CASH"} style={{marginLeft: 10}}>VND</Radio>
+                                          </Col>
+                                      </Row>
+                                  </Radio.Group>
+                              ),
+                          },
+                      ]}
+            />
         </Space>
     );
 };

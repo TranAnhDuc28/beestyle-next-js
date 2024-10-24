@@ -1,24 +1,27 @@
 "use client";
-import { Flex, Layout, notification, TableColumnsType, Tooltip, Modal, Tag } from "antd";
-import { EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
-import type { IPromotion } from "@/types/IPromotion";
+import {Flex, Layout, notification, TableColumnsType, Tooltip, Modal, Tag} from "antd";
+import {EditTwoTone, DeleteTwoTone} from "@ant-design/icons";
+import type {IPromotion} from "@/types/IPromotion";
 import TablePagination from "@/components/Table/TablePagination";
-import { getPromotions, URL_API_PROMOTION } from "@/services/PromotionService";
+import {getPromotions, URL_API_PROMOTION} from "@/services/PromotionService";
 import useSWR from "swr";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import dayjs from "dayjs";
 import HeaderPromotion from "@/components/Admin/Promotion/HeaderPromotion";
-import { DatePicker, Typography } from "antd";
-// import { deletePromotion } from '@/services/VoucherPromotion';
-import { useSearchParams } from "next/navigation";
+import {DatePicker, Typography} from "antd";
+import {STATUS} from "@/constants/Status";
+import {DISCOUNTTYPE} from "@/constants/DiscountType";
+import {useSearchParams} from "next/navigation";
 import useAppNotifications from "../../../hooks/useAppNotifications";
-// import CreatePromotion from "../Promotion/CreatePromotion";
-// import UpdatePromotion from "../Promotion/UpdatePromotion";
-// import CreatePromotion from "./CreatePromotion";
-// import UpdatePromotion from "./UpdatePromotion";
+import CreatePromotion from "./CreatePromotion";
+import UpdatePromotion from "./UpdatePromotion";
+import {deletePromotion} from "../../../services/PromotionService";
+import VoucherFilter from "../Voucher/VoucherFilter";
+import PromotionFilter from "./PromotionFilter";
 
-const { Content } = Layout;
-const { Title } = Typography;
+
+const {Content} = Layout;
+const {Title} = Typography;
 
 const PromotionComponent: React.FC<any> = (props: any) => {
 
@@ -28,15 +31,19 @@ const PromotionComponent: React.FC<any> = (props: any) => {
     const [dataUpdate, setDataUpdate] = useState<IPromotion | null>(null);
     const [promotions, setPromotions] = useState<any[]>([]);
 
-    const {showNotification} =useAppNotifications();
+    const {showNotification} = useAppNotifications();
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams.toString());
 
-    const {data, error, isLoading, mutate} = useSWR(
-        `${URL_API_PROMOTION.get}${params.toString() ? `?${params.toString()}` : ''}`,
-        getPromotions,
-        {revalidateOnFocus: false}
-    );
+
+    const {data, error, isLoading, mutate} =
+        useSWR(`${URL_API_PROMOTION.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
+            getPromotions,
+            {
+                revalidateOnFocus: false,
+                revalidateOnReconnect: false
+            }
+        );
     useEffect(() => {
         if (data) {
             console.log("Data received from API:", data);
@@ -46,29 +53,68 @@ const PromotionComponent: React.FC<any> = (props: any) => {
 
     useEffect(() => {
         if (error) {
-            console.error("Error fetching promotions:", error);
-            showNotification("error",{message: error?.message || "Error fetching promotions",
-                description: error?.response?.data?.message || "Có lỗi xảy ra!",});
+            showNotification("error", {
+                message: error?.message || "Error fetching promotions",
+                description: error?.response?.data?.message || "Có lỗi xảy ra!",
+            });
 
         }
     }, [error]);
-    // Bảng dữ liệu
+
+    let result: any;
+    if (!isLoading && data) {
+        result = data?.data;
+        console.log(result);
+    }
+    const handleDeletePromotion = async (id: number) => {
+        try {
+            const result = await deletePromotion(id);
+            if (result.code === 200) {
+                showNotification("success", {message: 'Xóa thành công!', description: result.message,});
+
+                mutate(); // Gọi lại dữ liệu sau khi xóa
+            } else {
+                showNotification("error", {
+                    message: 'Xóa không thành công!',
+                    description: result.message || 'Không có thông tin thêm.',
+                });
+            }
+        } catch (error) {
+            showNotification("error", {
+                message: 'Có lỗi xảy ra!',
+                description: error.message,
+            });
+        }
+    };
+
+    const onDelete = (record: IPromotion) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa',
+            content: 'Bạn có chắc chắn muốn xóa phiếu giảm giá này?',
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk: () => {
+                handleDeletePromotion(record.id); // Gọi hàm xóa record
+            }
+        });
+    };
     const columns: TableColumnsType<IPromotion> = [
-        { title: 'Tên chương trình', dataIndex: 'promotionName', key: 'promotionName' },
+        {title: 'Tên chương trình', dataIndex: 'promotionName', key: 'promotionName'},
         {
             title: 'Giảm',
             render: (text: string, record: IPromotion) => (
-                `${record.discountValue} ${record.discountType}`
+                `${record.discountValue} ${DISCOUNTTYPE[record.discountType]}`
             )
         },
-        {
-            title: 'Bắt đầu', dataIndex: 'startDate', key: 'startDate',
-            render: (date: string) => dayjs(date).format('DD-MM-YYYY')
-        },
-        {
-            title: 'Kết thúc', dataIndex: 'endDate', key: 'endDate',
-            render: (date: string) => dayjs(date).format('DD-MM-YYYY')
-        },
+        // {
+        //     title: 'Bắt đầu', dataIndex: 'startDate', key: 'startDate',
+        //     render: (date: string) => dayjs(date).format('DD-MM-YYYY')
+        // },
+        // {
+        //     title: 'Kết thúc', dataIndex: 'endDate', key: 'endDate',
+        //     render: (date: string) => dayjs(date).format('DD-MM-YYYY')
+        // },
         {
             title: 'Ngày bắt đầu',
             dataIndex: 'startDate',
@@ -81,15 +127,15 @@ const PromotionComponent: React.FC<any> = (props: any) => {
         },
 
         {
-            title: 'Trạng thái',
-            dataIndex: 'status',
-            render: (status: number) => (
-                <Tag style={{ color: status === 1 ? 'green' : 'red' }}>
-                    {status === 1 ? 'Đang diễn ra' : 'Kết thúc'}
-                </Tag>
-            )
+            title: 'Trạng thái', dataIndex: 'status', key: 'status',
+            render(value: keyof typeof STATUS, record, index) {
+                let color: string = value === 'ACTIVE' ? 'green' : 'red';
+                return (
+                    <Tag color={color} key={record.id}>{STATUS[value]}</Tag>
+                );
+            },
         },
-        // { title: 'Mô tả', dataIndex: 'description', key: 'description', width: 200},
+
         {
             title: 'Hành động',
             align: 'center',
@@ -120,7 +166,7 @@ const PromotionComponent: React.FC<any> = (props: any) => {
                                 border: "1px solid #ff4d4f",
                                 borderRadius: "5px"
                             }}
-                            // onClick={() => onDelete(record)}
+                            onClick={() => onDelete(record)}
                         />
                     </Tooltip>
                 </>
@@ -130,41 +176,41 @@ const PromotionComponent: React.FC<any> = (props: any) => {
     return (
         <>
             {contextHolder}
-            {/*<HeaderPromotion*/}
-            {/*    setIsCreateModalOpen={setIsCreateModalOpen}*/}
-            {/*    setVouchers={setVouchers}*/}
-            {/*    mutate={mutate}*/}
-            {/*/>*/}
-            <Content
-                className="min-w-0 bg-white"
-                style={{
-                    boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
-                    flex: 1,
-                    minWidth: 700,
-                    borderRadius: '8px 8px 0px 0px',
-                }}
-            >
-                <TablePagination
-                    loading={isLoading}
-                    columns={columns}
-                    data={promotions.length > 0 ? promotions : []}
-                    current={data?.data.pageNo}
-                    pageSize={data?.data.pageSize}
-                    total={data?.data.totalElements}
-                />
-            </Content>
-            {/*<CreatePromotion*/}
-            {/*    isCreateModalOpen={isCreateModalOpen}*/}
-            {/*    setIsCreateModalOpen={setIsCreateModalOpen}*/}
-            {/*    mutate={mutate}*/}
-            {/*/>*/}
-            {/*<UpdatePromotion*/}
-            {/*    isUpdateModalOpen={isUpdateModalOpen}*/}
-            {/*    setIsUpdateModalOpen={setIsUpdateModalOpen}*/}
-            {/*    mutate={mutate}*/}
-            {/*    dataUpdate={dataUpdate}*/}
-            {/*    setDataUpdate={setDataUpdate}*/}
-            {/*/>*/}
+            <HeaderPromotion setIsCreateModalOpen={setIsCreateModalOpen}/>
+            <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
+                <PromotionFilter error={error}/>
+                <Content
+                    className="min-w-0 bg-white"
+                    style={{
+                        boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
+                        flex: 1,
+                        minWidth: 700,
+                        borderRadius: '8px 8px 0px 0px',
+                    }}
+                >
+                    <TablePagination
+                        loading={isLoading}
+                        columns={columns}
+                        data={result?.items ? result.items : []}
+                        current={result?.pageNo}
+                        pageSize={result?.pageSize}
+                        total={result?.totalElements}
+                    >
+                    </TablePagination>
+                </Content>
+            </Flex>
+            <CreatePromotion
+                isCreateModalOpen={isCreateModalOpen}
+                setIsCreateModalOpen={setIsCreateModalOpen}
+                mutate={mutate}
+            />
+            <UpdatePromotion
+                isUpdateModalOpen={isUpdateModalOpen}
+                setIsUpdateModalOpen={setIsUpdateModalOpen}
+                mutate={mutate}
+                dataUpdate={dataUpdate}
+                setDataUpdate={setDataUpdate}
+            />
         </>
     );
 

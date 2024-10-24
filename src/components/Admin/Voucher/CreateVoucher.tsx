@@ -4,6 +4,8 @@ import {Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, 
 import {createVoucher} from '@/services/VoucherService';
 import {EuroOutlined, PercentageOutlined} from '@ant-design/icons';
 import useAppNotifications from "../../../hooks/useAppNotifications";
+import {STATUS} from "@/constants/Status";
+import {DISCOUNTTYPE} from "@/constants/DiscountType";
 
 const {Option} = Select;
 
@@ -113,8 +115,8 @@ const CreateVoucher = (props: IProps) => {
                                             placeholder="Chọn kiểu"
                                             suffixIcon={null}
                                         >
-                                            <Option value="PERCENTAGE" icon={<PercentageOutlined/>}>%</Option>
-                                            <Option value="CASH" icon={<EuroOutlined/>}>VND </Option>
+                                            <Option value="0" icon={<PercentageOutlined/>}>%</Option>
+                                            <Option value="1" icon={<EuroOutlined/>}>VND </Option>
                                         </Select>
                                     </Form.Item>
                                 </Input.Group>
@@ -191,18 +193,18 @@ const CreateVoucher = (props: IProps) => {
                         </Col>
 
 
-                        <Col span={12}>
-                            <Form.Item
-                                name="status"
-                                label="Trạng thái"
-                                rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}
-                            >
-                                <Select placeholder="Chọn trạng thái" style={{width: '100%'}}>
-                                    <Option value={1}>Đang diễn ra </Option>
-                                    <Option value={0}>Kết thúc </Option>
-                                </Select>
-                            </Form.Item>
-                        </Col>
+                        {/*<Col span={12}>*/}
+                        {/*    <Form.Item*/}
+                        {/*        name="status"*/}
+                        {/*        label="Trạng thái"*/}
+                        {/*        rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}*/}
+                        {/*    >*/}
+                        {/*        <Select placeholder="Chọn trạng thái" style={{width: '100%'}}>*/}
+                        {/*            <Option value={1}>Đang diễn ra </Option>*/}
+                        {/*            <Option value={0}>Kết thúc </Option>*/}
+                        {/*        </Select>*/}
+                        {/*    </Form.Item>*/}
+                        {/*</Col>*/}
                     </Row>
 
                 </Form>

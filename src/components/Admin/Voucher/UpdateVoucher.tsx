@@ -5,7 +5,8 @@ import { updateVoucher } from '@/services/VoucherService';
 import dayjs from 'dayjs';
 import {EuroOutlined, PercentageOutlined} from "@ant-design/icons"; // Thay thế moment bằng dayjs
 import useAppNotifications from "../../../hooks/useAppNotifications";
-
+import {STATUS} from "@/constants/Status";
+import {DISCOUNTTYPE} from "@/constants/DiscountType";
 const { Option } = Select;
 
 
@@ -256,15 +257,15 @@ const UpdateVoucher = (props: IProps) => {
 
 
                         <Col span={12}>
-                            <Form.Item
-                                name="status"
-                                label="Trạng thái"
-                                rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}
-                            >
-                                <Select placeholder="Chọn trạng thái" style={{width: '100%'}}>
-                                    <Option value={1}>Đang diễn ra </Option>
-                                    <Option value={0}>Kết thúc </Option>
-                                </Select>
+                            <Form.Item name="status" label="Trạng thái"
+                                       rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>
+                                <Select
+                                    options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
+                                        (key) => (
+                                            {value: key, label: STATUS[key]}
+                                        )
+                                    )}
+                                />
                             </Form.Item>
                         </Col>
                     </Row>

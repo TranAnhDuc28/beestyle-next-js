@@ -14,6 +14,11 @@ import { DatePicker, Typography } from "antd";
 import { deleteVoucher } from '@/services/VoucherService';
 import { useSearchParams } from "next/navigation"; // Thêm dòng này
 import useAppNotifications from "../../../hooks/useAppNotifications";
+import {STATUS} from "@/constants/Status";
+import {DISCOUNTTYPE} from "@/constants/DiscountType";
+import VoucherFilter from "./VoucherFilter";
+import CreateMaterial from "../Material/CreateMaterial";
+import UpdateMaterial from "../Material/UpdateMaterial";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -36,22 +41,34 @@ const VoucherComponent = () => {
         { revalidateOnFocus: false }
     );
 
-    useEffect(() => {
-        if (data) {
-            console.log("Data received from API:", data);
-            setVouchers(data.data.items || []); // Cập nhật vouchers
-        }
-    }, [data]);
-
+    // useEffect(() => {
+    //     if (data) {
+    //         console.log("Data received from API:", data);
+    //         setVouchers(data.data.items || []); // Cập nhật vouchers
+    //     }
+    // }, [data]);
+    //
+    // useEffect(() => {
+    //     if (error) {
+    //         console.error("Error fetching vouchers:", error);
+    //         showNotification("error",{message: error?.message || "Error fetching vouchers",
+    //             description: error?.response?.data?.message || "Có lỗi xảy ra!",});
+    //
+    //     }
+    // }, [error]);
     useEffect(() => {
         if (error) {
-            console.error("Error fetching vouchers:", error);
-            showNotification("error",{message: error?.message || "Error fetching vouchers",
-                description: error?.response?.data?.message || "Có lỗi xảy ra!",});
-
+            showNotification("error",{
+                message: error?.message, description: error?.response?.data?.message || "Error fetching vouchers",
+            });
         }
     }, [error]);
 
+    let result: any;
+    if (!isLoading && data) {
+        result = data?.data;
+        console.log(result);
+    }
     const handleDeleteVoucher = async (id: number) => {
         try {
             const result = await deleteVoucher(id);
@@ -83,11 +100,11 @@ const VoucherComponent = () => {
     };
 
     const columns: TableColumnsType<IVoucher> = [
-        {
-            title: 'STT',
-            dataIndex: 'key',
-            render: (text: string, record: IVoucher, index: number) => (index + 1)
-        },
+        // {
+        //     title: 'STT',
+        //     dataIndex: 'key',
+        //     render: (text: string, record: IVoucher, index: number) => (index + 1)
+        // },
         {
             title: 'Mã',
             dataIndex: 'voucherCode',
@@ -100,7 +117,7 @@ const VoucherComponent = () => {
         {
             title: 'Loại giảm',
             render: (text: string, record: IVoucher) => (
-                `${record.discountValue} ${record.discountType}`
+                `${record.discountValue} ${DISCOUNTTYPE[record.discountType]}`
             )
         },
         {
@@ -118,13 +135,13 @@ const VoucherComponent = () => {
             render: (value: string) => new Date(value).toLocaleDateString('vi-VN')
         },
         {
-            title: 'Trạng thái',
-            dataIndex: 'status',
-            render: (status: number) => (
-                <Tag style={{ color: status === 1 ? 'green' : 'red' }}>
-                    {status === 1 ? 'Đang diễn ra' : 'Kết thúc'}
-                </Tag>
-            )
+            title: 'Trạng thái', dataIndex: 'status', key: 'status',
+            render(value: keyof typeof STATUS, record, index) {
+                let color: string = value === 'ACTIVE' ? 'green' : 'red';
+                return (
+                    <Tag color={color} key={record.id}>{STATUS[value]}</Tag>
+                );
+            },
         },
         {
             title: 'Hành động',
@@ -166,35 +183,36 @@ const VoucherComponent = () => {
 
     return (
         <>
-            {contextHolder}
-            <HeaderVoucher
-                setIsCreateModalOpen={setIsCreateModalOpen}
-                setVouchers={setVouchers}
-                mutate={mutate} // Thêm hàm mutate để gọi lại dữ liệu
-            />
-            <Content
-                className="min-w-0 bg-white"
-                style={{
-                    boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
-                    flex: 1,
-                    minWidth: 700,
-                    borderRadius: '8px 8px 0px 0px',
-                }}
-            >
-                <TablePagination
-                    loading={isLoading}
-                    columns={columns}
-                    data={vouchers.length > 0 ? vouchers : []}
-                    current={data?.data.pageNo}
-                    pageSize={data?.data.pageSize}
-                    total={data?.data.totalElements}
-                />
-            </Content>
+            <HeaderVoucher setIsCreateModalOpen={setIsCreateModalOpen}/>
+            <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
+                <VoucherFilter error={error}/>
+                <Content
+                    className="min-w-0 bg-white"
+                    style={{
+                        boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
+                        flex: 1,
+                        minWidth: 700,
+                        borderRadius: '8px 8px 0px 0px'
+                    }}
+                >
+                    <TablePagination
+                        loading={isLoading}
+                        columns={columns}
+                        data={result?.items ? result.items : []}
+                        current={result?.pageNo}
+                        pageSize={result?.pageSize}
+                        total={result?.totalElements}
+                    >
+                    </TablePagination>
+                </Content>
+            </Flex>
+
             <CreateVoucher
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 mutate={mutate}
             />
+
             <UpdateVoucher
                 isUpdateModalOpen={isUpdateModalOpen}
                 setIsUpdateModalOpen={setIsUpdateModalOpen}
@@ -203,7 +221,7 @@ const VoucherComponent = () => {
                 setDataUpdate={setDataUpdate}
             />
         </>
-    );
+    )
 };
 
 export default VoucherComponent;
