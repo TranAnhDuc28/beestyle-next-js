@@ -1,5 +1,5 @@
 "use client"
-import {Flex, Layout, MenuProps, Select, Space, TableColumnsType, Tag, Tooltip, Typography, Image} from "antd";
+import {Flex, Layout, MenuProps, Select, Space, TableColumnsType, Tag, Tooltip, Typography, Image, FloatButton} from "antd";
 import {SearchProps} from "antd/lib/input";
 import TablePagination from "@/components/Table/TablePagination";
 import HeaderProduct from "@/components/Admin/Product/HeaderProduct";
