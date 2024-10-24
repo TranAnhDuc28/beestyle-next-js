@@ -58,7 +58,9 @@ const CreateBrand = (props: IProps) => {
                     <Form.Item
                         name="brandName"
                         label="Tên thương hiệu"
-                        rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}>
+                        rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}
+                        hasFeedback
+                    >
                         <Input/>
                     </Form.Item>
                 </Form>

@@ -71,7 +71,9 @@ const UpdateBrand = (props: IProps) => {
             >
                 <Form form={form} name="updateBrand" layout="vertical" onFinish={onFinish}>
                     <Form.Item name="brandName" label="Tên thương hiệu"
-                        rules={[{required: true, message: "Vui lòng nhập tên thương liệu!"}]}>
+                        rules={[{required: true, message: "Vui lòng nhập tên thương liệu!"}]}
+                        hasFeedback
+                    >
                         <Input/>
                     </Form.Item>
                     <Form.Item name="status" label="Trạng thái"

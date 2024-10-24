@@ -1,13 +1,16 @@
 "use client"
 import React, {memo, useEffect, useMemo, useState} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {Checkbox, Col, Collapse,Input, Radio, RadioChangeEvent, Row, Space, Tree, TreeDataNode, TreeProps, Typography
+import {
+    Checkbox, Col, Collapse, Input, Radio, RadioChangeEvent, Row, Space, Tree, TreeDataNode, TreeProps, Typography
 } from "antd";
-import type { GetProp } from 'antd';
+import type {GetProp} from 'antd';
 import {STATUS} from "@/constants/Status";
 import {GENDER_PRODUCT} from "@/constants/GenderProduct";
-import "./css/product.css";
+import styles from "./css/product.module.css";
 import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
+import useOptionBrand from "@/components/Admin/Brand/hooks/useOptionBrand";
+import StatusFilter from "@/components/Filter/StatusFilter";
 
 const {Title} = Typography;
 const {Search} = Input;
@@ -29,20 +32,12 @@ const getParentKey = (key: React.Key, tree: TreeDataNode[]): React.Key => {
     return parentKey!;
 };
 
-const optionsBrand = [
-    {key: 1, label: 'Thuong hieu 1', value: 1 },
-    {key: 2, label: 'Thuong hieu 2', value: 2 },
-    {key: 3, label: 'Thuong hieu 3', value: 3 },
-    {key: 4, label: 'Thuong hieu 4', value: 4 },
-    {key: 5, label: 'Thuong hieu 5', value: 5 },
-]
-
 const optionsMaterial = [
-    {key: 1, label: 'Chat lieu 1', value: 1 },
-    {key: 2, label: 'Chat lieu 2', value: 2 },
-    {key: 3, label: 'Chat lieu 3', value: 3 },
-    {key: 4, label: 'Chat lieu 4', value: 4 },
-    {key: 5, label: 'Chat lieu 5', value: 5 },
+    {key: 1, label: 'Chat lieu 1', value: 1},
+    {key: 2, label: 'Chat lieu 2', value: 2},
+    {key: 3, label: 'Chat lieu 3', value: 3},
+    {key: 4, label: 'Chat lieu 4', value: 4},
+    {key: 5, label: 'Chat lieu 5', value: 5},
 ]
 
 interface IProps {
@@ -56,7 +51,11 @@ const ProductFilter = (props: IProps) => {
     const {error} = props;
     const params = new URLSearchParams(searchParams);
 
-    const {dataTreeSelectCategory, error: errorDataTreeSelectCategory, isLoading} = useTreeSelectCategory(error ? false : true);
+    const {dataTreeSelectCategory, error: errorDataTreeSelectCategory, isLoading: isLoadingDataTreeSelectCategory}
+        = useTreeSelectCategory(error ? false : true);
+    const {dataOptionBrand, error: errorDataOptionCategory, isLoading: isLoadingDataOptionCategory}
+        = useOptionBrand(error ? false : true);
+
     const [isErrorNetWork, setErrorNetWork] = useState(false);
     const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
     const [searchValue, setSearchValue] = useState('');
@@ -65,8 +64,8 @@ const ProductFilter = (props: IProps) => {
     const generateList = (data: TreeDataNode[]) => {
         for (let i = 0; i < data.length; i++) {
             const node = data[i];
-            const { key, title} = node;
-            dataList.push({ key, title: (title as string)?.toLowerCase() });
+            const {key, title} = node;
+            dataList.push({key, title: (title as string)?.toLowerCase()});
             if (node.children) {
                 generateList(node.children);
             }
@@ -97,7 +96,7 @@ const ProductFilter = (props: IProps) => {
     };
 
     const onChangeBrandFilter: GetProp<typeof Checkbox.Group, 'onChange'> = (checkedValues) => {
-        if (checkedValues.length > 0 && checkedValues.length < optionsBrand.length) {
+        if (checkedValues.length > 0 && checkedValues.length < dataOptionBrand.length) {
             params.set("brand", checkedValues.toString());
             params.set("page", "1");
         } else {
@@ -169,7 +168,7 @@ const ProductFilter = (props: IProps) => {
                     index > -1 ? (
                         <span key={item.key}>
                             {beforeStr}
-                            <span className="site-tree-search-value">{searchValue}</span>
+                            <span className={styles.siteTreeSearchValue}>{searchValue}</span>
                             {afterStr}
                         </span>
                     ) : (
@@ -198,7 +197,8 @@ const ProductFilter = (props: IProps) => {
                         label: <Title level={5} style={{margin: '0px 10px'}}>Danh mục</Title>,
                         children: (
                             <div>
-                                <Search style={{marginBottom: 10}} placeholder="Search" onChange={onChangeSearchCategory}
+                                <Search style={{marginBottom: 10}} placeholder="Search"
+                                        onChange={onChangeSearchCategory}
                                         disabled={isErrorNetWork || errorDataTreeSelectCategory} enterButton={false}
                                 />
                                 <Tree
@@ -246,23 +246,25 @@ const ProductFilter = (props: IProps) => {
 
             <Collapse
                 size="small" className="w-full bg-white" ghost expandIconPosition="end"
-                style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256}}
+                style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256,}}
                 items={[
                     {
-                        key: 'gender-product',
+                        key: 'brand',
                         label: <Title level={5} style={{margin: '0px 10px'}}>Thương hiệu</Title>,
                         children: (
-                            <Checkbox.Group onChange={onChangeBrandFilter} disabled={isErrorNetWork}>
-                                <Row>
-                                    {optionsBrand.map((item) => (
-                                        <Col key={item.key} span={24} style={{marginBottom: 10}}>
-                                            <Checkbox value={item.value} style={{marginLeft: 10}}>
-                                                {item.label}
-                                            </Checkbox>
-                                        </Col>
-                                    ))}
-                                </Row>
-                            </Checkbox.Group>
+                            <div style={{maxHeight: 400, overflow: "auto"}}>
+                                <Checkbox.Group onChange={onChangeBrandFilter} disabled={isErrorNetWork}>
+                                    <Row>
+                                        {dataOptionBrand.map((item: any) => (
+                                            <Col key={item.key} span={24} style={{marginBottom: 10}}>
+                                                <Checkbox value={item.value} style={{marginLeft: 10}}>
+                                                    {item.label}
+                                                </Checkbox>
+                                            </Col>
+                                        ))}
+                                    </Row>
+                                </Checkbox.Group>
+                            </div>
                         ),
                     },
                 ]}
@@ -273,7 +275,7 @@ const ProductFilter = (props: IProps) => {
                 style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256}}
                 items={[
                     {
-                        key: 'gender-product',
+                        key: 'material',
                         label: <Title level={5} style={{margin: '0px 10px'}}>Chất liệu</Title>,
                         children: (
                             <Checkbox.Group onChange={onChangeMaterialFilter} disabled={isErrorNetWork}>
@@ -292,31 +294,9 @@ const ProductFilter = (props: IProps) => {
                 ]}
             />
 
-            <Collapse
-                size="small" className="w-full bg-white" ghost expandIconPosition="end"
-                style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256}}
-                items={[
-                    {
-                        key: 'status',
-                        label: <Title level={5} style={{margin: '0px 10px'}}>Trạng thái</Title>,
-                        children: (
-                            <Radio.Group onChange={onChangeStatusFilter} disabled={isErrorNetWork}>
-                                <Row>
-                                    <Col key={"ALL"} span={24} style={{marginBottom: 10}}>
-                                        <Radio value={undefined} style={{marginLeft: 10}}>Tất cả</Radio>
-                                    </Col>
-                                    {Object.keys(STATUS).map((key) => (
-                                        <Col key={key} span={24} style={{marginBottom: 10}}>
-                                            <Radio value={key} style={{marginLeft: 10}}>
-                                                {STATUS[key as keyof typeof STATUS]}
-                                            </Radio>
-                                        </Col>
-                                    ))}
-                                </Row>
-                            </Radio.Group>
-                        ),
-                    },
-                ]}
+            <StatusFilter
+                onChange={onChangeStatusFilter}
+                disabled={isErrorNetWork}
             />
         </Space>
     );

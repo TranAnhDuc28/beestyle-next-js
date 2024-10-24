@@ -1,3 +1,4 @@
+"use client"
 import { STATUS } from "@/constants/Status";
 import {App, Form, Input, Modal, notification, Radio, Select} from "antd";
 import { memo, useEffect } from "react";
@@ -70,7 +71,9 @@ const UpdateSize = (props: IProps) => {
             >
                 <Form form={form} name="updateSize" layout="vertical" onFinish={onFinish}>
                     <Form.Item name="sizeName" label="Tên kích thước"
-                        rules={[{ required: true, message: "Vui lòng nhập tên kích thước!" }]}>
+                        rules={[{ required: true, message: "Vui lòng nhập tên kích thước!" }]}
+                        hasFeedback
+                    >
                         <Input />
                     </Form.Item>
                     <Form.Item name="status" label="Trạng thái"

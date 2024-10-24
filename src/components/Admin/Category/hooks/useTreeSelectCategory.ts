@@ -12,21 +12,17 @@ const transformData = (data: any) => {
 };
 
 const useTreeSelectCategory = (isLoadTree: boolean) => {
-    let dataTreeSelectCategory: any = [];
-
     const {data, error, isLoading} = useSWR(
         isLoadTree ? URL_API_CATEGORY.options : null,
         getCategoryOptions,
         {
             revalidateIfStale:false,
+            revalidateOnFocus: false,
             revalidateOnReconnect: false,
-            shouldRetryOnError: false,
         }
     );
 
-    if (!isLoading && data) {
-        dataTreeSelectCategory = data?.data ? transformData(data?.data) : [];
-    }
+    const  dataTreeSelectCategory = !isLoading && data?.data ? transformData(data?.data) : [];
 
     return {dataTreeSelectCategory, error, isLoading};
 }

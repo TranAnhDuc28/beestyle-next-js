@@ -71,7 +71,9 @@ const UpdateColor = (props: IProps) => {
             >
                 <Form form={form} name="updateColor" layout="vertical" onFinish={onFinish}>
                     <Form.Item name="colorName" label="Tên màu sắc"
-                        rules={[{ required: true, message: "Vui lòng nhập tên màu sắc!" }]}>
+                        rules={[{ required: true, message: "Vui lòng nhập tên màu sắc!" }]}
+                        hasFeedback
+                    >
                         <Input />
                     </Form.Item>
                     <Form.Item name="status" label="Trạng thái"

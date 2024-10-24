@@ -16,7 +16,6 @@ import {getProducts, URL_API_PRODUCT} from "@/services/ProductService";
 import {GENDER_PRODUCT} from "@/constants/GenderProduct";
 
 const {Content} = Layout;
-const {Title} = Typography;
 
 const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
 
@@ -44,7 +43,7 @@ const ProductComponent = () => {
                         <Image
                             width={35}
                             height={35}
-                            src="/img-test-product.png"
+                            src={`/${value}`}
                             fallback="/fallback-image.png"
                         />
                     </div>

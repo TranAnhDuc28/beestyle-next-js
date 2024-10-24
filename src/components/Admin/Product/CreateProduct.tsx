@@ -1,13 +1,35 @@
 "use client"
-import {Col, Form, Input, Modal, Row, Tabs, TabsProps} from "antd";
+import {Col, Form, Input, InputNumber, Modal, Radio, Row, Select, Tabs, TabsProps, TreeSelect} from "antd";
 import useAppNotifications from "@/hooks/useAppNotifications";
-import {memo} from "react";
+import React, {memo} from "react";
 import {IProduct} from "@/types/IProduct";
 import UploadImage from "@/components/Upload/UploadImage";
-import TiptapEditor from "@/components/EditorText/EditorText";
-import EditorText from "@/components/EditorText/EditorText";
+import SelectSearchOptionLabel from "@/components/SelectSearch/SelectSearchOptionLabel";
+import useOptionMaterial from "@/components/Admin/Material/hooks/useOptionMaterial";
+import useOptionBrand from "@/components/Admin/Brand/hooks/useOptionBrand";
+import {GENDER_PRODUCT} from "@/constants/GenderProduct";
+import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
 
 const {TextArea} = Input;
+
+const normFile = (e: any) => {
+    if (Array.isArray(e)) {
+        return e;
+    }
+    console.log(e?.fileList)
+    return e?.fileList;
+};
+
+const formItemLayout = {
+    labelCol: {
+        xs: {span: 10},
+        sm: {span: 6},
+    },
+    wrapperCol: {
+        xs: {span: 24},
+        sm: {span: 14},
+    },
+};
 
 interface IProps {
     isCreateModalOpen: boolean;
@@ -18,7 +40,13 @@ interface IProps {
 const CreateProduct = (props: IProps) => {
     const {showNotification} = useAppNotifications();
     const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
+    const {dataOptionBrand, error: errorDataOptionBrand, isLoading: isLoadingDataOptionBrand}
+        = useOptionBrand(isCreateModalOpen);
+    const {dataTreeSelectCategory, error: errorDataTreeSelectCategory, isLoading: isLoadingDataTreeSelectCategory}
+        = useTreeSelectCategory(isCreateModalOpen);
     const [form] = Form.useForm();
+
+    console.log(dataOptionBrand);
 
     const handleCloseCreateModal = () => {
         form.resetFields();
@@ -52,61 +80,109 @@ const CreateProduct = (props: IProps) => {
             key: "info",
             label: "Thông tin",
             children: (
-                <Row gutter={[32, 16]} style={{paddingTop: 10}}>
+                <Row gutter={[40, 16]} style={{paddingTop: 10}}>
                     <Col span={14}>
-                        <Form.Item name="productName" label="Tên sản phẩm">
+                        <Form.Item
+                            name="productName"
+                            label="Tên sản phẩm"
+                            validateTrigger="onBlur"
+                            rules={[{required: true, message: "Vui lòng nhập tên sản phẩm!"}]}
+                            hasFeedback
+                        >
                             <Input/>
+                        </Form.Item>
+                        <Form.Item name="gender" label="Giới tính" initialValue="UNISEX">
+                            <Select
+                                options={Object.keys(GENDER_PRODUCT).map((key) => (
+                                    {
+                                        value: key,
+                                        label: GENDER_PRODUCT[key as keyof typeof GENDER_PRODUCT]
+                                    }
+                                ))}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name="parentCategoryId"
+                            label="Danh mục cha"
+                            validateStatus={errorDataTreeSelectCategory ? "error" : "success"}
+                            help={errorDataTreeSelectCategory ? "Error fetching categories" : ""}
+                        >
+                            <TreeSelect
+                                placeholder={isLoadingDataTreeSelectCategory ? "Đang tải..." : "---Lựa chọn---"}
+                                dropdownStyle={{maxHeight: 400, overflow: 'auto'}}
+                                treeData={dataTreeSelectCategory}
+                                loading={isLoadingDataTreeSelectCategory}
+                                showSearch
+                                placement="bottomLeft"
+                                allowClear
+                                filterTreeNode={(search, item) => {
+                                    let title = item.title?.toString() || "";
+                                    return title.toLowerCase().indexOf(search.toLowerCase()) >= 0;
+                                }}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name="brandId"
+                            label="Thương hiệu"
+                            validateStatus={errorDataOptionBrand ? "error" : "success"}
+                            help={errorDataOptionBrand ? "Error fetching brands" : ""}
+                        >
+                            <SelectSearchOptionLabel
+                                data={dataOptionBrand}
+                                error={errorDataOptionBrand}
+                                isLoading={isLoadingDataOptionBrand}
+                                onChange={(value) => form.setFieldsValue({brandId: value})}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name="materialId"
+                            label="Chất liệu"
+                            validateStatus={errorDataOptionBrand ? "error" : "success"}
+                            help={errorDataOptionBrand ? "Error fetching brands" : ""}
+                        >
+                            <SelectSearchOptionLabel
+                                data={dataOptionBrand}
+                                error={errorDataOptionBrand}
+                                isLoading={isLoadingDataOptionBrand}
+                                onChange={(value) => form.setFieldsValue({materialId: value})}
+                            />
+                        </Form.Item>
+                        <Form.Item name="description" label="Mô tả sản phẩm" layout="vertical"
+                                   tooltip="Mô tả chi tiết sản phẩm"
+                        >
+                            <TextArea/>
                         </Form.Item>
                     </Col>
                     <Col span={10}>
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                minWidth: 200,
-                                minHeight: 200
-                            }}
-                        >
-                            <UploadImage countFileImage={5}/>
-                        </div>
-                        <Form.Item name="productDescription" label="Giá vốn">
-                            <Input/>
+                        <Form.Item name="imageUrl" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
+                            <UploadImage countFileImage={1}/>
                         </Form.Item>
-                        <Form.Item name="productDescription" label="Giá vốn">
-                            <Input/>
+                        <Form.Item name="originalPrice" label="Giá vốn">
+                            <InputNumber style={{width: '100%'}}/>
+                        </Form.Item>
+                        <Form.Item name="salePrice" label="Giá bán">
+                            <InputNumber style={{width: '100%'}}/>
                         </Form.Item>
                     </Col>
                 </Row>
             ),
         },
-        {
-            key: "description",
-            label: "Mô tả chi tiết",
-            children: (
-                <>
-                    <Row>
-                        <Col span={24}>
-                            <Form.Item name="productDescription" label="Mô tả sản phẩm">
-                                {/*<EditorText/>*/}
-                                <TextArea rows={4}/>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                </>
-            ),
-        },
+
     ];
 
     return (
         <>
-            <Modal title="Thêm sản phẩm" cancelText="Hủy" okText="Lưu" width={1000} style={{top: 20}}
+            <Modal title="Thêm sản phẩm" cancelText="Hủy" okText="Lưu" width={1200} style={{top: 20}}
                    open={isCreateModalOpen}
                    onOk={() => form.submit()}
                    onCancel={() => handleCloseCreateModal()}
                    okButtonProps={{style: {background: "#00b96b"}}}
             >
-                <Form form={form} name="createProduct" onFinish={onFinish}>
+                <Form form={form} name="createProduct" onFinish={onFinish}
+                      labelCol={{ span: 5 }}
+                      labelAlign="left"
+                      labelWrap
+                >
                     <Tabs
                         defaultActiveKey="info"
                         items={itemTabs}

@@ -50,16 +50,11 @@ const CreateSize = (props: IProps) => {
                 onCancel={() => handleCloseCreateModal()}
                 okButtonProps={{style: { background: "#00b96b" }}}
             >
-                <Form
-                    form={form}
-                    name="createSize"
-                    layout="vertical"
-                    onFinish={onFinish}
-                >
-                    <Form.Item
-                        name="sizeName"
-                        label="Tên kích thước"
-                        rules={[{ required: true, message: "Vui lòng nhập tên kích thước!" }]}>
+                <Form form={form} name="createSize" layout="vertical" onFinish={onFinish}>
+                    <Form.Item name="sizeName" label="Tên kích thước"
+                        rules={[{ required: true, message: "Vui lòng nhập tên kích thước!" }]}
+                        hasFeedback
+                    >
                         <Input />
                     </Form.Item>
                 </Form>

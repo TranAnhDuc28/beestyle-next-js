@@ -50,16 +50,11 @@ const CreateColor = (props: IProps) => {
                 onCancel={() => handleCloseCreateModal()}
                 okButtonProps={{style: {background: "#00b96b"}}}
             >
-                <Form
-                    form={form}
-                    name="createColor"
-                    layout="vertical"
-                    onFinish={onFinish}
-                >
-                    <Form.Item
-                        name="colorName"
-                        label="Tên màu sắc"
-                        rules={[{required: true, message: "Vui lòng nhập tên màu sắc!"}]}>
+                <Form form={form} name="createColor" layout="vertical" onFinish={onFinish}>
+                    <Form.Item name="colorName" label="Tên màu sắc"
+                        rules={[{required: true, message: "Vui lòng nhập tên màu sắc!"}]}
+                        hasFeedback
+                    >
                         <Input/>
                     </Form.Item>
                 </Form>

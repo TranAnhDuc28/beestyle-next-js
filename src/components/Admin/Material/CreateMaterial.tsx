@@ -52,16 +52,12 @@ const CreateMaterial = (props: IProps) => {
                 onCancel={() => handleCloseCreateModal()}
                 okButtonProps={{style: { background: "#00b96b" }}}
             >
-                <Form
-                    form={form}
-                    name="createMaterial"
-                    layout="vertical"
-                    onFinish={onFinish}
+                <Form form={form} name="createMaterial" layout="vertical" onFinish={onFinish}
                 >
-                    <Form.Item
-                        name="materialName"
-                        label="Tên chất liệu"
-                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}>
+                    <Form.Item name="materialName" label="Tên chất liệu"
+                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}
+                        hasFeedback
+                    >
                         <Input />
                     </Form.Item>
                 </Form>

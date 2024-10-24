@@ -13,14 +13,14 @@ interface IProps {
 }
 
 const CreateCategory = (props: IProps) => {
-    const { showNotification } = useAppNotifications();
+    const {showNotification} = useAppNotifications();
     const {isCreateModalOpen, setIsCreateModalOpen, mutate: mutateCategories} = props;
     const [form] = Form.useForm();
     const {dataTreeSelectCategory, error, isLoading} = useTreeSelectCategory(isCreateModalOpen);
 
     useEffect(() => {
         if (error && isCreateModalOpen) {
-            showNotification("error",{
+            showNotification("error", {
                 message: error?.message || "Error fetching category input select",
                 description: error?.response?.data?.message,
             });
@@ -63,8 +63,11 @@ const CreateCategory = (props: IProps) => {
                    okButtonProps={{style: {background: "#00b96b"}}}
             >
                 <Form form={form} name="createCategory" layout="vertical" onFinish={onFinish}>
-                    <Form.Item name="categoryName" label="Tên danh mục"
-                               rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}>
+                    <Form.Item
+                        name="categoryName" label="Tên danh mục"
+                        rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}
+                        hasFeedback
+                    >
                         <Input/>
                     </Form.Item>
                     <Form.Item name="slug" label="Slug">

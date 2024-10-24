@@ -1,3 +1,4 @@
+"use client"
 import { STATUS } from "@/constants/Status";
 import { updateMaterial } from "@/services/MaterialService";
 import { IMaterial } from "@/types/IMaterial";
@@ -72,7 +73,9 @@ const UpdateMaterial = (props: IProps) => {
             >
                 <Form form={form} name="updateMaterial" layout="vertical" onFinish={onFinish}>
                     <Form.Item name="materialName" label="Tên chất liệu"
-                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}>
+                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}
+                        hasFeedback
+                    >
                         <Input />
                     </Form.Item>
                     <Form.Item name="status" label="Trạng thái"
