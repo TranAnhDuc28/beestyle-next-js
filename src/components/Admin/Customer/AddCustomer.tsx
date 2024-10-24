@@ -1,17 +1,10 @@
 "use client";
-import {
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  Modal,
-  Radio,
-  Row,
-} from "antd";
+import { Col, DatePicker, Form, Input, Modal, Radio, Row, Select } from "antd";
 import React, { memo } from "react";
 import moment from "moment";
 import { createCustomer } from "@/services/CustomerService";
 import useAppNotifications from "@/hooks/useAppNotifications";
+const {Option} = Select;
 
 interface ModalAdd {
   isCreateModalOpen: boolean;
@@ -51,15 +44,18 @@ const AddCustomer = ({
         form.resetFields();
         console.log("Dữ liệu Thêm mới: ", values);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       const errorMessage = error?.response?.data?.message;
-            if (errorMessage && typeof errorMessage === 'object') {
-                Object.entries(errorMessage).forEach(([field, message]) => {
-                    showNotification("error", {message: String(message)});
-                });
-            } else {
-                showNotification("error", {message: error?.message, description: errorMessage,});
-            }
+      if (errorMessage && typeof errorMessage === "object") {
+        Object.entries(errorMessage).forEach(([field, message]) => {
+          showNotification("error", { message: String(message) });
+        });
+      } else {
+        showNotification("error", {
+          message: error?.message,
+          description: errorMessage,
+        });
+      }
     }
   };
   return (
@@ -75,66 +71,56 @@ const AddCustomer = ({
         okButtonProps={{ style: { background: "#00b96b" } }}
       >
         <Form form={form} onFinish={handleSubmit} layout="vertical">
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Họ tên"
-                name="fullName"
-                rules={[
-                  { required: true, message: "Vui lòng nhập họ và tên!" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Password"
-                name="password"
-                rules={[{ required: true, message: "Vui lòng nhập password!" }]}
-              >
-                <Input.Password />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Sdt"
-                name="phoneNumber"
-                rules={[{ required: true, message: "Vui lòng nhập sdt!" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Ngày sinh"
-                name="dateOfBirth"
-                rules={[
-                  { required: true, message: "Vui lòng nhập ngày sinh!" },
-                ]}
-              >
-                <DatePicker format={"YYYY-MM-DD"} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Giới tính"
-                name="gender"
-                rules={[
-                  { required: true, message: "Vui lòng nhập giới tính!" },
-                ]}
-              >
-                <Radio.Group>
-                  <Radio value="0">Nam</Radio>
-                  <Radio value="1">Nữ</Radio>
-                </Radio.Group>
-              </Form.Item>
-            </Col>
-          </Row>
+          <Form.Item
+            label="Họ tên"
+            name="fullName"
+            rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[{ required: true, message: "Vui lòng nhập password!" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item
+            label="Sdt"
+            name="phoneNumber"
+            rules={[{ required: true, message: "Vui lòng nhập sdt!" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Ngày sinh"
+            name="dateOfBirth"
+            rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
+          >
+            <DatePicker format={"YYYY-MM-DD"} style={{ width: "100%" }} />
+          </Form.Item>
+
+          <Form.Item
+            label="Giới tính"
+            name="gender"
+            rules={[{ required: true, message: "Vui lòng nhập giới tính!" }]}
+          >
+            <Select
+              style={{ width: "100%" }}
+              placeholder="Giới tính"
+              suffixIcon={null}
+            >
+              <Option value="0" >
+                Nam
+              </Option>
+              <Option value="1" >
+                Nữ
+              </Option>
+            </Select>
+          </Form.Item>
         </Form>
       </Modal>
     </>

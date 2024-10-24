@@ -9,11 +9,14 @@ import {
   Modal,
   Radio,
   Row,
+  Select,
 } from "antd";
 import React, { memo } from "react";
 import moment from "moment";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { createStaff } from "@/services/StaffService";
+const {Option} = Select;
+
 
 interface IProps {
   isCreateModalOpen: boolean;
@@ -67,8 +70,7 @@ const AddStaff = (props: IProps) => {
         okButtonProps={{ style: { background: "#00b96b" } }}
       >
         <Form form={form} onFinish={handleSubmit} layout="vertical">
-          <Row gutter={16}>
-            <Col span={12}>
+          
               <Form.Item
                 label="Họ tên"
                 name="fullName"
@@ -78,8 +80,7 @@ const AddStaff = (props: IProps) => {
               >
                 <Input />
               </Form.Item>
-            </Col>
-            <Col span={12}>
+            
               <Form.Item
                 label="Password"
                 name="password"
@@ -87,10 +88,7 @@ const AddStaff = (props: IProps) => {
               >
                 <Input.Password />
               </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
+         
               <Form.Item
                 label="Username"
                 name="username"
@@ -98,8 +96,7 @@ const AddStaff = (props: IProps) => {
               >
                 <Input />
               </Form.Item>
-            </Col>
-            <Col span={12}>
+           
               <Form.Item
                 label="Email"
                 name="email"
@@ -107,10 +104,8 @@ const AddStaff = (props: IProps) => {
               >
                 <Input />
               </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
+     
+        
               <Form.Item
                 label="Sdt"
                 name="phoneNumber"
@@ -118,8 +113,7 @@ const AddStaff = (props: IProps) => {
               >
                 <Input />
               </Form.Item>
-            </Col>
-            <Col span={12}>
+           
               <Form.Item
                 label="Ngày sinh"
                 name="dateOfBirth"
@@ -129,24 +123,26 @@ const AddStaff = (props: IProps) => {
               >
                 <DatePicker format={"YYYY-MM-DD"} style={{width:"100%"}}/>
               </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
+           
+        
               <Form.Item
-                label="Giới tính"
-                name="gender"
-                rules={[
-                  { required: true, message: "Vui lòng nhập giới tính!" },
-                ]}
-              >
-                <Radio.Group>
-                  <Radio value="0">Nam</Radio>
-                  <Radio value="1">Nữ</Radio>
-                </Radio.Group>
-              </Form.Item>
-            </Col>
-          </Row>
+            label="Giới tính"
+            name="gender"
+            rules={[{ required: true, message: "Vui lòng nhập giới tính!" }]}
+          >
+            <Select
+              style={{ width: "100%" }}
+              placeholder="Giới tính"
+              suffixIcon={null}
+            >
+              <Option value="0" >
+                Nam
+              </Option>
+              <Option value="1" >
+                Nữ
+              </Option>
+            </Select>
+          </Form.Item>
         </Form>
       </Modal>
     </>
