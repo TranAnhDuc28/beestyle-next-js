@@ -81,9 +81,6 @@ const CustomerFilter = (props: IProps) => {
                         children: (
                             <Radio.Group onChange={onChangeGender} disabled={isErrorNetWork}>
                                 <Row>
-                                    <Col key={"ALL"} span={24} style={{ marginBottom: 10 }}>
-                                        <Radio value={undefined} style={{marginLeft: 10}}>Tất cả</Radio>
-                                    </Col>
                                     {Object.keys(GENDER).map((key) => (
                                         <Col key={key} span={24} style={{ marginBottom: 10 }}>
                                             <Radio value={key} style={{marginLeft: 10}}>
