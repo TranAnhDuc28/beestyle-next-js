@@ -1,7 +1,7 @@
 "use client"
 import {Table, TableColumnsType, TableProps } from "antd";
-import React from "react";
-import "./TablePagination.css";
+import React, {memo} from "react";
+import "./table-customize.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 
@@ -64,4 +64,4 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
     );
 }
 
-export default TablePagination;
+export default memo(TablePagination);

@@ -45,6 +45,7 @@ const UploadImage = (props: IProps) => {
     return (
         <>
             <Upload
+                multiple={true}
                 listType="picture-card"
                 fileList={fileList}
                 onPreview={handlePreview}

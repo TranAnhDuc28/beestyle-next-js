@@ -4,7 +4,7 @@ import {getBrands, URL_API_BRAND} from "@/services/BrandService";
 import {IBrand} from "@/types/IBrand";
 
 const transformData = (data: IBrand[]) => {
-    return data.map((item: any) => ({
+    return data.map((item) => ({
         key: item.id.toString() as React.Key,
         value: item.id,
         label: item.brandName,

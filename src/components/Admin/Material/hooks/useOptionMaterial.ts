@@ -4,11 +4,11 @@ import {getMaterials, URL_API_MATERIAL} from "@/services/MaterialService";
 import {IMaterial} from "@/types/IMaterial";
 
 const transformData = (data: IMaterial[]) => {
-    return data.map((item: any) => ({
+    return data.map((item) => ({
         key: item.id.toString() as React.Key,
         value: item.id,
-        label: item.brandName,
-        title: item.brandName,
+        label: item.materialName,
+        title: item.materialName,
     }));
 };
 

@@ -1,13 +1,8 @@
 import {Select} from "antd";
 import React, {memo} from "react";
 
-interface OptionItem  {
-    value: any,
-    label: string
-};
-
 interface IProps {
-    data?: OptionItem[];
+    data?: any[];
     error?: [];
     isLoading?: boolean;
     onChange?: (value: any) => void,
@@ -18,11 +13,11 @@ const SelectSearchOptionLabel = (props: IProps) => {
 
     return (
         <Select
-            placeholder={isLoading ? "Đang tải..." : "---Lựa chọn---"}
-            loading={isLoading}
             showSearch
             allowClear={true}
             placement="bottomLeft"
+            loading={isLoading}
+            placeholder={isLoading ? "Đang tải..." : "---Lựa chọn---"}
             filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }

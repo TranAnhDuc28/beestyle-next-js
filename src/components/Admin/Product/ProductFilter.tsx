@@ -5,12 +5,12 @@ import {
     Checkbox, Col, Collapse, Input, Radio, RadioChangeEvent, Row, Space, Tree, TreeDataNode, TreeProps, Typography
 } from "antd";
 import type {GetProp} from 'antd';
-import {STATUS} from "@/constants/Status";
 import {GENDER_PRODUCT} from "@/constants/GenderProduct";
 import styles from "./css/product.module.css";
 import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
 import useOptionBrand from "@/components/Admin/Brand/hooks/useOptionBrand";
 import StatusFilter from "@/components/Filter/StatusFilter";
+import useOptionMaterial from "@/components/Admin/Material/hooks/useOptionMaterial";
 
 const {Title} = Typography;
 const {Search} = Input;
@@ -32,14 +32,6 @@ const getParentKey = (key: React.Key, tree: TreeDataNode[]): React.Key => {
     return parentKey!;
 };
 
-const optionsMaterial = [
-    {key: 1, label: 'Chat lieu 1', value: 1},
-    {key: 2, label: 'Chat lieu 2', value: 2},
-    {key: 3, label: 'Chat lieu 3', value: 3},
-    {key: 4, label: 'Chat lieu 4', value: 4},
-    {key: 5, label: 'Chat lieu 5', value: 5},
-]
-
 interface IProps {
     error?: Error;
 }
@@ -53,8 +45,10 @@ const ProductFilter = (props: IProps) => {
 
     const {dataTreeSelectCategory, error: errorDataTreeSelectCategory, isLoading: isLoadingDataTreeSelectCategory}
         = useTreeSelectCategory(error ? false : true);
-    const {dataOptionBrand, error: errorDataOptionCategory, isLoading: isLoadingDataOptionCategory}
+    const {dataOptionBrand, error: errorDataOptionBrand, isLoading: isLoadingDataOptionBrand}
         = useOptionBrand(error ? false : true);
+    const {dataOptionMaterial, error: errorDataOptionMaterial, isLoading: isLoadingDataOptionMaterial}
+        = useOptionMaterial(error ? false : true);
 
     const [isErrorNetWork, setErrorNetWork] = useState(false);
     const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
@@ -106,7 +100,7 @@ const ProductFilter = (props: IProps) => {
     };
 
     const onChangeMaterialFilter: GetProp<typeof Checkbox.Group, 'onChange'> = (checkedValues) => {
-        if (checkedValues.length > 0 && checkedValues.length < optionsMaterial.length) {
+        if (checkedValues.length > 0 && checkedValues.length < dataOptionMaterial.length) {
             params.set("material", checkedValues.toString());
             params.set("page", "1");
         } else {
@@ -188,8 +182,7 @@ const ProductFilter = (props: IProps) => {
 
     return (
         <Space direction="vertical" style={{minWidth: 256}}>
-            <Collapse
-                size="small" className="w-full bg-white" ghost expandIconPosition="end"
+            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end"
                 style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256,}}
                 items={[
                     {
@@ -217,8 +210,7 @@ const ProductFilter = (props: IProps) => {
                 ]}
             />
 
-            <Collapse
-                size="small" className="w-full bg-white" ghost expandIconPosition="end"
+            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end"
                 style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256}}
                 items={[
                     {
@@ -244,8 +236,7 @@ const ProductFilter = (props: IProps) => {
                 ]}
             />
 
-            <Collapse
-                size="small" className="w-full bg-white" ghost expandIconPosition="end"
+            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end"
                 style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256,}}
                 items={[
                     {
@@ -253,7 +244,9 @@ const ProductFilter = (props: IProps) => {
                         label: <Title level={5} style={{margin: '0px 10px'}}>Thương hiệu</Title>,
                         children: (
                             <div style={{maxHeight: 400, overflow: "auto"}}>
-                                <Checkbox.Group onChange={onChangeBrandFilter} disabled={isErrorNetWork}>
+                                <Checkbox.Group onChange={onChangeBrandFilter}
+                                                disabled={isErrorNetWork || errorDataOptionBrand}
+                                >
                                     <Row>
                                         {dataOptionBrand.map((item: any) => (
                                             <Col key={item.key} span={24} style={{marginBottom: 10}}>
@@ -270,25 +263,28 @@ const ProductFilter = (props: IProps) => {
                 ]}
             />
 
-            <Collapse
-                size="small" className="w-full bg-white" ghost expandIconPosition="end"
+            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end"
                 style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256}}
                 items={[
                     {
                         key: 'material',
                         label: <Title level={5} style={{margin: '0px 10px'}}>Chất liệu</Title>,
                         children: (
-                            <Checkbox.Group onChange={onChangeMaterialFilter} disabled={isErrorNetWork}>
-                                <Row>
-                                    {optionsMaterial.map((item) => (
-                                        <Col key={item.key} span={24} style={{marginBottom: 10}}>
-                                            <Checkbox value={item.value} style={{marginLeft: 10}}>
-                                                {item.label}
-                                            </Checkbox>
-                                        </Col>
-                                    ))}
-                                </Row>
-                            </Checkbox.Group>
+                            <div style={{maxHeight: 400, overflow: "auto"}}>
+                                <Checkbox.Group onChange={onChangeMaterialFilter}
+                                                disabled={isErrorNetWork || errorDataOptionMaterial}
+                                >
+                                    <Row>
+                                        {dataOptionMaterial.map((item) => (
+                                            <Col key={item.key} span={24} style={{marginBottom: 10}}>
+                                                <Checkbox value={item.value} style={{marginLeft: 10}}>
+                                                    {item.label}
+                                                </Checkbox>
+                                            </Col>
+                                        ))}
+                                    </Row>
+                                </Checkbox.Group>
+                            </div>
                         ),
                     },
                 ]}

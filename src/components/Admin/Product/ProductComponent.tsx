@@ -1,5 +1,5 @@
 "use client"
-import {Flex, Layout, TableColumnsType, Tag, Tooltip, Typography, Image,} from "antd";
+import {Flex, Layout, TableColumnsType, Tag, Tooltip, Typography, Image, Row, Col,} from "antd";
 import {SearchProps} from "antd/lib/input";
 import TablePagination from "@/components/Table/TablePagination";
 import HeaderProduct from "@/components/Admin/Product/HeaderProduct";
@@ -77,29 +77,37 @@ const ProductComponent = () => {
             title: 'Hành động', align: 'center', render: (record) => {
                 return (
                     <>
-                        <Tooltip placement="top" title="Xem chi tiết">
-                            <EyeTwoTone
-                                style={{
-                                    cursor: "pointer", padding: "5px", border: "1px solid #1677FF", borderRadius: "5px",
-                                    marginRight: 10
-                                }}
-                            />
-                        </Tooltip>
-                        <Tooltip placement="top" title="Chỉnh sửa">
-                            <EditTwoTone
-                                twoToneColor={"#f57800"}
-                                style={{
-                                    cursor: "pointer",
-                                    padding: "5px",
-                                    border: "1px solid #f57800",
-                                    borderRadius: "5px"
-                                }}
-                                onClick={() => {
-                                    setIsUpdateModalOpen(true);
-                                    setDataUpdate(record);
-                                }}
-                            />
-                        </Tooltip>
+                        <Row gutter={[8, 8]} justify="center" align="middle">
+                            <Col>
+                                <Tooltip placement="top" title="Xem chi tiết">
+                                    <EyeTwoTone
+                                        style={{
+                                            cursor: "pointer",
+                                            padding: "5px",
+                                            border: "1px solid #1677FF",
+                                            borderRadius: "5px",
+                                        }}
+                                    />
+                                </Tooltip>
+                            </Col>
+                            <Col>
+                                <Tooltip placement="top" title="Chỉnh sửa">
+                                    <EditTwoTone
+                                        twoToneColor={"#f57800"}
+                                        style={{
+                                            cursor: "pointer",
+                                            padding: "5px",
+                                            border: "1px solid #f57800",
+                                            borderRadius: "5px"
+                                        }}
+                                        onClick={() => {
+                                            setIsUpdateModalOpen(true);
+                                            setDataUpdate(record);
+                                        }}
+                                    />
+                                </Tooltip>
+                            </Col>
+                        </Row>
                     </>
                 )
             }
@@ -108,7 +116,7 @@ const ProductComponent = () => {
 
     useEffect(() => {
         if (error) {
-            showNotification("error",{
+            showNotification("error", {
                 message: error?.message, description: error?.response?.data?.message || "Error fetching products",
             });
         }
@@ -130,7 +138,6 @@ const ProductComponent = () => {
                         boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
                         flex: 1,
                         minWidth: 700,
-                        borderRadius: '8px 8px 0px 0px'
                     }}
                 >
                     <TablePagination
