@@ -38,7 +38,15 @@ const ColorComponent = () => {
         );
 
     const columns: TableColumnsType<IColor> = [
-        {title: 'Màu', dataIndex: 'colorName', key: 'colorName'},
+        {
+            title: 'Màu', dataIndex: 'colorCode', key: 'colorCode', align: 'center', width: 120,
+            render(value, record, index) {
+                return (
+                    <Tag color={value} key={record.id}>{value}</Tag>
+                );
+            },
+        },
+        {title: 'Tên màu', dataIndex: 'colorName', key: 'colorName'},
         {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
         {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
         {
@@ -78,7 +86,7 @@ const ColorComponent = () => {
     useEffect(() => {
         if (error) {
             showNotification("error",{
-                message: error?.message || "Error fetching colors", description: error?.response?.data?.message,
+                message: error?.message, description: error?.response?.data?.message || "Error fetching colors",
             });
         }
     }, [error]);
@@ -99,7 +107,6 @@ const ColorComponent = () => {
                         boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
                         flex: 1,
                         minWidth: 700,
-                        borderRadius: '8px 8px 0px 0px'
                     }}
                 >
                     <TablePagination

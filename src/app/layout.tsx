@@ -1,5 +1,5 @@
 "use client";
-import "./globals.css";
+import "../css/globals.css";
 import React, { ReactNode, useEffect, useMemo, useState } from "react";
 import AdminLayout from "@/components/Layout/AdminLayout";
 import Loader from "@/components/Loader/Loader";

@@ -1,6 +1,7 @@
 import httpInstance, {OptionsParams} from "@/utils/HttpInstance";
 import {IVoucher} from "@/types/IVoucher";
 
+
 export const URL_API_VOUCHER = {
     get: '/admin/voucher/vouchers',
     create: '/admin/voucher/create',
@@ -25,17 +26,17 @@ export const updateVoucher = async (data: IVoucher) => {
     return response.data;
 }
 
-export const deleteVoucher = async (id: string) => {
+export const deleteVoucher = async (id: number) => {
     const response = await httpInstance.delete(`${URL_API_VOUCHER.delete}/${id}`);
     return response.data;
 }
-export const findVouchers = async (searchTerm, page = 0, size = 10) => {
+export const findVouchers = async (searchTerm: string, page = 0, size = 10) => {
     const response = await httpInstance.get(`${URL_API_VOUCHER.search}`, {
         params: {searchTerm, page, size},
     });
     return response.data;
 };
-export const findVouchersByDate = async (startDate, endDate, page = 0, size = 10) => {
+export const findVouchersByDate = async (startDate: any, endDate: any, page = 0, size = 10) => {
     const response = await httpInstance.get(`${URL_API_VOUCHER.searchByDate}`, {
         params: {startDate, endDate, page, size},
     });

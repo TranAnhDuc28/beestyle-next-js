@@ -64,8 +64,8 @@ const VoucherComponent = () => {
                     description: result.message || 'Không có thông tin thêm.',});
             }
         } catch (error) {
-            showNotification("error",{message: 'Có lỗi xảy ra!',
-                description: error.message,});
+            // showNotification("error",{message: 'Có lỗi xảy ra!',
+            //     description: error?.message,});
         }
     };
 
@@ -170,7 +170,6 @@ const VoucherComponent = () => {
             <HeaderVoucher
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 setVouchers={setVouchers}
-                mutate={mutate} // Thêm hàm mutate để gọi lại dữ liệu
             />
             <Content
                 className="min-w-0 bg-white"

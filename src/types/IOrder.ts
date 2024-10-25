@@ -5,6 +5,6 @@ export interface IOrder {
     totalAmount: number;
     paymentMethod: number;
     status?: string;
-    createAt?: string;
-    updateAt?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
