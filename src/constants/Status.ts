@@ -1,5 +1,5 @@
 export const STATUS = {
-    ACTIVE: "Đang hoạt động" as const,
+    ACTIVE: "Hoạt động" as const,
     INACTIVE: "Ngừng hoạt động" as const,
 };
 

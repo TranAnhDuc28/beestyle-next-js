@@ -14,7 +14,8 @@ const genPresets = (presets = presetPalettes) =>
     }));
 
 interface IProps {
-    onChange?: (value: any) => void,
+
+    onChange?: (value: any) => void;
 }
 
 const ColorPickerCustomize = (props: IProps) => {
@@ -29,9 +30,12 @@ const ColorPickerCustomize = (props: IProps) => {
     );
 
     const handleColorChange = (value: Color) => {
-        setColorHex(value);
-        const hexValue = typeof value === 'string' ? value : value?.toHexString();
-        if (onChange) onChange(hexValue); // Truyền mã hex ra ngoài
+        let hexValue = typeof value === 'string' ? value : value?.toHexString();
+        if (hexValue?.endsWith('00')) {
+            hexValue = "default";
+        }
+        setColorHex(hexValue);
+        if (onChange) onChange(hexValue);
     };
 
     const presets = genPresets({
@@ -58,9 +62,8 @@ const ColorPickerCustomize = (props: IProps) => {
 
     return (
         <Space>
-            <span>{hexString}</span>
             <ColorPicker
-                allowClear={true}
+                allowClear
                 format={formatHex}
                 value={colorHex}
                 onChange={handleColorChange}
@@ -69,6 +72,7 @@ const ColorPickerCustomize = (props: IProps) => {
                 presets={presets}
                 panelRender={customPanelRender}
             />
+            <span>{hexString}</span>
         </Space>
     );
 };

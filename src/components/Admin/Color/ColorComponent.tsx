@@ -38,7 +38,15 @@ const ColorComponent = () => {
         );
 
     const columns: TableColumnsType<IColor> = [
-        {title: 'Màu', dataIndex: 'colorName', key: 'colorName'},
+        {
+            title: 'Màu', dataIndex: 'colorCode', key: 'colorCode', align: 'center', width: 120,
+            render(value, record, index) {
+                return (
+                    <Tag color={value} key={record.id}>{value}</Tag>
+                );
+            },
+        },
+        {title: 'Tên màu', dataIndex: 'colorName', key: 'colorName'},
         {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
         {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
         {

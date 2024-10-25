@@ -9,6 +9,11 @@ const options = [
     {value: 'lime', label: 'lime'},
     {value: 'green', label: 'green'},
     {value: 'cyan', label: 'cyan'},
+    {value: '#000000', label: 'Đen'},
+    {value: 'default', label: 'Trắng'},
+    {value: '#ffffff', label: 'Trắng'},
+    {value: '#108ee9', label: '#108ee9'},
+    {value: '#87d068', label: '#87d068'},
 ];
 
 const tagRender: TagRender = (props) => {
@@ -23,7 +28,7 @@ const tagRender: TagRender = (props) => {
             onMouseDown={onPreventMouseDown}
             closable={closable}
             onClose={onClose}
-            className="custom-tag"
+            className="custom-tag-select"
         >
             {label}
         </Tag>

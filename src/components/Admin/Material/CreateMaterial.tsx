@@ -1,7 +1,7 @@
 "use client"
-import { memo } from 'react';
+import {memo} from 'react';
 import {App, Form, Input, Modal} from 'antd';
-import { IMaterial } from '@/types/IMaterial';
+import {IMaterial} from '@/types/IMaterial';
 import {createMaterial} from '@/services/MaterialService';
 import useAppNotifications from "@/hooks/useAppNotifications";
 
@@ -13,8 +13,8 @@ interface IProps {
 
 const CreateMaterial = (props: IProps) => {
     // console.log("Create Material render");
-    const { showNotification } = useAppNotifications();
-    const { isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
+    const {showNotification} = useAppNotifications();
+    const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
 
     const handleCloseCreateModal = () => {
@@ -47,18 +47,18 @@ const CreateMaterial = (props: IProps) => {
     return (
         <>
             <Modal title="Thêm chất liệu" cancelText="Hủy" okText="Lưu" style={{top: 20}}
-                open={isCreateModalOpen}
-                onOk={() => form.submit()}
-                onCancel={() => handleCloseCreateModal()}
-                okButtonProps={{style: { background: "#00b96b" }}}
+                   open={isCreateModalOpen}
+                   onOk={() => form.submit()}
+                   onCancel={() => handleCloseCreateModal()}
+                   okButtonProps={{style: {background: "#00b96b"}}}
             >
                 <Form form={form} name="createMaterial" layout="vertical" onFinish={onFinish}
                 >
                     <Form.Item name="materialName" label="Tên chất liệu"
-                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}
-                        hasFeedback
+                               rules={[{required: true, message: "Vui lòng nhập tên chất liệu!"}]}
+                               validateTrigger="onBlur"
                     >
-                        <Input />
+                        <Input/>
                     </Form.Item>
                 </Form>
             </Modal>

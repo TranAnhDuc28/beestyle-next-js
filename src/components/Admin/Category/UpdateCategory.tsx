@@ -91,7 +91,9 @@ const UpdateCategory = (props: IProps) => {
             >
                 <Form form={form} name="updateCategory" layout="vertical" onFinish={onFinish}>
                     <Form.Item name="categoryName" label="Tên danh mục"
-                               rules={[{required: true, message: "Vui lòng nhập tên danh mục!"}]}>
+                               rules={[{required: true, message: "Vui lòng nhập tên danh mục!"}]}
+                               validateTrigger="onBlur"
+                    >
                         <Input/>
                     </Form.Item>
                     <Form.Item name="slug" label="Slug">

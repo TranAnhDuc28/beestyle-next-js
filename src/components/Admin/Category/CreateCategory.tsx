@@ -66,7 +66,7 @@ const CreateCategory = (props: IProps) => {
                     <Form.Item
                         name="categoryName" label="Tên danh mục"
                         rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}
-                        hasFeedback
+                        validateTrigger="onBlur"
                     >
                         <Input/>
                     </Form.Item>

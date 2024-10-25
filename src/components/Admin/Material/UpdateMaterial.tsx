@@ -1,9 +1,9 @@
 "use client"
-import { STATUS } from "@/constants/Status";
-import { updateMaterial } from "@/services/MaterialService";
-import { IMaterial } from "@/types/IMaterial";
+import {STATUS} from "@/constants/Status";
+import {updateMaterial} from "@/services/MaterialService";
+import {IMaterial} from "@/types/IMaterial";
 import {App, Form, Input, Modal, notification, Radio, Select} from "antd";
-import { memo, useEffect } from "react";
+import {memo, useEffect} from "react";
 import useAppNotifications from "@/hooks/useAppNotifications";
 
 interface IProps {
@@ -16,8 +16,8 @@ interface IProps {
 
 const UpdateMaterial = (props: IProps) => {
     // console.log("Update Material render");
-    const { showNotification } = useAppNotifications();
-    const { isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate } = props;
+    const {showNotification} = useAppNotifications();
+    const {isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate} = props;
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -66,20 +66,20 @@ const UpdateMaterial = (props: IProps) => {
     return (
         <>
             <Modal title="Chỉnh sửa chất liệu" cancelText="Hủy" okText="Lưu" style={{top: 20}}
-                open={isUpdateModalOpen}
-                onOk={() => form.submit()}
-                onCancel={() => handleCloseUpdateModal()}
-                okButtonProps={{style: { background: "#00b96b" }}}
+                   open={isUpdateModalOpen}
+                   onOk={() => form.submit()}
+                   onCancel={() => handleCloseUpdateModal()}
+                   okButtonProps={{style: {background: "#00b96b"}}}
             >
                 <Form form={form} name="updateMaterial" layout="vertical" onFinish={onFinish}>
                     <Form.Item name="materialName" label="Tên chất liệu"
-                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}
-                        hasFeedback
+                               rules={[{required: true, message: "Vui lòng nhập tên chất liệu!"}]}
+                               validateTrigger="onBlur"
                     >
-                        <Input />
+                        <Input/>
                     </Form.Item>
                     <Form.Item name="status" label="Trạng thái"
-                        rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>
+                               rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}>
                         <Select
                             options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
                                 (key) => (

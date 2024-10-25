@@ -100,7 +100,6 @@ const CreateProduct = (props: IProps) => {
                                 label="Tên sản phẩm"
                                 validateTrigger="onBlur"
                                 rules={[{required: true, message: "Vui lòng nhập tên sản phẩm!"}]}
-                                hasFeedback
                             >
                                 <Input/>
                             </Form.Item>
@@ -176,11 +175,6 @@ const CreateProduct = (props: IProps) => {
                             </Form.Item>
                             <Form.Item name="quantityInStock" label="Tồn kho" initialValue={0}>
                                 <InputNumber style={{width: '100%'}}/>
-                            </Form.Item>
-                            <Form.Item label="ColorPicker" name="color">
-                                <ColorPickerCustomize
-                                    onChange={(value) => form.setFieldsValue({color: value})}
-                                />
                             </Form.Item>
                         </Col>
                     </Row>

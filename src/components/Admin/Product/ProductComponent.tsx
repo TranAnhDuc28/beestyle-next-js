@@ -36,15 +36,15 @@ const ProductComponent = () => {
 
     const columns: TableColumnsType<IProduct> = [
         {
-            title: 'Image', dataIndex: 'imageUrl', key: 'imageUrl', align: 'center', width: 100,
+            title: '', dataIndex: 'imageUrl', key: 'imageUrl', align: 'center', width: 70,
             render: (value, record) => {
                 return (
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <Image
                             width={35}
                             height={35}
-                            src={`/${value}`}
-                            fallback="/fallback-image.png"
+                            src={value ? value : "/no-img.png"}
+                            fallback="/no-img.png"
                         />
                     </div>
                 );
@@ -52,7 +52,7 @@ const ProductComponent = () => {
         },
         {title: 'Tên sản phẩm', dataIndex: 'productName', key: 'productName'},
         {
-            title: 'Giới tính', dataIndex: 'gender', key: 'gender', width: 100,
+            title: 'Giới tính', dataIndex: 'genderProduct', key: 'genderProduct', width: 100,
             render(value: keyof typeof GENDER_PRODUCT, record, index) {
                 return (
                     <span key={record.id}>{GENDER_PRODUCT[value]}</span>
@@ -65,11 +65,13 @@ const ProductComponent = () => {
         {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
         {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
         {
-            title: 'Trạng thái', dataIndex: 'status', key: 'status',
+            title: 'Trạng thái', dataIndex: 'status', key: 'status', align: 'center', width: 140,
             render(value: keyof typeof STATUS, record, index) {
                 let color: string = value === 'ACTIVE' ? 'green' : 'default';
                 return (
-                    <Tag color={color} key={record.id}>{STATUS[value]}</Tag>
+                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <Tag color={color} key={record.id}>{STATUS[value]}</Tag>
+                    </div>
                 );
             },
         },
