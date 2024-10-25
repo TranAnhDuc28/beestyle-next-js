@@ -63,6 +63,8 @@ const CustomerComponent = () => {
   const columns: ColumnType<ICustomer>[] = [
     { title: "Họ và tên", dataIndex: "fullName", key: "fullName" },
     { title: "Ngày sinh", dataIndex: "dateOfBirth", key: "dateOfBirth" },
+    { title: "Số điện thoại", dataIndex: "phoneNumber", key: "phoneNumber" },
+    { title: "Email", dataIndex: "email", key: "email" },
     {
       title: 'Giới tính', dataIndex: 'gender', key: 'gender',width:100,
       render(value: keyof typeof GENDER, record, index) {
@@ -71,20 +73,9 @@ const CustomerComponent = () => {
         );
     },
   },
-    {
-      title: "Ngày tạo",
-      dataIndex: "createdAt",
-      key: "createAt",
-    },
-    {
-      title: "Ngày sửa",
-      dataIndex: "updatedAt",
-      key: "updateAt",
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
+    {title: "Ngày tạo", dataIndex: "createdAt",  key: "createAt",    },
+    {   title: "Ngày sửa", dataIndex: "updatedAt", key: "updateAt",  },
+    {   title: "Trạng thái", dataIndex: "status",  key: "status",
       render(value: keyof typeof STATUS, record, index) {
         let color: string = value === "ACTIVE" ? "green" : "default";
         return (

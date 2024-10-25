@@ -26,11 +26,11 @@ const HeaderCustomer = (props: IProps) => {
     const onSearch: SearchProps['onSearch'] =
         (value, _e, info) => {
             if (info?.source === "input" && value) {
-                params.set("name", value);
+                params.set("keyword", value);
                 params.set("page", "1");
                 replace(`${pathname}?${params.toString()}`);
             } else {
-                params.delete("name")
+                params.delete("keyword")
                 replace(`${pathname}?${params.toString()}`);
             }
         }
@@ -42,7 +42,7 @@ const HeaderCustomer = (props: IProps) => {
                 <Flex justify={'space-between'} align={'center'}>
                     <div className="flex-grow max-w-96">
                         <Search
-                            placeholder="Nhập tên nhân viên"
+                            placeholder="Nhập tên, số điện thoại hoặc email nhân viên"
                             allowClear
                             onSearch={onSearch}
                             style={{width: '100%'}}

@@ -14,8 +14,7 @@ import {
 } from "antd";
 import moment from "moment";
 import { memo, useEffect } from "react";
-const {Option} = Select;
-
+const { Option } = Select;
 
 interface IProps {
   isUpdateModalOpen: boolean;
@@ -50,11 +49,19 @@ const UpdateCustomer = (props: IProps) => {
         dateOfBirth: dataUpdate.dateOfBirth
           ? moment(dataUpdate.dateOfBirth).local()
           : null, // Hiển thị ngày theo múi giờ hiện tại
-        gender: dataUpdate.gender === "MALE" ? "Nam" : "Nữ",
+        gender: dataUpdate.gender ,
         phoneNumber: dataUpdate.phoneNumber,
         password: dataUpdate.password,
         status: dataUpdate.status,
+        email: dataUpdate.email,
+        address: dataUpdate.addresses && dataUpdate.addresses.length > 0 
+        ? dataUpdate.addresses[0].addressName
+        : "",
       });
+      console.log("dataUpdate.address:", dataUpdate.address);
+
+      console.log(dataUpdate);
+      
     }
     // Cập nhật lại form khi param thay đổi
   }, [dataUpdate]);
@@ -101,56 +108,80 @@ const UpdateCustomer = (props: IProps) => {
       okButtonProps={{ style: { background: "#00b96b" } }}
     >
       <Form form={form} onFinish={onFinish} layout="vertical">
-      <Form.Item
-            label="Họ tên"
-            name="fullName"
-            rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
-          >
-            <Input />
-          </Form.Item>
+        <Form.Item
+          label="Họ tên"
+          name="fullName"
+          rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
+        >
+          <Input />
+        </Form.Item>
 
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[{ required: true, message: "Vui lòng nhập password!" }]}
-          >
-            <Input.Password />
-          </Form.Item>
+        <Form.Item
+          label="Password"
+          name="password"
+          rules={[{ required: true, message: "Vui lòng nhập password!" }]}
+        >
+          <Input.Password />
+        </Form.Item>
 
-          <Form.Item
-            label="Sdt"
-            name="phoneNumber"
-            rules={[{ required: true, message: "Vui lòng nhập sdt!" }]}
-          >
-            <Input />
-          </Form.Item>
+        <Form.Item
+          label="Địa chỉ"
+          name="address"
+          rules={[{ required: true, message: "Vui lòng nhập address!" }]}
+        >
+          <Input />
+        </Form.Item>
 
-          <Form.Item
-            label="Ngày sinh"
-            name="dateOfBirth"
-            rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
-          >
-            <DatePicker format={"YYYY-MM-DD"} style={{ width: "100%" }} />
-          </Form.Item>
+        <Form.Item
+          label="Sdt"
+          name="phoneNumber"
+          rules={[{ required: true, message: "Vui lòng nhập sdt!" }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Email"
+          name="email"
+          rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Ngày sinh"
+          name="dateOfBirth"
+          rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
+        >
+          <DatePicker format={"YYYY-MM-DD"} style={{ width: "100%" }} />
+        </Form.Item>
 
-          <Form.Item
-            label="Giới tính"
-            name="gender"
-            rules={[{ required: true, message: "Vui lòng nhập giới tính!" }]}
+        <Form.Item
+          label="Giới tính"
+          name="gender"
+          rules={[{ required: true, message: "Vui lòng nhập giới tính!" }]}
+        >
+          <Select
+            style={{ width: "100%" }}
+            placeholder="Giới tính"
+            suffixIcon={null}
           >
-            <Select
-              style={{ width: "100%" }}
-              placeholder="Giới tính"
-              suffixIcon={null}
-            >
-              <Option value="0" >
-                Nam
-              </Option>
-              <Option value="1" >
-                Nữ
-              </Option>
-            </Select>
-          </Form.Item>
+            <Option value="0">Nam</Option>
+            <Option value="1">Nữ</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item
+          label="Trạng thái"
+          name="status"
+          rules={[{ required: true, message: "Vui lòng nhập trạng thái!" }]}
+        >
+          <Select
+            style={{ width: "100%" }}
+            placeholder="Trạng thái"
+            suffixIcon={null}
+          >
+            <Option value="ACTIVE">Đang hoạt động</Option>
+            <Option value="INACTIVE">Ngừng hoạt động</Option>
+          </Select>
+        </Form.Item>
       </Form>
     </Modal>
   );

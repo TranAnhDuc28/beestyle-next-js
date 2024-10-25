@@ -223,9 +223,16 @@ const AddCustomer = (props: IProps) => {
           </Form.Item>
 
           <Form.Item
-            label="Sdt"
+            label="Số điện thoại"
             name="phoneNumber"
             rules={[{ required: true, message: "Vui lòng nhập sdt!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[{ required: true, message: "Vui lòng nhập email!" }]}
           >
             <Input />
           </Form.Item>

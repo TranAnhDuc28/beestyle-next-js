@@ -1,26 +1,16 @@
 "use client";
-
-import { getCustomer, URL_API_CUSTOMER } from "@/services/CustomerService";
 import {
-  Button,
   Flex,
-  notification,
-  Table,
   Tag,
   Tooltip,
-  Typography,
 } from "antd";
 import { ColumnType } from "antd/es/table";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { useEffect, useState } from "react";
 import TablePagination from "@/components/Table/TablePagination";
 import { Content } from "antd/es/layout/layout";
-import MaterialFilter from "../Material/MaterialFilter";
 import { EditTwoTone } from "@ant-design/icons";
 import { useSearchParams } from "next/navigation";
-import HeaderCustomer from "./HeaderStaff";
-import AddCustomer from "./AddStaff";
-import UpdateCustomer from "./UpdateStaff";
 import { STATUS } from "@/constants/Status";
 import CustomerFilter from "./CustomerFilter";
 import { getStaff, URL_API_STAFF } from "@/services/StaffService";
@@ -30,7 +20,6 @@ import HeaderStaff from "./HeaderStaff";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { GENDER } from "@/constants/Gender";
 
-const { Title } = Typography;
 const StaffComponent = () => {
   const { showNotification } = useAppNotifications();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
@@ -65,37 +54,21 @@ const StaffComponent = () => {
 
 
   const columns: ColumnType<IStaff>[] = [
-    {
-      title: "Họ và tên",
-      dataIndex: "fullName",
-    },
-    {
-      title: "Ngày sinh",
-      dataIndex: "dateOfBirth",
-    },
-    {
-      title: 'Giới tính', dataIndex: 'gender', key: 'gender',width:100,
+    { title: "Họ và tên",dataIndex: "fullName",key:"fullName" },
+    {title: "Ngày sinh",dataIndex: "dateOfBirth",key:"dateOfBirth"},
+    { title: "Số điện thoại", dataIndex: "phoneNumber", key: "phoneNumber" },
+    { title: "Email", dataIndex: "email", key: "email" },
+    {title: 'Giới tính', dataIndex: 'gender', key: 'gender',width:100,
       render(value: keyof typeof GENDER, record, index) {
         return (
             <span key={record.id}>{GENDER[value]}</span>
         );
     },
   },
-    {
-      title: "Ngày tạo",
-      dataIndex: "createdAt",
-      key: "createAt",
-    },
-    {
-      title: "Ngày sửa",
-      dataIndex: "updatedAt",
-      key: "updateAt",
-    },
+    {title: "Ngày tạo",dataIndex: "createdAt", key: "createAt",},
+    { title: "Ngày sửa",  dataIndex: "updatedAt", key: "updateAt",},
    
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
+    {title: "Trạng thái",  dataIndex: "status",key: "status",
       render(value: keyof typeof STATUS, record, index) {
         let color: string = value === "ACTIVE" ? "green" : "default";
         return (
