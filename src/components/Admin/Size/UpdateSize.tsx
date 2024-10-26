@@ -1,6 +1,7 @@
-import { STATUS } from "@/constants/Status";
+"use client"
+import {STATUS} from "@/constants/Status";
 import {App, Form, Input, Modal, notification, Radio, Select} from "antd";
-import { memo, useEffect } from "react";
+import {memo, useEffect} from "react";
 import {ISize} from "@/types/ISize";
 import {updateSize} from "@/services/SizeService";
 import useAppNotifications from "@/hooks/useAppNotifications";
@@ -14,8 +15,8 @@ interface IProps {
 }
 
 const UpdateSize = (props: IProps) => {
-    const { showNotification } = useAppNotifications();
-    const { isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate } = props;
+    const {showNotification} = useAppNotifications();
+    const {isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate} = props;
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -63,18 +64,20 @@ const UpdateSize = (props: IProps) => {
     return (
         <>
             <Modal title="Chỉnh sửa kích thước" cancelText="Hủy" okText="Lưu" style={{top: 20}}
-                open={isUpdateModalOpen}
-                onOk={() => form.submit()}
-                onCancel={() => handleCloseUpdateModal()}
-                okButtonProps={{style: { background: "#00b96b" }}}
+                   open={isUpdateModalOpen}
+                   onOk={() => form.submit()}
+                   onCancel={() => handleCloseUpdateModal()}
+                   okButtonProps={{style: {background: "#00b96b"}}}
             >
                 <Form form={form} name="updateSize" layout="vertical" onFinish={onFinish}>
                     <Form.Item name="sizeName" label="Tên kích thước"
-                        rules={[{ required: true, message: "Vui lòng nhập tên kích thước!" }]}>
-                        <Input />
+                               rules={[{required: true, message: "Vui lòng nhập tên kích thước!"}]}
+                               validateTrigger="onBlur"
+                    >
+                        <Input/>
                     </Form.Item>
                     <Form.Item name="status" label="Trạng thái"
-                        rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>
+                               rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}>
                         <Select
                             options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
                                 (key) => (

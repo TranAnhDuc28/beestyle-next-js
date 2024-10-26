@@ -1,4 +1,5 @@
 export interface IVoucher {
+    id: number;
     voucherCode: string;
     voucherName: string;
     discountType: string;

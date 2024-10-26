@@ -5,7 +5,8 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "Phiếu giảm giá",
-};
+    description: "Voucher service"
+}
 
 const VoucherPage = () => {
     return (

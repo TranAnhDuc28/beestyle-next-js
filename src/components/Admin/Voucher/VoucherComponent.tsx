@@ -66,8 +66,8 @@ const VoucherComponent = () => {
                     description: result.message || 'Không có thông tin thêm.',});
             }
         } catch (error) {
-            showNotification("error",{message: 'Có lỗi xảy ra!',
-                description: error.message,});
+            // showNotification("error",{message: 'Có lỗi xảy ra!',
+            //     description: error?.message,});
         }
     };
 

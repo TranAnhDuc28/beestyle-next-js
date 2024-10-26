@@ -1,5 +1,5 @@
 "use client"
-import { memo } from 'react';
+import {memo} from 'react';
 import {App, Form, Input, Modal, notification} from 'antd';
 import {ISize} from "@/types/ISize";
 import {createSize} from "@/services/SizeService";
@@ -12,8 +12,8 @@ interface IProps {
 }
 
 const CreateSize = (props: IProps) => {
-    const { showNotification } = useAppNotifications();
-    const { isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
+    const {showNotification} = useAppNotifications();
+    const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
 
     const handleCloseCreateModal = () => {
@@ -45,22 +45,17 @@ const CreateSize = (props: IProps) => {
     return (
         <>
             <Modal title="Thêm mới kích thước" cancelText="Hủy" okText="Lưu" style={{top: 20}}
-                open={isCreateModalOpen}
-                onOk={() => form.submit()}
-                onCancel={() => handleCloseCreateModal()}
-                okButtonProps={{style: { background: "#00b96b" }}}
+                   open={isCreateModalOpen}
+                   onOk={() => form.submit()}
+                   onCancel={() => handleCloseCreateModal()}
+                   okButtonProps={{style: {background: "#00b96b"}}}
             >
-                <Form
-                    form={form}
-                    name="createSize"
-                    layout="vertical"
-                    onFinish={onFinish}
-                >
-                    <Form.Item
-                        name="sizeName"
-                        label="Tên kích thước"
-                        rules={[{ required: true, message: "Vui lòng nhập tên kích thước!" }]}>
-                        <Input />
+                <Form form={form} name="createSize" layout="vertical" onFinish={onFinish}>
+                    <Form.Item name="sizeName" label="Tên kích thước"
+                               rules={[{required: true, message: "Vui lòng nhập tên kích thước!"}]}
+                               validateTrigger="onBlur"
+                    >
+                        <Input/>
                     </Form.Item>
                 </Form>
             </Modal>

@@ -11,7 +11,7 @@ interface IProps {
 }
 
 const CreateBrand = (props: IProps) => {
-    const { showNotification } = useAppNotifications();
+    const {showNotification} = useAppNotifications();
     const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
 
@@ -44,21 +44,16 @@ const CreateBrand = (props: IProps) => {
     return (
         <>
             <Modal title="Thêm mới thương hiệu" cancelText="Hủy" okText="Lưu" style={{top: 20}}
-                open={isCreateModalOpen}
-                onOk={() => form.submit()}
-                onCancel={() => handleCloseCreateModal()}
-                okButtonProps={{style: {background: "#00b96b"}}}
+                   open={isCreateModalOpen}
+                   onOk={() => form.submit()}
+                   onCancel={() => handleCloseCreateModal()}
+                   okButtonProps={{style: {background: "#00b96b"}}}
             >
-                <Form
-                    form={form}
-                    name="createBrand"
-                    layout="vertical"
-                    onFinish={onFinish}
-                >
-                    <Form.Item
-                        name="brandName"
-                        label="Tên thương hiệu"
-                        rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}>
+                <Form form={form} name="createBrand" layout="vertical" onFinish={onFinish}>
+                    <Form.Item name="brandName" label="Tên thương hiệu"
+                               rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}
+                               validateTrigger="onBlur"
+                    >
                         <Input/>
                     </Form.Item>
                 </Form>

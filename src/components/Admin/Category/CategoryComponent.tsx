@@ -87,7 +87,7 @@ const CategoryComponent = () => {
     useEffect(() => {
         if (error) {
             showNotification("error",{
-                message: error?.message || "Error fetching brands", description: error?.response?.data?.message,
+                message: error?.message, description: error?.response?.data?.message || "Error fetching categories",
             });
         }
     }, [error]);
@@ -109,7 +109,6 @@ const CategoryComponent = () => {
                         boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
                         flex: 1,
                         minWidth: 700,
-                        borderRadius: '8px 8px 0px 0px'
                     }}
                 >
                     <TablePagination

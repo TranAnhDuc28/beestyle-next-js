@@ -7,6 +7,6 @@ export interface ICategory{
     parentCategoryId?: number;
     parentCategoryName?: string;
     status?: string;
-    createAt?: string;
-    updateAt?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }

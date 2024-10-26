@@ -1,9 +1,9 @@
-import { STATUS } from "@/constants/Status";
+import {STATUS} from "@/constants/Status";
 import {App, Form, Input, Modal, notification, Radio, Select, TreeSelect} from "antd";
 import {memo, useEffect} from "react";
 import {ICategory} from "@/types/ICategory";
 import {updateCategory, URL_API_CATEGORY} from "@/services/CategoryService";
-import useTreeSelectCategory from "@/hooks/useTreeSelectCategory";
+import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {mutate} from "swr";
 import {MAX_CATEGORY_LEVEL} from "@/constants/AppConstants";
@@ -17,15 +17,16 @@ interface IProps {
 }
 
 const UpdateCategory = (props: IProps) => {
-    const { showNotification } = useAppNotifications();
-    const { isUpdateModalOpen, setIsUpdateModalOpen, mutate: mutateCategories, dataUpdate, setDataUpdate } = props;
+    const {showNotification} = useAppNotifications();
+    const {isUpdateModalOpen, setIsUpdateModalOpen, mutate: mutateCategories, dataUpdate, setDataUpdate} = props;
     const [form] = Form.useForm();
     const {dataTreeSelectCategory, error, isLoading} = useTreeSelectCategory(isUpdateModalOpen);
 
     useEffect(() => {
-        if(error && isUpdateModalOpen) {
+        if (error && isUpdateModalOpen) {
             showNotification("error", {
-                message: error?.message || "Error fetching category input select", description: error?.response?.data?.message,
+                message: error?.message || "Error fetching category input select",
+                description: error?.response?.data?.message,
             });
         }
     }, [isUpdateModalOpen]);
@@ -39,6 +40,7 @@ const UpdateCategory = (props: IProps) => {
                 status: dataUpdate.status,
             });
         }
+        console.log(dataUpdate);
     }, [dataUpdate]);
 
     const handleCloseUpdateModal = () => {
@@ -51,7 +53,7 @@ const UpdateCategory = (props: IProps) => {
         console.log(value);
         try {
             if (dataUpdate) {
-                if(dataUpdate.id === value.parentCategoryId)
+                if (dataUpdate.id === value.parentCategoryId)
                     throw Error("Không thể chọn danh mục làm cha cho chính nó.");
                 console.log(dataUpdate.level);
 
@@ -82,23 +84,25 @@ const UpdateCategory = (props: IProps) => {
     return (
         <>
             <Modal title="Chỉnh sửa danh mục" cancelText="Hủy" okText="Lưu" style={{top: 20}}
-                open={isUpdateModalOpen}
-                onOk={() => form.submit()}
-                onCancel={() => handleCloseUpdateModal()}
-                okButtonProps={{style: { background: "#00b96b" }}}
+                   open={isUpdateModalOpen}
+                   onOk={() => form.submit()}
+                   onCancel={() => handleCloseUpdateModal()}
+                   okButtonProps={{style: {background: "#00b96b"}}}
             >
                 <Form form={form} name="updateCategory" layout="vertical" onFinish={onFinish}>
                     <Form.Item name="categoryName" label="Tên danh mục"
-                        rules={[{ required: true, message: "Vui lòng nhập tên danh mục!" }]}>
-                        <Input />
+                               rules={[{required: true, message: "Vui lòng nhập tên danh mục!"}]}
+                               validateTrigger="onBlur"
+                    >
+                        <Input/>
                     </Form.Item>
                     <Form.Item name="slug" label="Slug">
-                        <Input />
+                        <Input/>
                     </Form.Item>
                     <Form.Item name="parentCategoryId" label="Danh mục cha">
                         <TreeSelect
                             placeholder={isLoading ? "Đang tải..." : "---Lựa chọn---"}
-                            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                            dropdownStyle={{maxHeight: 400, overflow: 'auto'}}
                             treeData={dataTreeSelectCategory}
                             loading={isLoading}
                             showSearch
@@ -111,7 +115,7 @@ const UpdateCategory = (props: IProps) => {
                         />
                     </Form.Item>
                     <Form.Item name="status" label="Trạng thái"
-                        rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>
+                               rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}>
                         <Select
                             options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
                                 (key) => (
