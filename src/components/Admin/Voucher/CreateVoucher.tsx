@@ -59,7 +59,7 @@ const CreateVoucher = (props: IProps) => {
                     style: {background: "#00b96b"},
                 }}
                 width={800} // Kích thước modal
-                bodyStyle={{padding: '20px'}}
+                style={{ body: {padding: '20px'} }}
             >
                 <Form
                     form={form}

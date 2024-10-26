@@ -41,21 +41,6 @@ const VoucherComponent = () => {
         { revalidateOnFocus: false }
     );
 
-    // useEffect(() => {
-    //     if (data) {
-    //         console.log("Data received from API:", data);
-    //         setVouchers(data.data.items || []); // Cập nhật vouchers
-    //     }
-    // }, [data]);
-    //
-    // useEffect(() => {
-    //     if (error) {
-    //         console.error("Error fetching vouchers:", error);
-    //         showNotification("error",{message: error?.message || "Error fetching vouchers",
-    //             description: error?.response?.data?.message || "Có lỗi xảy ra!",});
-    //
-    //     }
-    // }, [error]);
     useEffect(() => {
         if (error) {
             showNotification("error",{
@@ -98,13 +83,12 @@ const VoucherComponent = () => {
             }
         });
     };
+    useEffect(() => {
+        console.log("Updated vouchers:", vouchers);
+    }, [vouchers]);
 
     const columns: TableColumnsType<IVoucher> = [
-        // {
-        //     title: 'STT',
-        //     dataIndex: 'key',
-        //     render: (text: string, record: IVoucher, index: number) => (index + 1)
-        // },
+
         {
             title: 'Mã',
             dataIndex: 'voucherCode',
@@ -183,7 +167,10 @@ const VoucherComponent = () => {
 
     return (
         <>
-            <HeaderVoucher setIsCreateModalOpen={setIsCreateModalOpen}/>
+            <HeaderVoucher
+                setIsCreateModalOpen={setIsCreateModalOpen}
+                setVouchers={setVouchers}
+            />
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
                 <VoucherFilter error={error}/>
                 <Content
