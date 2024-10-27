@@ -4,7 +4,7 @@ import React, { ReactNode, useEffect, useState } from "react";
 import Loader from "@/components/Loader/Loader";
 import {App, FloatButton} from "antd";
 
-export default function RootAdminLayout({ children, }: Readonly<{ children: ReactNode; }>) {
+export default function RootUserLayout({ children, }: Readonly<{ children: ReactNode; }>) {
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
