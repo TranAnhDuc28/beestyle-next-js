@@ -1,7 +1,6 @@
 "use client"
 import {Table, TableColumnsType, TableProps } from "antd";
 import React, {memo} from "react";
-import "../../css/table-customize.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 

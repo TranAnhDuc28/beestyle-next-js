@@ -1,29 +1,18 @@
 "use client";
 import "../../css/globals.css";
-import React, { ReactNode, useEffect, useState } from "react";
-import Loader from "@/components/Loader/Loader";
+import React, {ReactNode} from "react";
 import {App, FloatButton} from "antd";
+import {AntdRegistry} from "@ant-design/nextjs-registry";
 
-export default function RootAdminLayout({ children, }: Readonly<{ children: ReactNode; }>) {
-    const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 2000);
-        return () => clearTimeout(timer);
-    }, [loading]);
-
+export default function RootUserLayout({children,}: Readonly<{ children: ReactNode; }>) {
     return (
-        <html lang="en">
-            <body>
-                {
-                    loading ?
-                        (<Loader />) :
-                        (
-                            <span>USER</span>
-                        )
-                }
-                <FloatButton.BackTop visibilityHeight={100}/>
-            </body>
-        </html >
+        <>
+            <AntdRegistry>
+                <App>
+                    <main>{children}</main>
+                </App>
+            </AntdRegistry>
+            <FloatButton.BackTop visibilityHeight={100}/>
+        </>
     );
 }
