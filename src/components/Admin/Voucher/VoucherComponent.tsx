@@ -79,7 +79,7 @@ const VoucherComponent = () => {
             okType: 'danger',
             cancelText: 'Hủy',
             onOk: () => {
-                handleDeleteVoucher(record.id); // Gọi hàm xóa record
+                handleDeleteVoucher(record.id);
             }
         });
     };

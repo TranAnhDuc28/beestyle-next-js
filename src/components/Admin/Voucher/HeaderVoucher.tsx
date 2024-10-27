@@ -46,7 +46,7 @@ const HeaderVoucher = ({ setIsCreateModalOpen, setVouchers }: IProps) => {
         await fetchVouchersByDate();
     };
 
-    // Hàm fetch vouchers dựa trên ngày đã chọn
+
     const fetchVouchersByDate = async () => {
         const startDate = params.get("startDate");
         const endDate = params.get("endDate");
