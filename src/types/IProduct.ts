@@ -1,3 +1,6 @@
+import {IProductImage} from "@/types/IProductImage";
+import {IProductVariant} from "@/types/IProductVariant";
+
 export interface IProduct {
     id: number;
     productName?: string;
@@ -11,8 +14,22 @@ export interface IProduct {
     materialName?: string;
     description?: string;
     status?: string;
-    createdAt?: string;
-    updatedAt?: string;
-    createdBy?: string;
-    updatedBy?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+    createdBy?: number;
+    updatedBy?: number;
+}
+
+export interface IProductCreate {
+    productName: string;
+    categoryId?: number;
+    gender?: string;
+    brandId?: number;
+    materialId?: number;
+    description?: string;
+    status?: string;
+    productImages?: IProductImage[];
+    productVariants?: IProductVariant[];
+    createdBy?: number;
+    updatedBy?: number;
 }

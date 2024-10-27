@@ -14,31 +14,34 @@ const getBase64 = (file: FileType): Promise<string> =>
 
 interface IProps {
     countFileImage?: number;
+    fileList: UploadFile[];
+    onChange: (fileList: UploadFile[]) => void;
 }
 
 const UploadImage = (props: IProps) => {
-    const {countFileImage} = props;
+    const {countFileImage, fileList: fileListProp, onChange} = props;
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
-    const [fileList, setFileList] = useState<UploadFile[]>([]);
+    const [fileList, setFileList] = useState<UploadFile[]>(fileListProp);
 
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj as FileType);
         }
-
-        console.log(file.url || (file.preview as string));
         setPreviewImage(file.url || (file.preview as string));
         setPreviewOpen(true);
     };
 
-    const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) =>
+    const handleChange: UploadProps['onChange'] = ({fileList: newFileList}) =>{
         setFileList(newFileList);
+        onChange(newFileList);
+    }
+
 
     const uploadButton = (
-        <button style={{ border: 0, background: 'none'}} type="button">
-            <PlusOutlined />
-            <div style={{ marginTop: 8 }}>Upload</div>
+        <button style={{border: 0, background: 'none'}} type="button">
+            <PlusOutlined/>
+            <div style={{marginTop: 8}}>Upload</div>
         </button>
     );
 
@@ -46,22 +49,25 @@ const UploadImage = (props: IProps) => {
         <>
             <Upload
                 multiple={true}
+                maxCount={countFileImage}
                 listType="picture-card"
                 fileList={fileList}
                 onPreview={handlePreview}
                 onChange={handleChange}
             >
-                {(fileList.length >= (countFileImage ?? 1)) ? null : uploadButton}
+                {(fileList?.length >= (countFileImage ?? 1)) ? null : uploadButton}
             </Upload>
-            <Image
-                wrapperStyle={{ display: 'none' }}
-                preview={{
-                    visible: previewOpen,
-                    onVisibleChange: (visible) => setPreviewOpen(visible),
-                    afterOpenChange: (visible) => !visible && setPreviewImage(''),
-                }}
-                src={previewImage}
-            />
+            {previewImage && (
+                <Image
+                    wrapperStyle={{display: 'none'}}
+                    preview={{
+                        visible: previewOpen,
+                        onVisibleChange: (visible) => setPreviewOpen(visible),
+                        afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                    }}
+                    src={previewImage}
+                />
+            )}
         </>
     );
 }
