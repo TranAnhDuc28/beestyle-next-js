@@ -1,5 +1,5 @@
 import httpInstance from "@/utils/HttpInstance";
-import {IProduct} from "@/types/IProduct";
+import {IProduct, IProductCreate} from "@/types/IProduct";
 
 export const URL_API_PRODUCT = {
     options: '/admin/product',
@@ -14,7 +14,7 @@ export const getProducts = async (url: string) => {
     return response.data;
 }
 
-export const createProduct = async (data: IProduct) => {
+export const createProduct = async (data: IProductCreate) => {
     const response = await httpInstance.post(URL_API_PRODUCT.create, data);
     return response.data;
 }

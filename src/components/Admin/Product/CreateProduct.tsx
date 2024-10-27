@@ -11,10 +11,10 @@ import {
     Tabs,
     TabsProps,
     TreeSelect,
-    Typography
+    Typography, UploadFile
 } from "antd";
 import useAppNotifications from "@/hooks/useAppNotifications";
-import React, {memo, useState} from "react";
+import React, {memo, useCallback, useState} from "react";
 import {IProduct} from "@/types/IProduct";
 import UploadImage from "@/components/Upload/UploadImage";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
@@ -22,18 +22,18 @@ import useOptionMaterial from "@/components/Admin/Material/hooks/useOptionMateri
 import useOptionBrand from "@/components/Admin/Brand/hooks/useOptionBrand";
 import {GENDER_PRODUCT} from "@/constants/GenderProduct";
 import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
-import TableEditRows from "@/components/Table/TableEditRows";
-import ColorPickerCustomize from "@/components/ColorPicker/ColorPickerCustomize";
+import TableEditRows from "@/components/Admin/Product/CreateProductVariantTable";
 import ColorOptionSelect from "@/components/Select/ColorOptionSelect";
+import {IProductImageCreate} from "@/types/IProductImage";
+import {IProductVariantCreate} from "@/types/IProductVariant";
 
-const {TextArea} = Input;
 const {Title} = Typography;
 
 const normFile = (e: any) => {
     if (Array.isArray(e)) {
         return e;
     }
-    console.log(e?.fileList)
+    console.log(e?.fileList || []);
     return e?.fileList;
 };
 
@@ -44,9 +44,10 @@ interface IProps {
 }
 
 const CreateProduct = (props: IProps) => {
+    const [form] = Form.useForm();
     const {showNotification} = useAppNotifications();
     const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
-    const [colorHex, setColorHex] = useState<string>('');
+    const [productVariants, setProductVariants] = useState<IProductVariantCreate[]>([]);
 
     const {dataOptionBrand, error: errorDataOptionBrand, isLoading: isLoadingDataOptionBrand}
         = useOptionBrand(isCreateModalOpen);
@@ -54,19 +55,29 @@ const CreateProduct = (props: IProps) => {
         = useTreeSelectCategory(isCreateModalOpen);
     const {dataOptionMaterial, error: errorDataOptionMaterial, isLoading: isLoadingDataOptionMaterial}
         = useOptionMaterial(isCreateModalOpen);
-    const [form] = Form.useForm();
-
-    const handleColorChange = () => {
-
-    }
 
     const handleCloseCreateModal = () => {
         form.resetFields();
         setIsCreateModalOpen(false);
     };
 
+    const handleProductImages = (fileList: UploadFile[]) => {
+        const images: IProductImageCreate[] = fileList.map((file, index) => (
+            {
+                imagUrl: `/${file.url || file.name || file.originFileObj?.name || 'no-img.png'}`,
+                isDefault: index === 0,
+            }
+        )).filter(Boolean);
+        form.setFieldsValue({productImages: images});
+    }
+
+    const handleProductVariants = () => {
+
+    }
+
     const onFinish = async (value: IProduct) => {
-        console.log('Success:', value);
+        const product = {...value, productVariants};
+        console.log('Success json:', JSON.stringify(product, null, 2));
         // try {
         //     const result = await createMaterial(value);
         //     mutate();
@@ -103,7 +114,7 @@ const CreateProduct = (props: IProps) => {
                             >
                                 <Input/>
                             </Form.Item>
-                            <Form.Item name="gender" label="Giới tính" initialValue="UNISEX">
+                            <Form.Item name="genderProduct" label="Giới tính" initialValue="UNISEX">
                                 <Select
                                     options={Object.keys(GENDER_PRODUCT).map((key) => (
                                         {
@@ -166,39 +177,44 @@ const CreateProduct = (props: IProps) => {
                             </Form.Item>
                         </Col>
                         <Col span={10}>
-                            <Form.Item name="originalPrice" label="Giá vốn" initialValue={0} layout="horizontal">
+                            <Form.Item label="Giá vốn" initialValue={0} layout="horizontal">
                                 {/*<Title level={5}>Giá vốn:</Title>*/}
-                                <InputNumber style={{width: '100%'}}/>
+                                <InputNumber style={{width: '100%'}} min={0} value={0}/>
                             </Form.Item>
-                            <Form.Item name="salePrice" label="Giá bán" initialValue={0}>
-                                <InputNumber style={{width: '100%'}}/>
+                            <Form.Item label="Giá bán" initialValue={0} >
+                                <InputNumber style={{width: '100%'}} min={0} value={0}/>
                             </Form.Item>
-                            <Form.Item name="quantityInStock" label="Tồn kho" initialValue={0}>
-                                <InputNumber style={{width: '100%'}}/>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row style={{margin: "10px 0px"}}>
-                        <Col span={24}>
-                            <Form.Item name="imageUrl" valuePropName="fileList" getValueFromEvent={normFile}>
-                                <UploadImage countFileImage={6}/>
+                            <Form.Item label="Tồn kho" initialValue={0}>
+                                <InputNumber style={{width: '100%'}} min={0} value={0}/>
                             </Form.Item>
                         </Col>
                     </Row>
                     <Row style={{margin: "10px 0px"}}>
                         <Col span={24}>
-                            <Collapse size="small" expandIconPosition="end"
+                            <Form.Item name="productImages" valuePropName="fileList" getValueFromEvent={normFile}>
+                                <UploadImage
+                                    countFileImage={6}
+                                    fileList={form.getFieldValue('productImages') || []}
+                                    onChange={(fileList) => handleProductImages(fileList)}
+                                />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row style={{margin: "10px 0px"}}>
+                        <Col span={24}>
+                            <Collapse
+                                size="small" expandIconPosition="end"
                                 items={[{
                                     key: 'thuoc-tinh',
                                     label: <Title level={5} style={{margin: '0px 10px'}}>Thuộc tính</Title>,
                                     children: (
                                         <>
-                                            <Form.Item label="Màu sắc" name="colorId" style={{marginTop: 24}}>
+                                            <Form.Item label="Màu sắc" style={{marginTop: 24}}>
                                                 <ColorOptionSelect
                                                     // onChange={(value) => form.setFieldsValue({colorId: value})}
                                                 />
                                             </Form.Item>
-                                            <Form.Item label="Kích cỡ" name="sizeId">
+                                            <Form.Item label="Kích cỡ">
                                                 <ColorOptionSelect/>
                                             </Form.Item>
                                         </>
@@ -209,14 +225,22 @@ const CreateProduct = (props: IProps) => {
                     </Row>
                     <Row style={{margin: "10px 0px"}}>
                         <Col span={24}>
-                            <Collapse size="small" expandIconPosition="end"
+                            <Collapse
+                                size="small" expandIconPosition="end"
                                 items={[{
                                     key: 'danh-sach-san-pham-cung-loai',
                                     label: (
                                         <Title level={5} style={{margin: '0px 10px'}}>
                                             Danh sách sản phẩm cùng loại
                                         </Title>),
-                                    children: (<TableEditRows/>)
+                                    children: (
+                                        <Form.Item name="productVariants">
+                                            <TableEditRows
+                                                form={form}
+                                                setProductVariants={setProductVariants}
+                                            />
+                                        </Form.Item>
+                                    )
                                 }]}
                             />
                         </Col>

@@ -78,39 +78,37 @@ const ProductComponent = () => {
         {
             title: 'Hành động', align: 'center', render: (record) => {
                 return (
-                    <>
-                        <Row gutter={[8, 8]} justify="center" align="middle">
-                            <Col>
-                                <Tooltip placement="top" title="Xem chi tiết">
-                                    <EyeTwoTone
-                                        style={{
-                                            cursor: "pointer",
-                                            padding: "5px",
-                                            border: "1px solid #1677FF",
-                                            borderRadius: "5px",
-                                        }}
-                                    />
-                                </Tooltip>
-                            </Col>
-                            <Col>
-                                <Tooltip placement="top" title="Chỉnh sửa">
-                                    <EditTwoTone
-                                        twoToneColor={"#f57800"}
-                                        style={{
-                                            cursor: "pointer",
-                                            padding: "5px",
-                                            border: "1px solid #f57800",
-                                            borderRadius: "5px"
-                                        }}
-                                        onClick={() => {
-                                            setIsUpdateModalOpen(true);
-                                            setDataUpdate(record);
-                                        }}
-                                    />
-                                </Tooltip>
-                            </Col>
-                        </Row>
-                    </>
+                    <Row gutter={[8, 8]} justify="center" align="middle">
+                        <Col>
+                            <Tooltip placement="top" title="Xem chi tiết">
+                                <EyeTwoTone
+                                    style={{
+                                        cursor: "pointer",
+                                        padding: "5px",
+                                        border: "1px solid #1677FF",
+                                        borderRadius: "5px",
+                                    }}
+                                />
+                            </Tooltip>
+                        </Col>
+                        <Col>
+                            <Tooltip placement="top" title="Chỉnh sửa">
+                                <EditTwoTone
+                                    twoToneColor={"#f57800"}
+                                    style={{
+                                        cursor: "pointer",
+                                        padding: "5px",
+                                        border: "1px solid #f57800",
+                                        borderRadius: "5px"
+                                    }}
+                                    onClick={() => {
+                                        setIsUpdateModalOpen(true);
+                                        setDataUpdate(record);
+                                    }}
+                                />
+                            </Tooltip>
+                        </Col>
+                    </Row>
                 )
             }
         },
