@@ -12,7 +12,7 @@ import { Content } from "antd/es/layout/layout";
 import { EditTwoTone } from "@ant-design/icons";
 import { useSearchParams } from "next/navigation";
 import { STATUS } from "@/constants/Status";
-import CustomerFilter from "./CustomerFilter";
+import CustomerFilter from "./StaffFilter";
 import { getStaff, URL_API_STAFF } from "@/services/StaffService";
 import AddStaff from "./AddStaff";
 import UpdateStaff from "./UpdateStaff";

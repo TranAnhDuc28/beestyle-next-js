@@ -32,7 +32,7 @@ const HeaderVoucher = (props: IProps) => {
             return;
         }
 
-        const data = await findVouchers(searchTerm, page);
+        const data = await findVouchers(searchTerm, Number(page));
         if (data && data.data) {
             const vouchersData = data.data.content || data.data.items || [];
             setVouchers(vouchersData.length > 0 ? vouchersData : []);
@@ -64,7 +64,7 @@ const HeaderVoucher = (props: IProps) => {
         const endDate = params.get("endDate");
         const page = params.get("page") || "0";
 
-        const data = await findVouchersByDate(startDate, endDate, page);
+        const data = await findVouchersByDate(startDate, endDate, Number(page));
         if (data && data.data) {
             const vouchersData = data.data.content || data.data.items || [];
             setVouchers(vouchersData);
@@ -83,7 +83,6 @@ const HeaderVoucher = (props: IProps) => {
     return (
         <div style={{ padding: '' }}>
             <Flex
-                direction="column"
                 style={{
                     backgroundColor: '#f5f5f5',
                     borderRadius: '8px',

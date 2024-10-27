@@ -8,14 +8,12 @@ export const metadata: Metadata = {
   title: "Khách hàng",
   description: "Customer - Customer service",
 };
+
 const CustomerPage = () => {
   return (
-    <div>
       <Suspense fallback={<Loader />}>
         <TableCustomer />
       </Suspense>
-    </div>
   );
 };
-
 export default CustomerPage;

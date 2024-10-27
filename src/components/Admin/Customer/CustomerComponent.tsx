@@ -4,6 +4,7 @@ import { getCustomer, URL_API_CUSTOMER } from "@/services/CustomerService";
 import {
   Button,
   Flex,
+  Layout,
   notification,
   Table,
   Tag,
@@ -14,7 +15,6 @@ import { ColumnType } from "antd/es/table";
 import useSWR, { mutate } from "swr";
 import { useEffect, useState } from "react";
 import TablePagination from "@/components/Table/TablePagination";
-import { Content } from "antd/es/layout/layout";
 import { EditTwoTone } from "@ant-design/icons";
 import { useSearchParams } from "next/navigation";
 import HeaderCustomer from "./HeaderCustomer";
@@ -25,7 +25,7 @@ import CustomerFilter from "./CustomerFilter";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { GENDER } from "@/constants/Gender";
 
-const { Title } = Typography;
+const { Content } = Layout;
 const CustomerComponent = () => {
   const { showNotification } = useAppNotifications();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
@@ -43,22 +43,7 @@ const CustomerComponent = () => {
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   );
 
-  useEffect(() => {
-    if (error) {
-      showNotification("error", {
-        message: error?.message,
-        description:
-          error?.response?.data?.message || "Error fetching customers",
-      });
-    }
-  }, [error]);
-
-  let result: any;
-  if (!isLoading && data) {
-    result = data?.data;
-  }
-
-  console.log(data);
+  
 
   const columns: ColumnType<ICustomer>[] = [
     { title: "Họ và tên", dataIndex: "fullName", key: "fullName" },
@@ -75,16 +60,19 @@ const CustomerComponent = () => {
   },
     {title: "Ngày tạo", dataIndex: "createdAt",  key: "createAt",    },
     {   title: "Ngày sửa", dataIndex: "updatedAt", key: "updateAt",  },
-    {   title: "Trạng thái", dataIndex: "status",  key: "status",
+    {
+      title: 'Trạng thái', dataIndex: 'status', key: 'status',
       render(value: keyof typeof STATUS, record, index) {
-        let color: string = value === "ACTIVE" ? "green" : "default";
-        return (
-          <Tag color={color} key={record.id}>
-            {STATUS[value]}
-          </Tag>
-        );
+         
+          let color: string = value === 'ACTIVE' ? 'green' : 'default';
+          console.log(record);
+          console.log(value);
+          return (
+              <Tag color={color} key={record.id}>{STATUS[value]}</Tag>
+          );
+          
       },
-    },
+  },
     
     {
       title: "Hành động",
@@ -109,6 +97,23 @@ const CustomerComponent = () => {
       ),
     },
   ];
+
+  useEffect(() => {
+    if (error) {
+      showNotification("error", {
+        message: error?.message,
+        description:
+          error?.response?.data?.message || "Error fetching customers",
+      });
+    }
+  }, [error]);
+
+  let result: any;
+  if (!isLoading && data) {
+    result = data?.data;
+  }
+
+  console.log(data);
 
   return (
     <div>

@@ -35,12 +35,6 @@ const UpdateCustomer = (props: IProps) => {
   } = props;
   const [form] = Form.useForm();
 
-  const handleCloseUpdateModal = () => {
-    form.resetFields();
-    setIsUpdateModalOpen(false);
-    setDataUpdate(null);
-  };
-
   useEffect(() => {
     if (dataUpdate) {
       form.setFieldsValue({
@@ -49,32 +43,41 @@ const UpdateCustomer = (props: IProps) => {
         dateOfBirth: dataUpdate.dateOfBirth
           ? moment(dataUpdate.dateOfBirth).local()
           : null, // Hiển thị ngày theo múi giờ hiện tại
-        gender: dataUpdate.gender ,
+        gender: dataUpdate.gender === "FEMALE" ? "Nữ" : "Nam",
         phoneNumber: dataUpdate.phoneNumber,
         password: dataUpdate.password,
         status: dataUpdate.status,
         email: dataUpdate.email,
-        address: dataUpdate.addresses && dataUpdate.addresses.length > 0 
-        ? dataUpdate.addresses[0].addressName
-        : "",
+        address:
+          dataUpdate.addresses && dataUpdate.addresses.length > 0
+            ? dataUpdate.addresses[0].addressName
+            : "",
       });
       console.log("dataUpdate.address:", dataUpdate.address);
 
       console.log(dataUpdate);
-      
     }
     // Cập nhật lại form khi param thay đổi
   }, [dataUpdate]);
 
+  const handleCloseUpdateModal = () => {
+    form.resetFields();
+    setIsUpdateModalOpen(false);
+    setDataUpdate(null);
+  };
   const onFinish = async (value: ICustomer) => {
     console.log(value);
     try {
       if (dataUpdate) {
         const data = {
           ...value,
+          gender: dataUpdate.gender ==="Nam"?"MALE":"FEMALE",
           id: dataUpdate.id,
         };
+        console.log(data);
+
         const result = await updateCustomer(data);
+        
         mutate();
         if (result.data) {
           handleCloseUpdateModal();
@@ -169,18 +172,15 @@ const UpdateCustomer = (props: IProps) => {
           </Select>
         </Form.Item>
         <Form.Item
-          label="Trạng thái"
           name="status"
-          rules={[{ required: true, message: "Vui lòng nhập trạng thái!" }]}
+          label="Trạng thái"
+          rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
         >
           <Select
-            style={{ width: "100%" }}
-            placeholder="Trạng thái"
-            suffixIcon={null}
-          >
-            <Option value="ACTIVE">Đang hoạt động</Option>
-            <Option value="INACTIVE">Ngừng hoạt động</Option>
-          </Select>
+            options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
+              (key) => ({ value: key, label: STATUS[key] })
+            )}
+          />
         </Form.Item>
       </Form>
     </Modal>

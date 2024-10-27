@@ -1,7 +1,6 @@
 "use client";
 import { Col, DatePicker, Form, Input, Modal, Select } from "antd";
 import React, { memo, useEffect, useState } from "react";
-import moment from "moment";
 import { createCustomer } from "@/services/CustomerService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { createAddress } from "@/services/AddressService";
@@ -27,38 +26,48 @@ const AddCustomer = (props: IProps) => {
   const [province, setProvince] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedWard, setSelectedWard] = useState("");
 
   const handleCancelModal = () => {
     form.resetFields();
     setIsCreateModalOpen(false);
-    setWards([])
+    setWards([]);
   };
 
   const handleSubmit = async (values: ICustomer) => {
     try {
       // Định dạng ngày sinh
       console.log(values.dateOfBirth);
-      
+
       const result = await createCustomer(values);
-      mutate();
+     
 
       if (result.data) {
         const customer = result.data; // Lấy ID của khách hàng từ phản hồi
+        const selectedProvinceCode = selectedProvince; // Từ state
+        const selectedDistrictCode = selectedDistrict; // Từ state
+        const selectedWardCode = selectedWard; // Từ state
 
-        // Tạo địa chỉ mới với ID của khách hàng
+        console.log(selectedProvince);
+        console.log(selectedDistrict);
+        console.log(ward);
+
         const address = {
-          addressName: "Địa chỉ",
-          city: province,
-          district: district,
-          commune: ward,
+          addressName: `${ward} - ${district} - ${province}`,
+          cityCode: Number(selectedProvinceCode), // Nếu cần chuyển đổi
+          city: province, // Lưu tên tỉnh vào đây
+          districtCode: Number(selectedDistrictCode), // Nếu cần chuyển đổi
+          district: district, // Lưu tên huyện vào đây
+          communeCode: Number(selectedWardCode), // Cần lấy từ API nếu có
+          commune: ward, // Tên xã
           isDefault: false,
           customer: {
-            id: customer.id,
+            id: customer.id, // Thay đổi bằng ID thực tế
           },
         };
 
         console.log(address);
-
+        mutate();
         // Gọi API để tạo địa chỉ
         try {
           const addressResult = await createAddress(address);
@@ -152,12 +161,27 @@ const AddCustomer = (props: IProps) => {
 
     // Kiểm tra xem có dữ liệu không
     if (data.exitcode === 1 && data.data && data.data.data.length > 0) {
-      // Lấy tên tỉnh
-      const provinceName = data.data.data[0].name;
-      setDistrict(provinceName); // Lưu tên vào state
-      // console.log(provinceName); // In ra tên
+      // Lấy tên huyện
+      const districtName = data.data.data[0].name;
+      setDistrict(districtName); // Lưu tên vào state
     } else {
-      console.log("Không tìm thấy tỉnh");
+      console.log("Không tìm thấy huyện");
+    }
+  };
+  // Lấy tên xã
+  const fetchWard = async (code?: any) => {
+    const response = await fetch(
+      `https://vn-public-apis.fpo.vn/wards/getAll?q=${code}&cols=code`
+    );
+    const data = await response.json();
+
+    // Kiểm tra xem có dữ liệu không
+    if (data.exitcode === 1 && data.data && data.data.data.length > 0) {
+      // Lấy tên xã
+      const wardName = data.data.data[0].name;
+      setWard(wardName); // Lưu tên vào state
+    } else {
+      console.log("Không tìm thấy xã");
     }
   };
 
@@ -183,13 +207,12 @@ const AddCustomer = (props: IProps) => {
     fetchWards(value);
     fetchDistrict(value);
     console.log(value);
-    
   };
   // Xử lý khi xã được chọn
   const handleWardChange = (value?: any) => {
-    setWard(value);
+    setSelectedWard(value);
+    fetchWard(value);
   };
-
 
   // console.log(wards);
 
@@ -205,7 +228,15 @@ const AddCustomer = (props: IProps) => {
         onCancel={handleCancelModal}
         okButtonProps={{ style: { background: "#00b96b" } }}
       >
-        <Form form={form} onFinish={handleSubmit} layout="vertical">
+        <Form
+          form={form}
+          onFinish={handleSubmit}
+          layout="horizontal"
+          labelAlign="left"
+          labelWrap
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 20 }}
+        >
           <Form.Item
             label="Họ tên"
             name="fullName"
@@ -245,14 +276,14 @@ const AddCustomer = (props: IProps) => {
             <DatePicker format={"YYYY-MM-DD"} style={{ width: "100%" }} />
           </Form.Item>
 
-          <Form.Item
-            label="Giới tính"
-            name="gender"
-            rules={[{ required: true, message: "Vui lòng nhập giới tính!" }]}
-          >
-            <Select style={{ width: "100%" }} placeholder="Giới tính">
-              <Option value="0">Nam</Option>
-              <Option value="1">Nữ</Option>
+          <Form.Item label="Giới tính" name="gender" initialValue="0">
+            <Select
+              style={{ width: "100%" }}
+              placeholder="Giới tính"
+              defaultValue="0"
+            >
+              <Select.Option value="0">Nam</Select.Option>
+              <Select.Option value="1">Nữ</Select.Option>
             </Select>
           </Form.Item>
 
@@ -268,9 +299,9 @@ const AddCustomer = (props: IProps) => {
               style={{ width: "100%" }}
             >
               {provinces.map((province) => (
-                <Option key={province._id} value={province.code}>
+                <Select.Option key={province._id} value={province.code}>
                   {province.name}
-                </Option>
+                </Select.Option>
               ))}
             </Select>
           </Form.Item>
@@ -287,9 +318,9 @@ const AddCustomer = (props: IProps) => {
               disabled={!selectedProvince} // Khóa khi chưa chọn tỉnh
             >
               {districts.map((district) => (
-                <Option key={district._id} value={district.code}>
+                <Select.Option key={district._id} value={district.code}>
                   {district.name}
-                </Option>
+                </Select.Option>
               ))}
             </Select>
           </Form.Item>
@@ -306,9 +337,9 @@ const AddCustomer = (props: IProps) => {
               disabled={!selectedDistrict} // Khóa khi chưa chọn huyện
             >
               {wards.map((ward) => (
-                <Option key={ward._id} value={ward.name}>
+                <Select.Option key={ward._id} value={ward.code}>
                   {ward.name}
-                </Option>
+                </Select.Option>
               ))}
             </Select>
           </Form.Item>

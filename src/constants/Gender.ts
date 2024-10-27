@@ -4,7 +4,7 @@ export const GENDER = {
     OTHER:"Khác"
 } as const;
 
-export const STATUS_KEYS = Object.keys(GENDER);
+export const GENDER_KEYS = Object.keys(GENDER).filter(key => key === 'MALE' || key === 'FEMALE');
 
 
 

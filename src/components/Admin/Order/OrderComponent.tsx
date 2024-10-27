@@ -83,10 +83,10 @@ const OrderComponent: React.FC = () => {
 
     return (
         <>
-            <HeaderOrder
-                setIsCreateModalOpen={setIsCreateModalOpen}
-                setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}
-            />
+            {/*<HeaderOrder*/}
+            {/*    setIsCreateModalOpen={setIsCreateModalOpen}*/}
+            {/*    setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}*/}
+            {/*/>*/}
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
                 <OrderFilter error={error}/>
                 <Content
@@ -95,7 +95,6 @@ const OrderComponent: React.FC = () => {
                         boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
                         flex: 1,
                         minWidth: 700,
-                        borderRadius: '8px 8px 0px 0px'
                     }}
                 >
                     <TablePagination
