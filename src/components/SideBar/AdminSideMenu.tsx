@@ -21,8 +21,8 @@ const siderStyle: React.CSSProperties = {
 type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
-    {key: 'tong-quan', label: <Link href={"/"}>Tổng quan</Link>, icon: <PieChartOutlined/>,},
-    {key: 'ban-hang-tai-quay', label: <Link href={"/"}>Bán hàng tại quầy</Link>, icon: <ShoppingCartOutlined/>,},
+    {key: 'tong-quan', label: <Link href={"/admin"}>Tổng quan</Link>, icon: <PieChartOutlined/>,},
+    {key: 'ban-hang-tai-quay', label: <Link href={"/admin"}>Bán hàng tại quầy</Link>, icon: <ShoppingCartOutlined/>,},
     {key: 'don-hang', label: <Link href={"/admin/order"}>Quản lý đơn hàng</Link>, icon: <ShoppingCartOutlined/>,},
     {
         key: 'quan-li-san-pham', label: 'Quản lý sản phẩm', icon: <ProductOutlined/>,
