@@ -1,11 +1,12 @@
 "use client";
-import {memo} from 'react';
+import React, {memo} from 'react';
 import {Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, Col} from 'antd';
 import {createVoucher} from '@/services/VoucherService';
 import {EuroOutlined, PercentageOutlined} from '@ant-design/icons';
 import useAppNotifications from "../../../hooks/useAppNotifications";
 import {STATUS} from "@/constants/Status";
 import {DISCOUNTTYPE} from "@/constants/DiscountType";
+import {DISCOUNTTYPE_KEYS} from "../../../constants/DiscountType";
 
 const {Option} = Select;
 
@@ -115,9 +116,10 @@ const CreateVoucher = (props: IProps) => {
                                             placeholder="Chọn kiểu"
                                             suffixIcon={null}
                                         >
-                                            <Option value="0" icon={<PercentageOutlined/>}>%</Option>
-                                            <Option value="1" icon={<EuroOutlined/>}>VND </Option>
+                                            <Option value="PERCENTAGE" icon={<PercentageOutlined/>}>%</Option>
+                                            <Option value="CASH" icon={<EuroOutlined/>}>VND </Option>
                                         </Select>
+
                                     </Form.Item>
                                 </Input.Group>
                             </Form.Item>
