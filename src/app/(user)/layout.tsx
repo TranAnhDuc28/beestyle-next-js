@@ -1,10 +1,10 @@
 "use client";
-import "../css/globals.css"
-import React, { ReactNode, useEffect, useMemo, useState } from "react";
+import "../../css/globals.css";
+import React, { ReactNode, useEffect, useState } from "react";
 import Loader from "@/components/Loader/Loader";
 import {App, FloatButton} from "antd";
 
-export default function RootLayout({ children, }: Readonly<{ children: ReactNode; }>) {
+export default function RootAdminLayout({ children, }: Readonly<{ children: ReactNode; }>) {
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -15,7 +15,13 @@ export default function RootLayout({ children, }: Readonly<{ children: ReactNode
     return (
         <html lang="en">
             <body>
-                {loading ? (<Loader />) : children}
+                {
+                    loading ?
+                        (<Loader />) :
+                        (
+                            <span>USER</span>
+                        )
+                }
                 <FloatButton.BackTop visibilityHeight={100}/>
             </body>
         </html >
