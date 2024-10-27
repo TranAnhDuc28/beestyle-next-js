@@ -1,15 +1,12 @@
+import { GENDER, GENDER_KEY } from "@/constants/Gender";
 import { STATUS } from "@/constants/Status";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { updateCustomer } from "@/services/CustomerService";
 import {
-  Button,
-  Col,
   DatePicker,
   Form,
   Input,
   Modal,
-  Radio,
-  Row,
   Select,
 } from "antd";
 import moment from "moment";
@@ -43,7 +40,7 @@ const UpdateCustomer = (props: IProps) => {
         dateOfBirth: dataUpdate.dateOfBirth
           ? moment(dataUpdate.dateOfBirth).local()
           : null, // Hiển thị ngày theo múi giờ hiện tại
-        gender: dataUpdate.gender === "FEMALE" ? "Nữ" : "Nam",
+        gender: dataUpdate.gender,
         phoneNumber: dataUpdate.phoneNumber,
         password: dataUpdate.password,
         status: dataUpdate.status,
@@ -71,8 +68,8 @@ const UpdateCustomer = (props: IProps) => {
       if (dataUpdate) {
         const data = {
           ...value,
-          gender: dataUpdate.gender ==="Nam"?"MALE":"FEMALE",
-          id: dataUpdate.id,
+
+           id: dataUpdate.id,
         };
         console.log(data);
 
@@ -162,14 +159,11 @@ const UpdateCustomer = (props: IProps) => {
           name="gender"
           rules={[{ required: true, message: "Vui lòng nhập giới tính!" }]}
         >
-          <Select
-            style={{ width: "100%" }}
-            placeholder="Giới tính"
-            suffixIcon={null}
-          >
-            <Option value="0">Nam</Option>
-            <Option value="1">Nữ</Option>
-          </Select>
+         <Select
+            options={(Object.keys(GENDER_KEY) as Array<keyof typeof GENDER_KEY>).map(
+              (key) => ({ value: key, label: GENDER_KEY[key] })
+            )}
+          />
         </Form.Item>
         <Form.Item
           name="status"

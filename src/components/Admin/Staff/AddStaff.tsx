@@ -1,16 +1,5 @@
 "use client";
-import {
-  Button,
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  message,
-  Modal,
-  Radio,
-  Row,
-  Select,
-} from "antd";
+import { DatePicker, Form, Input, Modal, Select } from "antd";
 import React, { memo } from "react";
 import moment from "moment";
 import useAppNotifications from "@/hooks/useAppNotifications";
@@ -34,25 +23,30 @@ const AddStaff = (props: IProps) => {
   };
 
   const handleSubmit = async (value: IStaff) => {
+    console.log(value);
+    
     try {
       const result = await createStaff(value);
       mutate();
       console.log(value);
-      
+
       if (result.data) {
-          handleCancelModal();
-          showNotification("success", {message: result.message});
+        handleCancelModal();
+        showNotification("success", { message: result.message });
       }
-  } catch (error: any) {
+    } catch (error: any) {
       const errorMessage = error?.response?.data?.message;
-      if (errorMessage && typeof errorMessage === 'object') {
-          Object.entries(errorMessage).forEach(([field, message]) => {
-              showNotification("error", {message: String(message)});
-          });
+      if (errorMessage && typeof errorMessage === "object") {
+        Object.entries(errorMessage).forEach(([field, message]) => {
+          showNotification("error", { message: String(message) });
+        });
       } else {
-          showNotification("error", {message: error?.message, description: errorMessage,});
+        showNotification("error", {
+          message: error?.message,
+          description: errorMessage,
+        });
       }
-  }
+    }
   };
   return (
     <>
@@ -66,7 +60,15 @@ const AddStaff = (props: IProps) => {
         onCancel={() => handleCancelModal()}
         okButtonProps={{ style: { background: "#00b96b" } }}
       >
-        <Form form={form} onFinish={handleSubmit} layout="vertical">
+        <Form
+          form={form}
+          onFinish={handleSubmit}
+          layout="horizontal"
+          labelAlign="left"
+          labelWrap
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 20 }}
+        >
           <Form.Item
             label="Họ tên"
             name="fullName"
@@ -88,14 +90,6 @@ const AddStaff = (props: IProps) => {
           >
             <Input.Password />
           </Form.Item>
-          <Form.Item
-            label="Địa chỉ"
-            name="address"
-            rules={[{ required: false, message: "Vui lòng nhập địa chỉ!" }]}
-          >
-            <Input.TextArea rows={4} />
-          </Form.Item>
-
           <Form.Item
             label="Email"
             name="email"
@@ -120,19 +114,22 @@ const AddStaff = (props: IProps) => {
             <DatePicker format={"YYYY-MM-DD"} style={{ width: "100%" }} />
           </Form.Item>
 
-          <Form.Item
-            label="Giới tính"
-            name="gender"
-            rules={[{ required: true, message: "Vui lòng nhập giới tính!" }]}
-          >
+          <Form.Item label="Giới tính" name="gender" initialValue="0">
             <Select
               style={{ width: "100%" }}
               placeholder="Giới tính"
-              suffixIcon={null}
+              defaultValue="0"
             >
-              <Option value="0">Nam</Option>
-              <Option value="1">Nữ</Option>
+              <Select.Option value="0">Nam</Select.Option>
+              <Select.Option value="1">Nữ</Select.Option>
             </Select>
+          </Form.Item>
+          <Form.Item
+            label="Địa chỉ"
+            name="address"
+            rules={[{ required: false, message: "Vui lòng nhập địa chỉ!" }]}
+          >
+            <Input.TextArea rows={4} />
           </Form.Item>
         </Form>
       </Modal>

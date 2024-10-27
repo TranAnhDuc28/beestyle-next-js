@@ -1,16 +1,8 @@
+import { GENDER_KEY } from "@/constants/Gender";
+import { STATUS } from "@/constants/Status";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { updateStaff } from "@/services/StaffService";
-import {
-  Button,
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  Modal,
-  Radio,
-  Row,
-  Select,
-} from "antd";
+import { DatePicker, Form, Input, Modal, Select } from "antd";
 import moment from "moment";
 import { memo, useEffect } from "react";
 const { Option } = Select;
@@ -50,20 +42,16 @@ const UpdateStaff = (props: IProps) => {
         dateOfBirth: dataUpdate.dateOfBirth
           ? moment(dataUpdate.dateOfBirth).local()
           : null, // Hiển thị ngày theo múi giờ hiện tại
-        gender: dataUpdate.gender === "MALE" ? "Nam" : "Nữ",
+        gender: dataUpdate.gender,
         phoneNumber: dataUpdate.phoneNumber,
         password: dataUpdate.password,
         status: dataUpdate.status,
         address: dataUpdate.address,
-        
       });
-      form.validateFields(); 
-      console.log("address:", dataUpdate.address);
-
       console.log(dataUpdate);
     }
     // Cập nhật lại form khi param thay đổi
-  }, [dataUpdate,form]);
+  }, [dataUpdate]);
 
   const onFinish = async (value: IStaff) => {
     console.log(value);
@@ -106,7 +94,15 @@ const UpdateStaff = (props: IProps) => {
       onCancel={() => handleCloseUpdateModal()}
       okButtonProps={{ style: { background: "#00b96b" } }}
     >
-      <Form form={form} onFinish={onFinish} layout="vertical">
+      <Form
+        form={form}
+        onFinish={onFinish}
+        layout="horizontal"
+        labelAlign="left"
+        labelWrap
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 20 }}
+      >
         <Form.Item
           label="Họ tên"
           name="fullName"
@@ -127,13 +123,6 @@ const UpdateStaff = (props: IProps) => {
           rules={[{ required: true, message: "Vui lòng nhập password!" }]}
         >
           <Input.Password />
-        </Form.Item>
-        <Form.Item
-          label="Địa chỉ"
-          name="address"
-          rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
-        >
-          <Input.TextArea rows={4}  /> {/* Chỉnh số dòng theo nhu cầu của bạn */}
         </Form.Item>
         <Form.Item
           label="Email"
@@ -165,29 +154,28 @@ const UpdateStaff = (props: IProps) => {
           rules={[{ required: true, message: "Vui lòng nhập giới tính!" }]}
         >
           <Select
-            style={{ width: "100%" }}
-            placeholder="Giới tính"
-            suffixIcon={null}
-          >
-            <Option value="0">Nam</Option>
-            <Option value="1">Nữ</Option>
-          </Select>
+            options={(
+              Object.keys(GENDER_KEY) as Array<keyof typeof GENDER_KEY>
+            ).map((key) => ({ value: key, label: GENDER_KEY[key] }))}
+          />
         </Form.Item>
-       
-
         <Form.Item
-          label="Trạng thái"
           name="status"
-          rules={[{ required: true, message: "Vui lòng nhập trạng thái!" }]}
+          label="Trạng thái"
+          rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
         >
           <Select
-            style={{ width: "100%" }}
-            placeholder="Trạng thái"
-            suffixIcon={null}
-          >
-            <Option value="ACTIVE">Đang hoạt động</Option>
-            <Option value="INACTIVE">Ngừng hoạt động</Option>
-          </Select>
+            options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
+              (key) => ({ value: key, label: STATUS[key] })
+            )}
+          />
+        </Form.Item>
+        <Form.Item
+          label="Địa chỉ"
+          name="address"
+          rules={[{ required: false, message: "Vui lòng nhập địa chỉ!" }]}
+        >
+          <Input.TextArea rows={4} />
         </Form.Item>
       </Form>
     </Modal>
