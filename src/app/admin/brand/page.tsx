@@ -1,5 +1,5 @@
 import BrandComponent from "@/components/Admin/Brand/BrandComponent";
-import Loader from "@/components/Loader/Loader";
+import Loader from "@/components/Loader/UserLoader";
 import React, { Suspense } from "react";
 import {Metadata} from "next";
 

@@ -6,7 +6,7 @@ export const URL_API_ORDER = {
     create: '',
 };
 
-export const getOrders = async (url: string) => {
+export const getOrdersById = async (url: string) => {
     const response = await httpInstance.get(url);
     return response.data;
 }

@@ -1,4 +1,4 @@
-import Loader from "@/components/Loader/Loader";
+import Loader from "@/components/Loader/UserLoader";
 import ColorComponent from "@/components/Admin/Color/ColorComponent";
 import { Suspense } from "react";
 import {Metadata} from "next";

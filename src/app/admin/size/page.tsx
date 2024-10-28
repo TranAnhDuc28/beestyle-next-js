@@ -1,5 +1,5 @@
 import React, {Suspense} from "react";
-import Loader from "@/components/Loader/Loader";
+import Loader from "@/components/Loader/UserLoader";
 import {Metadata} from "next";
 import SizeComponent from "@/components/Admin/Size/SizeComponent";
 

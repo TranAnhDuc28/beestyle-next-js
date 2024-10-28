@@ -3,8 +3,14 @@ export interface IOrder {
     customerName: string;
     phoneNumber: string;
     totalAmount: number;
-    paymentMethod: number;
+    paymentMethod: string;
+    shippingFee: number;
+    orderTrackingNumber: string;
+    orderChannel: string
+    orderStatus: string;
+    voucher?: string
     status?: string;
     createAt?: string;
     updateAt?: string;
 }
+

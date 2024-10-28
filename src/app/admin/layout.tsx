@@ -2,7 +2,7 @@
 import "./globals.css";
 import React, { ReactNode, useEffect, useMemo, useState } from "react";
 import AdminLayout from "@/components/Layout/AdminLayout";
-import Loader from "@/components/Loader/Loader";
+import Loader from "@/components/Loader/UserLoader";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import {App} from "antd";
 
