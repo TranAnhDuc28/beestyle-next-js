@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 import HeaderPromotion from "@/components/Admin/Promotion/HeaderPromotion";
 import {DatePicker, Typography} from "antd";
 import {STATUS} from "@/constants/Status";
-import {DISCOUNTTYPE} from "@/constants/DiscountType";
+import {DISCOUNT_TYPE} from "@/constants/DiscountType";
 import {useSearchParams} from "next/navigation";
 import useAppNotifications from "../../../hooks/useAppNotifications";
 import CreatePromotion from "./CreatePromotion";
@@ -104,7 +104,7 @@ const PromotionComponent: React.FC<any> = (props: any) => {
         {
             title: 'Giảm',
             render: (text: string, record: IPromotion) => (
-                `${record.discountValue} ${DISCOUNTTYPE[record.discountType]}`
+                `${record.discountValue} ${DISCOUNT_TYPE[record.discountType]}`
             )
         },
         // {

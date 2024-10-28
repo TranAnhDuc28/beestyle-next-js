@@ -19,6 +19,7 @@ import {DISCOUNTTYPE} from "@/constants/DiscountType";
 import VoucherFilter from "./VoucherFilter";
 import CreateMaterial from "../Material/CreateMaterial";
 import UpdateMaterial from "../Material/UpdateMaterial";
+import {DISCOUNT_TYPE} from "../../../constants/DiscountType";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -101,7 +102,7 @@ const VoucherComponent = () => {
         {
             title: 'Loại giảm',
             render: (text: string, record: IVoucher) => (
-                `${record.discountValue} ${DISCOUNTTYPE[record.discountType]}`
+                `${record.discountValue} ${DISCOUNT_TYPE[record.discountType]}`
             )
         },
         {

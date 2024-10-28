@@ -1,5 +1,5 @@
 "use client";
-import { memo, useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, Col } from 'antd';
 import { updatePromotion } from '@/services/PromotionService';
 import dayjs from 'dayjs';
@@ -167,14 +167,24 @@ const UpdatePromotion = (props: IProps) => {
                         label="Ngày bắt đầu"
                         rules={[{required: true, message: "Vui lòng chọn ngày bắt đầu!"}]}
                     >
-                        <DatePicker style={{width: '100%'}}/>
+                        <DatePicker
+                            style={{width: '100%'}}
+                            showTime
+                            format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                        />
                     </Form.Item>
+
+
                     <Form.Item
                         name="endDate"
                         label="Ngày kết thúc"
-                        rules={[{required: true, message: "Vui lòng chọn ngày kết thúc!"}]}
+                        rules={[{required: true, message: "Vui lòng chọn ngày bắt đầu!"}]}
                     >
-                        <DatePicker style={{width: '100%'}}/>
+                        <DatePicker
+                            style={{width: '100%'}}
+                            showTime
+                            format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                        />
                     </Form.Item>
                     <Form.Item name="description" label="Mô tả">
                         <Input.TextArea rows={3} placeholder="Nhập mô tả"/>

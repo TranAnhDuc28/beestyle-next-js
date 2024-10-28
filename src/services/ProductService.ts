@@ -25,16 +25,18 @@ export const updateProduct = async (data: IProduct) => {
     const response = await httpInstance.put(`${URL_API_PRODUCT.update}/${data.id}`, data);
     return response.data;
 }
-export const getProductDetails = async (data: IProductVariant) => {
+export const getProductDetails = async (productId: number) => {
     try {
-        const response = await httpInstance.get(URL_API_PRODUCT.productVariant);
-        console.log(`All product details:`, response.data); // In ra thông tin chi tiết của tất cả sản phẩm
-        return response.data; // Giả sử API trả về data là thông tin chi tiết của tất cả sản phẩm
+        // Sử dụng query parameter cho productId
+        const response = await httpInstance.get(`${URL_API_PRODUCT.productVariant}?productIds=${productId}`);
+        console.log("Product details:", response.data);
+        return response.data;
     } catch (error) {
-        console.error(`Error fetching product details:`, error); // Nên ghi rõ khi có lỗi
-        throw error; // Ném lỗi để có thể xử lý ở nơi gọi hàm
+        console.error("Error fetching product details:", error);
+        throw error;
     }
 };
+
 
 
 

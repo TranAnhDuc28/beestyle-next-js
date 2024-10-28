@@ -1,5 +1,5 @@
 "use client";
-import { memo, useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, Col } from 'antd';
 import { updateVoucher } from '@/services/VoucherService';
 import dayjs from 'dayjs';
@@ -203,20 +203,30 @@ const UpdateVoucher = (props: IProps) => {
                             <Form.Item
                                 name="startDate"
                                 label="Ngày bắt đầu"
-                                rules={[{required: true, message: "Vui lòng chọn ngày bắt đầu!"}]}
+                                rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
                             >
-                                <DatePicker style={{width: '100%'}}/>
+                                <DatePicker
+                                    style={{ width: '100%' }}
+                                    showTime
+                                    format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                                />
                             </Form.Item>
+
                         </Col>
 
                         <Col span={12}>
                             <Form.Item
                                 name="endDate"
                                 label="Ngày kết thúc"
-                                rules={[{required: true, message: "Vui lòng chọn ngày kết thúc!"}]}
+                                rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
                             >
-                                <DatePicker style={{width: '100%'}}/>
+                                <DatePicker
+                                    style={{ width: '100%' }}
+                                    showTime
+                                    format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                                />
                             </Form.Item>
+
 
                         </Col>
                     </Row>

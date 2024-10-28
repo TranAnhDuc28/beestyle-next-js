@@ -2,6 +2,7 @@ import {Checkbox, Col, Collapse, Radio, RadioChangeEvent, Row, Space, Typography
 import {STATUS} from "@/constants/Status";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {memo, useEffect, useState} from "react";
+import {DISCOUNT_TYPE} from "../../../constants/DiscountType";
 
 const {Title} = Typography;
 interface IProps {
@@ -84,12 +85,13 @@ const VoucherFilter = (props: IProps) => {
                                           <Col key={"ALL"} span={24} style={{marginBottom: 10}}>
                                               <Radio value={undefined} style={{marginLeft: 10}}>Tất cả</Radio>
                                           </Col>
-                                          <Col key={"PERCENTAGE"} span={24} style={{marginBottom: 10}}>
-                                              <Radio value={"PERCENTAGE"} style={{marginLeft: 10}}>Phần trăm (%)</Radio>
-                                          </Col>
-                                          <Col key={"CASH"} span={24} style={{marginBottom: 10}}>
-                                              <Radio value={"CASH"} style={{marginLeft: 10}}>VND</Radio>
-                                          </Col>
+                                          { Object.keys(DISCOUNT_TYPE).map((key) => (
+                                              <Col key={key} span={24} style={{marginBottom: 10}}>
+                                                  <Radio value={key} style={{marginLeft: 10}}>
+                                                      {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE]}
+                                                  </Radio>
+                                              </Col>
+                                          ))}
                                       </Row>
                                   </Radio.Group>
                               ),

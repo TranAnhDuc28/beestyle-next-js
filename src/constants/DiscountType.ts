@@ -1,6 +1,6 @@
-export const DISCOUNTTYPE = {
-    PERCENTAGE: "%",
-    CASH: "VND"
+export const DISCOUNT_TYPE = {
+    PERCENTAGE: "Phần trăm(%)",
+    CASH: "Tiền mặt"
 } as const;
 
-export const DISCOUNTTYPE_KEYS = Object.keys(DISCOUNTTYPE);
+export const DiscountTypeKeys = Object.keys(DISCOUNT_TYPE);
