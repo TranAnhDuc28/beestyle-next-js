@@ -1,4 +1,4 @@
-import { UserOutlined } from "@ant-design/icons";
+import { CalendarOutlined, CheckOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar } from "antd";
 import React from "react";
 
@@ -15,11 +15,11 @@ const InformationCustomer = (props: IProps) => {
         <Avatar size={120} icon={<UserOutlined />} />
         <p className="text-2xl font-bold mt-4  ">{customer?.fullName}</p>
       </div>
-      <div className="mt-5">
-        <p> {customer?.gender}</p>
-        <p> {customer?.email}</p>
-        <p> {customer?.dateOfBirth}</p>
-        <p> {customer?.status}</p>
+      <div className="mt-5 text-sm font-semibold">
+        <p><UserOutlined/> {customer?.gender === "MALE"?"Nam":"Nữ"}</p>
+        <p><PhoneOutlined/> {customer?.email}</p>
+        <p><CalendarOutlined/> {customer?.dateOfBirth}</p>
+        <p><CheckOutlined /> {customer?.status === "ACTIVE"?"Hoạt động":"Ngừng hoạt động" }</p>
       </div>
     </div>
   );

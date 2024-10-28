@@ -66,8 +66,8 @@ const CustomerComponent = () => {
       key: "status",
       render(value: keyof typeof STATUS, record, index) {
         let color: string = value === "ACTIVE" ? "green" : "default";
-        console.log(record);
-        console.log(value);
+        // console.log(record);
+        // console.log(value);
         return (
           <Tag color={color} key={record.id}>
             {STATUS[value]}
@@ -128,7 +128,7 @@ const CustomerComponent = () => {
     result = data?.data;
   }
 
-  console.log(data);
+  // console.log(data);
 
   return (
     <div>
