@@ -2,26 +2,14 @@ import React, {memo, useState} from 'react';
 import {Col, FormInstance, InputNumber, Row, TableProps, Tooltip} from 'antd';
 import {Form, Input, Table} from 'antd';
 import {CheckCircleTwoTone, CloseCircleFilled, DeleteTwoTone, EditTwoTone} from "@ant-design/icons";
-import {IProductVariantCreate} from "@/types/IProductVariant";
-
-const fakeData = Array.from({length: 7}).map<IProductVariantCreate>((_, i) => ({
-    key: i.toString(),
-    sku: `BT${i}-SP1-C${1}-S${i}`,
-    productId: 1,
-    productVariantName: `San pham 1 [color${i} - size${i}]`,
-    colorId: i,
-    sizeId: i,
-    originalPrice: 1000,
-    salePrice: 1200,
-    quantityInStock: 10
-}));
+import {IProductVariantRows} from "@/types/IProductVariant";
 
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
     editing: boolean;
     dataIndex: string;
     title: any;
     inputType: 'number' | 'text';
-    record: IProductVariantCreate;
+    record: IProductVariantRows;
     index: number;
 }
 
@@ -46,7 +34,12 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
         <td {...restProps}>
             {editing ? (
                 <Form.Item name={dataIndex} style={{margin: 0}}
-                           rules={[{required: true, message: `Please Input ${title}!`}]}
+                           rules={[
+                               {
+                                   required: inputType === 'number' ? true : false,
+                                   message: `Vui lòng không bỏ trống ${title.toString().toLowerCase()}!`
+                               }
+                           ]}
                            initialValue={inputType === 'number' ? 0 : ''}
                 >
                     {inputNode}
@@ -59,21 +52,17 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 };
 
 interface IProps {
-    form: FormInstance;
-    setProductVariants: (data: IProductVariantCreate[]) => void;
+    productVariantRows: IProductVariantRows[];
+    setProductVariantRows: (data: IProductVariantRows[]) => void;
 }
 
 const CreateProductVariantTable: React.FC<IProps> = (props) => {
-    const {setProductVariants} = props;
     const [form] = Form.useForm();
-    // const {form} = props;
-    const [dataSource, setDataSource] = useState<IProductVariantCreate[]>(fakeData);
+    const {productVariantRows, setProductVariantRows} = props;
     const [editingKey, setEditingKey] = useState('');
-    const [count, setCount] = useState(3);
+    const isEditing = (record: IProductVariantRows) => record.key === editingKey;
 
-    const isEditing = (record: IProductVariantCreate) => record.key === editingKey;
-
-    const edit = (record: Partial<IProductVariantCreate> & { key: React.Key }) => {
+    const edit = (record: Partial<IProductVariantRows> & { key: React.Key }) => {
         form.setFieldsValue({
             productVariantName: '',
             sku: '',
@@ -86,16 +75,16 @@ const CreateProductVariantTable: React.FC<IProps> = (props) => {
     };
 
     const handleDelete = (key: React.Key) => {
-        const newData = dataSource.filter((item) => item.key !== key);
-        setDataSource(newData);
+        const newData = productVariantRows.filter((item) => item.key !== key);
+        setProductVariantRows(newData);
     };
 
     const cancel = () => setEditingKey('');
 
     const save = async (key: React.Key) => {
         try {
-            const row = (await form.validateFields()) as IProductVariantCreate;
-            const newData = [...dataSource];
+            const row = (await form.validateFields()) as IProductVariantRows;
+            const newData = [...productVariantRows];
             const index = newData.findIndex((item) => key === item.key);
             if (index > -1) {
                 const item = newData[index];
@@ -103,23 +92,17 @@ const CreateProductVariantTable: React.FC<IProps> = (props) => {
                     ...item,
                     ...row,
                 });
-                setDataSource(newData);
+                setProductVariantRows(newData);
                 setEditingKey('');
             } else {
                 newData.push(row);
-                setDataSource(newData);
+                setProductVariantRows(newData);
                 setEditingKey('');
             }
         } catch (errInfo) {
-            console.log('Validate Failed:', errInfo);
+            // console.log('Validate Failed:', errInfo);
         }
     };
-
-    const onFinish = (value: IProductVariantCreate[]) => {
-        console.log('productVariants', JSON.stringify(value, null, 2));
-        setProductVariants(value);
-        form.submit();
-    }
 
     const columns = [
         {title: 'Tên', dataIndex: 'productVariantName'},
@@ -129,7 +112,7 @@ const CreateProductVariantTable: React.FC<IProps> = (props) => {
         {title: 'Tồn kho', dataIndex: 'quantityInStock', width: '15%', editable: true},
         {
             title: '', dataIndex: 'operation', width: '10%',
-            render: (_: any, record: IProductVariantCreate) => {
+            render: (_: any, record: IProductVariantRows) => {
                 const editable = isEditing(record);
                 return editable ? (
                     <Row gutter={[8, 8]} justify="center" align="middle">
@@ -200,13 +183,13 @@ const CreateProductVariantTable: React.FC<IProps> = (props) => {
         },
     ];
 
-    const mergedColumns: TableProps<IProductVariantCreate>['columns'] = columns.map((col) => {
+    const mergedColumns: TableProps<IProductVariantRows>['columns'] = columns.map((col) => {
         if (!col.editable) {
             return col;
         }
         return {
             ...col,
-            onCell: (record: IProductVariantCreate) => ({
+            onCell: (record: IProductVariantRows) => ({
                 record,
                 inputType: ['originalPrice', 'salePrice', 'quantityInStock'].includes(col.dataIndex) ? 'number' : 'text',
                 dataIndex: col.dataIndex,
@@ -218,20 +201,21 @@ const CreateProductVariantTable: React.FC<IProps> = (props) => {
 
     return (
         <div>
-            <Form form={form} onFinish={onFinish} component={false}>
-                <Table<IProductVariantCreate>
+            <Form form={form} component={false}>
+                <Table<IProductVariantRows>
                     components={{
                         body: {cell: EditableCell},
                     }}
                     bordered={false}
                     pagination={false}
-                    dataSource={dataSource}
+                    dataSource={productVariantRows}
                     columns={mergedColumns}
                     rowClassName="editable-row"
                     scroll={{x: true}}
+                    locale={{emptyText: ''}}
                 />
             </Form>
         </div>
-);
+    );
 };
 export default memo(CreateProductVariantTable);
