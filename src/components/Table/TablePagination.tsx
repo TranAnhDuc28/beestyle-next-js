@@ -1,8 +1,8 @@
 "use client"
-import {Table, TableColumnsType, TableProps} from "antd";
-import React from "react";
 import "./TablePagination.css";
-import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {Table, TableColumnsType, TableProps } from "antd";
+import React, {memo} from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 
 export interface ITablePaginationProps {
@@ -64,11 +64,11 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
                         style: {marginRight: 10},
                         showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
                     }}
-                    scroll={{x: true, y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true }}
+                    scroll={{y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true }}
                 />
             </div>
         </>
     );
 }
 
-export default TablePagination;
+export default memo(TablePagination);

@@ -1,5 +1,5 @@
-export interface Voucher {
-    key: string;
+export interface IVoucher {
+    id: number;
     voucherCode: string;
     voucherName: string;
     discountType: string;
@@ -11,4 +11,4 @@ export interface Voucher {
     usageLimit: number;
     usagePerUser: number;
     status: number;
-}I
+}

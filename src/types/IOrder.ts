@@ -10,7 +10,13 @@ export interface IOrder {
     orderStatus: string;
     voucher?: string
     status?: string;
+<<<<<<< HEAD
     createAt?: string;
     updateAt?: string;
 }
 
+=======
+    createdAt?: string;
+    updatedAt?: string;
+}
+>>>>>>> be4cc2f8c258eb45a9281f7553538b4c4b206038

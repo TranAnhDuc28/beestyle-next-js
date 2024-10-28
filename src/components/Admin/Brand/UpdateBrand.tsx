@@ -14,7 +14,7 @@ interface IProps {
 }
 
 const UpdateBrand = (props: IProps) => {
-    const { showNotification } = useAppNotifications();
+    const {showNotification} = useAppNotifications();
     const {isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate} = props;
     const [form] = Form.useForm();
 
@@ -64,18 +64,20 @@ const UpdateBrand = (props: IProps) => {
     return (
         <>
             <Modal title="Chỉnh sửa thương hiệu" cancelText="Hủy" okText="Lưu" style={{top: 20}}
-                open={isUpdateModalOpen}
-                onOk={() => form.submit()}
-                onCancel={() => handleCloseUpdateModal()}
-                okButtonProps={{style: {background: "#00b96b"}}}
+                   open={isUpdateModalOpen}
+                   onOk={() => form.submit()}
+                   onCancel={() => handleCloseUpdateModal()}
+                   okButtonProps={{style: {background: "#00b96b"}}}
             >
                 <Form form={form} name="updateBrand" layout="vertical" onFinish={onFinish}>
                     <Form.Item name="brandName" label="Tên thương hiệu"
-                        rules={[{required: true, message: "Vui lòng nhập tên thương liệu!"}]}>
+                               rules={[{required: true, message: "Vui lòng nhập tên thương liệu!"}]}
+                               validateTrigger="onBlur"
+                    >
                         <Input/>
                     </Form.Item>
                     <Form.Item name="status" label="Trạng thái"
-                        rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}>
+                               rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}>
                         <Select
                             options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
                                 (key) => ({value: key, label: STATUS[key]})

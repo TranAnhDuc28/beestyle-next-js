@@ -9,11 +9,9 @@ export const metadata: Metadata = {
 };
 const OrderPage: React.FC = () => {
     return (
-        <div>
-            <Suspense fallback={<Loader/>}>
-                <OrderComponent/>
-            </Suspense>
-        </div>
+        <Suspense fallback={<Loader/>}>
+            <OrderComponent/>
+        </Suspense>
     );
 };
 

@@ -131,6 +131,13 @@ const OrderComponent: React.FC = () => {
 
     return (
         <>
+<<<<<<< HEAD
+=======
+            {/*<HeaderOrder*/}
+            {/*    setIsCreateModalOpen={setIsCreateModalOpen}*/}
+            {/*    setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}*/}
+            {/*/>*/}
+>>>>>>> be4cc2f8c258eb45a9281f7553538b4c4b206038
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
                 <Content
                     className="min-w-0 bg-white"
@@ -138,8 +145,11 @@ const OrderComponent: React.FC = () => {
                         boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
                         flex: 1,
                         minWidth: 700,
+<<<<<<< HEAD
                         borderRadius: '8px 8px 0px 0px',
                         padding: '25px'
+=======
+>>>>>>> be4cc2f8c258eb45a9281f7553538b4c4b206038
                     }}
                 >
                     <div>

@@ -1,9 +1,10 @@
-import { STATUS } from "@/constants/Status";
+import {STATUS} from "@/constants/Status";
 import {App, Form, Input, Modal, notification, Select} from "antd";
-import { memo, useEffect } from "react";
+import React, {memo, useEffect} from "react";
 import {IColor} from "@/types/IColor";
 import {updateColor} from "@/services/ColorService";
 import useAppNotifications from "@/hooks/useAppNotifications";
+import ColorPickerCustomize from "@/components/ColorPicker/ColorPickerCustomize";
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -14,13 +15,14 @@ interface IProps {
 }
 
 const UpdateColor = (props: IProps) => {
-    const { showNotification } = useAppNotifications();
-    const { isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate } = props;
+    const {showNotification} = useAppNotifications();
+    const {isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate} = props;
     const [form] = Form.useForm();
 
     useEffect(() => {
         if (dataUpdate) {
             form.setFieldsValue({
+                colorCode: dataUpdate.colorCode,
                 colorName: dataUpdate.colorName,
                 status: dataUpdate.status,
             });
@@ -58,24 +60,31 @@ const UpdateColor = (props: IProps) => {
                 showNotification("error", {message: error?.message, description: errorMessage,});
             }
         }
-
     };
 
     return (
         <>
             <Modal title="Chỉnh sửa màu sắc" cancelText="Hủy" okText="Lưu" style={{top: 20}}
-                open={isUpdateModalOpen}
-                onOk={() => form.submit()}
-                onCancel={() => handleCloseUpdateModal()}
-                okButtonProps={{style: { background: "#00b96b" }}}
+                   open={isUpdateModalOpen}
+                   onOk={() => form.submit()}
+                   onCancel={() => handleCloseUpdateModal()}
+                   okButtonProps={{style: {background: "#00b96b"}}}
             >
                 <Form form={form} name="updateColor" layout="vertical" onFinish={onFinish}>
+                    <Form.Item label="Chọn màu" name="colorCode" layout="horizontal" style={{marginTop: 24}}
+                    >
+                        <ColorPickerCustomize
+                            onChange={(value) => form.setFieldsValue({colorCode: value})}
+                        />
+                    </Form.Item>
                     <Form.Item name="colorName" label="Tên màu sắc"
-                        rules={[{ required: true, message: "Vui lòng nhập tên màu sắc!" }]}>
-                        <Input />
+                               rules={[{required: true, message: "Vui lòng nhập tên màu sắc!"}]}
+                               validateTrigger="onBlur"
+                    >
+                        <Input/>
                     </Form.Item>
                     <Form.Item name="status" label="Trạng thái"
-                        rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>
+                               rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}>
                         <Select
                             options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
                                 (key) => (

@@ -21,8 +21,8 @@ const siderStyle: React.CSSProperties = {
 type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
-    {key: 'tong-quan', label: <Link href={"/"}>Tổng quan</Link>, icon: <PieChartOutlined/>,},
-    {key: 'ban-hang-tai-quay', label: <Link href={"/"}>Bán hàng tại quầy</Link>, icon: <ShoppingCartOutlined/>,},
+    {key: 'tong-quan', label: <Link href={"/admin"}>Tổng quan</Link>, icon: <PieChartOutlined/>,},
+    {key: 'ban-hang-tai-quay', label: <Link href={"/admin"}>Bán hàng tại quầy</Link>, icon: <ShoppingCartOutlined/>,},
     {key: 'don-hang', label: <Link href={"/admin/order"}>Quản lý đơn hàng</Link>, icon: <ShoppingCartOutlined/>,},
     {
         key: 'quan-li-san-pham', label: 'Quản lý sản phẩm', icon: <ProductOutlined/>,
@@ -39,14 +39,14 @@ const items: MenuItem[] = [
         key: 'giam-gia', label: 'Giảm giá', icon: <GiftOutlined/>,
         children: [
             {key: 'voucher', label: <Link href={"/admin/voucher"}>Quản lý voucher</Link>},
-            {key: 'khuyen-mai', label: 'Quản lý khuyến mại'},
+            {key: 'khuyen-mai', label: <Link href={"/admin/promotion"}>Quản lý khuyến mại</Link>},
         ],
     },
     {
         key: 'tai-khoan', label: 'Tài khoản', icon: <UserOutlined/>,
         children: [
-            {key: '6.1', label: <Link href={'/admin/Customer'}>Khách hàng</Link>},
-            {key: '6.2', label: 'Nhân viên'},
+            {key: '6.1', label: <Link href={'/admin/customer'}>Khách hàng</Link>},
+            {key: '6.2', label: <Link href={'/admin/staff'}>Nhân viên</Link>},
         ],
     }
 ];

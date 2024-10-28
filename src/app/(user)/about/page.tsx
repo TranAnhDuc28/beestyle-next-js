@@ -1,17 +1,16 @@
 import {Metadata} from "next";
-import Dashboard from "@/components/Dashboard/Dashboard";
 import { Suspense } from "react";
-import Loader from "@/components/Loader/UserLoader";
+import Loader from "@/components/Loader/Loader";
 
 export const metadata: Metadata = {
-    title: "Dashboard",
-    description: "Dashboard",
+    title: "Thông tin",
+    description: "about",
 };
 
 export default function Home() {
     return (
         <Suspense fallback={<Loader/>}>
-             <Dashboard/>
+            ABOUT
         </Suspense>
     );
 }

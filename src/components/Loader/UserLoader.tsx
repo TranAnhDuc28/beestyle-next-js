@@ -1,5 +1,3 @@
-import '@/app/beestyle/styles/globals.css';
-
 const UserLoader = () => {
     return (
         <div className="preloader">
