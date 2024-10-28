@@ -2,7 +2,6 @@ import { Button, Col, DatePicker, Form, Input, message, Modal, Radio, Row } from
 import React from "react";
 import moment from "moment";
 import { createCustomer } from "@/services/CustomerService";
-import { mutate } from "swr";
 import useAppNotifications from "@/hooks/useAppNotifications";
 
 interface ModalAdd {
