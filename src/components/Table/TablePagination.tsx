@@ -1,5 +1,4 @@
 "use client"
-import "./TablePagination.css";
 import {Table, TableColumnsType, TableProps } from "antd";
 import React, {memo} from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
