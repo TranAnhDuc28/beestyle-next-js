@@ -4,7 +4,6 @@ import React, { Suspense, useState } from 'react';
 import { ConfigProvider, Layout } from 'antd';
 import AdminSideMenu from '../SideBar/AdminSideMenu';
 import AdminHeader from '../Header/AdminHeader';
-import Loader from "@/components/Loader/Loader";
 
 const { Content } = Layout;
 

@@ -13,6 +13,12 @@ export const getCustomer = async (url:string) => {
   return response.data
 }
 
+export const getDetailCustomer = async (key: string) => {
+  // const id = key.split('/').pop(); // Lấy id từ key nếu cần
+  const response = await httpInstance.get(key);
+  return response.data;
+};
+
 export const createCustomer = async (data: ICustomer) => {
   const response = await httpInstance.post(URL_API_CUSTOMER.creat,data)
   return response.data

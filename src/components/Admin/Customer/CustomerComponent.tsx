@@ -15,7 +15,7 @@ import { ColumnType } from "antd/es/table";
 import useSWR, { mutate } from "swr";
 import { useEffect, useState } from "react";
 import TablePagination from "@/components/Table/TablePagination";
-import { EditTwoTone } from "@ant-design/icons";
+import { EditTwoTone, EyeOutlined } from "@ant-design/icons";
 import { useSearchParams } from "next/navigation";
 import HeaderCustomer from "./HeaderCustomer";
 import AddCustomer from "./AddCustomer";
@@ -24,6 +24,7 @@ import { STATUS } from "@/constants/Status";
 import CustomerFilter from "./CustomerFilter";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { GENDER } from "@/constants/Gender";
+import Link from "next/link";
 
 const { Content } = Layout;
 const CustomerComponent = () => {
@@ -43,37 +44,38 @@ const CustomerComponent = () => {
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   );
 
-  
-
   const columns: ColumnType<ICustomer>[] = [
     { title: "Họ và tên", dataIndex: "fullName", key: "fullName" },
     { title: "Ngày sinh", dataIndex: "dateOfBirth", key: "dateOfBirth" },
     { title: "Số điện thoại", dataIndex: "phoneNumber", key: "phoneNumber" },
     { title: "Email", dataIndex: "email", key: "email" },
     {
-      title: 'Giới tính', dataIndex: 'gender', key: 'gender',width:100,
+      title: "Giới tính",
+      dataIndex: "gender",
+      key: "gender",
+      width: 100,
       render(value: keyof typeof GENDER, record, index) {
-        return (
-            <span key={record.id}>{GENDER[value]}</span>
-        );
-    },
-  },
-    {title: "Ngày tạo", dataIndex: "createdAt",  key: "createAt",    },
-    {   title: "Ngày sửa", dataIndex: "updatedAt", key: "updateAt",  },
-    {
-      title: 'Trạng thái', dataIndex: 'status', key: 'status',
-      render(value: keyof typeof STATUS, record, index) {
-         
-          let color: string = value === 'ACTIVE' ? 'green' : 'default';
-          console.log(record);
-          console.log(value);
-          return (
-              <Tag color={color} key={record.id}>{STATUS[value]}</Tag>
-          );
-          
+        return <span key={record.id}>{GENDER[value]}</span>;
       },
-  },
-    
+    },
+    { title: "Ngày tạo", dataIndex: "createdAt", key: "createAt" },
+    { title: "Ngày sửa", dataIndex: "updatedAt", key: "updateAt" },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render(value: keyof typeof STATUS, record, index) {
+        let color: string = value === "ACTIVE" ? "green" : "default";
+        console.log(record);
+        console.log(value);
+        return (
+          <Tag color={color} key={record.id}>
+            {STATUS[value]}
+          </Tag>
+        );
+      },
+    },
+
     {
       title: "Hành động",
       render: (text: any, record: ICustomer, index: number) => (
@@ -92,6 +94,19 @@ const CustomerComponent = () => {
                 setDataUpdate(record);
               }}
             />
+          </Tooltip>
+          <Tooltip placement="top" title="Chi tiết">
+            <Link href={`/admin/customer/${record.id}`}>
+              <EyeOutlined
+                twoToneColor={"#f57800"}
+                style={{
+                  cursor: "pointer",
+                  padding: "5px",
+                  border: "1px solid #f57800",
+                  borderRadius: "5px",
+                }}
+              />
+            </Link>
           </Tooltip>
         </div>
       ),
