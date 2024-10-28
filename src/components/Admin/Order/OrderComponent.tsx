@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
-import {App, Flex, Layout, TableColumnsType, TabsProps, Tag} from "antd";
+import {Flex, Layout, TableColumnsType, TabsProps, Tag} from "antd";
 import useSWR from "swr";
 import {IOrder} from "@/types/IOrder";
 import TablePagination from "@/components/Table/TablePagination";
-import {getBrands} from "@/services/BrandService";
 import {useEffect, useState} from "react";
 import {useSearchParams} from "next/navigation";
 import {getOrdersById, URL_API_ORDER} from "@/services/OrderService";
@@ -12,35 +11,30 @@ import useAppNotifications from "@/hooks/useAppNotifications";
 import HeaderOrder from "@/components/Admin/Order/HeaderOrder";
 import TabsOrder from "@/components/Admin/Order/TabsOrder";
 import InvoiceDetail from "@/components/Admin/Order/OrderDetail";
-import httpInstance from "@/utils/HttpInstance";
 
 const {Content} = Layout;
 
 const OrderComponent: React.FC = () => {
     const {showNotification} = useAppNotifications();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
-    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
     const [isCategoryDisplayOrderModalOpen, setIsCategoryDisplayOrderModalOpen] = useState<boolean>(false);
-    const [dataUpdate, setDataUpdate] = useState<any>(null);
-    const [expandedRowKeys, setExpandedRowKeys] = useState<number[]>([]); // Trạng thái cho hàng mở rộng
+    const [expandedRowKeys, setExpandedRowKeys] = useState<number[]>([]);
 
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams);
 
-    const {data, error, isLoading} = useSWR(
+    const {data: orders, error, isLoading} = useSWR(
         `${URL_API_ORDER.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
-        getBrands,
+        getOrdersById,
         {
             revalidateOnFocus: false,
         }
     );
 
-    const fetcher = (url) => httpInstance.get(url).then((res) => res.data);
+    // const expandedRowRender = (record: any) => {
+    //     return <InvoiceDetail record={record} extraData={extraData}/>;
+    // };
 
-    const {data: orderItems, error: e, isLoading: isLoadingItems} = useSWR(
-        fetcher,
-        {revalidateOnFocus: false}
-    );
 
     const columns: TableColumnsType<IOrder> = [
             {
@@ -82,7 +76,7 @@ const OrderComponent: React.FC = () => {
     }, [error]);
 
     let result: any;
-    if (!isLoading && data) result = data?.data;
+    if (!isLoading && orders) result = orders?.data;
 
     const dataItems = Array.isArray(result?.items) ? result.items : [];
 
@@ -90,6 +84,8 @@ const OrderComponent: React.FC = () => {
         const newExpandedRowKeys = expandedRowKeys.includes(record.id) ? [] : [record.id];
         setExpandedRowKeys(newExpandedRowKeys);
     };
+
+    const expandedRowRender = (record: IOrder) => <InvoiceDetail record={record} />;
 
     const items: TabsProps['items'] = [
         {
@@ -106,8 +102,8 @@ const OrderComponent: React.FC = () => {
                     onRow={(record) => ({
                         onClick: () => onRowClick(record),
                     })}
-                    expandedRowKeys={expandedRowKeys} // Trạng thái hàng mở rộng
-                    expandedRowRender={InvoiceDetail}
+                    expandedRowKeys={expandedRowKeys}
+                    expandedRowRender={expandedRowRender}
                 />
             ),
         },

@@ -3,10 +3,10 @@
 import "./styles/index.css";
 
 import React, { ReactNode, useEffect, useState } from "react";
-import Loader from "@/components/Loader/UserLoader";
 import { App, Layout } from "antd";
 import { Poppins } from 'next/font/google';
 import UserLayout from "@/components/Layout/UserLayout";
+import UserLoader from "@/components/Loader/UserLoader";
 
 const poppins = Poppins({
     weight: ['200', '300', '400', '500', '600', '700', '800', '900'],
@@ -28,7 +28,7 @@ export default function RootLayout({ children, }: Readonly<{ children: ReactNode
             <body>
                 {
                     loading ?
-                        (<Loader />) :
+                        (<UserLoader />) :
                         (
                             <App className="js">
                                 <Layout className={`${poppins.className}`}>

@@ -14,7 +14,7 @@ export interface ITablePaginationProps {
     loading?: boolean,
     onRow?: (record: any) => { [key: string]: (event: React.MouseEvent<HTMLElement>) => void },
     expandedRowKeys?: number[],
-    expandedRowRender?: React.ReactElement
+    expandedRowRender?: React.FC
 
 }
 
@@ -64,11 +64,7 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
                         style: {marginRight: 10},
                         showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
                     }}
-<<<<<<< HEAD
-                    scroll={{y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true}}
-=======
                     scroll={{x: true, y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true }}
->>>>>>> 3b9711a94e5b67a85871f581994556e22b8a8c14
                 />
             </div>
         </>

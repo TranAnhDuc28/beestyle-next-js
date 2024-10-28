@@ -1,10 +1,10 @@
 "use client";
 import "./globals.css";
-import React, { ReactNode, useEffect, useMemo, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import AdminLayout from "@/components/Layout/AdminLayout";
-import Loader from "@/components/Loader/UserLoader";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import {App} from "antd";
+import AdminLoader from "@/components/Loader/AdminLoader";
 
 export default function RootLayout({ children, }: Readonly<{ children: ReactNode; }>) {
     const [loading, setLoading] = useState<boolean>(true);
@@ -19,7 +19,7 @@ export default function RootLayout({ children, }: Readonly<{ children: ReactNode
             <body>
                 {
                     loading ?
-                        (<Loader />) :
+                        (<AdminLoader />) :
                         (
                             <App>
                                 <AntdRegistry>
