@@ -1,13 +1,14 @@
-import PromotionComponent from "@/components/Admin/Promotion/PromotionComponent";
 import { Suspense } from "react";
 import Loader from "@/components/Loader/Loader";
 import { Metadata } from "next";
+import PromotionComponent from "@/components/Admin/Promotion/PromotionComponent";
 
 export const metadata: Metadata = {
-    title: "Phiếu giảm giá",
-};
+    title: "Chương trình khuyến mại",
+    description: "Promotion"
+}
 
-const PromotionPage = () => {
+const VoucherPage = () => {
     return (
         <Suspense fallback={<Loader />}>
             <PromotionComponent/>
@@ -15,4 +16,4 @@ const PromotionPage = () => {
     );
 }
 
-export default PromotionPage;
+export default VoucherPage;
