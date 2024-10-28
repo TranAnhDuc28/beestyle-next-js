@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import TableCustomer from "@/components/Admin/Customer/TableCustomer";
-import Loader from "@/components/Loader/UserLoader";
+import Loader from "@/components/Loader/Loader";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

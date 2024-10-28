@@ -23,11 +23,11 @@ const HeaderProduct = (props: IProps) => {
     const onSearch: SearchProps['onSearch'] =
         (value, _e, info) => {
             if (info?.source === "input" && value) {
-                params.set("name", value);
+                params.set("keyword", value);
                 params.set("page", "1");
                 replace(`${pathname}?${params.toString()}`);
             } else {
-                params.delete("name")
+                params.delete("keyword")
                 replace(`${pathname}?${params.toString()}`);
             }
         }

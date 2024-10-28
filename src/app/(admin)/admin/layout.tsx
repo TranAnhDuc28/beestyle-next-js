@@ -1,40 +1,21 @@
 "use client";
-import "./globals.css";
-import React, { ReactNode, useEffect, useState } from "react";
+import "../../../css/globals.css";
+import React, {ReactNode} from "react";
 import AdminLayout from "@/components/Layout/AdminLayout";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { App } from "antd";
-import AdminLoader from "@/components/Loader/AdminLoader";
+import {AntdRegistry} from "@ant-design/nextjs-registry";
+import {App, FloatButton} from "antd";
 
-export default function RootLayout({ children, }: Readonly<{ children: ReactNode; }>) {
-    const [loading, setLoading] = useState<boolean>(true);
-
-    const handleLoad = () => setLoading(false);
-
-    useEffect(() => {
-        if (document.readyState === 'complete') {
-            handleLoad();
-        } else {
-            window.addEventListener('load', handleLoad);
-            return () => window.removeEventListener('load', handleLoad);
-        }
-    }, [loading]);
-
+export default function RootAdminLayout({children,}: Readonly<{ children: ReactNode; }>) {
     return (
-        <html lang="en">
-            <body>
-                {
-                    loading ?
-                        (<AdminLoader />) :
-                        (
-                            <App>
-                                <AntdRegistry>
-                                    <AdminLayout>{children}</AdminLayout>
-                                </AntdRegistry>
-                            </App>
-                        )
-                }
-            </body>
-        </html >
-    )
+        <>
+            <AntdRegistry>
+                <App>
+                    <AdminLayout>
+                        <main>{children}</main>
+                    </AdminLayout>
+                </App>
+            </AntdRegistry>
+            <FloatButton.BackTop visibilityHeight={100}/>
+        </>
+    );
 }

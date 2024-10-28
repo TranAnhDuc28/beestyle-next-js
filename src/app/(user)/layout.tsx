@@ -1,43 +1,18 @@
 "use client";
+import React, {ReactNode} from "react";
+import {App, FloatButton} from "antd";
+import {AntdRegistry} from "@ant-design/nextjs-registry";
 
-import "./styles/index.css";
 
-import React, { ReactNode, useEffect, useState } from "react";
-import { App, Layout } from "antd";
-import { Poppins } from 'next/font/google';
-import UserLayout from "@/components/Layout/UserLayout";
-import UserLoader from "@/components/Loader/UserLoader";
-
-const poppins = Poppins({
-    weight: ['200', '300', '400', '500', '600', '700', '800', '900'],
-    style: ['normal', 'italic'],
-    subsets: ['latin'],
-    display: 'swap',
-});
-
-export default function RootLayout({ children, }: Readonly<{ children: ReactNode; }>) {
-    const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 2000);
-        return () => clearTimeout(timer);
-    }, [loading]);
-
+export default function RootUserLayout({children,}: Readonly<{ children: ReactNode; }>) {
     return (
-        <html lang="en">
-            <body>
-                {
-                    loading ?
-                        (<UserLoader />) :
-                        (
-                            <App className="js">
-                                <Layout className={`${poppins.className}`}>
-                                    <UserLayout />
-                                </Layout>
-                            </App>
-                        )
-                }
-            </body>
-        </html >
+        <>
+            <AntdRegistry>
+                <App>
+                    <main>{children}</main>
+                </App>
+            </AntdRegistry>
+            <FloatButton.BackTop visibilityHeight={100}/>
+        </>
     );
 }

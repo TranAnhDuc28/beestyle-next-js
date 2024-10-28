@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
-import { Flex, Layout, TableColumnsType, TabsProps, Tag } from "antd";
+import {Flex, Layout, TableColumnsType, TabsProps, Tag} from "antd";
 import useSWR from "swr";
-import { IOrder } from "@/types/IOrder";
+import {IOrder} from "@/types/IOrder";
 import TablePagination from "@/components/Table/TablePagination";
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { getOrdersById, URL_API_ORDER } from "@/services/OrderService";
+import {useEffect, useState} from "react";
+import {useSearchParams} from "next/navigation";
+import {getOrdersById, URL_API_ORDER} from "@/services/OrderService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import HeaderOrder from "@/components/Admin/Order/HeaderOrder";
 import TabsOrder from "@/components/Admin/Order/TabsOrder";
 import InvoiceDetail from "@/components/Admin/Order/OrderDetail";
 
-const { Content } = Layout;
+const {Content} = Layout;
 
 const OrderComponent: React.FC = () => {
-    const { showNotification } = useAppNotifications();
+    const {showNotification} = useAppNotifications();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isCategoryDisplayOrderModalOpen, setIsCategoryDisplayOrderModalOpen] = useState<boolean>(false);
     const [expandedRowKeys, setExpandedRowKeys] = useState<number[]>([]);
@@ -23,7 +23,7 @@ const OrderComponent: React.FC = () => {
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams);
 
-    const { data: orders, error, isLoading } = useSWR(
+    const {data: orders, error, isLoading} = useSWR(
         `${URL_API_ORDER.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
         getOrdersById,
         {
@@ -31,37 +31,41 @@ const OrderComponent: React.FC = () => {
         }
     );
 
+    const expandedRowRender = (record: any) => {
+        return <InvoiceDetail record={record} />;
+    };
+
 
     const columns: TableColumnsType<IOrder> = [
-        {
-            title: 'Mã đơn hàng',
-            dataIndex: 'orderTrackingNumber',
-            key: 'trackingNumber'
-        },
-        { title: 'Khách hàng', dataIndex: 'customerName', key: 'customerName' },
-        { title: 'Số điện thoại', dataIndex: 'phoneNumber', key: 'phoneNumber' },
-        { title: 'Phí vận chuyển', dataIndex: 'shippingFee', key: 'shippingFee' },
-        { title: 'Tổng tiền', dataIndex: 'totalAmount', key: 'totalAmount' },
-        {
-            title: 'Hình thức',
-            dataIndex: 'paymentMethod',
-            key: 'paymentMethod',
-            render: val => (
-                val === 'BANK_TRANSFER' ?
-                    <Tag color={'geekblue'} key={'1'}>Chuyển khoản</Tag> :
-                    <Tag color={'green'} key={'2'}>Tiền mặt</Tag>
-            )
-        },
-        {
-            title: 'Ngày tạo',
-            dataIndex: 'createdAt',
-            key: 'createdAt',
-            render: val => (
-                val.toString().replace('T', ' ')
-            )
-        }
-    ]
-        ;
+            {
+                title: 'Mã đơn hàng',
+                dataIndex: 'orderTrackingNumber',
+                key: 'trackingNumber'
+            },
+            {title: 'Khách hàng', dataIndex: 'customerName', key: 'customerName'},
+            {title: 'Số điện thoại', dataIndex: 'phoneNumber', key: 'phoneNumber'},
+            {title: 'Phí vận chuyển', dataIndex: 'shippingFee', key: 'shippingFee'},
+            {title: 'Tổng tiền', dataIndex: 'totalAmount', key: 'totalAmount'},
+            {
+                title: 'Hình thức',
+                dataIndex: 'paymentMethod',
+                key: 'paymentMethod',
+                render: val => (
+                    val === 'BANK_TRANSFER' ?
+                        <Tag color={'geekblue'} key={'1'}>Chuyển khoản</Tag> :
+                        <Tag color={'green'} key={'2'}>Tiền mặt</Tag>
+                )
+            },
+            {
+                title: 'Ngày tạo',
+                dataIndex: 'createdAt',
+                key: 'createdAt',
+                render: val => (
+                    val.toString().replace('T', ' ')
+                )
+            }
+        ]
+    ;
 
     useEffect(() => {
         if (error) {
@@ -78,10 +82,9 @@ const OrderComponent: React.FC = () => {
 
     const onRowClick = (record: IOrder) => {
         const newExpandedRowKeys = expandedRowKeys.includes(record.id) ? [] : [record.id];
+        setExpandedRowKeys([]);
         setExpandedRowKeys(newExpandedRowKeys);
     };
-
-    const expandedRowRender = (record: IOrder) => <InvoiceDetail record={record} />;
 
     const items: TabsProps['items'] = [
         {
@@ -127,10 +130,6 @@ const OrderComponent: React.FC = () => {
 
     return (
         <>
-            {/*<HeaderOrder*/}
-            {/*    setIsCreateModalOpen={setIsCreateModalOpen}*/}
-            {/*    setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}*/}
-            {/*/>*/}
             <Flex align={'flex-start'} justify={'flex-start'} gap={'middle'}>
                 <Content
                     className="min-w-0 bg-white"
@@ -145,7 +144,7 @@ const OrderComponent: React.FC = () => {
                     <div>
                         <HeaderOrder
                             setIsCreateModalOpen={setIsCreateModalOpen}
-                            // setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}
+                            setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}
                         />
                     </div>
                     <TabsOrder

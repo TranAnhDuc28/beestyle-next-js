@@ -1,7 +1,7 @@
 import MaterialComponent from "@/components/Admin/Material/MaterialComponent";
 import { OptionsParams } from "@/utils/HttpInstance";
 import { Suspense } from "react";
-import Loader from "@/components/Loader/UserLoader";
+import Loader from "@/components/Loader/Loader";
 import {Metadata} from "next";
 
 export const metadata: Metadata = {
