@@ -1,5 +1,4 @@
 "use client";
-import "../../css/globals.css";
 import React, {ReactNode} from "react";
 import {App, FloatButton} from "antd";
 import {AntdRegistry} from "@ant-design/nextjs-registry";
