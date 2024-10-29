@@ -1,5 +1,5 @@
 "use client";
-import "../../../css/globals.css";
+import "../../../css/admin.css";
 import React, {ReactNode} from "react";
 import AdminLayout from "@/components/Layout/AdminLayout";
 import {AntdRegistry} from "@ant-design/nextjs-registry";

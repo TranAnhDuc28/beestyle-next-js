@@ -1,6 +1,6 @@
 import VoucherComponent from "@/components/Admin/Voucher/VoucherComponent";
 import { Suspense } from "react";
-import Loader from "@/components/Loader/Loader";
+import AdminLoader from "@/components/Loader/AdminLoader";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const VoucherPage = () => {
     return (
-        <Suspense fallback={<Loader />}>
+        <Suspense fallback={<AdminLoader />}>
             <VoucherComponent/>
         </Suspense>
     );

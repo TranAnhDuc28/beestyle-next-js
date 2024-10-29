@@ -1,5 +1,5 @@
 import {Suspense} from "react";
-import Loader from "@/components/Loader/Loader";
+import AdminLoader from "@/components/Loader/AdminLoader";
 import ProductComponent from "@/components/Admin/Product/ProductComponent";
 import {Metadata} from "next";
 
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 const Product = () => {
     return (
-        <Suspense fallback={<Loader />}>
+        <Suspense fallback={<AdminLoader />}>
             <ProductComponent/>
         </Suspense>
     );

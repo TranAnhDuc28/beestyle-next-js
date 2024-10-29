@@ -1,17 +1,16 @@
 import {Metadata} from "next";
-import {Suspense} from "react";
+import { Suspense } from "react";
 import UserLoader from "@/components/Loader/UserLoader";
-import UserLayout from '@/components/Layout/UserLayout';
 
 export const metadata: Metadata = {
-    title: "Trang chủ",
-    description: "home",
+    title: "Liên hệ",
+    description: "contact",
 };
 
-export default function HomeUser() {
+export default function Contact() {
     return (
         <Suspense fallback={<UserLoader/>}>
-            <UserLayout/>
+            CONTACT
         </Suspense>
     );
 }

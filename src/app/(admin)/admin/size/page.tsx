@@ -1,5 +1,5 @@
 import React, {Suspense} from "react";
-import Loader from "@/components/Loader/Loader";
+import AdminLoader from "@/components/Loader/AdminLoader";
 import {Metadata} from "next";
 import SizeComponent from "@/components/Admin/Size/SizeComponent";
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 function Size() {
     return (
-        <Suspense fallback={<Loader />}>
+        <Suspense fallback={<AdminLoader />}>
             <SizeComponent/>
         </Suspense>
     );
