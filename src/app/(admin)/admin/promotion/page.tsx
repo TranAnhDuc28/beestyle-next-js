@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Loader from "@/components/Loader/Loader";
 import { Metadata } from "next";
 import PromotionComponent from "@/components/Admin/Promotion/PromotionComponent";
+import ProductVariantComponent from "../../../../components/Admin/Promotion/ProductVariantComponent";
 
 export const metadata: Metadata = {
     title: "Chương trình khuyến mại",

@@ -1,5 +1,6 @@
 import httpInstance from "@/utils/HttpInstance";
 import {IProduct, IProductCreate} from "@/types/IProduct";
+import {IProductVariant} from "../types/IProductVariant";
 
 export const URL_API_PRODUCT = {
     options: '/admin/product',
@@ -7,6 +8,7 @@ export const URL_API_PRODUCT = {
     create: '/admin/product/create',
     update: '/admin/product/update',
     delete: '/admin/product/delete',
+    productVariant: '/admin/product/productVariant'
 };
 
 export const getProducts = async (url: string) => {
@@ -23,3 +25,18 @@ export const updateProduct = async (data: IProduct) => {
     const response = await httpInstance.put(`${URL_API_PRODUCT.update}/${data.id}`, data);
     return response.data;
 }
+export const getProductDetails = async (productId: number) => {
+    try {
+        // Sử dụng query parameter cho productId
+        const response = await httpInstance.get(`${URL_API_PRODUCT.productVariant}?productIds=${productId}`);
+        console.log("Product details:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching product details:", error);
+        throw error;
+    }
+};
+
+
+
+

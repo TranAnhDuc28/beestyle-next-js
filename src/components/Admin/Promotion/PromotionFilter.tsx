@@ -60,7 +60,7 @@ const VoucherFilter = (props: IProps) => {
                                           <Col key={"ALL"} span={24} style={{marginBottom: 10}}>
                                               <Radio value={undefined} style={{marginLeft: 10}}>Tất cả</Radio>
                                           </Col>
-                                          { Object.keys(STATUS).map((key) => (
+                                          {Object.keys(STATUS).map((key) => (
                                               <Col key={key} span={24} style={{marginBottom: 10}}>
                                                   <Radio value={key} style={{marginLeft: 10}}>
                                                       {STATUS[key as keyof typeof STATUS]}
@@ -85,7 +85,6 @@ const VoucherFilter = (props: IProps) => {
                                           <Col key={"ALL"} span={24} style={{marginBottom: 10}}>
                                               <Radio value={undefined} style={{marginLeft: 10}}>Tất cả</Radio>
                                           </Col>
-
                                           { Object.keys(DISCOUNT_TYPE).map((key) => (
                                               <Col key={key} span={24} style={{marginBottom: 10}}>
                                                   <Radio value={key} style={{marginLeft: 10}}>

@@ -1,11 +1,12 @@
 "use client";
-import { memo, useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, Col } from 'antd';
 import { updateVoucher } from '@/services/VoucherService';
 import dayjs from 'dayjs';
 import {EuroOutlined, PercentageOutlined} from "@ant-design/icons"; // Thay thế moment bằng dayjs
 import useAppNotifications from "../../../hooks/useAppNotifications";
-
+import {STATUS} from "@/constants/Status";
+import {DISCOUNTTYPE} from "@/constants/DiscountType";
 const { Option } = Select;
 
 
@@ -121,7 +122,7 @@ const UpdateVoucher = (props: IProps) => {
                     style: { background: "#00b96b" },
                 }}
                 width={800} // Kích thước modal
-                bodyStyle={{ padding: '20px' }}
+                style={{ body: {padding: '20px'} }}
             >
                 <Form
                     form={form}
@@ -202,20 +203,30 @@ const UpdateVoucher = (props: IProps) => {
                             <Form.Item
                                 name="startDate"
                                 label="Ngày bắt đầu"
-                                rules={[{required: true, message: "Vui lòng chọn ngày bắt đầu!"}]}
+                                rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
                             >
-                                <DatePicker style={{width: '100%'}}/>
+                                <DatePicker
+                                    style={{ width: '100%' }}
+                                    showTime
+                                    format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                                />
                             </Form.Item>
+
                         </Col>
 
                         <Col span={12}>
                             <Form.Item
                                 name="endDate"
                                 label="Ngày kết thúc"
-                                rules={[{required: true, message: "Vui lòng chọn ngày kết thúc!"}]}
+                                rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
                             >
-                                <DatePicker style={{width: '100%'}}/>
+                                <DatePicker
+                                    style={{ width: '100%' }}
+                                    showTime
+                                    format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                                />
                             </Form.Item>
+
 
                         </Col>
                     </Row>
@@ -256,15 +267,15 @@ const UpdateVoucher = (props: IProps) => {
 
 
                         <Col span={12}>
-                            <Form.Item
-                                name="status"
-                                label="Trạng thái"
-                                rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}
-                            >
-                                <Select placeholder="Chọn trạng thái" style={{width: '100%'}}>
-                                    <Option value={1}>Đang diễn ra </Option>
-                                    <Option value={0}>Kết thúc </Option>
-                                </Select>
+                            <Form.Item name="status" label="Trạng thái"
+                                       rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>
+                                <Select
+                                    options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
+                                        (key) => (
+                                            {value: key, label: STATUS[key]}
+                                        )
+                                    )}
+                                />
                             </Form.Item>
                         </Col>
                     </Row>
