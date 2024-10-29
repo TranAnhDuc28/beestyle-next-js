@@ -1,7 +1,6 @@
 import MaterialComponent from "@/components/Admin/Material/MaterialComponent";
-import { OptionsParams } from "@/utils/HttpInstance";
 import { Suspense } from "react";
-import Loader from "@/components/Loader/Loader";
+import AdminLoader from "@/components/Loader/AdminLoader";
 import {Metadata} from "next";
 
 export const metadata: Metadata = {
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
 
 const MaterialPage = () => {
     return (
-        <Suspense fallback={<Loader />}>
+        <Suspense fallback={<AdminLoader />}>
             <MaterialComponent/>
         </Suspense>
     );

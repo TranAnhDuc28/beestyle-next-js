@@ -1,5 +1,5 @@
 import React, {Suspense} from "react";
-import Loader from "@/components/Loader/Loader";
+import AdminLoader from "@/components/Loader/AdminLoader";
 import {Metadata} from "next";
 import CategoryComponent from "@/components/Admin/Category/CategoryComponent";
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 function Category() {
     return (
-        <Suspense fallback={<Loader/>}>
+        <Suspense fallback={<AdminLoader/>}>
             <CategoryComponent/>
         </Suspense>
     );

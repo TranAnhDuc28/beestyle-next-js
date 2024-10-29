@@ -1,4 +1,3 @@
-import './styles/index.css';
 import {Metadata} from "next";
 import {Suspense} from "react";
 import UserLoader from "@/components/Loader/UserLoader";
