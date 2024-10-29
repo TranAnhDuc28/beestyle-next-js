@@ -1,5 +1,5 @@
 import {GetProp, Upload, UploadFile, UploadProps, Image} from "antd";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {PlusOutlined} from "@ant-design/icons";
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -14,15 +14,15 @@ const getBase64 = (file: FileType): Promise<string> =>
 
 interface IProps {
     countFileImage?: number;
-    fileList: UploadFile[];
     onChange: (fileList: UploadFile[]) => void;
 }
 
 const UploadImage = (props: IProps) => {
-    const {countFileImage, fileList: fileListProp, onChange} = props;
+    const {countFileImage, onChange} = props;
+    // console.log(fileListProp)
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
-    const [fileList, setFileList] = useState<UploadFile[]>(fileListProp);
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
 
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
@@ -32,11 +32,10 @@ const UploadImage = (props: IProps) => {
         setPreviewOpen(true);
     };
 
-    const handleChange: UploadProps['onChange'] = ({fileList: newFileList}) =>{
+    const handleChange: UploadProps['onChange'] = ({fileList: newFileList}) => {
         setFileList(newFileList);
         onChange(newFileList);
     }
-
 
     const uploadButton = (
         <button style={{border: 0, background: 'none'}} type="button">
@@ -68,6 +67,7 @@ const UploadImage = (props: IProps) => {
                     src={previewImage}
                 />
             )}
+
         </>
     );
 }

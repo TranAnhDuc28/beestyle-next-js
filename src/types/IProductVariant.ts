@@ -16,10 +16,20 @@ export interface IProductVariant {
     updatedBy?: number;
 }
 
-export interface IProductVariantCreate{
+export interface IProductVariantRows{
     key: string
     sku?: string;
     productVariantName?: string;
+    productId?: number;
+    colorId?: number;
+    sizeId?: number;
+    originalPrice?: number;
+    salePrice?: number;
+    quantityInStock?: number;
+}
+
+export interface IProductVariantCreate{
+    sku?: string;
     productId?: number;
     colorId?: number;
     sizeId?: number;

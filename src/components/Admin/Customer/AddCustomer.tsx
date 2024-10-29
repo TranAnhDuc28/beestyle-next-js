@@ -1,9 +1,10 @@
 "use client";
-import { Col, DatePicker, Form, Input, Modal, Select } from "antd";
+import { DatePicker, Form, Input, Modal, Select } from "antd";
 import React, { memo, useEffect, useState } from "react";
 import { createCustomer } from "@/services/CustomerService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { createAddress } from "@/services/AddressService";
+import CreateAddress from "../Address/CreateAddress";
 
 const { Option } = Select;
 
@@ -17,46 +18,33 @@ const AddCustomer = (props: IProps) => {
   const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
   const { showNotification } = useAppNotifications();
   const [form] = Form.useForm();
-  const [provinces, setProvinces] = useState<any[]>([]); // Dữ liệu tỉnh
-  const [districts, setDistricts] = useState<any[]>([]); // Dữ liệu huyện
-  const [wards, setWards] = useState<any[]>([]); // Dữ liệu xã
-
-  const [ward, setWard] = useState("");
-  const [district, setDistrict] = useState("");
-  const [province, setProvince] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
+  const [selectedProvinceName, setSelectedProvinceName] = useState("");
+  const [selectedDistrictName, setSelectedDistrictName] = useState("");
+  const [selectedWardName, setSelectedWardName] = useState("");
 
- 
   console.log(isCreateModalOpen);
-  
+
   const handleSubmit = async (values: ICustomer) => {
     try {
       // Định dạng ngày sinh
       console.log(values.dateOfBirth);
 
       const result = await createCustomer(values);
-     
 
       if (result.data) {
         const customer = result.data; // Lấy ID của khách hàng từ phản hồi
-        const selectedProvinceCode = selectedProvince; // Từ state
-        const selectedDistrictCode = selectedDistrict; // Từ state
-        const selectedWardCode = selectedWard; // Từ state
-
-        console.log(selectedProvince);
-        console.log(selectedDistrict);
-        console.log(ward);
 
         const address = {
-          addressName: `${ward} - ${district} - ${province}`,
-          cityCode: Number(selectedProvinceCode), // Nếu cần chuyển đổi
-          city: province, // Lưu tên tỉnh vào đây
-          districtCode: Number(selectedDistrictCode), // Nếu cần chuyển đổi
-          district: district, // Lưu tên huyện vào đây
-          communeCode: Number(selectedWardCode), // Cần lấy từ API nếu có
-          commune: ward, // Tên xã
+          addressName: `${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`,
+          cityCode: Number(selectedProvince), // Nếu cần chuyển đổi
+          city: selectedProvinceName ?? "", // Lưu tên tỉnh vào đây
+          districtCode: Number(selectedDistrict), // Nếu cần chuyển đổi
+          district: selectedDistrictName ?? "", // Lưu tên huyện vào đây
+          communeCode: Number(selectedWard), // Cần lấy từ API nếu có
+          commune: selectedWardName ?? "", // Tên xã
           isDefault: false,
           customer: {
             id: customer.id, // Thay đổi bằng ID thực tế
@@ -67,7 +55,7 @@ const AddCustomer = (props: IProps) => {
         mutate();
         // Gọi API để tạo địa chỉ
         try {
-           await createAddress(address);
+          await createAddress(address);
           console.log(address.customer);
         } catch (error: any) {
           const errorMessage = error?.response?.data?.message;
@@ -105,122 +93,34 @@ const AddCustomer = (props: IProps) => {
   const handleCancelModal = () => {
     form.resetFields();
     setIsCreateModalOpen(false);
-    setWards([]);
-  };
-
-
-  // Lấy dữ liệu tỉnh
-  const fetchProvinces = async () => {
-    // Thay thế URL bằng API lấy tỉnh thực tế
-    const response = await fetch(
-      "https://vn-public-apis.fpo.vn/provinces/getAll?limit=-1"
-    );
-    const data = await response.json();
-    setProvinces(data.data.data);
-  };
-
-  // Lấy dữ liệu huyện khi tỉnh được chọn
-  const fetchDistricts = async (code?: any) => {
-    const response = await fetch(
-      `https://vn-public-apis.fpo.vn/districts/getByProvince?provinceCode=${code}&limit=-1`
-    );
-    const data = await response.json();
-    setDistricts(data.data.data);
-  };
-
-  // Lấy dữ liệu xã khi xã được chọn
-  const fetchWards = async (code?: any) => {
-    const response = await fetch(
-      `https://vn-public-apis.fpo.vn/wards/getByDistrict?districtCode=${code}&limit=-1`
-    );
-    const data = await response.json();
-    setWards(data.data.data);
-  };
-
-  // Lấy tên tỉnh
-  const fetchProvince = async (code?: any) => {
-    const response = await fetch(
-      `https://vn-public-apis.fpo.vn/provinces/getAll?q=${code}&cols=code`
-    );
-    const data = await response.json();
-
-    // Kiểm tra xem có dữ liệu không
-    if (data.exitcode === 1 && data.data && data.data.data.length > 0) {
-      // Lấy tên tỉnh
-      const provinceName = data.data.data[0].name;
-      setProvince(provinceName); // Lưu tên vào state
-      console.log(provinceName); // In ra tên
-    } else {
-      console.log("Không tìm thấy tỉnh");
-    }
-  };
-
-  // Lấy tên huyện
-  const fetchDistrict = async (code?: any) => {
-    const response = await fetch(
-      `https://vn-public-apis.fpo.vn/districts/getAll?q=${code}&cols=code`
-    );
-    const data = await response.json();
-
-    // Kiểm tra xem có dữ liệu không
-    if (data.exitcode === 1 && data.data && data.data.data.length > 0) {
-      // Lấy tên huyện
-      const districtName = data.data.data[0].name;
-      setDistrict(districtName); // Lưu tên vào state
-    } else {
-      console.log("Không tìm thấy huyện");
-    }
-  };
-  // Lấy tên xã
-  const fetchWard = async (code?: any) => {
-    const response = await fetch(
-      `https://vn-public-apis.fpo.vn/wards/getAll?q=${code}&cols=code`
-    );
-    const data = await response.json();
-
-    // Kiểm tra xem có dữ liệu không
-    if (data.exitcode === 1 && data.data && data.data.data.length > 0) {
-      // Lấy tên xã
-      const wardName = data.data.data[0].name;
-      setWard(wardName); // Lưu tên vào state
-    } else {
-      console.log("Không tìm thấy xã");
-    }
   };
 
   useEffect(() => {
     if (isCreateModalOpen) {
-      fetchProvinces();
       setSelectedProvince("");
       setSelectedDistrict("");
       setSelectedWard("");
-      setDistricts([]);
-      setWards([]);
     }
   }, [isCreateModalOpen]);
-  
+
+
 
   // Xử lý khi tỉnh được chọn
-  const handleProvinceChange = (value?: any) => {
+  const handleProvinceChange = (value: any, name: string) => {
     setSelectedProvince(value);
+    setSelectedProvinceName(name);
     setSelectedDistrict(""); // Reset huyện khi tỉnh thay đổi
-    setWards([]); // Reset xã khi tỉnh thay đổi
-    fetchDistricts(value);
-    fetchProvince(value);
-    // console.log(value);
   };
 
   // Xử lý khi huyện được chọn
-  const handleDistrictChange = (value?: any) => {
+  const handleDistrictChange = (value: any, name: string) => {
     setSelectedDistrict(value);
-    fetchWards(value);
-    fetchDistrict(value);
-    console.log(value);
+    setSelectedDistrictName(name);
   };
   // Xử lý khi xã được chọn
-  const handleWardChange = (value?: any) => {
+  const handleWardChange = (value: any, name: string) => {
     setSelectedWard(value);
-    fetchWard(value);
+    setSelectedWardName(name);
   };
 
   // console.log(wards);
@@ -295,62 +195,13 @@ const AddCustomer = (props: IProps) => {
             </Select>
           </Form.Item>
 
-          {/* Trường địa chỉ */}
-          <Form.Item
-            label="Tỉnh"
-            name="province"
-            rules={[{ required: true, message: "Vui lòng chọn tỉnh!" }]}
-          >
-            <Select
-              onChange={handleProvinceChange}
-              placeholder="Chọn tỉnh"
-              style={{ width: "100%" }}
-            >
-              {provinces.map((province) => (
-                <Select.Option key={province._id} value={province.code}>
-                  {province.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Huyện"
-            name="district"
-            rules={[{ required: true, message: "Vui lòng chọn huyện!" }]}
-          >
-            <Select
-              onChange={handleDistrictChange}
-              placeholder="Chọn huyện"
-              style={{ width: "100%" }}
-              disabled={!selectedProvince} // Khóa khi chưa chọn tỉnh
-            >
-              {districts.map((district) => (
-                <Select.Option key={district._id} value={district.code}>
-                  {district.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Xã"
-            name="ward"
-            rules={[{ required: true, message: "Vui lòng chọn xã!" }]}
-          >
-            <Select
-              onChange={handleWardChange}
-              placeholder="Chọn xã"
-              style={{ width: "100%" }}
-              disabled={!selectedDistrict} // Khóa khi chưa chọn huyện
-            >
-              {wards.map((ward) => (
-                <Select.Option key={ward._id} value={ward.code}>
-                  {ward.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+          <CreateAddress
+            handleDistrictChange={handleDistrictChange}
+            handleProvinceChange={handleProvinceChange}
+            handleWardChange={handleWardChange}
+            selectedDistrict={selectedDistrict}
+            selectedProvince={selectedProvince}
+          />
         </Form>
       </Modal>
     </>

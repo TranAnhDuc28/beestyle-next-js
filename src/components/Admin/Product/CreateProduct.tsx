@@ -1,20 +1,10 @@
 "use client"
 import {
-    Col,
-    Collapse,
-    Form,
-    Input,
-    InputNumber,
-    Modal,
-    Row,
-    Select,
-    Tabs,
-    TabsProps,
-    TreeSelect,
-    Typography, UploadFile
+    Col, Collapse, Flex, Form, Input, InputNumber, Modal, Row, Select,
+    Tabs, TabsProps, TreeSelect, Typography, UploadFile
 } from "antd";
 import useAppNotifications from "@/hooks/useAppNotifications";
-import React, {memo, useCallback, useState} from "react";
+import React, {memo, useCallback, useEffect, useState} from "react";
 import {IProduct} from "@/types/IProduct";
 import UploadImage from "@/components/Upload/UploadImage";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
@@ -25,16 +15,28 @@ import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSele
 import TableEditRows from "@/components/Admin/Product/CreateProductVariantTable";
 import ColorOptionSelect from "@/components/Select/ColorOptionSelect";
 import {IProductImageCreate} from "@/types/IProductImage";
-import {IProductVariantCreate} from "@/types/IProductVariant";
+import {IProductVariantCreate, IProductVariantRows} from "@/types/IProductVariant";
+import SizeOptionSelect from "@/components/Select/SizeOptionSelect";
+import TextArea from "antd/es/input/TextArea";
 
 const {Title} = Typography;
 
-const normFile = (e: any) => {
-    if (Array.isArray(e)) {
-        return e;
-    }
-    console.log(e?.fileList || []);
-    return e?.fileList;
+const generateProductVariants = (
+    colors: { value: number; label: string }[],
+    sizes: { value: number; label: string }[]
+) => {
+    return colors.flatMap((color, index) =>
+        sizes.map((size) => ({
+            key: `${color.value}-${size.value}`,
+            sku: `SKU-${color.label}-${size.label}`,
+            productVariantName: `${color.label} - ${size.label}`,
+            colorId: color.value,
+            sizeId: size.value,
+            originalPrice: 1000,
+            salePrice: 1200,
+            quantityInStock: 10,
+        }))
+    );
 };
 
 interface IProps {
@@ -47,7 +49,11 @@ const CreateProduct = (props: IProps) => {
     const [form] = Form.useForm();
     const {showNotification} = useAppNotifications();
     const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
-    const [productVariants, setProductVariants] = useState<IProductVariantCreate[]>([]);
+
+    const [activeKeyCollapse, setActiveKeyCollapse] = useState<string[]>([]);
+    const [productVariantRows, setProductVariantRows] = useState<IProductVariantRows[]>([]);
+    const [selectedColors, setSelectedColors] = useState<{ value: number; label: any }[]>([]);
+    const [selectedSizes, setSelectedSizes] = useState<{ value: number; label: any }[]>([]);
 
     const {dataOptionBrand, error: errorDataOptionBrand, isLoading: isLoadingDataOptionBrand}
         = useOptionBrand(isCreateModalOpen);
@@ -58,10 +64,13 @@ const CreateProduct = (props: IProps) => {
 
     const handleCloseCreateModal = () => {
         form.resetFields();
+        setProductVariantRows([]);
+        setSelectedColors([]);
+        setSelectedSizes([]);
         setIsCreateModalOpen(false);
     };
 
-    const handleProductImages = (fileList: UploadFile[]) => {
+    const handleProductImages = useCallback((fileList: UploadFile[]) => {
         const images: IProductImageCreate[] = fileList.map((file, index) => (
             {
                 imagUrl: `/${file.url || file.name || file.originFileObj?.name || 'no-img.png'}`,
@@ -69,20 +78,51 @@ const CreateProduct = (props: IProps) => {
             }
         )).filter(Boolean);
         form.setFieldsValue({productImages: images});
-    }
+    }, []);
 
-    const handleProductVariants = () => {
+    const handleSelectChange = useCallback(
+        (type: 'colors' | 'sizes', selectedOptions: { value: number; label: string }[]) => {
+            if (type === 'colors') {
+                setSelectedColors(selectedOptions);
+            } else {
+                setSelectedSizes(selectedOptions);
+            }
+        },
+        []
+    );
 
-    }
+    const handleCollapseChange = (key: string | string[]) => {
+        if (key.includes('thuoc-tinh')) {
+            setActiveKeyCollapse(['thuoc-tinh', 'danh-sach-san-pham-cung-loai']);
+        } else {
+            setActiveKeyCollapse(key as string[]);
+        }
+    };
+
+    useEffect(() => {
+        if (selectedColors.length > 0 || selectedSizes.length > 0) {
+            const variants = generateProductVariants(selectedColors, selectedSizes);
+            console.log("Variants:", variants);
+            setProductVariantRows(variants);
+        }
+    }, [selectedColors, selectedSizes]);
+
+    useEffect(() => {
+        if (!isCreateModalOpen) {
+            setActiveKeyCollapse([]);
+        }
+    }, [isCreateModalOpen]);
 
     const onFinish = async (value: IProduct) => {
+        const productVariants: IProductVariantCreate[] =
+            productVariantRows.map(({key, productVariantName, ...rest}) => rest);
         const product = {...value, productVariants};
         console.log('Success json:', JSON.stringify(product, null, 2));
         // try {
         //     const result = await createMaterial(value);
         //     mutate();
         //     if (result.data) {
-        //         handleCloseCreateModal();
+        handleCloseCreateModal();
         //         showNotification("success", {message: result.message});
         //     }
         //
@@ -170,53 +210,71 @@ const CreateProduct = (props: IProps) => {
                                     onChange={(value) => form.setFieldsValue({materialId: value})}
                                 />
                             </Form.Item>
-                            <Form.Item name="description" label="Mô tả sản phẩm"
-                                       tooltip="Mô tả chi tiết sản phẩm"
-                            >
-                                <Input/>
-                            </Form.Item>
                         </Col>
                         <Col span={10}>
                             <Form.Item label="Giá vốn" initialValue={0} layout="horizontal">
-                                {/*<Title level={5}>Giá vốn:</Title>*/}
-                                <InputNumber style={{width: '100%'}} min={0} value={0}/>
+                                <InputNumber style={{width: '100%'}} min={0} placeholder={"0"}/>
                             </Form.Item>
-                            <Form.Item label="Giá bán" initialValue={0} >
-                                <InputNumber style={{width: '100%'}} min={0} value={0}/>
+                            <Form.Item label="Giá bán" initialValue={0}>
+                                <InputNumber style={{width: '100%'}} min={0} placeholder={"0"}/>
                             </Form.Item>
                             <Form.Item label="Tồn kho" initialValue={0}>
-                                <InputNumber style={{width: '100%'}} min={0} value={0}/>
+                                <InputNumber style={{width: '100%'}} min={0} placeholder={"0"}/>
                             </Form.Item>
                         </Col>
                     </Row>
                     <Row style={{margin: "10px 0px"}}>
                         <Col span={24}>
-                            <Form.Item name="productImages" valuePropName="fileList" getValueFromEvent={normFile}>
-                                <UploadImage
-                                    countFileImage={6}
-                                    fileList={form.getFieldValue('productImages') || []}
-                                    onChange={(fileList) => handleProductImages(fileList)}
-                                />
+                            <Form.Item name="productImages">
+                                <UploadImage countFileImage={6} onChange={handleProductImages}/>
                             </Form.Item>
                         </Col>
                     </Row>
                     <Row style={{margin: "10px 0px"}}>
                         <Col span={24}>
                             <Collapse
+                                activeKey={activeKeyCollapse}
+                                onChange={handleCollapseChange}
+                                collapsible="icon"
                                 size="small" expandIconPosition="end"
                                 items={[{
                                     key: 'thuoc-tinh',
                                     label: <Title level={5} style={{margin: '0px 10px'}}>Thuộc tính</Title>,
                                     children: (
                                         <>
-                                            <Form.Item label="Màu sắc" style={{marginTop: 24}}>
-                                                <ColorOptionSelect
-                                                    // onChange={(value) => form.setFieldsValue({colorId: value})}
-                                                />
-                                            </Form.Item>
-                                            <Form.Item label="Kích cỡ">
-                                                <ColorOptionSelect/>
-                                            </Form.Item>
+                                            <Flex vertical gap={16}>
+                                                <div>
+                                                    <Typography.Title level={5}>Màu sắc:</Typography.Title>
+                                                    <ColorOptionSelect
+                                                        selectedValues={selectedColors}
+                                                        onChange={
+                                                            (selectedOptions: { value: number; label: string }[]) => {
+                                                                console.log("Selected colors:", selectedOptions);
+                                                                handleSelectChange("colors", selectedOptions);
+                                                            }}
+                                                        onClear={() => {
+                                                            setSelectedColors([]);
+                                                            setProductVariantRows([]);
+                                                        }}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Typography.Title level={5}>Kích cỡ</Typography.Title>
+                                                    <SizeOptionSelect
+                                                        selectedValues={selectedSizes}
+                                                        onChange={
+                                                            (selectedOptions: { value: number; label: string }[]) => {
+                                                                console.log("Selected sizes:", selectedOptions);
+                                                                handleSelectChange("sizes", selectedOptions);
+                                                            }
+                                                        }
+                                                        onClear={() => {
+                                                            setSelectedSizes([])
+                                                            setProductVariantRows([]);
+                                                        }}
+                                                    />
+                                                </div>
+                                            </Flex>
                                         </>
                                     )
                                 }]}
@@ -226,6 +284,9 @@ const CreateProduct = (props: IProps) => {
                     <Row style={{margin: "10px 0px"}}>
                         <Col span={24}>
                             <Collapse
+                                activeKey={activeKeyCollapse}
+                                onChange={handleCollapseChange}
+                                collapsible="icon"
                                 size="small" expandIconPosition="end"
                                 items={[{
                                     key: 'danh-sach-san-pham-cung-loai',
@@ -236,8 +297,8 @@ const CreateProduct = (props: IProps) => {
                                     children: (
                                         <Form.Item name="productVariants">
                                             <TableEditRows
-                                                form={form}
-                                                setProductVariants={setProductVariants}
+                                                productVariantRows={productVariantRows}
+                                                setProductVariantRows={setProductVariantRows}
                                             />
                                         </Form.Item>
                                     )
@@ -248,26 +309,39 @@ const CreateProduct = (props: IProps) => {
                 </>
             ),
         },
-
+        {
+            key: "description-detail",
+            label: "Mô tả chi tiết",
+            children: (
+                <>
+                    <Row style={{margin: "10px 0px"}}>
+                        <Col span={24}>
+                            <Form.Item name="description" label="Mô tả sản phẩm" layout="horizontal"
+                                       tooltip="Mô tả chi tiết sản phẩm"
+                            >
+                                <TextArea showCount style={{height: 120, resize: 'none'}}/>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </>
+            )
+        },
     ];
 
     return (
         <>
             <Modal title="Thêm sản phẩm" cancelText="Hủy" okText="Lưu" width={1200} style={{top: 20}}
+                   maskClosable={false}
                    open={isCreateModalOpen}
                    onOk={() => form.submit()}
                    onCancel={() => handleCloseCreateModal()}
                    okButtonProps={{style: {background: "#00b96b"}}}
+
             >
                 <Form form={form} name="createProduct" onFinish={onFinish}
-                      labelCol={{span: 5}}
-                      labelAlign="left"
-                      labelWrap
+                      labelCol={{span: 6}} labelAlign="left" labelWrap
                 >
-                    <Tabs
-                        defaultActiveKey="info"
-                        items={itemTabs}
-                    />
+                    <Tabs defaultActiveKey="info" items={itemTabs}/>
                 </Form>
             </Modal>
         </>
