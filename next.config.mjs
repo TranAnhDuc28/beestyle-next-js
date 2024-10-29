@@ -2,7 +2,14 @@
 const nextConfig = {
     reactStrictMode: false,
     images: {
-        domains: ['theme.hstatic.net', 'via.placeholder.com'],
+        remotePatterns: [
+            {
+                hostname: 'theme.hstatic.net',
+            },
+            {
+                hostname: 'via.placeholder.com'
+            },
+        ]
     }
 };
 

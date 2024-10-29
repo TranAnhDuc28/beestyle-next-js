@@ -1,6 +1,4 @@
 "use client"
-
-import React, { useState } from 'react';
 import { Layout } from 'antd';
 import UserHeader from '../Header/UserHeader';
 import Slider from '../Slider/UserSlider';
@@ -13,13 +11,11 @@ import ShopBlog from '../User/Products/ShopBlog';
 import ShopServices from '../Footer/ShopServices';
 import Newsletter from '../Footer/Newsletter';
 import UserFooter from '../Footer/UserFooter';
+import React from "react";
 
 const { Content } = Layout;
 
 const UserLayout: React.FC = () => {
-    const [collapsed, setCollapsed] = useState(false);
-
-    const toggleCollapsed = () => setCollapsed(!collapsed);
 
     return (
         <Layout>

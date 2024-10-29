@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import TableCustomer from "@/components/Admin/Customer/TableCustomer";
-import Loader from "@/components/Loader/Loader";
+import AdminLoader from "@/components/Loader/AdminLoader";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const CustomerPage = () => {
   return (
-      <Suspense fallback={<Loader />}>
+      <Suspense fallback={<AdminLoader />}>
         <TableCustomer />
       </Suspense>
   );

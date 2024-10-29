@@ -1,6 +1,6 @@
 import {Metadata} from "next";
 import { Suspense } from "react";
-import Loader from "@/components/Loader/Loader";
+import UserLoader from "@/components/Loader/UserLoader";
 
 export const metadata: Metadata = {
     title: "Thông tin",
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
     return (
-        <Suspense fallback={<Loader/>}>
+        <Suspense fallback={<UserLoader/>}>
             ABOUT
         </Suspense>
     );

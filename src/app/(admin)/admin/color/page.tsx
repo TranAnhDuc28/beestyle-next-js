@@ -1,4 +1,4 @@
-import Loader from "@/components/Loader/Loader";
+import AdminLoader from "@/components/Loader/AdminLoader";
 import ColorComponent from "@/components/Admin/Color/ColorComponent";
 import { Suspense } from "react";
 import {Metadata} from "next";
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 function Color() {
     return (
-        <Suspense fallback={<Loader />}>
+        <Suspense fallback={<AdminLoader />}>
             <ColorComponent/>
         </Suspense>
     );
