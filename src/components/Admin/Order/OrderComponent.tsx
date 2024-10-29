@@ -144,7 +144,7 @@ const OrderComponent: React.FC = () => {
                     <div>
                         <HeaderOrder
                             setIsCreateModalOpen={setIsCreateModalOpen}
-                            setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}
+                            // setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}
                         />
                     </div>
                     <TabsOrder

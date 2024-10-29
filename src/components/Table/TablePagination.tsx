@@ -50,8 +50,6 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
                     dataSource={tbl.data}
                     onChange={onChange}
                     onRow={tbl.onRow}
-                    expandedRowKeys={tbl.expandedRowKeys}
-                    expandedRowRender={tbl.expandedRowRender}
                     rowSelection={rowSelection}
                     pagination={{
                         current: tbl.current || 1,
@@ -63,7 +61,7 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
                         style: {marginRight: 10},
                         showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
                     }}
-                    scroll={{y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true }}
+                    scroll={{x: true, y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true }}
                 />
             </div>
         </>
