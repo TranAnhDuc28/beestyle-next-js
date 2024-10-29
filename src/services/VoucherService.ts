@@ -3,7 +3,7 @@ import {IVoucher} from "@/types/IVoucher";
 
 
 export const URL_API_VOUCHER = {
-    get: '/admin/voucher/vouchers',
+    get: '/admin/voucher',
     create: '/admin/voucher/create',
     update: '/admin/voucher/update',
     delete: '/admin/voucher/delete',

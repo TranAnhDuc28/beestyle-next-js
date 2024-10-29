@@ -1,5 +1,5 @@
-import Loader from "@/components/Loader/Loader";
+import AdminLoader from "@/components/Loader/AdminLoader";
 
 export default function Loading() {
-    return <Loader />
+    return <AdminLoader/>
 }

@@ -1,9 +1,12 @@
 "use client";
-import {memo} from 'react';
-import {Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, Col} from 'antd';
+import React, {memo} from 'react';
+import {Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, Col, Radio, Space} from 'antd';
 import {createVoucher} from '@/services/VoucherService';
 import {EuroOutlined, PercentageOutlined} from '@ant-design/icons';
 import useAppNotifications from "../../../hooks/useAppNotifications";
+import {STATUS} from "@/constants/Status";
+import {DISCOUNTTYPE} from "@/constants/DiscountType";
+import {DISCOUNT_TYPE, DISCOUNTTYPE_KEYS} from "../../../constants/DiscountType";
 
 const {Option} = Select;
 
@@ -14,7 +17,7 @@ interface IProps {
 }
 
 const CreateVoucher = (props: IProps) => {
-    const {showNotification} =useAppNotifications();
+    const {showNotification} = useAppNotifications();
     const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
 
@@ -29,17 +32,19 @@ const CreateVoucher = (props: IProps) => {
             mutate();
             if (result.data) {
                 handleCloseCreateModal();
-                showNotification("success",{message: result.message,});
+                showNotification("success", {message: result.message,});
             }
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {
                 Object.entries(errorMessage).forEach(([field, message]) => {
-                    showNotification("error",{message: String(message),});
+                    showNotification("error", {message: String(message),});
                 });
             } else {
-                showNotification("error",{message: error?.message,
-                    description: errorMessage,});
+                showNotification("error", {
+                    message: error?.message,
+                    description: errorMessage,
+                });
             }
         }
     };
@@ -57,7 +62,7 @@ const CreateVoucher = (props: IProps) => {
                     style: {background: "#00b96b"},
                 }}
                 width={800} // Kích thước modal
-                bodyStyle={{padding: '20px'}}
+                style={{body: {padding: '20px'}}}
             >
                 <Form
                     form={form}
@@ -95,29 +100,33 @@ const CreateVoucher = (props: IProps) => {
                                 label="Giá trị giảm giá"
                                 rules={[{required: true, message: "Vui lòng nhập giá trị giảm giá và chọn kiểu!"}]}
                             >
-                                <Input.Group compact>
+                                <Space.Compact style={{ width: '100%' }}>
                                     <Form.Item
                                         name="discountValue"
                                         noStyle
-                                        rules={[{required: true, message: "Giá trị giảm là bắt buộc!"}]}
+                                        rules={[{ required: true, message: "Giá trị giảm là bắt buộc!" }]}
                                     >
-                                        <InputNumber style={{width: '70%'}} placeholder="Giá trị giảm"/>
+                                        <InputNumber style={{ width: '70%' }} placeholder="Giá trị giảm" />
                                     </Form.Item>
                                     <Form.Item
                                         name="discountType"
                                         noStyle
-                                        rules={[{required: true, message: "Kiểu giảm là bắt buộc!"}]}
+                                        rules={[{ required: true, message: "Kiểu giảm là bắt buộc!" }]}
                                     >
                                         <Select
-                                            style={{width: '30%'}}
+                                            style={{ width: '30%' }}
                                             placeholder="Chọn kiểu"
                                             suffixIcon={null}
                                         >
-                                            <Option value="PERCENTAGE" icon={<PercentageOutlined/>}>%</Option>
-                                            <Option value="CASH" icon={<EuroOutlined/>}>VND </Option>
+                                            {Object.keys(DISCOUNT_TYPE).map((key) => (
+                                                <Option key={key} value={key}>
+                                                    {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE]}
+                                                </Option>
+                                            ))}
                                         </Select>
                                     </Form.Item>
-                                </Input.Group>
+                                </Space.Compact>
+
                             </Form.Item>
                         </Col>
 
@@ -138,20 +147,30 @@ const CreateVoucher = (props: IProps) => {
                             <Form.Item
                                 name="startDate"
                                 label="Ngày bắt đầu"
-                                rules={[{required: true, message: "Vui lòng chọn ngày bắt đầu!"}]}
+                                rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
                             >
-                                <DatePicker style={{width: '100%'}}/>
+                                <DatePicker
+                                    style={{ width: '100%' }}
+                                    showTime
+                                    format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                                />
                             </Form.Item>
+
                         </Col>
 
                         <Col span={12}>
                             <Form.Item
                                 name="endDate"
                                 label="Ngày kết thúc"
-                                rules={[{required: true, message: "Vui lòng chọn ngày kết thúc!"}]}
+                                rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
                             >
-                                <DatePicker style={{width: '100%'}}/>
+                                <DatePicker
+                                    style={{ width: '100%' }}
+                                    showTime
+                                    format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                                />
                             </Form.Item>
+
 
                         </Col>
                     </Row>
@@ -191,18 +210,18 @@ const CreateVoucher = (props: IProps) => {
                         </Col>
 
 
-                        <Col span={12}>
-                            <Form.Item
-                                name="status"
-                                label="Trạng thái"
-                                rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}
-                            >
-                                <Select placeholder="Chọn trạng thái" style={{width: '100%'}}>
-                                    <Option value={1}>Đang diễn ra </Option>
-                                    <Option value={0}>Kết thúc </Option>
-                                </Select>
-                            </Form.Item>
-                        </Col>
+                        {/*<Col span={12}>*/}
+                        {/*    <Form.Item*/}
+                        {/*        name="status"*/}
+                        {/*        label="Trạng thái"*/}
+                        {/*        rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}*/}
+                        {/*    >*/}
+                        {/*        <Select placeholder="Chọn trạng thái" style={{width: '100%'}}>*/}
+                        {/*            <Option value={1}>Đang diễn ra </Option>*/}
+                        {/*            <Option value={0}>Kết thúc </Option>*/}
+                        {/*        </Select>*/}
+                        {/*    </Form.Item>*/}
+                        {/*</Col>*/}
                     </Row>
 
                 </Form>
