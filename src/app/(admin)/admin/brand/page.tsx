@@ -1,5 +1,5 @@
 import BrandComponent from "@/components/Admin/Brand/BrandComponent";
-import Loader from "@/components/Loader/Loader";
+import AdminLoader from "@/components/Loader/AdminLoader";
 import React, { Suspense } from "react";
 import {Metadata} from "next";
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 function BrandPage() {
     return (
-        <Suspense fallback={<Loader />}>
+        <Suspense fallback={<AdminLoader />}>
             <BrandComponent/>
         </Suspense>
     );

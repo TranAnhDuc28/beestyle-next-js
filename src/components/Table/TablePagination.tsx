@@ -10,7 +10,11 @@ export interface ITablePaginationProps {
     current?: number,
     pageSize?: number,
     total?: number,
-    loading?: boolean
+    loading?: boolean,
+    onRow?: (record: any) => { [key: string]: (event: React.MouseEvent<HTMLElement>) => void },
+    expandedRowKeys?: number[],
+    expandedRowRender?: React.FC
+
 }
 
 const rowSelection: TableProps<any>['rowSelection'] = {
@@ -24,12 +28,12 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
 
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const { replace } = useRouter()
+    const {replace} = useRouter()
 
     const onChange = (pagination: any, filters: any, sorter: any, extra: any) => {
         if (pagination?.current) {
             const params = new URLSearchParams(searchParams);
-            params.set("page", pagination.current); 
+            params.set("page", pagination.current);
             params.set("size", pagination.pageSize);
             replace(`${pathname}?${params.toString()}`);
         }
@@ -45,6 +49,9 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
                     columns={tbl.columns}
                     dataSource={tbl.data}
                     onChange={onChange}
+                    onRow={tbl.onRow}
+                    expandedRowKeys={tbl.expandedRowKeys}
+                    expandedRowRender={tbl.expandedRowRender}
                     rowSelection={rowSelection}
                     pagination={{
                         current: tbl.current || 1,
@@ -53,7 +60,7 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
                         showSizeChanger: true,
                         pageSizeOptions: [10, 25, 35, 50],
                         responsive: true,
-                        style: { marginRight: 10 },
+                        style: {marginRight: 10},
                         showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
                     }}
                     scroll={{y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true }}

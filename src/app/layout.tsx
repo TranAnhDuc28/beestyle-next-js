@@ -1,7 +1,7 @@
 "use client";
 import "../css/globals.css";
 import React, {ReactNode, useEffect, useState} from "react";
-import Loader from "@/components/Loader/Loader";
+import AdminLoader from "@/components/Loader/AdminLoader";
 import {App, FloatButton} from "antd";
 import {AntdRegistry} from "@ant-design/nextjs-registry";
 
@@ -25,7 +25,7 @@ export default function RootLayout({children,}: Readonly<{ children: ReactNode; 
         {
             loading ?
                 (
-                    <Loader/>
+                    <AdminLoader/>
                 ) : (
                     <AntdRegistry>
                         <App>
