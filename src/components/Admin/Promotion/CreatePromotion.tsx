@@ -224,15 +224,6 @@ const CreatePromotion = (props: IProps) => {
                                     </Form.Item>
                                 </Space.Compact>
                             </Form.Item>
-
-                            <Form.Item
-                                name="startDate"
-                                label="Ngày bắt đầu"
-                                rules={[{required: true, message: "Vui lòng chọn ngày bắt đầu!"}]}
-                            >
-                                <DatePicker style={{width: '100%'}}/>
-                            </Form.Item>
-
                             <Form.Item
                                 name="startDate"
                                 label="Ngày bắt đầu"
@@ -256,6 +247,9 @@ const CreatePromotion = (props: IProps) => {
                                     showTime
                                     format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
                                 />
+                            </Form.Item>
+                            <Form.Item name="description" label="Mô tả">
+                                <Input.TextArea rows={3} placeholder="Nhập mô tả"/>
                             </Form.Item>
                         </Form>
                     </Col>
