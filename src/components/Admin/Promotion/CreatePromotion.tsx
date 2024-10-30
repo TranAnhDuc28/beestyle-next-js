@@ -66,7 +66,7 @@ const CreatePromotion = (props: IProps) => {
                     <Image
                         width={35}
                         height={35}
-                        src={value || "/no-img.png"}
+                        src={value || "/no-img550x750.png"}
                         fallback="/no-img.png"
                     />
                 </div>
@@ -116,7 +116,7 @@ const CreatePromotion = (props: IProps) => {
                     <Image
                         width={35}
                         height={35}
-                        src={value ? value : "/no-img.png"}
+                        src={value ? value : "/no-img550x750.png"}
                         fallback="/no-img.png"
                     />
                 </div>
