@@ -8,8 +8,14 @@ export const URL_API_ADDRESS = {
     delete:'/admin/address/delete',
   }
 
+  
   export const createAddress = async (data: IAddress) => {
     const response = await httpInstance.post(URL_API_ADDRESS.creat,data)
+    return response.data
+  }
+
+  export const getAddressByCustomerId = async (key:any) => {
+    const response = await httpInstance.get(key);
     return response.data
   }
 

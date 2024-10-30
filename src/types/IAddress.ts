@@ -6,6 +6,6 @@ export interface IAddress {
   district: string;
   communeCode: number;
   commune: string;
-  isDefault: boolean;
+  default: boolean;
   customer: any;
 }

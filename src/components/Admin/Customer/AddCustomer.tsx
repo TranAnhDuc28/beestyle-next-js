@@ -45,7 +45,7 @@ const AddCustomer = (props: IProps) => {
           district: selectedDistrictName ?? "", // Lưu tên huyện vào đây
           communeCode: Number(selectedWard), // Cần lấy từ API nếu có
           commune: selectedWardName ?? "", // Tên xã
-          isDefault: false,
+          default: false,
           customer: {
             id: customer.id, // Thay đổi bằng ID thực tế
           },

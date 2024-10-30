@@ -25,6 +25,7 @@ import CustomerFilter from "./CustomerFilter";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { GENDER } from "@/constants/Gender";
 import Link from "next/link";
+import { IAddress } from "@/types/IAddress";
 
 const { Content } = Layout;
 const CustomerComponent = () => {
@@ -58,8 +59,26 @@ const CustomerComponent = () => {
         return <span key={record.id}>{GENDER[value]}</span>;
       },
     },
-    { title: "Ngày tạo", dataIndex: "createdAt", key: "createAt" },
-    { title: "Ngày sửa", dataIndex: "updatedAt", key: "updateAt" },
+    {
+      title: "Địa chỉ",
+      dataIndex: "addresses",
+      key: "addresses",
+      render: (addresses) => {
+        if (addresses && addresses.length > 0) {
+          // console.log(addresses);
+          
+          // Lọc để lấy địa chỉ có isDefault: true
+          const defaultAddress = addresses.find((address:any) => address.default === true);
+    
+          // Kiểm tra nếu tồn tại defaultAddress, nếu không thì trả về rỗng
+          const addressToDisplay = defaultAddress || "";
+    
+          // Kiểm tra addressToDisplay trước khi truy cập addressName
+          return `${addressToDisplay?.addressName}`;
+        }
+        return ""; // Nếu không có địa chỉ nào trong mảng
+      },
+    },
     {
       title: "Trạng thái",
       dataIndex: "status",
@@ -96,7 +115,7 @@ const CustomerComponent = () => {
             />
           </Tooltip>
           <Tooltip placement="top" title="Chi tiết">
-            <Link href={`/admin/customer/${record.id}`}>
+            <Link href={`/admin/customer/${record.id}`} >
               <EyeOutlined
                 twoToneColor={"#f57800"}
                 style={{
@@ -128,7 +147,7 @@ const CustomerComponent = () => {
     result = data?.data;
   }
 
-  // console.log(data);
+  console.log(result);
 
   return (
     <div>

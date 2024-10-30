@@ -1,5 +1,5 @@
 "use client";
-import AddressCustomer from "@/components/Admin/Customer/Detail/AddressCustomer";
+import AddressComponent from "@/components/Admin/Address/AddressComponent";
 import InformationCustomer from "@/components/Admin/Customer/Detail/InformationCustomer";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { getDetailCustomer, URL_API_CUSTOMER } from "@/services/CustomerService";
@@ -9,7 +9,7 @@ import { Content } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import useSWR from "swr";
 
 
@@ -58,7 +58,7 @@ const DeatialCustomer = () => {
       <Layout>
         <Content className="pt-5 pr-2.5 pb-2.5 pl-5 overflow-auto" style={{ marginLeft: 300 }}>
           <p className="flex gap-2"><Link href={"/admin/customer"} ><TeamOutlined/> Khách hàng</Link>/<span className="font-medium">Chi tiết</span></p>
-          <AddressCustomer addresses={result?.addresses ? result?.addresses : []} />
+          <AddressComponent />
         </Content>
       </Layout>
     </Layout>
