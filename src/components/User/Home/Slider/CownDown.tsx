@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function CowndownArea() {
+export default function CownDownArea() {
     return (
         <section className="cown-down">
             <div className="section-inner ">
@@ -8,7 +8,7 @@ export default function CowndownArea() {
                     <div className="row">
                         <div className="col-lg-6 col-12 padding-right">
                             <div className="image">
-                                <img src="https://via.placeholder.com/750x590" alt="#" />
+                                <img src="/img750x590.png" alt="#" />
                             </div>
                         </div>
                         <div className="col-lg-6 col-12 padding-left">

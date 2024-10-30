@@ -17,7 +17,7 @@ function ShopHome() {
                             <div className="row">
                                 <div className="col-lg-6 col-md-6 col-12">
                                     <div className="list-image overlay">
-                                        <img src="https://via.placeholder.com/115x140" alt="#" />
+                                        <img src="/img115x140.png" alt="#" />
                                         <a href="#" className="buy"><i className="fa fa-shopping-bag" /></a>
                                     </div>
                                 </div>
@@ -33,7 +33,7 @@ function ShopHome() {
                             <div className="row">
                                 <div className="col-lg-6 col-md-6 col-12">
                                     <div className="list-image overlay">
-                                        <img src="https://via.placeholder.com/115x140" alt="#" />
+                                        <img src="/img115x140.png" alt="#" />
                                         <a href="#" className="buy"><i className="fa fa-shopping-bag" /></a>
                                     </div>
                                 </div>
@@ -49,7 +49,7 @@ function ShopHome() {
                             <div className="row">
                                 <div className="col-lg-6 col-md-6 col-12">
                                     <div className="list-image overlay">
-                                        <img src="https://via.placeholder.com/115x140" alt="#" />
+                                        <img src="/img115x140.png" alt="#" />
                                         <a href="#" className="buy"><i className="fa fa-shopping-bag" /></a>
                                     </div>
                                 </div>
@@ -74,7 +74,7 @@ function ShopHome() {
                             <div className="row">
                                 <div className="col-lg-6 col-md-6 col-12">
                                     <div className="list-image overlay">
-                                        <img src="https://via.placeholder.com/115x140" alt="#" />
+                                        <img src="/img115x140.png" alt="#" />
                                         <a href="#" className="buy"><i className="fa fa-shopping-bag" /></a>
                                     </div>
                                 </div>
@@ -90,7 +90,7 @@ function ShopHome() {
                             <div className="row">
                                 <div className="col-lg-6 col-md-6 col-12">
                                     <div className="list-image overlay">
-                                        <img src="https://via.placeholder.com/115x140" alt="#" />
+                                        <img src="/img115x140.png" alt="#" />
                                         <a href="#" className="buy"><i className="fa fa-shopping-bag" /></a>
                                     </div>
                                 </div>
@@ -106,7 +106,7 @@ function ShopHome() {
                             <div className="row">
                                 <div className="col-lg-6 col-md-6 col-12">
                                     <div className="list-image overlay">
-                                        <img src="https://via.placeholder.com/115x140" alt="#" />
+                                        <img src="/img115x140.png" alt="#" />
                                         <a href="#" className="buy"><i className="fa fa-shopping-bag" /></a>
                                     </div>
                                 </div>
@@ -131,7 +131,7 @@ function ShopHome() {
                             <div className="row">
                                 <div className="col-lg-6 col-md-6 col-12">
                                     <div className="list-image overlay">
-                                        <img src="https://via.placeholder.com/115x140" alt="#" />
+                                        <img src="/img115x140.png" alt="#" />
                                         <a href="#" className="buy"><i className="fa fa-shopping-bag" /></a>
                                     </div>
                                 </div>
@@ -147,7 +147,7 @@ function ShopHome() {
                             <div className="row">
                                 <div className="col-lg-6 col-md-6 col-12">
                                     <div className="list-image overlay">
-                                        <img src="https://via.placeholder.com/115x140" alt="#" />
+                                        <img src="/img115x140.png" alt="#" />
                                         <a href="#" className="buy"><i className="fa fa-shopping-bag" /></a>
                                     </div>
                                 </div>
@@ -163,7 +163,7 @@ function ShopHome() {
                             <div className="row">
                                 <div className="col-lg-6 col-md-6 col-12">
                                     <div className="list-image overlay">
-                                        <img src="https://via.placeholder.com/115x140" alt="#" />
+                                        <img src="/img115x140.png" alt="#" />
                                         <a href="#" className="buy"><i className="fa fa-shopping-bag" /></a>
                                     </div>
                                 </div>

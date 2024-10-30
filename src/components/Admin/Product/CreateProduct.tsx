@@ -4,8 +4,8 @@ import {
     Tabs, TabsProps, TreeSelect, Typography, UploadFile
 } from "antd";
 import useAppNotifications from "@/hooks/useAppNotifications";
-import React, {memo, useCallback, useEffect, useState} from "react";
-import {IProduct} from "@/types/IProduct";
+import React, {memo, useCallback, useEffect, useRef, useState} from "react";
+import {IProductCreate} from "@/types/IProduct";
 import UploadImage from "@/components/Upload/UploadImage";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import useOptionMaterial from "@/components/Admin/Material/hooks/useOptionMaterial";
@@ -18,12 +18,17 @@ import {IProductImageCreate} from "@/types/IProductImage";
 import {IProductVariantCreate, IProductVariantRows} from "@/types/IProductVariant";
 import SizeOptionSelect from "@/components/Select/SizeOptionSelect";
 import TextArea from "antd/es/input/TextArea";
+import {createProduct} from "@/services/ProductService";
+import {useDebounce} from "use-debounce";
 
 const {Title} = Typography;
 
 const generateProductVariants = (
     colors: { value: number; label: string }[],
-    sizes: { value: number; label: string }[]
+    sizes: { value: number; label: string }[],
+    originalPrice: number = 0,
+    salePrice: number = 0,
+    quantityInStock: number = 0,
 ) => {
     return colors.flatMap((color, index) =>
         sizes.map((size) => ({
@@ -32,9 +37,9 @@ const generateProductVariants = (
             productVariantName: `${color.label} - ${size.label}`,
             colorId: color.value,
             sizeId: size.value,
-            originalPrice: 1000,
-            salePrice: 1200,
-            quantityInStock: 10,
+            originalPrice: originalPrice,
+            salePrice: salePrice,
+            quantityInStock: quantityInStock,
         }))
     );
 };
@@ -54,6 +59,12 @@ const CreateProduct = (props: IProps) => {
     const [productVariantRows, setProductVariantRows] = useState<IProductVariantRows[]>([]);
     const [selectedColors, setSelectedColors] = useState<{ value: number; label: any }[]>([]);
     const [selectedSizes, setSelectedSizes] = useState<{ value: number; label: any }[]>([]);
+    const [productPricingAndStock, setProductPricingAndStock] = useState({
+        originalPrice: 0,
+        salePrice: 0,
+        quantityInStock: 0,
+    });
+    const [debouncedPricingAndStockVariant] = useDebounce(productPricingAndStock, 1000);
 
     const {dataOptionBrand, error: errorDataOptionBrand, isLoading: isLoadingDataOptionBrand}
         = useOptionBrand(isCreateModalOpen);
@@ -67,13 +78,14 @@ const CreateProduct = (props: IProps) => {
         setProductVariantRows([]);
         setSelectedColors([]);
         setSelectedSizes([]);
+        setProductPricingAndStock({originalPrice: 0, salePrice: 0, quantityInStock: 0,});
         setIsCreateModalOpen(false);
     };
 
     const handleProductImages = useCallback((fileList: UploadFile[]) => {
         const images: IProductImageCreate[] = fileList.map((file, index) => (
             {
-                imagUrl: `/${file.url || file.name || file.originFileObj?.name || 'no-img.png'}`,
+                imageUrl: `/${file.url || file.name || file.originFileObj?.name || 'no-img550x750.png'}`,
                 isDefault: index === 0,
             }
         )).filter(Boolean);
@@ -87,9 +99,15 @@ const CreateProduct = (props: IProps) => {
             } else {
                 setSelectedSizes(selectedOptions);
             }
-        },
-        []
-    );
+        }, []);
+
+    const handleInputChangePricingAndStock = (field: 'originalPrice' | 'salePrice' | 'quantityInStock',
+                                              value: number | null = 0) => {
+        setProductPricingAndStock((prevValues) => ({
+            ...prevValues,
+            [field]: value ?? 0,
+        }));
+    };
 
     const handleCollapseChange = (key: string | string[]) => {
         if (key.includes('thuoc-tinh')) {
@@ -99,13 +117,20 @@ const CreateProduct = (props: IProps) => {
         }
     };
 
+
     useEffect(() => {
+        console.log("render")
         if (selectedColors.length > 0 || selectedSizes.length > 0) {
-            const variants = generateProductVariants(selectedColors, selectedSizes);
-            console.log("Variants:", variants);
+            const variants = generateProductVariants(
+                selectedColors,
+                selectedSizes,
+                debouncedPricingAndStockVariant.originalPrice,
+                debouncedPricingAndStockVariant.salePrice,
+                debouncedPricingAndStockVariant.quantityInStock,
+            );
             setProductVariantRows(variants);
         }
-    }, [selectedColors, selectedSizes]);
+    }, [selectedColors, selectedSizes, debouncedPricingAndStockVariant]);
 
     useEffect(() => {
         if (!isCreateModalOpen) {
@@ -113,29 +138,28 @@ const CreateProduct = (props: IProps) => {
         }
     }, [isCreateModalOpen]);
 
-    const onFinish = async (value: IProduct) => {
+    const onFinish = async (value: IProductCreate) => {
         const productVariants: IProductVariantCreate[] =
             productVariantRows.map(({key, productVariantName, ...rest}) => rest);
-        const product = {...value, productVariants};
+        const product: IProductCreate = {...value, productVariants};
         console.log('Success json:', JSON.stringify(product, null, 2));
-        // try {
-        //     const result = await createMaterial(value);
-        //     mutate();
-        //     if (result.data) {
-        handleCloseCreateModal();
-        //         showNotification("success", {message: result.message});
-        //     }
-        //
-        // } catch (error: any) {
-        //     const errorMessage = error?.response?.data?.message;
-        //     if (errorMessage && typeof errorMessage === 'object') {
-        //         Object.entries(errorMessage).forEach(([field, message]) => {
-        //             showNotification("error", {message: String(message)});
-        //         });
-        //     } else {
-        //         showNotification("error", {message: error?.message, description: errorMessage,});
-        //     }
-        // }
+        try {
+            const result = await createProduct(product);
+            mutate();
+            if (result.data) {
+                handleCloseCreateModal();
+                showNotification("success", {message: result.message});
+            }
+        } catch (error: any) {
+            const errorMessage = error?.response?.data?.message;
+            if (errorMessage && typeof errorMessage === 'object') {
+                Object.entries(errorMessage).forEach(([field, message]) => {
+                    showNotification("error", {message: String(message)});
+                });
+            } else {
+                showNotification("error", {message: error?.message, description: errorMessage,});
+            }
+        }
     }
 
     const itemTabs: TabsProps['items'] = [
@@ -165,7 +189,7 @@ const CreateProduct = (props: IProps) => {
                                 />
                             </Form.Item>
                             <Form.Item
-                                name="parentCategoryId"
+                                name="categoryId"
                                 label="Danh mục"
                                 validateStatus={errorDataTreeSelectCategory ? "error" : "success"}
                                 help={errorDataTreeSelectCategory ? "Error fetching categories" : ""}
@@ -213,13 +237,19 @@ const CreateProduct = (props: IProps) => {
                         </Col>
                         <Col span={10}>
                             <Form.Item label="Giá vốn" initialValue={0} layout="horizontal">
-                                <InputNumber style={{width: '100%'}} min={0} placeholder={"0"}/>
+                                <InputNumber style={{width: '100%'}} min={0} placeholder={"0"}
+                                    onChange={(value) => handleInputChangePricingAndStock("originalPrice", value)}
+                                />
                             </Form.Item>
                             <Form.Item label="Giá bán" initialValue={0}>
-                                <InputNumber style={{width: '100%'}} min={0} placeholder={"0"}/>
+                                <InputNumber style={{width: '100%'}} min={0} placeholder={"0"}
+                                    onChange={(value) => handleInputChangePricingAndStock("salePrice", value)}
+                                />
                             </Form.Item>
                             <Form.Item label="Tồn kho" initialValue={0}>
-                                <InputNumber style={{width: '100%'}} min={0} placeholder={"0"}/>
+                                <InputNumber style={{width: '100%'}} min={0} placeholder={"0"}
+                                    onChange={(value) => handleInputChangePricingAndStock("quantityInStock", value)}
+                                />
                             </Form.Item>
                         </Col>
                     </Row>

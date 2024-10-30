@@ -14,6 +14,7 @@ import {STATUS} from "@/constants/Status";
 import useSWR from "swr";
 import {getProducts, URL_API_PRODUCT} from "@/services/ProductService";
 import {GENDER_PRODUCT} from "@/constants/GenderProduct";
+import dayjs from "dayjs";
 
 const {Content} = Layout;
 
@@ -40,30 +41,34 @@ const ProductComponent = () => {
             render: (value, record) => {
                 return (
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <Image
-                            width={35}
-                            height={35}
-                            src={value ? value : "/no-img.png"}
+                        <Image width={35} height={35}
+                            src={value ? value : "/no-img550x750.png"}
                             fallback="/no-img.png"
                         />
                     </div>
                 );
             }
         },
-        {title: 'Tên sản phẩm', dataIndex: 'productName', key: 'productName'},
+        {title: 'Tên sản phẩm', dataIndex: 'productName', key: 'productName',},
         {
-            title: 'Giới tính', dataIndex: 'genderProduct', key: 'genderProduct', width: 100,
+            title: 'Giới tính', dataIndex: 'genderProduct', key: 'genderProduct', width: 90,
             render(value: keyof typeof GENDER_PRODUCT, record, index) {
                 return (
                     <span key={record.id}>{GENDER_PRODUCT[value]}</span>
                 );
             },
         },
-        {title: 'Danh mục', dataIndex: 'categoryName', key: 'categoryName'},
-        {title: 'Thương hiệu', dataIndex: 'brandName', key: 'brandName'},
-        {title: 'Chất liệu', dataIndex: 'materialName', key: 'materialName'},
-        {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
-        {title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt'},
+        {title: 'Danh mục', dataIndex: 'categoryName', key: 'categoryName',},
+        {title: 'Thương hiệu', dataIndex: 'brandName', key: 'brandName',},
+        {title: 'Chất liệu', dataIndex: 'materialName', key: 'materialName', width: 120},
+        {
+            title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt',
+            render: (value) => dayjs(value).format('YYYY-MM-DD HH:mm:ss')
+        },
+        {
+            title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt',
+            render: (value) => dayjs(value).format('YYYY-MM-DD HH:mm:ss')
+        },
         {
             title: 'Trạng thái', dataIndex: 'status', key: 'status', align: 'center', width: 140,
             render(value: keyof typeof STATUS, record, index) {
@@ -155,7 +160,7 @@ const ProductComponent = () => {
             <CreateProduct
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
-                mutate={undefined}
+                mutate={mutate}
             />
         </>
 
