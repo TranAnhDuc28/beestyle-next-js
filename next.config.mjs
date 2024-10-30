@@ -6,9 +6,6 @@ const nextConfig = {
             {
                 hostname: 'theme.hstatic.net',
             },
-            {
-                hostname: 'via.placeholder.com'
-            },
         ]
     }
 };

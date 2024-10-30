@@ -1,17 +1,17 @@
 "use client"
 import { Layout } from 'antd';
 import UserHeader from '../Header/UserHeader';
-import Slider from '../Slider/UserSlider';
-import ProductArea from '../User/Products/ProductArea';
-import MediumBanner from '../Slider/MidiumBanner';
-import PopularArea from '../User/Products/PopularArea';
-import ShopHome from '../User/Products/ShopHome';
-import CowndownArea from '../Slider/Cowndown';
-import ShopBlog from '../User/Products/ShopBlog';
+import Slider from '@/components/User/Home/Slider/UserSlider';
+import ProductArea from '@/components/User/Home/Products/ProductArea';
+import MediumBanner from '@/components/User/Home/Slider/MidiumBanner';
+import ShopHome from '@/components/User/Home/Products/ShopHome';
+import CowndownArea from '@/components/User/Home/Slider/CownDown';
+import ShopBlog from '@/components/User/Home/Products/ShopBlog';
 import ShopServices from '../Footer/ShopServices';
 import Newsletter from '../Footer/Newsletter';
 import UserFooter from '../Footer/UserFooter';
 import React from "react";
+import MostPopularProduct from "@/components/User/Home/Products/MostPopularProduct";
 
 const { Content } = Layout;
 
@@ -24,7 +24,7 @@ const UserLayout: React.FC = () => {
             <Content>
                 <ProductArea />
                 <MediumBanner />
-                <PopularArea />
+                <MostPopularProduct />
                 <ShopHome />
                 <CowndownArea />
                 <ShopBlog />

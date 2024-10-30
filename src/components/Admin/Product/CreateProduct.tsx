@@ -85,7 +85,7 @@ const CreateProduct = (props: IProps) => {
     const handleProductImages = useCallback((fileList: UploadFile[]) => {
         const images: IProductImageCreate[] = fileList.map((file, index) => (
             {
-                imageUrl: `/${file.url || file.name || file.originFileObj?.name || 'no-img.png'}`,
+                imageUrl: `/${file.url || file.name || file.originFileObj?.name || 'no-img550x750.png'}`,
                 isDefault: index === 0,
             }
         )).filter(Boolean);

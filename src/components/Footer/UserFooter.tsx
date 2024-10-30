@@ -9,7 +9,7 @@ export default function UserFooter() {
                         <div className="col-lg-5 col-md-6 col-12">
                             <div className="single-footer about">
                                 <div className="logo">
-                                    <a href="index.html"><img src="" alt="#" /></a>
+                                    <a href="index.html"><img src="/logo2.png" alt="#" /></a>
                                 </div>
                                 <p className="text">Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue,  magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus.</p>
                                 <p className="call">Got Question? Call us 24/7<span><a href="tel:123456789">+0123 456 789</a></span></p>

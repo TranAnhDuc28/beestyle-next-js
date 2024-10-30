@@ -42,7 +42,7 @@ const ProductComponent = () => {
                 return (
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <Image width={35} height={35}
-                            src={value ? value : "/no-img.png"}
+                            src={value ? value : "/no-img550x750.png"}
                             fallback="/no-img.png"
                         />
                     </div>
