@@ -118,12 +118,12 @@ const PromotionComponent: React.FC<any> = (props: any) => {
         {
             title: 'Ngày bắt đầu',
             dataIndex: 'startDate',
-            render: (value: string) => new Date(value).toLocaleDateString('vi-VN')
+            render: (value) => dayjs(value).format('YYYY-MM-DD HH:mm:ss')
         },
         {
             title: 'Ngày kết thúc',
             dataIndex: 'endDate',
-            render: (value: string) => new Date(value).toLocaleDateString('vi-VN')
+            render: (value) => dayjs(value).format('YYYY-MM-DD HH:mm:ss')
         },
 
         {

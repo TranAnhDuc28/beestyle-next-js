@@ -14,6 +14,10 @@ export interface IProductVariant {
     updatedAt?: Date;
     createdBy?: number;
     updatedBy?: number;
+    brandId?: number;
+    brandName?: string;
+    materialId?: number;
+    materialName?: string;
 }
 
 export interface IProductVariantRows{

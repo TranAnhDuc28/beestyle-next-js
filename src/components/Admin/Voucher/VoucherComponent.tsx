@@ -20,6 +20,7 @@ import VoucherFilter from "./VoucherFilter";
 import CreateMaterial from "../Material/CreateMaterial";
 import UpdateMaterial from "../Material/UpdateMaterial";
 import {DISCOUNT_TYPE} from "../../../constants/DiscountType";
+import dayjs from "dayjs";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -112,12 +113,12 @@ const VoucherComponent = () => {
         {
             title: 'Ngày bắt đầu',
             dataIndex: 'startDate',
-            render: (value: string) => new Date(value).toLocaleDateString('vi-VN')
+            render: (value) => dayjs(value).format('YYYY-MM-DD HH:mm:ss')
         },
         {
             title: 'Ngày kết thúc',
             dataIndex: 'endDate',
-            render: (value: string) => new Date(value).toLocaleDateString('vi-VN')
+            render: (value) => dayjs(value).format('YYYY-MM-DD HH:mm:ss')
         },
         {
             title: 'Trạng thái', dataIndex: 'status', key: 'status',

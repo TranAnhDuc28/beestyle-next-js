@@ -118,7 +118,7 @@ const UpdatePromotion = (props: IProps) => {
                     style: { background: "#00b96b" },
                 }}
                 width={800} // Kích thước modal
-                bodyStyle={{ padding: '20px' }}
+                Style={{ padding: '20px' }}
             >
                 <Form
                     form={form}
@@ -140,7 +140,17 @@ const UpdatePromotion = (props: IProps) => {
                             <Form.Item
                                 name="discountValue"
                                 noStyle
-                                rules={[{required: true, message: "Giá trị giảm là bắt buộc!"}]}
+                                rules={[
+                                    { required: true, message: "Giá trị giảm là bắt buộc!" },
+                                    ({ getFieldValue }) => ({
+                                        validator(_, value) {
+                                            if (getFieldValue("discountType") === "PERCENTAGE" && value > 100) {
+                                                return Promise.reject(new Error("Giá trị giảm không được vượt quá 100%"));
+                                            }
+                                            return Promise.resolve();
+                                        },
+                                    }),
+                                ]}
                             >
                                 <InputNumber style={{width: '70%'}} placeholder="Giá trị giảm"/>
                             </Form.Item>
