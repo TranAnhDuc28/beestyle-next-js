@@ -20,7 +20,7 @@ import useAppNotifications from "../../../hooks/useAppNotifications";
 import {IPromotion} from "../../../types/IPromotion";
 import {useSearchParams} from "next/navigation";
 import useSWR from "swr";
-import {getProductDetails, getProducts, URL_API_PRODUCT} from "../../../services/ProductService";
+import {getProductDetails, getProducts, updateProductVariant, URL_API_PRODUCT} from "../../../services/ProductService";
 import {IProduct} from "../../../types/IProduct";
 import {STATUS} from "../../../constants/Status";
 import TablePagination from "../../Table/TablePagination";
@@ -78,7 +78,7 @@ const CreatePromotion = (props: IProps) => {
                 const detailsResponse = await getProductDetails(product.id);
                 console.log("Fetched product details:", detailsResponse);
                 return Array.isArray(detailsResponse) ? detailsResponse.map(item => ({
-                    id: item[0],
+                    id: item[4],
                     productVariantName: item[1],
                     brandName: item[2],
                     materialName: item[3],
@@ -101,6 +101,7 @@ const CreatePromotion = (props: IProps) => {
     const rowSelectionDetails = {
         selectedRowKeys: selectedDetailProducts,
         onChange: (selectedRowKeys) => {
+            console.log("Selected row keys:", selectedRowKeys);
             setSelectedDetailProducts(selectedRowKeys);
         },
     };
@@ -157,42 +158,35 @@ const CreatePromotion = (props: IProps) => {
     };
     const onFinish = async (value: IPromotion) => {
         try {
-            const result = await createPromotion({...value, selectedProducts});
-            mutate();
-            // if (result.data) {
-            //
-            //     const newPromotionId = result.data.id;
-            //
-            //     // Cập nhật ID của đợt giảm giá mới cho sản phẩm chi tiết đã chọn
-            //     const updatePromises = selectedDetailProducts.map(async (detailId) => {
-            //         // Giả sử bạn có hàm updateProductVariantPromotion để cập nhật ID của sản phẩm chi tiết
-            //         await updateProductVariantPromotion(detailId, newPromotionId);
-            //     });
-            //
-            //     await Promise.all(updatePromises);
-            //     mutate(); // Cập nhật lại danh sách sau khi thực hiện các thay đổi
-            //     handleCloseCreateModal();
-            //     showNotification("success", {message: result.message});
-            // }
+            const result = await createPromotion({ ...value, selectedProducts });
+            mutate(); // Cập nhật lại danh sách khuyến mãi
+
             if (result.data) {
-                handleCloseCreateModal();
-                showNotification("success", {message: result.message});
+                const newPromotionId = result.data.id;
+
+                // Cập nhật ID của đợt giảm giá mới cho sản phẩm chi tiết đã chọn
+                const updatePromises = selectedDetailProducts.map(async (detailId) => {
+                    return updateProductVariant(newPromotionId, [detailId]);
+                });
+
+                // Chờ tất cả các cập nhật hoàn tất
+                await Promise.all(updatePromises);
+
+                mutate(); // Cập nhật lại danh sách sản phẩm sau khi thực hiện các thay đổi
+                handleCloseCreateModal(); // Đóng modal tạo mới
+                showNotification("success", { message: result.message });
             }
 
         } catch (error: any) {
-            const errorMessage = error?.response?.data?.message;
-            if (errorMessage && typeof errorMessage === 'object') {
-                Object.entries(errorMessage).forEach(([field, message]) => {
-                    showNotification("error", {message: String(message)});
-                });
-            } else {
-                showNotification("error", {
-                    message: error?.message,
-                    description: errorMessage,
-                });
-            }
+            const errorMessage = error?.response?.data?.message || error.message;
+            showNotification("error", {
+                message: "Có lỗi xảy ra!",
+                description: errorMessage,
+            });
         }
     };
+
+
 
     return (
         <>
@@ -318,10 +312,10 @@ const CreatePromotion = (props: IProps) => {
                                     columns={detailColumns}
                                     dataSource={productDetails.map((variant) => ({
                                         ...variant,
-                                        key: `${variant.sku}-${variant.productId}`,
+                                        key: variant.id,
                                     }))}
                                     rowKey="key"
-                                    rowSelection={rowSelectionDetails} // Thêm rowSelection cho bảng chi tiết
+                                    rowSelection={rowSelectionDetails}
                                 />
                             </div>
                         )}
