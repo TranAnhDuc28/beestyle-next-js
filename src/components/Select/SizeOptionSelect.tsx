@@ -1,18 +1,5 @@
 import React from 'react';
 import { Select, Space } from 'antd';
-import type { SelectProps } from 'antd';
-
-const options: SelectProps['options'] = [];
-
-const sizes: string[] = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '$XL', '5XL', '6XL', 'Freesize'];
-const length = sizes.length;
-
-for (let i = 0; i < length; i++) {
-    options.push({
-        label: sizes[i],
-        value: i + 1,
-    });
-}
 
 interface IProps {
     selectedValues: any[];
@@ -28,7 +15,7 @@ const SizeOptionSelect: React.FC<IProps> = (props) => {
 
     const handleChange = (selectedValues: number[]) => {
         const selectedOptions = selectedValues.map(value => {
-            const option = options.find(option => option.value === value);
+            const option = data.find(option => option.value === value);
             return { value, label: option?.label?.toString() || '' };
         });
         onChange && onChange(selectedOptions);
@@ -48,7 +35,7 @@ const SizeOptionSelect: React.FC<IProps> = (props) => {
                 placeholder={isLoading ? "Đang tải..." : "---Lựa chọn---"}
                 onChange={handleChange}
                 onClear={onClear}
-                options={options}
+                options={data}
                 filterOption={(input, option) =>
                     (option?.label ?? '').toString().toLowerCase().includes(input.toLowerCase())
                 }

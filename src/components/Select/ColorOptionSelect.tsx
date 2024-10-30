@@ -34,20 +34,12 @@ const getTagRender = (dataMap: Map<number, string | undefined>): TagRender => {
 interface OptionTag {
     value: any;
     label?: string;
-    colorCode?: string;
+    code?: string;
 }
 
 
 const options: OptionTag[] = [
-    {value: 1, colorCode: 'gold', label: 'gold'},
-    {value: 2, colorCode: 'lime', label: 'lime'},
-    {value: 3, colorCode: 'green', label: 'green'},
-    {value: 4, colorCode: 'cyan', label: 'cyan'},
-    {value: 5, colorCode: '#000000', label: 'Đen'},
-    {value: 6, colorCode: 'default', label: 'Xám'},
-    {value: 7, colorCode: '#ffffff', label: 'Trắng'},
-    {value: 8, colorCode: '#108ee9', label: '#108ee9'},
-    {value: 9, colorCode: '#87d068', label: '#87d068'},
+    {value: 1, code: 'gold', label: 'gold'},
 ];
 
 interface IProps {
@@ -61,13 +53,12 @@ interface IProps {
 
 const ColorOptionSelect = (props: IProps) => {
     const {selectedValues, data = [], error, isLoading, onChange, onClear} = props;
-
-    const dataMap = new Map(options.map(item => [item.value, item.colorCode]));
+    const dataMap = new Map(data.map(item => [item.value, item.code]));
     const memoizedTagRender = useMemo(() => getTagRender(dataMap), [dataMap]);
 
     const handleChange = (selectedValues: number[]) => {
         const selectedOptions = selectedValues.map(value => {
-            const option = options.find(option => option.value === value);
+            const option = data.find(option => option.value === value);
             return { value, label: option?.label?.toString() || '' };
         });
         onChange && onChange(selectedOptions);
@@ -85,9 +76,9 @@ const ColorOptionSelect = (props: IProps) => {
             loading={isLoading}
             placeholder={isLoading ? "Đang tải..." : "---Lựa chọn---"}
             tagRender={memoizedTagRender}
-            options={options}
+            options={data}
             optionRender={(option) => (
-                <Tag className="custom-tag" color={option.data.colorCode}>{option.data.label}</Tag>
+                <Tag className="custom-tag" color={option.data.code}>{option.data.label}</Tag>
             )}
             filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())

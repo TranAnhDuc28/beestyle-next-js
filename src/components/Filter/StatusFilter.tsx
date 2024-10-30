@@ -14,7 +14,7 @@ const StatusFilter = (props: IProps) => {
 
     return (
         <Collapse
-            size="small" className="w-full bg-white" ghost expandIconPosition="end"
+            size="small" className="w-full bg-white" ghost expandIconPosition="end" collapsible="icon"
             style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256}}
             items={[
                 {

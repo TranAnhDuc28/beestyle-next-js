@@ -18,8 +18,10 @@ import {IProductImageCreate} from "@/types/IProductImage";
 import {IProductVariantCreate, IProductVariantRows} from "@/types/IProductVariant";
 import SizeOptionSelect from "@/components/Select/SizeOptionSelect";
 import TextArea from "antd/es/input/TextArea";
-import {createProduct} from "@/services/ProductService";
 import {useDebounce} from "use-debounce";
+import useOptionColor from "@/components/Admin/Color/hooks/useOptionColor";
+import useOptionSize from "@/components/Admin/Size/hooks/useOptionSize";
+import {createProduct} from "@/services/ProductService";
 
 const {Title} = Typography;
 
@@ -60,9 +62,9 @@ const CreateProduct = (props: IProps) => {
     const [selectedColors, setSelectedColors] = useState<{ value: number; label: any }[]>([]);
     const [selectedSizes, setSelectedSizes] = useState<{ value: number; label: any }[]>([]);
     const [productPricingAndStock, setProductPricingAndStock] = useState({
-        originalPrice: 0,
-        salePrice: 0,
-        quantityInStock: 0,
+        originalPrice: null,
+        salePrice: null,
+        quantityInStock: null,
     });
     const [debouncedPricingAndStockVariant] = useDebounce(productPricingAndStock, 1000);
 
@@ -72,13 +74,17 @@ const CreateProduct = (props: IProps) => {
         = useTreeSelectCategory(isCreateModalOpen);
     const {dataOptionMaterial, error: errorDataOptionMaterial, isLoading: isLoadingDataOptionMaterial}
         = useOptionMaterial(isCreateModalOpen);
+    const {dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor}
+        = useOptionColor(isCreateModalOpen);
+    const {dataOptionSize, error: errorDataOptionSize, isLoading: isLoadingDataOptionSize}
+        = useOptionSize(isCreateModalOpen);
 
     const handleCloseCreateModal = () => {
         form.resetFields();
         setProductVariantRows([]);
         setSelectedColors([]);
         setSelectedSizes([]);
-        setProductPricingAndStock({originalPrice: 0, salePrice: 0, quantityInStock: 0,});
+        setProductPricingAndStock({originalPrice: null, salePrice: null, quantityInStock: null,});
         setIsCreateModalOpen(false);
     };
 
@@ -105,7 +111,7 @@ const CreateProduct = (props: IProps) => {
                                               value: number | null = 0) => {
         setProductPricingAndStock((prevValues) => ({
             ...prevValues,
-            [field]: value ?? 0,
+            [field]: value,
         }));
     };
 
@@ -119,14 +125,13 @@ const CreateProduct = (props: IProps) => {
 
 
     useEffect(() => {
-        console.log("render")
         if (selectedColors.length > 0 || selectedSizes.length > 0) {
             const variants = generateProductVariants(
                 selectedColors,
                 selectedSizes,
-                debouncedPricingAndStockVariant.originalPrice,
-                debouncedPricingAndStockVariant.salePrice,
-                debouncedPricingAndStockVariant.quantityInStock,
+                debouncedPricingAndStockVariant.originalPrice ?? 0,
+                debouncedPricingAndStockVariant.salePrice ?? 0,
+                debouncedPricingAndStockVariant.quantityInStock ?? 0,
             );
             setProductVariantRows(variants);
         }
@@ -143,23 +148,23 @@ const CreateProduct = (props: IProps) => {
             productVariantRows.map(({key, productVariantName, ...rest}) => rest);
         const product: IProductCreate = {...value, productVariants};
         console.log('Success json:', JSON.stringify(product, null, 2));
-        try {
-            const result = await createProduct(product);
-            mutate();
-            if (result.data) {
-                handleCloseCreateModal();
-                showNotification("success", {message: result.message});
-            }
-        } catch (error: any) {
-            const errorMessage = error?.response?.data?.message;
-            if (errorMessage && typeof errorMessage === 'object') {
-                Object.entries(errorMessage).forEach(([field, message]) => {
-                    showNotification("error", {message: String(message)});
-                });
-            } else {
-                showNotification("error", {message: error?.message, description: errorMessage,});
-            }
-        }
+        // try {
+        //     const result = await createProduct(product);
+        //     mutate();
+        //     if (result.data) {
+        //         handleCloseCreateModal();
+        //         showNotification("success", {message: result.message});
+        //     }
+        // } catch (error: any) {
+        //     const errorMessage = error?.response?.data?.message;
+        //     if (errorMessage && typeof errorMessage === 'object') {
+        //         Object.entries(errorMessage).forEach(([field, message]) => {
+        //             showNotification("error", {message: String(message)});
+        //         });
+        //     } else {
+        //         showNotification("error", {message: error?.message, description: errorMessage,});
+        //     }
+        // }
     }
 
     const itemTabs: TabsProps['items'] = [
@@ -229,8 +234,8 @@ const CreateProduct = (props: IProps) => {
                             >
                                 <SelectSearchOptionLabel
                                     data={dataOptionMaterial}
-                                    error={errorDataOptionBrand}
-                                    isLoading={isLoadingDataOptionBrand}
+                                    error={errorDataOptionMaterial}
+                                    isLoading={isLoadingDataOptionMaterial}
                                     onChange={(value) => form.setFieldsValue({materialId: value})}
                                 />
                             </Form.Item>
@@ -238,17 +243,20 @@ const CreateProduct = (props: IProps) => {
                         <Col span={10}>
                             <Form.Item label="Giá vốn" initialValue={0} layout="horizontal">
                                 <InputNumber style={{width: '100%'}} min={0} placeholder={"0"}
-                                    onChange={(value) => handleInputChangePricingAndStock("originalPrice", value)}
+                                             value={productPricingAndStock.originalPrice}
+                                             onChange={(value) => handleInputChangePricingAndStock("originalPrice", value)}
                                 />
                             </Form.Item>
                             <Form.Item label="Giá bán" initialValue={0}>
                                 <InputNumber style={{width: '100%'}} min={0} placeholder={"0"}
-                                    onChange={(value) => handleInputChangePricingAndStock("salePrice", value)}
+                                             value={productPricingAndStock.salePrice}
+                                             onChange={(value) => handleInputChangePricingAndStock("salePrice", value)}
                                 />
                             </Form.Item>
                             <Form.Item label="Tồn kho" initialValue={0}>
                                 <InputNumber style={{width: '100%'}} min={0} placeholder={"0"}
-                                    onChange={(value) => handleInputChangePricingAndStock("quantityInStock", value)}
+                                             value={productPricingAndStock.quantityInStock}
+                                             onChange={(value) => handleInputChangePricingAndStock("quantityInStock", value)}
                                 />
                             </Form.Item>
                         </Col>
@@ -276,10 +284,12 @@ const CreateProduct = (props: IProps) => {
                                                 <div>
                                                     <Typography.Title level={5}>Màu sắc:</Typography.Title>
                                                     <ColorOptionSelect
+                                                        data={dataOptionColor}
+                                                        error={errorDataOptionColor}
+                                                        isLoading={isLoadingDataOptionColor}
                                                         selectedValues={selectedColors}
                                                         onChange={
                                                             (selectedOptions: { value: number; label: string }[]) => {
-                                                                console.log("Selected colors:", selectedOptions);
                                                                 handleSelectChange("colors", selectedOptions);
                                                             }}
                                                         onClear={() => {
@@ -291,10 +301,12 @@ const CreateProduct = (props: IProps) => {
                                                 <div>
                                                     <Typography.Title level={5}>Kích cỡ</Typography.Title>
                                                     <SizeOptionSelect
+                                                        data={dataOptionSize}
+                                                        error={errorDataOptionSize}
+                                                        isLoading={isLoadingDataOptionSize}
                                                         selectedValues={selectedSizes}
                                                         onChange={
                                                             (selectedOptions: { value: number; label: string }[]) => {
-                                                                console.log("Selected sizes:", selectedOptions);
                                                                 handleSelectChange("sizes", selectedOptions);
                                                             }
                                                         }
@@ -313,26 +325,24 @@ const CreateProduct = (props: IProps) => {
                     </Row>
                     <Row style={{margin: "10px 0px"}}>
                         <Col span={24}>
-                            <Collapse
-                                activeKey={activeKeyCollapse}
-                                onChange={handleCollapseChange}
-                                collapsible="icon"
-                                size="small" expandIconPosition="end"
-                                items={[{
-                                    key: 'danh-sach-san-pham-cung-loai',
-                                    label: (
-                                        <Title level={5} style={{margin: '0px 10px'}}>
-                                            Danh sách sản phẩm cùng loại
-                                        </Title>),
-                                    children: (
-                                        <Form.Item name="productVariants">
-                                            <TableEditRows
-                                                productVariantRows={productVariantRows}
-                                                setProductVariantRows={setProductVariantRows}
-                                            />
-                                        </Form.Item>
-                                    )
-                                }]}
+                            <Collapse size="small" expandIconPosition="end" collapsible="icon"
+                                      activeKey={activeKeyCollapse}
+                                      onChange={handleCollapseChange}
+                                      items={[{
+                                          key: 'danh-sach-san-pham-cung-loai',
+                                          label: (
+                                              <Title level={5} style={{margin: '0px 10px'}}>
+                                                  Danh sách sản phẩm cùng loại
+                                              </Title>),
+                                          children: (
+                                              <Form.Item name="productVariants">
+                                                  <TableEditRows
+                                                      productVariantRows={productVariantRows}
+                                                      setProductVariantRows={setProductVariantRows}
+                                                  />
+                                              </Form.Item>
+                                          )
+                                      }]}
                             />
                         </Col>
                     </Row>
