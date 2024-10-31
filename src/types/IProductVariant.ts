@@ -1,8 +1,8 @@
 export interface IProductVariant {
     id: number;
     sku?: string;
-    productVariantName?: string;
     productId?: number;
+    productName?: string;
     colorId?: number;
     colorName?: string;
     sizeId?: number;
@@ -10,6 +10,7 @@ export interface IProductVariant {
     originalPrice?: number;
     salePrice?: number;
     quantityInStock?: number;
+    status?: string
     createdAt?: Date;
     updatedAt?: Date;
     createdBy?: number;

@@ -8,7 +8,6 @@ export const metadata: Metadata = {
     description: "Product service",
 };
 
-
 const Product = () => {
     return (
         <Suspense fallback={<AdminLoader />}>

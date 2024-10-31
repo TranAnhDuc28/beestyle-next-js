@@ -1,7 +1,19 @@
-function Variant() {
+import {Suspense} from "react";
+import AdminLoader from "@/components/Loader/AdminLoader";
+import {Metadata} from "next";
+import VariantComponent from "@/components/Admin/Product/Variant/VariantComponent";
 
+export const metadata: Metadata = {
+    title: "Sản phẩm",
+    description: "Product variant service",
+};
+
+function Variant({ params }: { params: { id: string }}) {
+    const productId = params.id;
     return (
-        <h1>Product Variant</h1>
+        <Suspense fallback={<AdminLoader/>}>
+            <VariantComponent productId={productId}/>
+        </Suspense>
     );
 }
 
