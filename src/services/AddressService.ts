@@ -6,6 +6,7 @@ export const URL_API_ADDRESS = {
     creat:'/admin/address/create',
     update:'/admin/address/update',
     delete:'/admin/address/delete',
+    isDefault:'/admin/address'
   }
 
   
@@ -14,10 +15,18 @@ export const URL_API_ADDRESS = {
     return response.data
   }
 
+  export const setIsDefault = async (data: IAddress) => {
+    const response = await httpInstance.put(`${URL_API_ADDRESS.isDefault}/${data.id}`,data);
+    return response.data
+  }
   export const getAddressByCustomerId = async (key:any) => {
     const response = await httpInstance.get(key);
     return response.data
   }
 
+  export const updateAddress = async (data: IAddress) => {
+    const response = await httpInstance.put(`${URL_API_ADDRESS.update}/${data.id}`, data);
+    return response.data;
+}
 
   

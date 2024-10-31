@@ -1,4 +1,5 @@
 export interface IAddress {
+  id:number
   addressName: string;
   cityCode:number;
   city: string;
@@ -6,6 +7,6 @@ export interface IAddress {
   district: string;
   communeCode: number;
   commune: string;
-  default: boolean;
+  isDefault: boolean;
   customer: any;
 }

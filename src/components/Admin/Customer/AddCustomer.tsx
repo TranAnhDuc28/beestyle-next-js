@@ -52,11 +52,12 @@ const AddCustomer = (props: IProps) => {
         };
 
         console.log(address);
-        mutate();
+       
         // Gọi API để tạo địa chỉ
         try {
           await createAddress(address);
           console.log(address.customer);
+          mutate();
         } catch (error: any) {
           const errorMessage = error?.response?.data?.message;
           if (errorMessage && typeof errorMessage === "object") {
@@ -151,14 +152,6 @@ const AddCustomer = (props: IProps) => {
             rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
           >
             <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[{ required: true, message: "Vui lòng nhập password!" }]}
-          >
-            <Input.Password />
           </Form.Item>
 
           <Form.Item

@@ -51,7 +51,6 @@ const UpdateCustomer = (props: IProps) => {
             : "",
       });
       console.log("dataUpdate.address:", dataUpdate.address);
-
       console.log(dataUpdate);
     }
     // Cập nhật lại form khi param thay đổi
@@ -121,15 +120,16 @@ const UpdateCustomer = (props: IProps) => {
           name="password"
           rules={[{ required: true, message: "Vui lòng nhập password!" }]}
         >
-          <Input.Password />
+          <Input.Password  />
         </Form.Item>
 
         <Form.Item
           label="Địa chỉ"
           name="address"
           rules={[{ required: true, message: "Vui lòng nhập address!" }]}
+          
         >
-          <Input />
+          <Input disabled={true}/>
         </Form.Item>
 
         <Form.Item

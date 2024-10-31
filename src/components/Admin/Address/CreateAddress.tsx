@@ -66,15 +66,11 @@ const CreateAddress = (props: IProps) => {
           style={{ width: "100%" }}
           disabled={!selectedProvince}
         >
-          {districts.length > 0 ? (
-            districts.map((district) => (
-              <Select.Option key={district.code} value={district.code}>
-                {district.name}
-              </Select.Option>
-            ))
-          ) : (
-            <Select.Option disabled>Không có xã nào</Select.Option>
-          )}
+          {districts.map((district) => (
+            <Select.Option key={district.code} value={district.code}>
+              {district.name}
+            </Select.Option>
+          ))}
         </Select>
       </Form.Item>
 
