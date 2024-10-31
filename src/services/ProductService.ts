@@ -1,6 +1,5 @@
 import httpInstance from "@/utils/HttpInstance";
 import {IProduct, IProductCreate} from "@/types/IProduct";
-import {IProductVariant} from "../types/IProductVariant";
 
 export const URL_API_PRODUCT = {
     options: '/admin/product',

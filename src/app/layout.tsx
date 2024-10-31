@@ -6,7 +6,14 @@ import {App, FloatButton} from "antd";
 import {AntdRegistry} from "@ant-design/nextjs-registry";
 import {usePathname} from "next/navigation";
 import UserLoader from "@/components/Loader/UserLoader";
+import { Poppins } from 'next/font/google';
 
+const poppins = Poppins({
+    subsets: ['latin'],
+    display: 'swap',
+    variable: '--font-poppins',
+    weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900']
+});
 
 export default function RootLayout({children,}: Readonly<{ children: ReactNode; }>) {
     const [loading, setLoading] = useState<boolean>(true);
@@ -32,7 +39,7 @@ export default function RootLayout({children,}: Readonly<{ children: ReactNode; 
 
     return (
         <html lang="en">
-        <body>
+        <body className={`${poppins.variable}`}>
         {
             loading ?
                 (

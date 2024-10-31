@@ -8,8 +8,8 @@ const transformData = (data: ISize[]) => {
     return data.map((item: any) => ({
         key: item.id.toString() as React.Key,
         value: item.id,
-        label: item.brandName,
-        title: item.brandName,
+        label: item.sizeName,
+        title: item.sizeName,
     }));
 };
 
