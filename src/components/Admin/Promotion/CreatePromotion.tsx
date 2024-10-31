@@ -12,20 +12,23 @@ import {
     Table,
     Tag,
     Image,
-    Space
+    Space, GetProps
 } from 'antd';
 import {createPromotion} from '@/services/PromotionService';
 import {EuroOutlined, PercentageOutlined} from '@ant-design/icons';
 import useAppNotifications from "../../../hooks/useAppNotifications";
 import {IPromotion} from "../../../types/IPromotion";
-import {useSearchParams} from "next/navigation";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import useSWR from "swr";
-import {getProductDetails, getProducts, URL_API_PRODUCT} from "../../../services/ProductService";
+import {getProductDetails, getProducts, updateProductVariant, URL_API_PRODUCT} from "../../../services/ProductService";
 import {IProduct} from "../../../types/IProduct";
 import {STATUS} from "../../../constants/Status";
 import TablePagination from "../../Table/TablePagination";
 import {GENDER_PRODUCT} from "../../../constants/GenderProduct";
 import {DISCOUNT_TYPE} from "../../../constants/DiscountType";
+import {IProductVariant} from "../../../types/IProductVariant";
+import HeaderProduct from "../Product/HeaderProduct";
+import Search from "antd/es/input/Search";
 
 const {Option} = Select;
 
@@ -42,8 +45,11 @@ const CreatePromotion = (props: IProps) => {
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams);
 
-    const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
-    const [productDetails, setProductDetails] = useState([]);
+    const [products, setProducts] = useState<IProduct[]>([]);
+    const [selectedProducts, setSelectedProducts] = useState<IProduct[]>([]);
+    const [productDetails, setProductDetails] = useState<IProductVariant[]>([]);
+    const [selectedDetailProducts, setSelectedDetailProducts] = useState([]);
+
 
     const handleCloseCreateModal = () => {
         form.resetFields();
@@ -52,118 +58,150 @@ const CreatePromotion = (props: IProps) => {
         setProductDetails([]);
     };
 
-    const {data, error, isLoading} =
-        useSWR(`${URL_API_PRODUCT.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
-            getProducts,
-            {revalidateOnFocus: false, revalidateOnReconnect: false}
-        );
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await getProducts('/admin/product');
+                console.log("Fetched products:", response.data);
+                setProducts(response.data.items || []);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
 
-    const columnsProduct = [
-        {
-            title: '', dataIndex: 'imageUrl', key: 'imageUrl', align: 'center', width: 70,
-            render: (value) => (
-                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    <Image
-                        width={35}
-                        height={35}
-                        src={value || "/no-img550x750.png"}
-                        fallback="/no-img.png"
-                    />
-                </div>
-            ),
+        fetchProducts();
+    }, []);
+
+    const handleRowSelectionChange = async (selectedRowKeys: React.Key[], selectedRows: IProduct[]) => {
+        setSelectedProducts(selectedRows);
+
+        const detailsPromises = selectedRows.map(async (product) => {
+            try {
+                const detailsResponse = await getProductDetails(product.id);
+                console.log("Fetched product details:", detailsResponse);
+                return Array.isArray(detailsResponse) ? detailsResponse.map(item => ({
+                    id: item[4],
+                    productVariantName: item[1],
+                    brandName: item[2],
+                    materialName: item[3],
+                    quantityInStock: item[9],
+                    sku: item[5],
+                    colorName: item[6],
+                    sizeName: item[7],
+                    originalPrice: item[8],
+                    createdAt: item[10],
+                })) : [];
+            } catch (error) {
+                console.error("Error fetching product details:", error);
+                return [];
+            }
+        });
+
+        const allProductDetails = await Promise.all(detailsPromises);
+        setProductDetails(allProductDetails.flat());
+    };
+    const rowSelectionDetails = {
+        selectedRowKeys: selectedDetailProducts,
+        onChange: (selectedRowKeys) => {
+            console.log("Selected row keys:", selectedRowKeys);
+            setSelectedDetailProducts(selectedRowKeys);
         },
+    };
+    const productColumns = [
+        { title: 'ID', dataIndex: 'id', key: 'id' },
         {title: 'Tên sản phẩm', dataIndex: 'productName', key: 'productName'},
         {
-            title: 'Trạng thái', dataIndex: 'status', key: 'status', align: 'center', width: 140,
-            render: (value: keyof typeof STATUS) => {
-                const color = value === 'ACTIVE' ? 'green' : 'default';
+            title: 'Giới tính', dataIndex: 'genderProduct', key: 'genderProduct',
+            render(value: keyof typeof GENDER_PRODUCT, record, index) {
                 return (
-                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <Tag color={color}>{STATUS[value]}</Tag>
-                    </div>
+                    <span key={record.id}>{GENDER_PRODUCT[value]}</span>
+                );
+            },
+        },
+        {
+            title: 'Trạng thái', dataIndex: 'status', key: 'status',
+            render(value: keyof typeof STATUS, record, index) {
+                let color: string = value === 'ACTIVE' ? 'green' : 'red';
+                return (
+                    <Tag color={color} key={record.id}>{STATUS[value]}</Tag>
                 );
             },
         },
     ];
-    const fetchProductDetails = async (productIds: string[]) => {
-        try {
-            const details = await getProductDetails(productIds); // Lấy chi tiết sản phẩm
-            if (Array.isArray(details)) {
-                setProductDetails(details);
-            } else {
-                console.error("Unexpected product details format:", details);
-                setProductDetails([]); // Đặt lại sản phẩm chi tiết về mảng rỗng nếu không hợp lệ
-            }
-        } catch (err) {
-            console.error(err);
-            showNotification("error", {message: "Error fetching product details"});
-        }
-    };
 
-    useEffect(() => {
-        if (selectedProducts.length > 0) {
-            fetchProductDetails(selectedProducts);
-        } else {
-            setProductDetails([]); // Reset details if no products are selected
-        }
-    }, [selectedProducts]);
+    const detailColumns = [
 
-    const columnsProductDetail = [
         {
             title: '', dataIndex: 'imageUrl', key: 'imageUrl', align: 'center', width: 70,
-            render: (value) => (
-                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    <Image
-                        width={35}
-                        height={35}
-                        src={value ? value : "/no-img550x750.png"}
-                        fallback="/no-img.png"
-                    />
-                </div>
-            )
+            render: (value, record) => {
+                return (
+                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <Image width={35} height={35}
+                               src={value ? value : "/no-img.png"}
+                               fallback="/no-img.png"
+                        />
+                    </div>
+                );
+            }
         },
-        {title: 'Tên sản phẩm', dataIndex: 'productName', key: 'productName'},
-        {title: 'Thương hiệu', dataIndex: 'brandName', key: 'brandName'},
-        {title: 'Chất liệu', dataIndex: 'materialName', key: 'materialName'},
-        {title: 'Màu sắc', dataIndex: 'colorName', key: 'colorName'},
-        {title: 'Kích thước', dataIndex: 'sizeName', key: 'sizeName'},
-        {title: 'Giá bán', dataIndex: 'originalPrice', key: 'originalPrice'},
-        {title: 'Số lượng', dataIndex: 'quantityInStock', key: 'quantityInStock'}
+        {title: "SKU", dataIndex: "sku", key: "sku"},
+        {title: "Tên sản phẩm", dataIndex: "productVariantName", key: "productVariantName"},
+        {title: 'Thương hiệu', dataIndex: 'brandName', key: 'brandName',},
+        {title: 'Chất liệu', dataIndex: 'materialName', key: 'materialName', width: 120},
+        {title: "Màu sắc", dataIndex: "colorName", key: "colorName"},
+        {title: "Kích thước", dataIndex: "sizeName", key: "sizeName"},
+        {title: "Giá gốc", dataIndex: "originalPrice", key: "originalPrice"},
+        {title: "Số lượng", dataIndex: "quantityInStock", key: "quantityInStock"},
     ];
-    useEffect(() => {
-        if (error) {
-            showNotification("error", {
-                message: error?.message, description: error?.response?.data?.message || "Error fetching products",
-            });
-        }
-    }, [error]);
 
-    let result: any;
-    if (!isLoading && data) {
-        result = data?.data;
-    }
+    // Thiết lập rowSelection
+    const rowSelection = {
+        onChange: handleRowSelectionChange,
+    };
     const onFinish = async (value: IPromotion) => {
         try {
-            const result = await createPromotion({...value, selectedProducts}); // Gửi cả danh sách sản phẩm đã chọn
-            mutate();
+            const result = await createPromotion({ ...value, selectedProducts });
+            mutate(); // Cập nhật lại danh sách khuyến mãi
+
             if (result.data) {
-                handleCloseCreateModal();
-                showNotification("success", {message: result.message});
+                const newPromotionId = result.data.id;
+
+                // Cập nhật ID của đợt giảm giá mới cho sản phẩm chi tiết đã chọn
+                const updatePromises = selectedDetailProducts.map(async (detailId) => {
+                    return updateProductVariant(newPromotionId, [detailId]);
+                });
+
+                // Chờ tất cả các cập nhật hoàn tất
+                await Promise.all(updatePromises);
+
+                mutate(); // Cập nhật lại danh sách sản phẩm sau khi thực hiện các thay đổi
+                handleCloseCreateModal(); // Đóng modal tạo mới
+                showNotification("success", { message: result.message });
             }
+
         } catch (error: any) {
-            const errorMessage = error?.response?.data?.message;
-            if (errorMessage && typeof errorMessage === 'object') {
-                Object.entries(errorMessage).forEach(([field, message]) => {
-                    showNotification("error", {message: String(message)});
-                });
-            } else {
-                showNotification("error", {
-                    message: error?.message,
-                    description: errorMessage,
-                });
-            }
+            const errorMessage = error?.response?.data?.message || error.message;
+            showNotification("error", {
+                message: "Có lỗi xảy ra!",
+                description: errorMessage,
+            });
         }
     };
+    const pathname = usePathname();
+    const { replace } = useRouter();
+    type SearchProps = GetProps<typeof Input.Search>;
+    const onSearch: SearchProps['onSearch'] =
+        (value, _e, info) => {
+            if (info?.source === "input" && value) {
+                params.set("keyword", value);
+                params.set("page", "1");
+                replace(`${pathname}?${params.toString()}`);
+            } else {
+                params.delete("keyword")
+                replace(`${pathname}?${params.toString()}`);
+            }
+        }
+
 
     return (
         <>
@@ -175,9 +213,9 @@ const CreatePromotion = (props: IProps) => {
                 cancelText="Hủy"
                 okText="Lưu"
                 okButtonProps={{
-                    style: {background: "#00b96b"},
+                    style: { background: "#00b96b" },
                 }}
-                width={1200} style={{top: 20}}
+                width={1200} style={{ top: 20 }}
             >
                 <Row gutter={16}>
                     {/* Form thêm mới */}
@@ -189,29 +227,39 @@ const CreatePromotion = (props: IProps) => {
                             onFinish={onFinish}
                         >
                             <Form.Item name="promotionName" label="Tên chương trình"
-                                       rules={[{required: true, message: 'Vui lòng nhập tên chương trình'}]}>
-                                <Input placeholder="Nhập tên chương trình"/>
+                                       rules={[{ required: true, message: 'Vui lòng nhập tên chương trình' }]}>
+                                <Input placeholder="Nhập tên chương trình" />
                             </Form.Item>
 
                             <Form.Item
                                 label="Giá trị giảm giá"
-                                rules={[{required: true, message: "Vui lòng nhập giá trị giảm giá và chọn kiểu!"}]}
+                                rules={[{ required: true, message: "Vui lòng nhập giá trị giảm giá và chọn kiểu!" }]}
                             >
-                                <Space.Compact style={{width: '100%'}}>
+                                <Space.Compact style={{ width: '100%' }}>
                                     <Form.Item
                                         name="discountValue"
                                         noStyle
-                                        rules={[{required: true, message: "Giá trị giảm là bắt buộc!"}]}
+                                        rules={[
+                                            { required: true, message: "Giá trị giảm là bắt buộc!" },
+                                            ({ getFieldValue }) => ({
+                                                validator(_, value) {
+                                                    if (getFieldValue("discountType") === "PERCENTAGE" && value > 100) {
+                                                        return Promise.reject(new Error("Giá trị giảm không được vượt quá 100%"));
+                                                    }
+                                                    return Promise.resolve();
+                                                },
+                                            }),
+                                        ]}
                                     >
-                                        <InputNumber style={{width: '70%'}} placeholder="Giá trị giảm"/>
+                                        <InputNumber style={{ width: '70%' }} placeholder="Giá trị giảm" />
                                     </Form.Item>
                                     <Form.Item
                                         name="discountType"
                                         noStyle
-                                        rules={[{required: true, message: "Kiểu giảm là bắt buộc!"}]}
+                                        rules={[{ required: true, message: "Kiểu giảm là bắt buộc!" }]}
                                     >
                                         <Select
-                                            style={{width: '30%'}}
+                                            style={{ width: '30%' }}
                                             placeholder="Chọn kiểu"
                                             suffixIcon={null}
                                         >
@@ -224,81 +272,77 @@ const CreatePromotion = (props: IProps) => {
                                     </Form.Item>
                                 </Space.Compact>
                             </Form.Item>
+
                             <Form.Item
                                 name="startDate"
                                 label="Ngày bắt đầu"
-                                rules={[{required: true, message: "Vui lòng chọn ngày bắt đầu!"}]}
+                                rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
                             >
                                 <DatePicker
-                                    style={{width: '100%'}}
+                                    style={{ width: '100%' }}
                                     showTime
                                     format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
                                 />
                             </Form.Item>
-
 
                             <Form.Item
                                 name="endDate"
                                 label="Ngày kết thúc"
-                                rules={[{required: true, message: "Vui lòng chọn ngày bắt đầu!"}]}
+                                rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc!" }]}
                             >
                                 <DatePicker
-                                    style={{width: '100%'}}
+                                    style={{ width: '100%' }}
                                     showTime
                                     format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
                                 />
                             </Form.Item>
+
                             <Form.Item name="description" label="Mô tả">
-                                <Input.TextArea rows={3} placeholder="Nhập mô tả"/>
+                                <Input.TextArea rows={3} placeholder="Nhập mô tả" />
                             </Form.Item>
                         </Form>
                     </Col>
 
                     {/* Danh Sách Sản Phẩm */}
                     <Col span={12}>
-                        <h3>Danh Sách Sản Phẩm</h3>
-                        <TablePagination
-                            rowSelection={{
-                                type: 'checkbox',
-                                onChange: (_, selectedRows) => {
-                                    // Chuyển đổi ID thành số
-                                    setSelectedProducts(selectedRows.map(row => Number(row.key)));
-                                },
-                            }}
-                            loading={isLoading}
-                            columns={columnsProduct}
-                            data={result?.items ? result.items : []}
-                            current={result?.pageNo}
-                            pageSize={result?.pageSize}
-                            total={result?.totalElements}
-                        />
+                        <div>
+                            <h2 style={{ fontWeight: 'bold', marginBottom: '16px' }}>Danh sách sản phẩm</h2>
+                            <div className="flex-grow max-w-96">
+                                <Search
+                                    placeholder="Theo tên sản phẩm"
+                                    allowClear
+                                    onSearch={onSearch}
+                                    style={{width: '100%'}}
+                                />
+                            </div>
+
+                            <Table
+                                columns={productColumns}
+                                dataSource={products}
+                                rowKey="id"
+                                rowSelection={rowSelection}
+                            />
+                        </div>
                     </Col>
                 </Row>
+
                 {/* Danh Sách Chi Tiết Sản Phẩm */}
-                <Row style={{marginTop: '20px'}}>
+                <Row style={{ marginTop: '20px' }}>
                     <Col span={24}>
-                        <h3>Danh Sách Chi Tiết Sản Phẩm</h3>
-                        <TablePagination
-                            rowSelection={{
-                                type: 'checkbox',
-                                onChange: (_, selectedRows) => setSelectedProducts(selectedRows.map(row => row.key)),
-                            }}
-                            loading={isLoading}
-                            columns={columnsProductDetail}
-                            data={result?.items ? result.items : []}
-                            current={result?.pageNo}
-                            pageSize={result?.pageSize}
-                            total={result?.totalElements}
-                        >
-                        </TablePagination>
-                        {/*<TablePagination*/}
-                        {/*    loading={isLoading}*/}
-                        {/*    columns={columnsProductDetail}*/}
-                        {/*    data={data}*/}
-                        {/*    current={1}*/}
-                        {/*    pageSize={productDetails.length}*/}
-                        {/*    total={productDetails.length}*/}
-                        {/*/>*/}
+                        {selectedProducts.length > 0 && productDetails.length > 0 && (
+                            <div style={{ marginTop: '20px' }}>
+                                <h2 style={{ fontWeight: 'bold', marginBottom: '16px' }}>Chi tiết sản phẩm đã chọn</h2>
+                                <Table
+                                    columns={detailColumns}
+                                    dataSource={productDetails.map((variant) => ({
+                                        ...variant,
+                                        key: variant.id,
+                                    }))}
+                                    rowKey="key"
+                                    rowSelection={rowSelectionDetails}
+                                />
+                            </div>
+                        )}
                     </Col>
                 </Row>
             </Modal>
@@ -307,164 +351,3 @@ const CreatePromotion = (props: IProps) => {
 };
 
 export default memo(CreatePromotion);
-
-//
-// "use client";
-// import { memo, useState } from 'react';
-// import { Form, Input, Modal, Select, DatePicker, InputNumber, Table, Row, Col } from 'antd';
-// import { createPromotion } from '@/services/PromotionService';
-// import { EuroOutlined, PercentageOutlined } from '@ant-design/icons';
-// import useAppNotifications from "../../../hooks/useAppNotifications";
-// import { IPromotion } from "../../../types/IPromotion";
-//
-// const { Option } = Select;
-//
-// interface IProps {
-//     isCreateModalOpen: boolean;
-//     setIsCreateModalOpen: (value: boolean) => void;
-//     mutate: any;
-// }
-//
-// const productData = [
-//     { key: '1', productCode: 'AO01', productName: 'Áo Sơmi Cuban Linen', status: 'Đang Bán' },
-//     { key: '2', productCode: 'SM001', productName: 'Áo Sơ mi Chrysanthemum', status: 'Đang Bán' },
-//     { key: '3', productCode: 'SPRE', productName: 'Áo Sơ mi Semi Spread', status: 'Đang Bán' },
-// ];
-//
-// const CreatePromotion = (props: IProps) => {
-//     const { showNotification } = useAppNotifications();
-//     const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
-//     const [form] = Form.useForm();
-//     const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-//
-//     const handleCloseCreateModal = () => {
-//         form.resetFields();
-//         setIsCreateModalOpen(false);
-//     };
-//
-//     const onFinish = async (value: IPromotion) => {
-//         try {
-//             const result = await createPromotion(value);
-//             mutate();
-//             if (result.data) {
-//                 handleCloseCreateModal();
-//                 showNotification("success", { message: result.message });
-//             }
-//         } catch (error: any) {
-//             showNotification("error", { message: error?.message });
-//         }
-//     };
-//
-//     const productColumns = [
-//         { title: 'Mã Sản Phẩm', dataIndex: 'productCode', key: 'productCode' },
-//         { title: 'Tên Sản Phẩm', dataIndex: 'productName', key: 'productName' },
-//         { title: 'Trạng Thái', dataIndex: 'status', key: 'status' },
-//     ];
-//
-//     const detailColumns = [
-//         { title: 'Mã Sản Phẩm', dataIndex: 'productCode', key: 'productCode' },
-//         { title: 'Tên Sản Phẩm', dataIndex: 'productName', key: 'productName' },
-//         { title: 'Số Lượng Tồn', dataIndex: 'stock', key: 'stock' },
-//         { title: 'Giá', dataIndex: 'price', key: 'price' },
-//         { title: 'Kiểu', dataIndex: 'type', key: 'type' },
-//     ];
-//
-//     return (
-//         <>
-//             <Modal
-//                 title="Thêm mới đợt giảm giá"
-//                 open={isCreateModalOpen}
-//                 onOk={() => form.submit()}
-//                 onCancel={() => handleCloseCreateModal()}
-//                 cancelText="Hủy"
-//                 okText="Lưu"
-//                 width={1000} // Đặt chiều rộng modal rộng hơn để hiển thị hết nội dung
-//                 bodyStyle={{ padding: '20px' }}
-//             >
-
-//                 <Row gutter={16}>
-//                     {/* Form thêm mới */}
-//                     <Col span={12}>
-//                         <Form form={form} name="createPromotion" layout="vertical" onFinish={onFinish}>
-//                             <Form.Item name="promotionName" label="Tên chương trình"
-//                                        rules={[{ required: true, message: 'Vui lòng nhập tên chương trình' }]}>
-//                                 <Input placeholder="Nhập tên chương trình" />
-//                             </Form.Item>
-//
-//                             <Form.Item label="Giá trị giảm giá">
-//                                 <Input.Group compact>
-//                                     <Form.Item
-//                                         name="discountValue"
-//                                         noStyle
-//                                         rules={[{ required: true, message: "Giá trị giảm là bắt buộc!" }]}
-//                                     >
-//                                         <InputNumber style={{ width: '70%' }} placeholder="Giá trị giảm" />
-//                                     </Form.Item>
-//                                     <Form.Item
-//                                         name="discountType"
-//                                         noStyle
-//                                         rules={[{ required: true, message: "Kiểu giảm là bắt buộc!" }]}
-//                                     >
-//                                         <Select style={{ width: '30%' }} placeholder="Chọn kiểu">
-//                                             <Option value="0"><PercentageOutlined /> %</Option>
-//                                             <Option value="1"><EuroOutlined /> VND</Option>
-//                                         </Select>
-//                                     </Form.Item>
-//                                 </Input.Group>
-//                             </Form.Item>
-//
-//                             <Form.Item name="startDate" label="Ngày bắt đầu"
-//                                        rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}>
-//                                 <DatePicker style={{ width: '100%' }} />
-//                             </Form.Item>
-//                             <Form.Item name="endDate" label="Ngày kết thúc"
-//                                        rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc!" }]}>
-//                                 <DatePicker style={{ width: '100%' }} />
-//                             </Form.Item>
-//                             <Form.Item name="description" label="Mô tả">
-//                                 <Input.TextArea rows={3} placeholder="Nhập mô tả" />
-//                             </Form.Item>
-//                         </Form>
-//                     </Col>
-//
-//                     {/* Danh Sách Sản Phẩm */}
-//                     <Col span={12}>
-//                         <h3>Danh Sách Sản Phẩm</h3>
-//                         <Table
-//                             rowSelection={{
-//                                 type: 'checkbox',
-//                                 onChange: (_, selectedRows) => setSelectedProducts(selectedRows.map(row => row.key)),
-//                             }}
-//                             columns={productColumns}
-//                             dataSource={productData}
-//                             pagination={{ pageSize: 5 }}
-//                             scroll={{ y: 200 }}
-//                         />
-//                     </Col>
-//                 </Row>
-//
-//                 {/* Danh Sách Chi Tiết Sản Phẩm */}
-//                 <Row style={{ marginTop: '20px' }}>
-//                     <Col span={24}>
-//                         <h3>Danh Sách Chi Tiết Sản Phẩm</h3>
-//                         <Table
-//                             columns={detailColumns}
-//                             dataSource={selectedProducts.map(productId => ({
-//                                 key: productId,
-//                                 productCode: productId,
-//                                 productName: productData.find(p => p.key === productId)?.productName || '',
-//                                 stock: '100',
-//                                 price: '200000',
-//                                 type: 'Default'
-//                             }))}
-//                             pagination={false}
-//                             scroll={{ y: 200 }}
-//                         />
-//                     </Col>
-//                 </Row>
-//             </Modal>
-//         </>
-//     );
-// };
-//
-// export default memo(CreatePromotion);
