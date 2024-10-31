@@ -11,6 +11,7 @@ import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSele
 import useOptionBrand from "@/components/Admin/Brand/hooks/useOptionBrand";
 import StatusFilter from "@/components/Filter/StatusFilter";
 import useOptionMaterial from "@/components/Admin/Material/hooks/useOptionMaterial";
+import {DownOutlined} from "@ant-design/icons";
 
 const {Title} = Typography;
 const {Search} = Input;
@@ -37,10 +38,10 @@ interface IProps {
 }
 
 const ProductFilter = (props: IProps) => {
+    const {error} = props;
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const {replace} = useRouter();
-    const {error} = props;
     const params = new URLSearchParams(searchParams);
 
     const {dataTreeSelectCategory, error: errorDataTreeSelectCategory, isLoading: isLoadingDataTreeSelectCategory}
@@ -182,7 +183,7 @@ const ProductFilter = (props: IProps) => {
 
     return (
         <Space direction="vertical" style={{minWidth: 256}}>
-            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end"
+            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end" collapsible="icon"
                 style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256,}}
                 items={[
                     {
@@ -195,6 +196,7 @@ const ProductFilter = (props: IProps) => {
                                         disabled={isErrorNetWork || errorDataTreeSelectCategory} enterButton={false}
                                 />
                                 <Tree
+                                    switcherIcon={<DownOutlined />}
                                     disabled={isErrorNetWork || errorDataTreeSelectCategory}
                                     onExpand={onExpand}
                                     onSelect={onSelectCategory}
@@ -210,7 +212,7 @@ const ProductFilter = (props: IProps) => {
                 ]}
             />
 
-            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end"
+            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end" collapsible="icon"
                 style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256}}
                 items={[
                     {
@@ -236,7 +238,7 @@ const ProductFilter = (props: IProps) => {
                 ]}
             />
 
-            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end"
+            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end" collapsible="icon"
                 style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256,}}
                 items={[
                     {
@@ -263,7 +265,7 @@ const ProductFilter = (props: IProps) => {
                 ]}
             />
 
-            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end"
+            <Collapse size="small" className="w-full bg-white" ghost expandIconPosition="end" collapsible="icon"
                 style={{borderRadius: 8, boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)', maxWidth: 256}}
                 items={[
                     {
