@@ -3,8 +3,6 @@ import {Menu, MenuProps,} from 'antd';
 import {UserOutlined, PieChartOutlined, ShoppingCartOutlined, ProductOutlined, GiftOutlined,} from '@ant-design/icons';
 import Sider from "antd/es/layout/Sider";
 import Link from "next/link";
-import { LiaProductHunt } from 'react-icons/lia';
-import { RiProductHuntLine } from 'react-icons/ri';
 
 const siderStyle: React.CSSProperties = {
     overflow: 'auto',
@@ -24,7 +22,7 @@ type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
     {key: 'tong-quan', label: <Link href={"/admin"}>Tổng quan</Link>, icon: <PieChartOutlined/>,},
-    {key: 'ban-hang-tai-quay', label: <Link href={"/admin"}>Bán hàng tại quầy</Link>, icon: <ShoppingCartOutlined/>,},
+    {key: 'ban-hang-tai-quay', label: <Link href={"/sale"}>Bán hàng tại quầy</Link>, icon: <ShoppingCartOutlined/>,},
     {key: 'don-hang', label: <Link href={"/admin/order"}>Quản lý đơn hàng</Link>, icon: <ShoppingCartOutlined/>,},
     {
         key: 'quan-li-san-pham', label: 'Quản lý sản phẩm', icon: <ProductOutlined/>,

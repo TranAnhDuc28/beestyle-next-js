@@ -1,15 +1,13 @@
 "use client"
-
-import React, { Suspense, useState } from 'react';
-import { ConfigProvider, Layout } from 'antd';
+import React, {useState } from 'react';
+import {Layout } from 'antd';
 import AdminSideMenu from '../SideBar/AdminSideMenu';
 import AdminHeader from '../Header/AdminHeader';
 
 const { Content } = Layout;
 
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [collapsed, setCollapsed] = useState(false);
-
+    const [collapsed, setCollapsed] = useState(true);
     const toggleCollapsed = () => setCollapsed(!collapsed);
 
     return (
