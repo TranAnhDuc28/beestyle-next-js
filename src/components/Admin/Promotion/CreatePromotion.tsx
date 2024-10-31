@@ -12,13 +12,13 @@ import {
     Table,
     Tag,
     Image,
-    Space
+    Space, GetProps
 } from 'antd';
 import {createPromotion} from '@/services/PromotionService';
 import {EuroOutlined, PercentageOutlined} from '@ant-design/icons';
 import useAppNotifications from "../../../hooks/useAppNotifications";
 import {IPromotion} from "../../../types/IPromotion";
-import {useSearchParams} from "next/navigation";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import useSWR from "swr";
 import {getProductDetails, getProducts, updateProductVariant, URL_API_PRODUCT} from "../../../services/ProductService";
 import {IProduct} from "../../../types/IProduct";
@@ -27,6 +27,8 @@ import TablePagination from "../../Table/TablePagination";
 import {GENDER_PRODUCT} from "../../../constants/GenderProduct";
 import {DISCOUNT_TYPE} from "../../../constants/DiscountType";
 import {IProductVariant} from "../../../types/IProductVariant";
+import HeaderProduct from "../Product/HeaderProduct";
+import Search from "antd/es/input/Search";
 
 const {Option} = Select;
 
@@ -185,7 +187,20 @@ const CreatePromotion = (props: IProps) => {
             });
         }
     };
-
+    const pathname = usePathname();
+    const { replace } = useRouter();
+    type SearchProps = GetProps<typeof Input.Search>;
+    const onSearch: SearchProps['onSearch'] =
+        (value, _e, info) => {
+            if (info?.source === "input" && value) {
+                params.set("keyword", value);
+                params.set("page", "1");
+                replace(`${pathname}?${params.toString()}`);
+            } else {
+                params.delete("keyword")
+                replace(`${pathname}?${params.toString()}`);
+            }
+        }
 
 
     return (
@@ -292,11 +307,20 @@ const CreatePromotion = (props: IProps) => {
                     <Col span={12}>
                         <div>
                             <h2 style={{ fontWeight: 'bold', marginBottom: '16px' }}>Danh sách sản phẩm</h2>
+                            <div className="flex-grow max-w-96">
+                                <Search
+                                    placeholder="Theo tên sản phẩm"
+                                    allowClear
+                                    onSearch={onSearch}
+                                    style={{width: '100%'}}
+                                />
+                            </div>
+
                             <Table
                                 columns={productColumns}
                                 dataSource={products}
                                 rowKey="id"
-                                rowSelection={rowSelection} // Sử dụng rowSelection
+                                rowSelection={rowSelection}
                             />
                         </div>
                     </Col>
