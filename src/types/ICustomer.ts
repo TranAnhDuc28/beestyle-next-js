@@ -6,8 +6,8 @@ interface ICustomer{
     gender: string,
     phoneNumber: string,
     email: string,
-    status: number,
+    status: string,
     addresses: any,
-    createdAt?: string,
-    updatedAt?: string,
+    createdAt?: Date,
+    updatedAt?: Date,
 }

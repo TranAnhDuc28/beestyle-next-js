@@ -1,121 +1,204 @@
-import { Button, Col, DatePicker, Form, Input, message, Modal, Radio, Row } from "antd";
-import React from "react";
-import moment from "moment";
+"use client";
+import { DatePicker, Form, Input, Modal, Select } from "antd";
+import React, { memo, useEffect, useState } from "react";
 import { createCustomer } from "@/services/CustomerService";
 import useAppNotifications from "@/hooks/useAppNotifications";
+import { createAddress } from "@/services/AddressService";
+import CreateAddress from "../Address/CreateAddress";
 
-interface ModalAdd {
-  visible: boolean;
-  onClose: () => void;
-  onMutate: any;
+const { Option } = Select;
+
+interface IProps {
+  isCreateModalOpen: boolean;
+  setIsCreateModalOpen: (value: boolean) => void;
+  mutate: any;
 }
 
-const AddCustomer = ({ visible, onClose, onMutate }: ModalAdd) => {
+const AddCustomer = (props: IProps) => {
+  const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
   const { showNotification } = useAppNotifications();
   const [form] = Form.useForm();
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedWard, setSelectedWard] = useState("");
+  const [selectedProvinceName, setSelectedProvinceName] = useState("");
+  const [selectedDistrictName, setSelectedDistrictName] = useState("");
+  const [selectedWardName, setSelectedWardName] = useState("");
+
+  console.log(isCreateModalOpen);
 
   const handleSubmit = async (values: ICustomer) => {
     try {
-      form.setFieldValue(
-        values.dateOfBirth,
-        moment.utc(values.dateOfBirth).format("YYYY-MM-DD")
-      );
+      // Định dạng ngày sinh
+      console.log(values.dateOfBirth);
+
       const result = await createCustomer(values);
 
-      console.log(result);
+      if (result.data) {
+        const customer = result.data; // Lấy ID của khách hàng từ phản hồi
 
-      if (result.code !== 201) {
-        showNotification("error", { message: result.error });
-      } else {
-        onMutate();
+        const address = {
+          addressName: `${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`,
+          cityCode: Number(selectedProvince), // Nếu cần chuyển đổi
+          city: selectedProvinceName ?? "", // Lưu tên tỉnh vào đây
+          districtCode: Number(selectedDistrict), // Nếu cần chuyển đổi
+          district: selectedDistrictName ?? "", // Lưu tên huyện vào đây
+          communeCode: Number(selectedWard), // Cần lấy từ API nếu có
+          commune: selectedWardName ?? "", // Tên xã
+          default: false,
+          customer: {
+            id: customer.id, // Thay đổi bằng ID thực tế
+          },
+        };
+
+        console.log(address);
+       
+        // Gọi API để tạo địa chỉ
+        try {
+          await createAddress(address);
+          console.log(address.customer);
+          mutate();
+        } catch (error: any) {
+          const errorMessage = error?.response?.data?.message;
+          if (errorMessage && typeof errorMessage === "object") {
+            Object.entries(errorMessage).forEach(([field, message]) => {
+              showNotification("error", { message: String(message) });
+            });
+          } else {
+            showNotification("error", {
+              message: error?.message,
+              description: errorMessage,
+            });
+          }
+        }
+
+        // Đóng modal và hiển thị thông báo thành công
+        handleCancelModal();
         showNotification("success", { message: result.message });
-        onClose();
-        form.resetFields();
-        console.log("Dữ liệu Thêm mới: ", values);
       }
-    } catch (error) {
-      showNotification("error", { message: error });
+    } catch (error: any) {
+      // Xử lý lỗi và hiển thị thông báo lỗi
+      const errorMessage = error?.response?.data?.message;
+      if (errorMessage && typeof errorMessage === "object") {
+        Object.entries(errorMessage).forEach(([field, message]) => {
+          showNotification("error", { message: String(message) });
+        });
+      } else {
+        showNotification("error", {
+          message: error?.message,
+          description: errorMessage,
+        });
+      }
     }
   };
+  const handleCancelModal = () => {
+    form.resetFields();
+    setIsCreateModalOpen(false);
+  };
+
+  useEffect(() => {
+    if (isCreateModalOpen) {
+      setSelectedProvince("");
+      setSelectedDistrict("");
+      setSelectedWard("");
+    }
+  }, [isCreateModalOpen]);
+
+
+
+  // Xử lý khi tỉnh được chọn
+  const handleProvinceChange = (value: any, name: string) => {
+    setSelectedProvince(value);
+    setSelectedProvinceName(name);
+    setSelectedDistrict(""); // Reset huyện khi tỉnh thay đổi
+  };
+
+  // Xử lý khi huyện được chọn
+  const handleDistrictChange = (value: any, name: string) => {
+    setSelectedDistrict(value);
+    setSelectedDistrictName(name);
+  };
+  // Xử lý khi xã được chọn
+  const handleWardChange = (value: any, name: string) => {
+    setSelectedWard(value);
+    setSelectedWardName(name);
+  };
+
+  // console.log(wards);
   return (
     <>
       <Modal
         title={"Thêm mới khách hàng"}
-        visible={visible}
-        onCancel={onClose}
-        footer={null}
-        style={{
-          top:20
-        }}
+        cancelText="Hủy"
+        okText="Lưu"
+        onOk={() => form.submit()}
+        style={{ top: 20 }}
+        open={isCreateModalOpen}
+        onCancel={handleCancelModal}
+        okButtonProps={{ style: { background: "#00b96b" } }}
       >
-        <Form form={form} onFinish={handleSubmit} layout="vertical">
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Họ tên"
-                name="fullName"
-                rules={[
-                  { required: true, message: "Vui lòng nhập họ và tên!" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Password"
-                name="password"
-                rules={[{ required: true, message: "Vui lòng nhập password!" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Sdt"
-                name="phoneNumber"
-                rules={[{ required: true, message: "Vui lòng nhập sdt!" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Ngày sinh"
-                name="dateOfBirth"
-                rules={[
-                  { required: true, message: "Vui lòng nhập ngày sinh!" },
-                ]}
-              >
-                <DatePicker format={"YYYY-MM-DD"} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Giới tính"
-                name="gender"
-                rules={[
-                  { required: true, message: "Vui lòng nhập giới tính!" },
-                ]}
-              >
-                <Radio.Group>
-                  <Radio value="MALE">Nam</Radio>
-                  <Radio value="FEMALE">Nữ</Radio>
-                </Radio.Group>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Button type="primary" htmlType="submit">
-            Thêm
-          </Button>
+        <Form
+          form={form}
+          onFinish={handleSubmit}
+          layout="horizontal"
+          labelAlign="left"
+          labelWrap
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 20 }}
+        >
+          <Form.Item
+            label="Họ tên"
+            name="fullName"
+            rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Số điện thoại"
+            name="phoneNumber"
+            rules={[{ required: true, message: "Vui lòng nhập sdt!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Ngày sinh"
+            name="dateOfBirth"
+            rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
+          >
+            <DatePicker format={"YYYY-MM-DD"} style={{ width: "100%" }} />
+          </Form.Item>
+
+          <Form.Item label="Giới tính" name="gender" initialValue="0">
+            <Select
+              style={{ width: "100%" }}
+              placeholder="Giới tính"
+              defaultValue="0"
+            >
+              <Select.Option value="0">Nam</Select.Option>
+              <Select.Option value="1">Nữ</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <CreateAddress
+            handleDistrictChange={handleDistrictChange}
+            handleProvinceChange={handleProvinceChange}
+            handleWardChange={handleWardChange}
+            selectedDistrict={selectedDistrict}
+            selectedProvince={selectedProvince}
+          />
         </Form>
       </Modal>
     </>
   );
 };
 
-export default AddCustomer;
+export default memo(AddCustomer);

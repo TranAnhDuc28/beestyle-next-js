@@ -2,16 +2,22 @@ import httpInstance from "@/utils/HttpInstance"
 
 
 export const URL_API_CUSTOMER = {
-  get: '/admin/Customer',
-  creat:'/admin/Customer/create',
-  update:'/admin/Customer/update',
-  delete:'/admin/Customer/delete',
+  get: '/admin/customer',
+  creat:'/admin/customer/create',
+  update:'/admin/customer/update',
+  delete:'/admin/customer/delete',
 }
 
 export const getCustomer = async (url:string) => {
   const response = await httpInstance.get(url)
   return response.data
 }
+
+export const getDetailCustomer = async (key: string) => {
+  // const id = key.split('/').pop(); // Lấy id từ key nếu cần
+  const response = await httpInstance.get(key);
+  return response.data;
+};
 
 export const createCustomer = async (data: ICustomer) => {
   const response = await httpInstance.post(URL_API_CUSTOMER.creat,data)
