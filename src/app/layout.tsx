@@ -52,7 +52,7 @@ export default function RootLayout({children,}: Readonly<{ children: ReactNode; 
                     </AntdRegistry>
                 )
         }
-        <FloatButton.BackTop visibilityHeight={100}/>
+        <FloatButton.BackTop visibilityHeight={400}/>
         </body>
         </html>
     );

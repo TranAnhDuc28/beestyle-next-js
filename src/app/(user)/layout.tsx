@@ -12,7 +12,7 @@ export default function RootUserLayout({children,}: Readonly<{ children: ReactNo
                     <main>{children}</main>
                 </App>
             </AntdRegistry>
-            <FloatButton.BackTop visibilityHeight={100}/>
+            <FloatButton.BackTop visibilityHeight={400}/>
         </>
     );
 }
