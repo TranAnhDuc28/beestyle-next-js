@@ -24,7 +24,7 @@ const AddStaff = (props: IProps) => {
 
   const handleSubmit = async (value: IStaff) => {
     console.log(value);
-    
+
     try {
       const result = await createStaff(value);
       mutate();
@@ -111,7 +111,11 @@ const AddStaff = (props: IProps) => {
             name="dateOfBirth"
             rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
           >
-            <DatePicker format={"YYYY-MM-DD"} style={{ width: "100%" }} />
+            <DatePicker
+              showTime
+              format="YYYY-MM-DD HH:mm:ss"
+              style={{ width: "100%" }}
+            />
           </Form.Item>
 
           <Form.Item label="Giới tính" name="gender" initialValue="0">

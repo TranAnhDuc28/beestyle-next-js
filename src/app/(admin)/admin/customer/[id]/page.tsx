@@ -1,68 +1,23 @@
-"use client";
-import AddressComponent from "@/components/Admin/Address/AddressComponent";
-import InformationCustomer from "@/components/Admin/Customer/Detail/InformationCustomer";
-import useAppNotifications from "@/hooks/useAppNotifications";
-import { getDetailCustomer, URL_API_CUSTOMER } from "@/services/CustomerService";
-import { TeamOutlined, UserOutlined } from "@ant-design/icons";
-import { Avatar, Layout } from "antd";
-import { Content } from "antd/es/layout/layout";
-import Sider from "antd/es/layout/Sider";
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import React, { useEffect } from "react";
-import useSWR from "swr";
+
+import CustomerDetailComponent from "@/components/Admin/Customer/Detail/CustomerDetailComponent";
+import AdminLoader from "@/components/Loader/AdminLoader";
+import { Metadata } from "next";
+import React, { Suspense } from "react";
 
 
-
-const DeatialCustomer = () => {
-  const {showNotification} = useAppNotifications();
-  const { id } = useParams()
-
-  const {data, error, isLoading, mutate} =
-        useSWR(
-            `${URL_API_CUSTOMER.get}/${id}`,
-            getDetailCustomer,
-            {
-                revalidateOnFocus: false,
-                revalidateOnReconnect: false
-            }
-        );
-
-        useEffect(() => {
-          if (error) {
-              showNotification("error",{
-                  message: error?.message, description: error?.response?.data?.message || "Error fetching brands",
-              });
-          }
-      }, [error]);
-  
-      let result: any;
-      if (!isLoading && data) {
-          result = data?.data;
-      }
-      console.log(result?.addresses);
-      
-  return (
-    <Layout>
-      <Sider
-        theme="light"
-        width={300}
-        style={{
-          position: "fixed",
-          minHeight: "100vh",
-          paddingTop:"20px"
-        }}
-      >
-        <InformationCustomer customer={result} />
-      </Sider>
-      <Layout>
-        <Content className="pt-5 pr-2.5 pb-2.5 pl-5 overflow-auto" style={{ marginLeft: 300 }}>
-          <p className="flex gap-2"><Link href={"/admin/customer"} ><TeamOutlined/> Khách hàng</Link>/<span className="font-medium">Chi tiết</span></p>
-          <AddressComponent />
-        </Content>
-      </Layout>
-    </Layout>
-  );
+export const metadata: Metadata = {
+  title: "Khách hàng",
+  description: "Customer detail service",
 };
 
-export default DeatialCustomer;
+
+  function DeatailCustomer({ params }: { params: { id: string }}) {
+    const customerId = params.id;
+    return (
+        <Suspense fallback={<AdminLoader/>}>
+            <CustomerDetailComponent customerId={customerId}/>
+        </Suspense>
+    );
+}
+
+export default DeatailCustomer;

@@ -45,14 +45,14 @@ const AddCustomer = (props: IProps) => {
           district: selectedDistrictName ?? "", // Lưu tên huyện vào đây
           communeCode: Number(selectedWard), // Cần lấy từ API nếu có
           commune: selectedWardName ?? "", // Tên xã
-          default: false,
+          isDefault: false,
           customer: {
             id: customer.id, // Thay đổi bằng ID thực tế
           },
         };
 
         console.log(address);
-       
+
         // Gọi API để tạo địa chỉ
         try {
           await createAddress(address);
@@ -103,8 +103,6 @@ const AddCustomer = (props: IProps) => {
       setSelectedWard("");
     }
   }, [isCreateModalOpen]);
-
-
 
   // Xử lý khi tỉnh được chọn
   const handleProvinceChange = (value: any, name: string) => {
@@ -174,7 +172,11 @@ const AddCustomer = (props: IProps) => {
             name="dateOfBirth"
             rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
           >
-            <DatePicker format={"YYYY-MM-DD"} style={{ width: "100%" }} />
+            <DatePicker
+              showTime
+              format="YYYY-MM-DD HH:mm:ss"
+              style={{ width: "100%" }}
+            />
           </Form.Item>
 
           <Form.Item label="Giới tính" name="gender" initialValue="0">

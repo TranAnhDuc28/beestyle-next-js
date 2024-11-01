@@ -9,14 +9,13 @@ import { useParams } from "next/navigation";
 interface IProps {
   mutate: any;
   initialValues: any;
-  onSubmit: (values: any) => void;
+  hanldeClose: () => void;
 }
 
 const UpdateAddress = (props: IProps) => {
   const { showNotification } = useAppNotifications();
-  const { mutate, initialValues, onSubmit } = props;
+  const { mutate, initialValues, hanldeClose } = props;
   const [form] = Form.useForm();
-  const { id } = useParams();
   const { provinces, districts, wards, fetchDistricts, fetchWards } =
     useAddress();
   const [selectedProvince, setSelectedProvince] = useState("");
@@ -56,6 +55,7 @@ const UpdateAddress = (props: IProps) => {
         province: initialValues.city,
         district: initialValues.district,
         ward: initialValues.commune,
+        
       });
     }
   }, [initialValues]);
@@ -78,7 +78,7 @@ const UpdateAddress = (props: IProps) => {
         city: selectedProvinceName ?? "", // Lưu tên tỉnh vào đây
         district: selectedDistrictName ?? "", // Lưu tên huyện vào đây
         commune: selectedWardName ?? "", // Tên xã
-        isDefault: initialValues.default,
+        default: initialValues.default,
         ...rest, // Gộp các giá trị khác từ value vào đối tượng address
       };
       console.log("Success:", address);
@@ -91,7 +91,7 @@ const UpdateAddress = (props: IProps) => {
         mutate();
         if (result.data) {
           console.log(result.data);
-
+          hanldeClose();
           showNotification("success", { message: result.message });
         }
       }
