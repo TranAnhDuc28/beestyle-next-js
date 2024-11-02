@@ -2,12 +2,15 @@ import React, {CSSProperties, memo, useState} from "react";
 import {ClockCircleOutlined, PhoneOutlined} from "@ant-design/icons";
 import DeliverySaleTab from "@/components/Admin/Sale/TabSale/DeliverySaleTab";
 import NormalSaleTab from "@/components/Admin/Sale/TabSale/NormalSaleTab";
-import {Tabs} from "antd";
+import {ConfigProvider, Tabs, theme} from "antd";
 
 
 interface IProps {
 
 }
+
+const tabBarStyle: CSSProperties = {
+};
 
 const ContentTabPanelSale: React.FC<IProps> = (props) => {
     const {} = props;
@@ -44,8 +47,8 @@ const ContentTabPanelSale: React.FC<IProps> = (props) => {
                 tabPosition="bottom"
                 tabBarGutter={0}
                 items={itemsTabSale}
+                tabBarStyle={tabBarStyle}
             />
-
         </>
     );
 }
