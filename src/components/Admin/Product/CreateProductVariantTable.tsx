@@ -203,6 +203,7 @@ const CreateProductVariantTable: React.FC<IProps> = (props) => {
         <div>
             <Form form={form} component={false}>
                 <Table<IProductVariantRows>
+                    size="small"
                     components={{
                         body: {cell: EditableCell},
                     }}

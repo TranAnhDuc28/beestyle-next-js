@@ -4,7 +4,7 @@ import {
     Tabs, TabsProps, TreeSelect, Typography, UploadFile
 } from "antd";
 import useAppNotifications from "@/hooks/useAppNotifications";
-import React, {memo, useCallback, useEffect, useRef, useState} from "react";
+import React, {memo, useCallback, useEffect, useLayoutEffect, useRef, useState} from "react";
 import {IProductCreate} from "@/types/IProduct";
 import UploadImage from "@/components/Upload/UploadImage";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
@@ -21,7 +21,6 @@ import TextArea from "antd/es/input/TextArea";
 import {useDebounce} from "use-debounce";
 import useOptionColor from "@/components/Admin/Color/hooks/useOptionColor";
 import useOptionSize from "@/components/Admin/Size/hooks/useOptionSize";
-import {createProduct} from "@/services/ProductService";
 
 const {Title} = Typography;
 
@@ -81,6 +80,7 @@ const CreateProduct = (props: IProps) => {
 
     const handleCloseCreateModal = () => {
         form.resetFields();
+        setActiveKeyCollapse([]);
         setProductVariantRows([]);
         setSelectedColors([]);
         setSelectedSizes([]);
@@ -137,7 +137,7 @@ const CreateProduct = (props: IProps) => {
         }
     }, [selectedColors, selectedSizes, debouncedPricingAndStockVariant]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!isCreateModalOpen) {
             setActiveKeyCollapse([]);
         }
@@ -175,6 +175,12 @@ const CreateProduct = (props: IProps) => {
                 <>
                     <Row gutter={40} style={{margin: "10px 0px"}}>
                         <Col span={14}>
+                            <Form.Item
+                                name="productCode"
+                                label="Mã sản phẩm"
+                            >
+                                <Input placeholder="Mã tự động"/>
+                            </Form.Item>
                             <Form.Item
                                 name="productName"
                                 label="Tên sản phẩm"
