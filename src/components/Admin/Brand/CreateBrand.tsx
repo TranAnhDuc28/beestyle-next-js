@@ -1,18 +1,27 @@
 import React, {memo} from 'react';
 import {App, Form, Input, Modal, notification} from 'antd';
 import {IBrand} from "@/types/IBrand";
-import {createBrand} from "@/services/BrandService";
+import {createBrand, URL_API_BRAND} from "@/services/BrandService";
 import useAppNotifications from "@/hooks/useAppNotifications";
+import {mutate} from "swr";
 
 interface IProps {
     isCreateModalOpen: boolean;
-    setIsCreateModalOpen: (value: boolean) => void;
-    mutate: any
+    setIsCreateModalOpen: (value: any) => void;
+    mutate?: any;
+    isLoadingSelectBrand?: boolean;
+    formName?: string;
 }
 
 const CreateBrand = (props: IProps) => {
+    const {
+        isCreateModalOpen,
+        setIsCreateModalOpen,
+        mutate: mutateBrand,
+        isLoadingSelectBrand,
+        formName = "createBrand"
+    } = props;
     const {showNotification} = useAppNotifications();
-    const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
 
     const handleCloseCreateModal = () => {
@@ -24,11 +33,12 @@ const CreateBrand = (props: IProps) => {
         // console.log('Success:', value);
         try {
             const result = await createBrand(value);
-            mutate();
+            if (mutateBrand) mutateBrand();
             if (result.data) {
                 handleCloseCreateModal();
                 showNotification("success", {message: result.message});
             }
+            if (isLoadingSelectBrand) await mutate(URL_API_BRAND.option);
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {
@@ -49,7 +59,7 @@ const CreateBrand = (props: IProps) => {
                    onCancel={() => handleCloseCreateModal()}
                    okButtonProps={{style: {background: "#00b96b"}}}
             >
-                <Form form={form} name="createBrand" layout="vertical" onFinish={onFinish}>
+                <Form form={form} name={formName} layout="vertical" onFinish={onFinish}>
                     <Form.Item name="brandName" label="Tên thương hiệu"
                                rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}
                                validateTrigger="onBlur"

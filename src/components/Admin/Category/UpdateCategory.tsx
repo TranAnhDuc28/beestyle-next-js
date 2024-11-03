@@ -6,7 +6,6 @@ import {updateCategory, URL_API_CATEGORY} from "@/services/CategoryService";
 import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {mutate} from "swr";
-import {MAX_CATEGORY_LEVEL} from "@/constants/AppConstants";
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -55,19 +54,15 @@ const UpdateCategory = (props: IProps) => {
             if (dataUpdate) {
                 if (dataUpdate.id === value.parentCategoryId)
                     throw Error("Không thể chọn danh mục làm cha cho chính nó.");
-                console.log(dataUpdate.level);
 
-                const data = {
-                    ...value,
-                    id: dataUpdate.id
-                }
+                const data = {...value, id: dataUpdate.id}
                 const result = await updateCategory(data);
                 mutateCategories();
                 if (result.data) {
                     handleCloseUpdateModal();
                     showNotification("success", {message: result.message});
-                    await mutate(URL_API_CATEGORY.options);
                 }
+                await mutate(URL_API_CATEGORY.option);
             }
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
@@ -100,14 +95,11 @@ const UpdateCategory = (props: IProps) => {
                         <Input/>
                     </Form.Item>
                     <Form.Item name="parentCategoryId" label="Danh mục cha">
-                        <TreeSelect
+                        <TreeSelect showSearch allowClear placement="bottomLeft"
                             placeholder={isLoading ? "Đang tải..." : "---Lựa chọn---"}
                             dropdownStyle={{maxHeight: 400, overflow: 'auto'}}
                             treeData={dataTreeSelectCategory}
                             loading={isLoading}
-                            showSearch
-                            placement="bottomLeft"
-                            allowClear
                             filterTreeNode={(search, item) => {
                                 let title = item.title?.toString() || "";
                                 return title.toLowerCase().indexOf(search.toLowerCase()) >= 0;

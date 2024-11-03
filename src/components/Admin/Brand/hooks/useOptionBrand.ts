@@ -14,7 +14,7 @@ const transformData = (data: IBrand[]) => {
 
 const useOptionBrand = (isLoadOption: boolean) => {
     const {data, error, isLoading} = useSWR(
-        isLoadOption ? `${URL_API_BRAND.get}?size=1000` : null,
+        isLoadOption ? `${URL_API_BRAND.option}` : null,
         getBrands,
         {
             revalidateIfStale: false,
@@ -23,7 +23,7 @@ const useOptionBrand = (isLoadOption: boolean) => {
         }
     );
 
-    const dataOptionBrand = !isLoading && data?.data?.items ? transformData(data.data.items) : [];
+    const dataOptionBrand = !isLoading && data?.data ? transformData(data.data) : [];
 
     return {dataOptionBrand, error, isLoading};
 }
