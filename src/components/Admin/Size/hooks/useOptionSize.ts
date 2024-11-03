@@ -15,7 +15,7 @@ const transformData = (data: ISize[]) => {
 
 const useOptionSize = (isLoadOption: boolean) => {
     const {data, error, isLoading} = useSWR(
-        isLoadOption ? `${URL_API_SIZE.get}?size=100` : null,
+        isLoadOption ? `${URL_API_SIZE.option}` : null,
         getColors,
         {
             revalidateIfStale: false,
@@ -24,7 +24,7 @@ const useOptionSize = (isLoadOption: boolean) => {
         }
     );
 
-    const dataOptionSize = !isLoading && data?.data?.items ? transformData(data.data.items) : [];
+    const dataOptionSize = !isLoading && data?.data ? transformData(data.data) : [];
 
     return {dataOptionSize, error, isLoading};
 }

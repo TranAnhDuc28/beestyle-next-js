@@ -7,7 +7,8 @@ export const URL_API_PRODUCT = {
     create: '/admin/product/create',
     update: '/admin/product/update',
     delete: '/admin/product/delete',
-    productVariant: '/admin/product/productVariant'
+    productVariant: '/admin/productVariant',
+    updateProductVariant: '/admin/productVariant/updates'
 };
 
 export const getProducts = async (url: string) => {
@@ -24,9 +25,9 @@ export const updateProduct = async (data: IProduct) => {
     const response = await httpInstance.put(`${URL_API_PRODUCT.update}/${data.id}`, data);
     return response.data;
 }
+
 export const getProductDetails = async (productId: number) => {
     try {
-        // Sử dụng query parameter cho productId
         const response = await httpInstance.get(`${URL_API_PRODUCT.productVariant}?productIds=${productId}`);
         console.log("Product details:", response.data);
         return response.data;
@@ -36,6 +37,19 @@ export const getProductDetails = async (productId: number) => {
     }
 };
 
+export const updateProductVariant = async (promotionId: number, variantIds: number[]) => {
+    try {
+        const response = await httpInstance.put(URL_API_PRODUCT.updateProductVariant, {
+            promotionId,
+            variantIds,
+            status: "ACTIVE",
+        });
+        return response.data; // Trả về dữ liệu từ phản hồi
+    } catch (error) {
+        console.error("Error updating product variant:", error);
+        throw error; // Ném lỗi để có thể xử lý ở nơi gọi hàm
+    }
+};
 
 
 

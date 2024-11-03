@@ -43,3 +43,6 @@ export const findPromotionsByDate = async (startDate, endDate, page = 0, size = 
     });
     return response.data;
 }
+import axios from 'axios';
+
+

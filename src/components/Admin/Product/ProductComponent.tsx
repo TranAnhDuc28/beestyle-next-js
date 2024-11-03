@@ -1,6 +1,5 @@
 "use client"
 import {Flex, Layout, TableColumnsType, Tag, Tooltip, Typography, Image, Row, Col,} from "antd";
-import {SearchProps} from "antd/lib/input";
 import TablePagination from "@/components/Table/TablePagination";
 import HeaderProduct from "@/components/Admin/Product/HeaderProduct";
 import useAppNotifications from "@/hooks/useAppNotifications";
@@ -9,8 +8,6 @@ import ProductFilter from "@/components/Admin/Product/ProductFilter";
 import {EditTwoTone, EyeTwoTone} from "@ant-design/icons";
 import {useSearchParams} from "next/navigation";
 import CreateProduct from "@/components/Admin/Product/CreateProduct";
-import {IProduct} from "@/types/IProduct";
-import {STATUS} from "@/constants/Status";
 import useSWR from "swr";
 import {getProducts, URL_API_PRODUCT} from "@/services/ProductService";
 import {GENDER_PRODUCT} from "@/constants/GenderProduct";
@@ -18,6 +15,7 @@ import dayjs from "dayjs";
 import {IProductVariant} from "@/types/IProductVariant";
 import {STATUS_PRODUCT} from "@/constants/StatusProduct";
 import Link from "next/link";
+import UpdateProduct from "@/components/Admin/Product/UpdateProduct";
 
 const {Content} = Layout;
 
@@ -43,13 +41,14 @@ const ProductComponent: React.FC = () => {
                 return (
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <Image width={35} height={35}
-                               src={value ? value : "/no-img550x750.png"}
+                               src={value ? value : "/no-img.png"}
                                fallback="/no-img.png"
                         />
                     </div>
                 );
             }
         },
+        {title: 'Mã', dataIndex: 'productCode', key: 'productCode', width: 100},
         {title: 'Tên sản phẩm', dataIndex: 'productName', key: 'productName', width: 200},
         {
             title: 'Giới tính', dataIndex: 'genderProduct', key: 'genderProduct', width: 90,
@@ -63,11 +62,11 @@ const ProductComponent: React.FC = () => {
         {title: 'Thương hiệu', dataIndex: 'brandName', key: 'brandName', width: 200},
         {title: 'Chất liệu', dataIndex: 'materialName', key: 'materialName', width: 120},
         {
-            title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt',
+            title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt', width: 170,
             render: (value) => dayjs(value).format('YYYY-MM-DD HH:mm:ss')
         },
         {
-            title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt',
+            title: 'Ngày sửa', dataIndex: 'updatedAt', key: 'updatedAt', width: 170,
             render: (value) => dayjs(value).format('YYYY-MM-DD HH:mm:ss')
         },
         {
@@ -99,7 +98,7 @@ const ProductComponent: React.FC = () => {
                             </Tooltip>
                         </Col>
                         <Col>
-                            <Tooltip placement="top" title="Chỉnh sửa">
+                            <Tooltip placement="top" title="Cập nhật">
                                 <EditTwoTone
                                     twoToneColor={"#f57800"}
                                     style={{
@@ -163,6 +162,14 @@ const ProductComponent: React.FC = () => {
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 mutate={mutate}
+            />
+
+            <UpdateProduct
+                isUpdateModalOpen={isUpdateModalOpen}
+                setIsUpdateModalOpen={setIsUpdateModalOpen}
+                mutate={mutate}
+                dataUpdate={dataUpdate}
+                setDataUpdate={setDataUpdate}
             />
         </>
 

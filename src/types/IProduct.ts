@@ -21,6 +21,7 @@ export interface IProduct {
 }
 
 export interface IProductCreate {
+    productCode?: string;
     productName: string;
     categoryId?: number;
     gender?: string;

@@ -2,8 +2,9 @@ import {STATUS} from "@/constants/Status";
 import {App, Form, Input, Modal, notification, Radio, Select} from "antd";
 import {memo, useEffect} from "react";
 import {IBrand} from "@/types/IBrand";
-import {updateBrand} from "@/services/BrandService";
+import {updateBrand, URL_API_BRAND} from "@/services/BrandService";
 import useAppNotifications from "@/hooks/useAppNotifications";
+import {mutate} from "swr"
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -15,7 +16,7 @@ interface IProps {
 
 const UpdateBrand = (props: IProps) => {
     const {showNotification} = useAppNotifications();
-    const {isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate} = props;
+    const {isUpdateModalOpen, setIsUpdateModalOpen, mutate: mutateBrand, dataUpdate, setDataUpdate} = props;
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -42,11 +43,12 @@ const UpdateBrand = (props: IProps) => {
                     id: dataUpdate.id
                 }
                 const result = await updateBrand(data);
-                mutate();
+                mutateBrand();
                 if (result.data) {
                     handleCloseUpdateModal();
                     showNotification("success", {message: result.message});
                 }
+                await mutate(URL_API_BRAND.option, undefined, {revalidate: true});
             }
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;

@@ -6,8 +6,8 @@ export interface IVoucher {
     discountValue: number;
     maxDiscount: number;
     minOrderValue: number;
-    startDate: string;
-    endDate: string;
+    startDate: Date;
+    endDate: Date;
     usageLimit: number;
     usagePerUser: number;
     status: number;

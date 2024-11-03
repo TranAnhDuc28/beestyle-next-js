@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {Select, Tag} from 'antd';
+import {Badge, Select, Tag} from 'antd';
 import type {SelectProps} from 'antd';
 import {CloseOutlined} from "@ant-design/icons";
 
@@ -17,14 +17,12 @@ const getTagRender = (dataMap: Map<number, string | undefined>): TagRender => {
 
         return (
             <Tag
-                closeIcon={<CloseOutlined style={{color: "black"}}/>}
-                color={color ?? "default"}
                 onMouseDown={onPreventMouseDown}
                 closable={closable}
                 onClose={onClose}
                 className="custom-tag-select"
             >
-                {label}
+                <Tag className="custom-tag" color={color ?? "default"}/> {label}
             </Tag>
         );
     }
@@ -59,7 +57,7 @@ const ColorOptionSelect = (props: IProps) => {
     const handleChange = (selectedValues: number[]) => {
         const selectedOptions = selectedValues.map(value => {
             const option = data.find(option => option.value === value);
-            return { value, label: option?.label?.toString() || '' };
+            return {value, label: option?.label?.toString() || ''};
         });
         onChange && onChange(selectedOptions);
     }
@@ -78,7 +76,9 @@ const ColorOptionSelect = (props: IProps) => {
             tagRender={memoizedTagRender}
             options={data}
             optionRender={(option) => (
-                <Tag className="custom-tag" color={option.data.code}>{option.data.label}</Tag>
+                <div className="flex align-middle">
+                    <Tag className="custom-tag" color={option.data.code}/> {option.data.label}
+                </div>
             )}
             filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())

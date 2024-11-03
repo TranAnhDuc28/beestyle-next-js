@@ -164,7 +164,17 @@ const UpdateVoucher = (props: IProps) => {
                                     <Form.Item
                                         name="discountValue"
                                         noStyle
-                                        rules={[{required: true, message: "Giá trị giảm là bắt buộc!"}]}
+                                        rules={[
+                                            { required: true, message: "Giá trị giảm là bắt buộc!" },
+                                            ({ getFieldValue }) => ({
+                                                validator(_, value) {
+                                                    if (getFieldValue("discountType") === "PERCENTAGE" && value > 100) {
+                                                        return Promise.reject(new Error("Giá trị giảm không được vượt quá 100%"));
+                                                    }
+                                                    return Promise.resolve();
+                                                },
+                                            }),
+                                        ]}
                                     >
                                         <InputNumber style={{width: '70%'}} placeholder="Giá trị giảm"/>
                                     </Form.Item>
