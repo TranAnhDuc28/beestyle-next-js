@@ -1,17 +1,7 @@
-@import 'user/styles/animate.css';
-@import 'user/styles/flex-slider.min.css';
-@import 'user/styles/jquery-ui.css';
-@import 'user/styles/magnific-popup.css';
-@import 'user/styles/magnific-popup.min.css';
-@import 'user/styles/niceselect.css';
-@import 'user/styles/nice-select.css';
-@import 'user/styles/owl-carousel.css';
-@import 'user/styles/slicknav.min.css';
-
-
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 @import 'user/styles/responsive.css';
 @import 'user/styles/globals.css';
 @import 'user/styles/reset.css';
 @import 'user/styles/color.css';
 @import 'bootstrap/dist/css/bootstrap.min.css';
-@import 'font-awesome/css/font-awesome.min.css';
+

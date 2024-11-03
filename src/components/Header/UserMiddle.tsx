@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import {TfiBag, TfiSearch} from "react-icons/tfi";
+import {TfiSearch} from "react-icons/tfi";
 import React from "react";
 import {FaCartShopping, FaCircleUser} from "react-icons/fa6";
 import {FaRegHeart} from "react-icons/fa";
@@ -13,19 +13,19 @@ export default function MiddleBar() {
                 <div className="row">
                     <div className="col-lg-2 col-md-2 col-12">
                         <div className="logo">
-                            <Link href="/">
+                            <Link href={"/home"}>
                                 <Image
                                     src="/logo.png"
-                                    alt="logo"
+                                    alt="Logo"
                                     width={135}
-                                    height={50} // Set appropriate height
+                                    height={50}
                                 />
                             </Link>
                         </div>
                         <div className="search-top">
                             <div className="top-search">
-                                <Link href="#0">
-                                    <i className="ti-search"></i>
+                                <Link href="#">
+                                    <button value="search" type="submit"><TfiSearch/></button>
                                 </Link>
                             </div>
                             <div className="search-top">
@@ -42,7 +42,7 @@ export default function MiddleBar() {
                             <div className="search-bar">
                                 <Form layout="inline">
                                     <Form.Item style={{marginRight: 0}}>
-                                        <Input placeholder="Search products here....."/>
+                                        <Input placeholder="Tìm kiếm sản phẩm tại đây....."/>
                                     </Form.Item>
                                     <Form.Item style={{marginRight: 0}}>
                                         <Button icon={<TfiSearch/>} className="btnn"/>
@@ -64,33 +64,45 @@ export default function MiddleBar() {
                                     className="total-count">2</span></Link>
                                 <div className="shopping-item">
                                     <div className="dropdown-cart-header">
-                                        <span>2 Items</span>
-                                        <Link href="#">View Cart</Link>
+                                        <span>2 sản phẩm</span>
+                                        <Link href="#" style={{textDecoration: 'none'}}>Xem giỏ hàng</Link>
                                     </div>
                                     <ul className="shopping-list">
                                         <li>
                                             <Link href="#" className="remove" title="Remove this item"><i
                                                 className="fa fa-remove"></i></Link>
-                                            <Link className="cart-img" href="#"><img
-                                                src="https://via.placeholder.com/70x70" alt="#"/></Link>
+                                            <Link className="cart-img" href="#">
+                                                <Image
+                                                    src="https://via.placeholder.com/70x70"
+                                                    alt="IMG"
+                                                    width={70}
+                                                    height={70}
+                                                />
+                                            </Link>
                                             <h4><Link href="#">Woman Ring</Link></h4>
-                                            <p className="quantity">1x - <span className="amount">$99.00</span></p>
+                                            <p className="quantity">1x - <span className="amount">350.000 VND</span></p>
                                         </li>
                                         <li>
                                             <Link href="#" className="remove" title="Remove this item"><i
                                                 className="fa fa-remove"></i></Link>
-                                            <Link className="cart-img" href="#"><img
-                                                src="https://via.placeholder.com/70x70" alt="#"/></Link>
+                                            <Link className="cart-img" href="#">
+                                                <Image
+                                                    src="https://via.placeholder.com/70x70"
+                                                    alt="IMG"
+                                                    width={70}
+                                                    height={70}
+                                                />
+                                            </Link>
                                             <h4><Link href="#">Woman Necklace</Link></h4>
-                                            <p className="quantity">1x - <span className="amount">$35.00</span></p>
+                                            <p className="quantity">1x - <span className="amount">400.000 VND</span></p>
                                         </li>
                                     </ul>
                                     <div className="bottom">
                                         <div className="total">
-                                            <span>Total</span>
-                                            <span className="total-amount">$134.00</span>
+                                            <span>Tổng</span>
+                                            <span className="total-amount">750.000 VND</span>
                                         </div>
-                                        <Link href="checkout.html" className="btn animate">Checkout</Link>
+                                        <Link href={"/checkout"} className="btn animate">Thanh toán</Link>
                                     </div>
                                 </div>
                             </div>

@@ -1,6 +1,5 @@
-/* Animate CSS*/
+@charset "UTF-8"; /* Animate CSS*/
 
-@charset "UTF-8";
 .animated {
     -webkit-animation-duration: 1s;
     animation-duration: 1s;
@@ -20,7 +19,7 @@
 
 .pulse {
     animation-name: pulse_animation;
-    animation-duration: 14s!important;
+    animation-duration: 14s !important;
     transform-origin: 70% 70%;
     animation-iteration-count: infinite;
     animation-timing-function: linear
@@ -1626,9 +1625,9 @@
 }
 
 .flipInX {
-    -webkit-backface-visibility: visible!important;
-    -ms-backface-visibility: visible!important;
-    backface-visibility: visible!important;
+    -webkit-backface-visibility: visible !important;
+    -ms-backface-visibility: visible !important;
+    backface-visibility: visible !important;
     -webkit-animation-name: flipInX;
     animation-name: flipInX
 }
@@ -1680,9 +1679,9 @@
 }
 
 .flipInY {
-    -webkit-backface-visibility: visible!important;
-    -ms-backface-visibility: visible!important;
-    backface-visibility: visible!important;
+    -webkit-backface-visibility: visible !important;
+    -ms-backface-visibility: visible !important;
+    backface-visibility: visible !important;
     -webkit-animation-name: flipInY;
     animation-name: flipInY
 }
@@ -1718,9 +1717,9 @@
 .flipOutX {
     -webkit-animation-name: flipOutX;
     animation-name: flipOutX;
-    -webkit-backface-visibility: visible!important;
-    -ms-backface-visibility: visible!important;
-    backface-visibility: visible!important
+    -webkit-backface-visibility: visible !important;
+    -ms-backface-visibility: visible !important;
+    backface-visibility: visible !important
 }
 
 @-webkit-keyframes flipOutY {
@@ -1752,9 +1751,9 @@
 }
 
 .flipOutY {
-    -webkit-backface-visibility: visible!important;
-    -ms-backface-visibility: visible!important;
-    backface-visibility: visible!important;
+    -webkit-backface-visibility: visible !important;
+    -ms-backface-visibility: visible !important;
+    backface-visibility: visible !important;
     -webkit-animation-name: flipOutY;
     animation-name: flipOutY
 }

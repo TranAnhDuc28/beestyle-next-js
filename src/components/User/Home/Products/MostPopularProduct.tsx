@@ -1,3 +1,6 @@
+import Image from "next/image";
+import Link from "next/link";
+
 function MostPopularProduct() {
     return (
         <div className="product-area most-popular section">
@@ -14,26 +17,27 @@ function MostPopularProduct() {
                         <div className="owl-carousel popular-slider">
                             <div className="single-product">
                                 <div className="product-img">
-                                    <a href="product-details.html">
-                                        <img className="default-img" src="/img550x750.png" alt="#"/>
-                                        <img className="hover-img" src="/img550x750.png"
-                                             alt="#"/>
+                                    <Link href="#">
+                                        <Image width={550} height={750} className="default-img" src="/img550x750.png"
+                                               alt="#"/>
+                                        <Image width={550} height={750} className="hover-img" src="/img550x750.png"
+                                               alt="#"/>
                                         <span className="out-of-stock">Hot</span>
-                                    </a>
+                                    </Link>
                                     <div className="button-head">
                                         <div className="product-action">
-                                            <a data-toggle="modal" data-target="#exampleModal" title="Quick View"
-                                               href="#"><i className=" ti-eye"></i><span>Quick Shop</span></a>
-                                            <a title="Wishlist" href="#"><i className=" ti-heart "></i><span>Add to Wishlist</span></a>
-                                            <a title="Compare" href="#"><i className="ti-bar-chart-alt"></i><span>Add to Compare</span></a>
+                                            <Link data-toggle="modal" data-target="#exampleModal" title="Quick View"
+                                                  href="#"><i className=" ti-eye"></i><span>Quick Shop</span></Link>
+                                            <Link title="Wishlist" href="#"><i className=" ti-heart "></i><span>Add to Wishlist</span></Link>
+                                            <Link title="Compare" href="#"><i className="ti-bar-chart-alt"></i><span>Add to Compare</span></Link>
                                         </div>
                                         <div className="product-action-2">
-                                            <a title="Add to cart" href="#">Add to cart</a>
+                                            <Link title="Add to cart" href="#">Add to cart</Link>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="product-content">
-                                    <h3><a href="product-details.html">Black Sunglass For Women</a></h3>
+                                    <h3><Link href="#">Black Sunglass For Women</Link></h3>
                                     <div className="product-price">
                                         <span className="old">$60.00</span>
                                         <span>$50.00</span>
@@ -42,24 +46,26 @@ function MostPopularProduct() {
                             </div>
                             <div className="single-product">
                                 <div className="product-img">
-                                    <a href="product-details.html">
-                                        <img className="default-img" src="/img550x750.png" alt="#"/>
-                                        <img className="hover-img" src="/img550x750.png" alt="#"/>
-                                    </a>
+                                    <Link href="#">
+                                        <Image width={550} height={750} className="default-img" src="/img550x750.png"
+                                               alt="#"/>
+                                        <Image width={550} height={750} className="hover-img" src="/img550x750.png"
+                                               alt="#"/>
+                                    </Link>
                                     <div className="button-head">
                                         <div className="product-action">
-                                            <a data-toggle="modal" data-target="#exampleModal" title="Quick View"
-                                               href="#"><i className=" ti-eye"></i><span>Quick Shop</span></a>
-                                            <a title="Wishlist" href="#"><i className=" ti-heart "></i><span>Add to Wishlist</span></a>
-                                            <a title="Compare" href="#"><i className="ti-bar-chart-alt"></i><span>Add to Compare</span></a>
+                                            <Link data-toggle="modal" data-target="#exampleModal" title="Quick View"
+                                                  href="#"><i className=" ti-eye"></i><span>Quick Shop</span></Link>
+                                            <Link title="Wishlist" href="#"><i className=" ti-heart "></i><span>Add to Wishlist</span></Link>
+                                            <Link title="Compare" href="#"><i className="ti-bar-chart-alt"></i><span>Add to Compare</span></Link>
                                         </div>
                                         <div className="product-action-2">
-                                            <a title="Add to cart" href="#">Add to cart</a>
+                                            <Link title="Add to cart" href="#">Add to cart</Link>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="product-content">
-                                    <h3><a href="product-details.html">Women Hot Collection</a></h3>
+                                    <h3><Link href="#">Women Hot Collection</Link></h3>
                                     <div className="product-price">
                                         <span>$50.00</span>
                                     </div>
@@ -67,25 +73,27 @@ function MostPopularProduct() {
                             </div>
                             <div className="single-product">
                                 <div className="product-img">
-                                    <a href="product-details.html">
-                                        <img className="default-img" src="/img550x750.png" alt="#"/>
-                                        <img className="hover-img" src="/img550x750.png" alt="#"/>
+                                    <Link href="#">
+                                        <Image width={550} height={750} className="default-img" src="/img550x750.png"
+                                               alt="#"/>
+                                        <Image width={550} height={750} className="hover-img" src="/img550x750.png"
+                                               alt="#"/>
                                         <span className="new">New</span>
-                                    </a>
+                                    </Link>
                                     <div className="button-head">
                                         <div className="product-action">
-                                            <a data-toggle="modal" data-target="#exampleModal" title="Quick View"
-                                               href="#"><i className=" ti-eye"></i><span>Quick Shop</span></a>
-                                            <a title="Wishlist" href="#"><i className=" ti-heart "></i><span>Add to Wishlist</span></a>
-                                            <a title="Compare" href="#"><i className="ti-bar-chart-alt"></i><span>Add to Compare</span></a>
+                                            <Link data-toggle="modal" data-target="#exampleModal" title="Quick View"
+                                                  href="#"><i className=" ti-eye"></i><span>Quick Shop</span></Link>
+                                            <Link title="Wishlist" href="#"><i className=" ti-heart "></i><span>Add to Wishlist</span></Link>
+                                            <Link title="Compare" href="#"><i className="ti-bar-chart-alt"></i><span>Add to Compare</span></Link>
                                         </div>
                                         <div className="product-action-2">
-                                            <a title="Add to cart" href="#">Add to cart</a>
+                                            <Link title="Add to cart" href="#">Add to cart</Link>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="product-content">
-                                    <h3><a href="product-details.html">Awesome Pink Show</a></h3>
+                                    <h3><Link href="#">Awesome Pink Show</Link></h3>
                                     <div className="product-price">
                                         <span>$50.00</span>
                                     </div>
@@ -93,24 +101,26 @@ function MostPopularProduct() {
                             </div>
                             <div className="single-product">
                                 <div className="product-img">
-                                    <a href="product-details.html">
-                                        <img className="default-img" src="/img550x750.png" alt="#"/>
-                                        <img className="hover-img" src="/img550x750.png" alt="#"/>
-                                    </a>
+                                    <Link href="#">
+                                        <Image width={550} height={750} className="default-img" src="/img550x750.png"
+                                               alt="#"/>
+                                        <Image width={550} height={750} className="hover-img" src="/img550x750.png"
+                                               alt="#"/>
+                                    </Link>
                                     <div className="button-head">
                                         <div className="product-action">
-                                            <a data-toggle="modal" data-target="#exampleModal" title="Quick View"
-                                               href="#"><i className=" ti-eye"></i><span>Quick Shop</span></a>
-                                            <a title="Wishlist" href="#"><i className=" ti-heart "></i><span>Add to Wishlist</span></a>
-                                            <a title="Compare" href="#"><i className="ti-bar-chart-alt"></i><span>Add to Compare</span></a>
+                                            <Link data-toggle="modal" data-target="#exampleModal" title="Quick View"
+                                                  href="#"><i className=" ti-eye"></i><span>Quick Shop</span></Link>
+                                            <Link title="Wishlist" href="#"><i className=" ti-heart "></i><span>Add to Wishlist</span></Link>
+                                            <Link title="Compare" href="#"><i className="ti-bar-chart-alt"></i><span>Add to Compare</span></Link>
                                         </div>
                                         <div className="product-action-2">
-                                            <a title="Add to cart" href="#">Add to cart</a>
+                                            <Link title="Add to cart" href="#">Add to cart</Link>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="product-content">
-                                    <h3><a href="product-details.html">Awesome Bags Collection</a></h3>
+                                    <h3><Link href="#">Awesome Bags Collection</Link></h3>
                                     <div className="product-price">
                                         <span>$50.00</span>
                                     </div>
@@ -123,4 +133,5 @@ function MostPopularProduct() {
         </div>
     );
 }
+
 export default MostPopularProduct;

@@ -1,37 +1,20 @@
 "use client"
-import { Layout } from 'antd';
+import {Layout} from 'antd';
 import UserHeader from '../Header/UserHeader';
-import Slider from '@/components/User/Home/Slider/UserSlider';
-import ProductArea from '@/components/User/Home/Products/ProductArea';
-import MediumBanner from '@/components/User/Home/Slider/MidiumBanner';
-import ShopHome from '@/components/User/Home/Products/ShopHome';
-import CowndownArea from '@/components/User/Home/Slider/CownDown';
-import ShopBlog from '@/components/User/Home/Products/ShopBlog';
-import ShopServices from '../Footer/ShopServices';
-import Newsletter from '../Footer/Newsletter';
 import UserFooter from '../Footer/UserFooter';
 import React from "react";
-import MostPopularProduct from "@/components/User/Home/Products/MostPopularProduct";
 
-const { Content } = Layout;
+const {Content} = Layout;
 
-const UserLayout: React.FC = () => {
+const UserLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
 
     return (
         <Layout>
-            <UserHeader />
-            <Slider />
+            <UserHeader/>
             <Content>
-                <ProductArea />
-                <MediumBanner />
-                <MostPopularProduct />
-                <ShopHome />
-                <CowndownArea />
-                <ShopBlog />
+                {children}
             </Content>
-            <ShopServices />
-            <Newsletter />
-            <UserFooter />
+            <UserFooter/>
         </Layout>
     );
 };
