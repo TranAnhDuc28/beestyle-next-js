@@ -20,7 +20,7 @@ import useAppNotifications from "../../../hooks/useAppNotifications";
 import {IPromotion} from "../../../types/IPromotion";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import useSWR from "swr";
-import {getProductDetails, getProducts, updateProductVariant, URL_API_PRODUCT} from "../../../services/ProductService";
+import {getProducts, URL_API_PRODUCT} from "../../../services/ProductService";
 import {IProduct} from "../../../types/IProduct";
 import {STATUS} from "../../../constants/Status";
 import TablePagination from "../../Table/TablePagination";
@@ -29,7 +29,10 @@ import {DISCOUNT_TYPE} from "../../../constants/DiscountType";
 import {IProductVariant} from "../../../types/IProductVariant";
 import HeaderProduct from "../Product/HeaderProduct";
 import Search from "antd/es/input/Search";
+import dayjs from "dayjs";
+import {getProductDetails, updateProductVariant, URL_API_PRODUCT_VARIANT} from "../../../services/ProductVariantService";
 
+type SearchProps = GetProps<typeof Input.Search>;
 const {Option} = Select;
 
 interface IProps {
@@ -42,8 +45,6 @@ const CreatePromotion = (props: IProps) => {
     const {showNotification} = useAppNotifications();
     const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
-    const searchParams = useSearchParams();
-    const params = new URLSearchParams(searchParams);
 
     const [products, setProducts] = useState<IProduct[]>([]);
     const [selectedProducts, setSelectedProducts] = useState<IProduct[]>([]);
@@ -89,7 +90,7 @@ const CreatePromotion = (props: IProps) => {
                     colorName: item[6],
                     sizeName: item[7],
                     originalPrice: item[8],
-                    createdAt: item[10],
+                    promotionName: item[11],
                 })) : [];
             } catch (error) {
                 console.error("Error fetching product details:", error);
@@ -108,7 +109,7 @@ const CreatePromotion = (props: IProps) => {
         },
     };
     const productColumns = [
-        { title: 'ID', dataIndex: 'id', key: 'id' },
+        // { title: 'ID', dataIndex: 'id', key: 'id' },
         {title: 'Tên sản phẩm', dataIndex: 'productName', key: 'productName'},
         {
             title: 'Giới tính', dataIndex: 'genderProduct', key: 'genderProduct',
@@ -147,11 +148,12 @@ const CreatePromotion = (props: IProps) => {
         {title: "SKU", dataIndex: "sku", key: "sku"},
         {title: "Tên sản phẩm", dataIndex: "productVariantName", key: "productVariantName"},
         {title: 'Thương hiệu', dataIndex: 'brandName', key: 'brandName',},
-        {title: 'Chất liệu', dataIndex: 'materialName', key: 'materialName', width: 120},
+        {title: 'Chất liệu', dataIndex: 'materialName', key: 'materialName'},
         {title: "Màu sắc", dataIndex: "colorName", key: "colorName"},
         {title: "Kích thước", dataIndex: "sizeName", key: "sizeName"},
-        {title: "Giá gốc", dataIndex: "originalPrice", key: "originalPrice"},
-        {title: "Số lượng", dataIndex: "quantityInStock", key: "quantityInStock"},
+        {title: "Đang áp dụng", dataIndex: "promotionName", key: "promotionName"},
+        // {title: "Giá gốc", dataIndex: "originalPrice", key: "originalPrice"},
+        // {title: "Số lượng", dataIndex: "quantityInStock", key: "quantityInStock"},
     ];
 
     // Thiết lập rowSelection
@@ -166,7 +168,7 @@ const CreatePromotion = (props: IProps) => {
             if (result.data) {
                 const newPromotionId = result.data.id;
 
-                // Cập nhật ID của đợt giảm giá mới cho sản phẩm chi tiết đã chọn
+
                 const updatePromises = selectedDetailProducts.map(async (detailId) => {
                     return updateProductVariant(newPromotionId, [detailId]);
                 });
@@ -174,8 +176,8 @@ const CreatePromotion = (props: IProps) => {
                 // Chờ tất cả các cập nhật hoàn tất
                 await Promise.all(updatePromises);
 
-                mutate(); // Cập nhật lại danh sách sản phẩm sau khi thực hiện các thay đổi
-                handleCloseCreateModal(); // Đóng modal tạo mới
+                mutate();
+                handleCloseCreateModal();
                 showNotification("success", { message: result.message });
             }
 
@@ -187,20 +189,40 @@ const CreatePromotion = (props: IProps) => {
             });
         }
     };
+    const searchParams = useSearchParams();
     const pathname = usePathname();
-    const { replace } = useRouter();
-    type SearchProps = GetProps<typeof Input.Search>;
-    const onSearch: SearchProps['onSearch'] =
-        (value, _e, info) => {
-            if (info?.source === "input" && value) {
-                params.set("keyword", value);
-                params.set("page", "1");
-                replace(`${pathname}?${params.toString()}`);
-            } else {
-                params.delete("keyword")
-                replace(`${pathname}?${params.toString()}`);
-            }
+    const {replace} = useRouter();
+    const [filteredProducts, setFilteredProducts] = useState(products);
+    const params = new URLSearchParams(searchParams);
+    const [searchKeyword, setSearchKeyword] = useState("");
+
+    const onSearch: SearchProps['onSearch'] = (value, _e, info) => {
+        console.log("Searching:", value); // Kiểm tra giá trị tìm kiếm
+        if (info?.source === "input" && value) {
+            setSearchKeyword(value);
+            params.set("keyword", value);
+            params.set("page", "1");
+            replace(`${pathname}?${params.toString()}`);
+        } else {
+            console.log("Clearing search keyword"); // Kiểm tra khi xóa từ khóa
+            setSearchKeyword("");
+            params.delete("keyword");
+            replace(`${pathname}?${params.toString()}`);
         }
+    };
+
+    useEffect(() => {
+        console.log("Current search keyword:", searchKeyword); // Kiểm tra từ khóa hiện tại
+        if (searchKeyword) {
+            setFilteredProducts(products.filter(product =>
+                product.productName?.toLowerCase().includes(searchKeyword.toLowerCase())
+            ));
+        } else {
+            setFilteredProducts(products);
+        }
+    }, [products, searchKeyword]);
+
+
 
 
     return (
@@ -219,7 +241,7 @@ const CreatePromotion = (props: IProps) => {
             >
                 <Row gutter={16}>
                     {/* Form thêm mới */}
-                    <Col span={12}>
+                    <Col span={10}>
                         <Form
                             form={form}
                             name="createPromotion"
@@ -277,23 +299,39 @@ const CreatePromotion = (props: IProps) => {
                                 name="startDate"
                                 label="Ngày bắt đầu"
                                 rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
+
                             >
                                 <DatePicker
                                     style={{ width: '100%' }}
                                     showTime
-                                    format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                                    format="YYYY-MM-DD HH:mm:ss"
+                                    disabledDate={current => current && current < dayjs().startOf('day')}
                                 />
                             </Form.Item>
 
                             <Form.Item
                                 name="endDate"
                                 label="Ngày kết thúc"
-                                rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc!" }]}
+                                dependencies={['startDate']}
+                                rules={[
+                                    { required: true, message: "Vui lòng chọn ngày kết thúc!" },
+                                    ({ getFieldValue }) => ({
+                                        validator(_, value) {
+                                            const startDate = getFieldValue("startDate");
+                                            if (!value || !startDate || value.isAfter(startDate)) {
+                                                return Promise.resolve();
+                                            }
+                                            return Promise.reject(
+                                                new Error("Ngày kết thúc phải lớn hơn ngày bắt đầu!")
+                                            );
+                                        },
+                                    }),
+                                ]}
                             >
                                 <DatePicker
                                     style={{ width: '100%' }}
                                     showTime
-                                    format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                                    format="YYYY-MM-DD HH:mm:ss"
                                 />
                             </Form.Item>
 
@@ -304,7 +342,7 @@ const CreatePromotion = (props: IProps) => {
                     </Col>
 
                     {/* Danh Sách Sản Phẩm */}
-                    <Col span={12}>
+                    <Col span={14}>
                         <div>
                             <h2 style={{ fontWeight: 'bold', marginBottom: '16px' }}>Danh sách sản phẩm</h2>
                             <div className="flex-grow max-w-96">
@@ -318,8 +356,9 @@ const CreatePromotion = (props: IProps) => {
 
                             <Table
                                 columns={productColumns}
-                                dataSource={products}
+                                dataSource={filteredProducts}
                                 rowKey="id"
+                                pagination={{ pageSize: 10 }}
                                 rowSelection={rowSelection}
                             />
                         </div>

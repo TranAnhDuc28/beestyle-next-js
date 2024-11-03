@@ -7,6 +7,7 @@ import {EuroOutlined, PercentageOutlined} from "@ant-design/icons"; // Thay th�
 import useAppNotifications from "../../../hooks/useAppNotifications";
 import {STATUS} from "@/constants/Status";
 import {DISCOUNTTYPE} from "@/constants/DiscountType";
+import {DISCOUNT_STATUS} from "../../../constants/DiscountStastus";
 const { Option } = Select;
 
 
@@ -218,7 +219,8 @@ const UpdateVoucher = (props: IProps) => {
                                 <DatePicker
                                     style={{ width: '100%' }}
                                     showTime
-                                    format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                                    format="YYYY-MM-DD HH:mm:ss"
+                                    disabledDate={current => current && current < dayjs().startOf('day')}
                                 />
                             </Form.Item>
 
@@ -228,12 +230,26 @@ const UpdateVoucher = (props: IProps) => {
                             <Form.Item
                                 name="endDate"
                                 label="Ngày kết thúc"
-                                rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
+                                dependencies={['startDate']}
+                                rules={[
+                                    { required: true, message: "Vui lòng chọn ngày kết thúc!" },
+                                    ({ getFieldValue }) => ({
+                                        validator(_, value) {
+                                            const startDate = getFieldValue("startDate");
+                                            if (!value || !startDate || value.isAfter(startDate)) {
+                                                return Promise.resolve();
+                                            }
+                                            return Promise.reject(
+                                                new Error("Ngày kết thúc phải lớn hơn ngày bắt đầu!")
+                                            );
+                                        },
+                                    }),
+                                ]}
                             >
                                 <DatePicker
                                     style={{ width: '100%' }}
                                     showTime
-                                    format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                                    format="YYYY-MM-DD HH:mm:ss"
                                 />
                             </Form.Item>
 
@@ -263,32 +279,32 @@ const UpdateVoucher = (props: IProps) => {
                             </Form.Item>
                         </Col>
                     </Row>
-                    <Row gutter={16}>
+                    {/*<Row gutter={16}>*/}
 
-                        <Col span={12}>
-                            <Form.Item
-                                name="usagePerUser"
-                                label="Số lần sử dụng mỗi người"
-                                rules={[{required: true, message: "Vui lòng nhập số lần sử dụng mỗi người!"}]}
-                            >
-                                <InputNumber style={{width: '100%'}}/>
-                            </Form.Item>
-                        </Col>
+                    {/*    <Col span={12}>*/}
+                    {/*        <Form.Item*/}
+                    {/*            name="usagePerUser"*/}
+                    {/*            label="Số lần sử dụng mỗi người"*/}
+                    {/*            rules={[{required: true, message: "Vui lòng nhập số lần sử dụng mỗi người!"}]}*/}
+                    {/*        >*/}
+                    {/*            <InputNumber style={{width: '100%'}}/>*/}
+                    {/*        </Form.Item>*/}
+                    {/*    </Col>*/}
 
 
-                        <Col span={12}>
-                            <Form.Item name="status" label="Trạng thái"
-                                       rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>
-                                <Select
-                                    options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
-                                        (key) => (
-                                            {value: key, label: STATUS[key]}
-                                        )
-                                    )}
-                                />
-                            </Form.Item>
-                        </Col>
-                    </Row>
+                    {/*    <Col span={12}>*/}
+                    {/*        <Form.Item name="status" label="Trạng thái"*/}
+                    {/*                   rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>*/}
+                    {/*            <Select*/}
+                    {/*                options={(Object.keys(DISCOUNT_STATUS) as Array<keyof typeof DISCOUNT_STATUS>).map(*/}
+                    {/*                    (key) => (*/}
+                    {/*                        {value: key, label: DISCOUNT_STATUS[key]}*/}
+                    {/*                    )*/}
+                    {/*                )}*/}
+                    {/*            />*/}
+                    {/*        </Form.Item>*/}
+                    {/*    </Col>*/}
+                    {/*</Row>*/}
 
                 </Form>
             </Modal>

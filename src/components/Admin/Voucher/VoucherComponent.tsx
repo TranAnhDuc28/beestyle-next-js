@@ -21,6 +21,7 @@ import CreateMaterial from "../Material/CreateMaterial";
 import UpdateMaterial from "../Material/UpdateMaterial";
 import {DISCOUNT_TYPE} from "../../../constants/DiscountType";
 import dayjs from "dayjs";
+import {DISCOUNT_STATUS} from "../../../constants/DiscountStastus";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -122,10 +123,21 @@ const VoucherComponent = () => {
         },
         {
             title: 'Trạng thái', dataIndex: 'status', key: 'status',
-            render(value: keyof typeof STATUS, record, index) {
-                let color: string = value === 'ACTIVE' ? 'green' : 'red';
+            render(value: keyof typeof DISCOUNT_STATUS, record, index) {
+                let color: string;
+                console.log(value)
+                if (value === 'UPCOMING') {
+                    color = 'yellow';
+                } else if (value === 'ONGOING') {
+                    color = 'green';
+                } else if (value === 'ENDED') {
+                    color = 'red';
+                }
+
                 return (
-                    <Tag color={color} key={record.id}>{STATUS[value]}</Tag>
+                    <div style={{ textAlign: 'center' }}>
+                        <Tag color={color} key={record.id}>{DISCOUNT_STATUS[value]}</Tag>
+                    </div>
                 );
             },
         },

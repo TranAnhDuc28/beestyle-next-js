@@ -18,6 +18,7 @@ import UpdatePromotion from "./UpdatePromotion";
 import {deletePromotion} from "../../../services/PromotionService";
 import VoucherFilter from "../Voucher/VoucherFilter";
 import PromotionFilter from "./PromotionFilter";
+import {DISCOUNT_STATUS} from "../../../constants/DiscountStastus";
 
 
 const {Content} = Layout;
@@ -128,10 +129,21 @@ const PromotionComponent: React.FC<any> = (props: any) => {
 
         {
             title: 'Trạng thái', dataIndex: 'status', key: 'status',
-            render(value: keyof typeof STATUS, record, index) {
-                let color: string = value === 'ACTIVE' ? 'green' : 'red';
+            render(value: keyof typeof DISCOUNT_STATUS, record, index) {
+                let color: string;
+
+                if (value === 'UPCOMING') {
+                    color = 'yellow';
+                } else if (value === 'ONGOING') {
+                    color = 'green';
+                } else if (value === 'ENDED') {
+                    color = 'red';
+                }
+
                 return (
-                    <Tag color={color} key={record.id}>{STATUS[value]}</Tag>
+                    <div style={{ textAlign: 'center' }}>
+                        <Tag color={color} key={record.id}>{DISCOUNT_STATUS[value]}</Tag>
+                    </div>
                 );
             },
         },
