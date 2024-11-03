@@ -46,7 +46,7 @@ const HeaderProduct = (props: IProps) => {
                     <Flex justify={'space-between'} align={'center'}>
                         <div className="flex-grow max-w-96">
                             <Search
-                                placeholder="Theo tên sản phẩm"
+                                placeholder="Theo mã, tên sản phẩm"
                                 allowClear
                                 onSearch={onSearch}
                                 style={{width: '100%'}}

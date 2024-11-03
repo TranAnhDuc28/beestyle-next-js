@@ -2,7 +2,7 @@ import httpInstance from "@/utils/HttpInstance";
 import {ICategory} from "@/types/ICategory";
 
 export const URL_API_CATEGORY = {
-    options: '/category',
+    option: '/admin/category/category-options',
     get: '/admin/category',
     create: '/admin/category/create',
     update: '/admin/category/update',

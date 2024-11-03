@@ -8,13 +8,21 @@ import {mutate} from "swr";
 
 interface IProps {
     isCreateModalOpen: boolean;
-    setIsCreateModalOpen: (value: boolean) => void;
-    mutate: any
+    setIsCreateModalOpen: (value: any) => void;
+    mutate?: any;
+    isLoadingSelectTreeCategory?: boolean;
+    formName?: string;
 }
 
 const CreateCategory = (props: IProps) => {
+    const {
+        isCreateModalOpen,
+        setIsCreateModalOpen,
+        mutate: mutateCategories,
+        isLoadingSelectTreeCategory,
+        formName = "createCategory"
+    } = props;
     const {showNotification} = useAppNotifications();
-    const {isCreateModalOpen, setIsCreateModalOpen, mutate: mutateCategories} = props;
     const [form] = Form.useForm();
     const {dataTreeSelectCategory, error, isLoading} = useTreeSelectCategory(isCreateModalOpen);
 
@@ -33,15 +41,15 @@ const CreateCategory = (props: IProps) => {
     };
 
     const onFinish = async (value: ICategory) => {
-        console.log('Success:', value);
+        console.log('Category create:', JSON.stringify(value, null, 2));
         try {
             const result = await createCategory(value);
-            mutateCategories();
+            if (mutateCategories) mutateCategories();
             if (result.data) {
                 handleCloseCreateModal();
                 showNotification("success", {message: result.message});
-                await mutate(URL_API_CATEGORY.options);
             }
+            if (isLoadingSelectTreeCategory) await mutate(URL_API_CATEGORY.option);
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {
@@ -62,7 +70,7 @@ const CreateCategory = (props: IProps) => {
                    onCancel={() => handleCloseCreateModal()}
                    okButtonProps={{style: {background: "#00b96b"}}}
             >
-                <Form form={form} name="createCategory" layout="vertical" onFinish={onFinish}>
+                <Form form={form} name={formName} layout="vertical" onFinish={onFinish}>
                     <Form.Item
                         name="categoryName" label="Tên danh mục"
                         rules={[{required: true, message: "Vui lòng nhập tên thương hiệu!"}]}

@@ -1,10 +1,11 @@
 import {STATUS} from "@/constants/Status";
-import {App, Form, Input, Modal, notification, Select} from "antd";
+import {Form, Input, Modal, Select} from "antd";
 import React, {memo, useEffect} from "react";
 import {IColor} from "@/types/IColor";
-import {updateColor} from "@/services/ColorService";
+import {updateColor, URL_API_COLOR} from "@/services/ColorService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import ColorPickerCustomize from "@/components/ColorPicker/ColorPickerCustomize";
+import {mutate} from "swr"
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -16,7 +17,7 @@ interface IProps {
 
 const UpdateColor = (props: IProps) => {
     const {showNotification} = useAppNotifications();
-    const {isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate} = props;
+    const {isUpdateModalOpen, setIsUpdateModalOpen, mutate: mutateColor, dataUpdate, setDataUpdate} = props;
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -44,11 +45,12 @@ const UpdateColor = (props: IProps) => {
                     id: dataUpdate.id
                 }
                 const result = await updateColor(data);
-                mutate();
+                mutateColor();
                 if (result.data) {
                     handleCloseUpdateModal();
                     showNotification("success", {message: result.message});
                 }
+                await mutate(URL_API_COLOR.option, undefined, {revalidate: true});
             }
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;

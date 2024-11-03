@@ -25,6 +25,7 @@ export const updateProduct = async (data: IProduct) => {
     const response = await httpInstance.put(`${URL_API_PRODUCT.update}/${data.id}`, data);
     return response.data;
 }
+
 export const getProductDetails = async (productId: number) => {
     try {
         const response = await httpInstance.get(`${URL_API_PRODUCT.productVariant}?productIds=${productId}`);
@@ -35,6 +36,7 @@ export const getProductDetails = async (productId: number) => {
         throw error;
     }
 };
+
 export const updateProductVariant = async (promotionId: number, variantIds: number[]) => {
     try {
         const response = await httpInstance.put(URL_API_PRODUCT.updateProductVariant, {
