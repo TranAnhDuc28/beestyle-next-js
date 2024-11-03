@@ -24,8 +24,6 @@ const MaterialComponent = () => {
 
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams);
-    // console.log(params.size);
-    // console.log(`${URL_API_MATERIAL.get}${params.size !== 0 ? `?${params.toString()}` : ''}`);
 
     const {data, error, isLoading, mutate} =
         useSWR(`${URL_API_MATERIAL.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
@@ -53,7 +51,7 @@ const MaterialComponent = () => {
             title: 'Hành động', align: 'center', render: (record) => {
                 return (
                     <>
-                        <Tooltip placement="top" title="Chỉnh sửa">
+                        <Tooltip placement="top" title="Cập nhật">
                             <EditTwoTone
                                 twoToneColor={"#f57800"}
                                 style={{
@@ -83,10 +81,7 @@ const MaterialComponent = () => {
     }, [error]);
 
     let result: any;
-    if (!isLoading && data) {
-        result = data?.data;
-        console.log(result);
-    }
+    if (!isLoading && data) result = data?.data;
 
     return (
         <>

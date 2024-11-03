@@ -62,7 +62,7 @@ const ColorComponent = () => {
             title: 'Hành động', align: 'center', render: (record) => {
                 return (
                     <>
-                        <Tooltip placement="top" title="Chỉnh sửa">
+                        <Tooltip placement="top" title="Cập nhật">
                             <EditTwoTone
                                 twoToneColor={"#f57800"}
                                 style={{

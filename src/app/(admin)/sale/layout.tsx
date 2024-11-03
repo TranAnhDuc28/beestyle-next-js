@@ -1,10 +1,10 @@
 "use client";
-import "../../css/user.css";
+import "../../../css/admin.css";
 import React, {ReactNode} from "react";
-import {App, FloatButton} from "antd";
 import {AntdRegistry} from "@ant-design/nextjs-registry";
+import {App} from "antd";
 
-export default function RootUserLayout({children,}: Readonly<{ children: ReactNode; }>) {
+export default function SaleLayout({children,}: Readonly<{ children: ReactNode; }>) {
     return (
         <>
             <AntdRegistry>
@@ -12,7 +12,6 @@ export default function RootUserLayout({children,}: Readonly<{ children: ReactNo
                     <main>{children}</main>
                 </App>
             </AntdRegistry>
-            <FloatButton.BackTop visibilityHeight={400}/>
         </>
     );
 }

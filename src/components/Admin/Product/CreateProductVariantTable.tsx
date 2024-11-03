@@ -25,7 +25,12 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
                                                                             }) => {
     const inputNode = inputType === 'number' ?
         (
-            <InputNumber style={{width: '100%'}} min={0}/>
+            <InputNumber<number>
+                min={0}
+                style={{width: '100%'}}
+                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as unknown as number}
+            />
         ) : (
             <Input placeholder="Mã hàng tự động"/>
         );
@@ -35,10 +40,7 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
             {editing ? (
                 <Form.Item name={dataIndex} style={{margin: 0}}
                            rules={[
-                               {
-                                   required: inputType === 'number' ? true : false,
-                                   message: `Vui lòng không bỏ trống ${title.toString().toLowerCase()}!`
-                               }
+                               {required: inputType === 'number' ? true : false, message: `Không bỏ trống!`}
                            ]}
                            initialValue={inputType === 'number' ? 0 : ''}
                 >
@@ -105,7 +107,7 @@ const CreateProductVariantTable: React.FC<IProps> = (props) => {
     };
 
     const columns = [
-        {title: 'Tên', dataIndex: 'productVariantName'},
+        {title: 'Tên', dataIndex: 'productVariantName', width: '15%'},
         {title: 'Mã hàng (sku)', dataIndex: 'sku', width: '20%', editable: true},
         {title: 'Giá vốn', dataIndex: 'originalPrice', width: '15%', editable: true},
         {title: 'Giá bán', dataIndex: 'salePrice', width: '15%', editable: true},

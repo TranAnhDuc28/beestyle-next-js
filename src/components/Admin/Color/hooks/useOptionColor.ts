@@ -15,7 +15,7 @@ const transformData = (data: IColor[]) => {
 
 const useOptionColor = (isLoadOption: boolean) => {
     const {data, error, isLoading} = useSWR(
-        isLoadOption ? `${URL_API_COLOR.get}?size=1000` : null,
+        isLoadOption ? `${URL_API_COLOR.option}` : null,
         getColors,
         {
             revalidateIfStale: false,
@@ -24,7 +24,7 @@ const useOptionColor = (isLoadOption: boolean) => {
         }
     );
 
-    const dataOptionColor = !isLoading && data?.data?.items ? transformData(data.data.items) : [];
+    const dataOptionColor = !isLoading && data?.data ? transformData(data.data) : [];
 
     return {dataOptionColor, error, isLoading};
 }

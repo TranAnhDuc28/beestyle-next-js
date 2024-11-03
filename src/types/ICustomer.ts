@@ -2,7 +2,7 @@ interface ICustomer{
     id: number,
     fullName: string,
     password: string,
-    dateOfBirth: Date,
+    dateOfBirth?: Date,
     gender: string,
     phoneNumber: string,
     email: string,

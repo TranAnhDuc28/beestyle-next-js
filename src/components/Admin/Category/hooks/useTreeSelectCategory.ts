@@ -13,7 +13,7 @@ const transformData = (data: any) => {
 
 const useTreeSelectCategory = (isLoadTree: boolean) => {
     const {data, error, isLoading} = useSWR(
-        isLoadTree ? URL_API_CATEGORY.options : null,
+        isLoadTree ? URL_API_CATEGORY.option : null,
         getCategoryOptions,
         {
             revalidateIfStale:false,

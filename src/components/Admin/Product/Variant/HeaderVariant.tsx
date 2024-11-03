@@ -1,9 +1,11 @@
+"use client"
 import React, {memo} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {Breadcrumb, Flex, GetProps, Input, Space, Typography} from "antd";
 import Search from "antd/es/input/Search";
 import ColorButton from "@/components/Button/ColorButton";
 import {HomeOutlined, PlusOutlined} from "@ant-design/icons";
+import Link from "next/link";
 
 type SearchProps = GetProps<typeof Input.Search>;
 const {Title} = Typography;
@@ -35,8 +37,8 @@ const HeaderFilter: React.FC<IProps> = (props) => {
         <>
             <Breadcrumb
                 items={[
-                    {href: '/admin', title: <HomeOutlined/>,},
-                    {href: '/admin/product', title: 'Sản phẩm',},
+                    {title: <Link href={"/admin"}><HomeOutlined/></Link>,},
+                    {title: <Link href={"/admin/product"}>Sản phẩm</Link>,},
                     {title: 'Chi tiết',},
                 ]}
             />

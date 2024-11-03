@@ -3,6 +3,7 @@ import {ISize} from "@/types/ISize";
 
 export const URL_API_SIZE = {
     get: '/admin/size',
+    option: '/admin/size/size-options',
     create: '/admin/size/create',
     update: '/admin/size/update',
     delete: '/admin/size/delete',

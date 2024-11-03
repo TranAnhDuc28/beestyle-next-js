@@ -14,7 +14,7 @@ const transformData = (data: IMaterial[]) => {
 
 const useOptionMaterial = (isLoadOption: boolean) => {
     const {data, error, isLoading} = useSWR(
-        isLoadOption ? `${URL_API_MATERIAL.get}?size=500` : null,
+        isLoadOption ? `${URL_API_MATERIAL.option}` : null,
         getMaterials,
         {
             revalidateIfStale: false,
@@ -23,7 +23,7 @@ const useOptionMaterial = (isLoadOption: boolean) => {
         }
     );
 
-    const dataOptionMaterial = !isLoading && data?.data?.items ? transformData(data.data.items) : [];
+    const dataOptionMaterial = !isLoading && data?.data ? transformData(data.data) : [];
 
     return {dataOptionMaterial, error, isLoading};
 }

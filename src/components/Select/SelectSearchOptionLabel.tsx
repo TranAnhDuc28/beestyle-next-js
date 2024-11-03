@@ -2,18 +2,20 @@ import {Select} from "antd";
 import React, {memo} from "react";
 
 interface IProps {
+    value?: any;
     data?: any[];
     error?: [];
     isLoading?: boolean;
-    onChange?: (value: any) => void,
+    onChange?: (value: any) => void;
 }
 
 const SelectSearchOptionLabel = (props: IProps) => {
-    const {data = [], error, isLoading, onChange} = props;
+    const {value, data = [], error, isLoading, onChange} = props;
 
     return (
         <Select
             showSearch
+            value={value}
             allowClear={true}
             placement="bottomLeft"
             loading={isLoading}
