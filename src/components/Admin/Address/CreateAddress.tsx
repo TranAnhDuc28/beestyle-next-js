@@ -1,6 +1,7 @@
 import { Form, Select } from "antd";
 import React from "react";
 import useAddress from "./hook/useAddress";
+import TextArea from "antd/es/input/TextArea";
 
 interface IProps {
   selectedProvince: string;
@@ -8,6 +9,7 @@ interface IProps {
   handleProvinceChange: (value: string, name: string) => void;
   handleDistrictChange: (value: string, name: string) => void;
   handleWardChange: (value: string, name: string) => void;
+  handleDetailAddress: (value: string) => void;
 }
 const CreateAddress = (props: IProps) => {
   const {
@@ -16,6 +18,7 @@ const CreateAddress = (props: IProps) => {
     handleDistrictChange,
     handleProvinceChange,
     handleWardChange,
+    handleDetailAddress,
   } = props;
   const { provinces, districts, wards, fetchDistricts, fetchWards } =
     useAddress();
@@ -96,6 +99,12 @@ const CreateAddress = (props: IProps) => {
             </Select.Option>
           ))}
         </Select>
+      </Form.Item>
+      <Form.Item label="Chi tiết" name="detail">
+        <TextArea
+          onChange={(e) => handleDetailAddress(e.target.value)}
+          placeholder="Nhập địa chỉ chi tiết"
+        />
       </Form.Item>
     </div>
   );

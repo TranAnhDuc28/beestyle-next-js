@@ -24,6 +24,7 @@ const AddCustomer = (props: IProps) => {
   const [selectedProvinceName, setSelectedProvinceName] = useState("");
   const [selectedDistrictName, setSelectedDistrictName] = useState("");
   const [selectedWardName, setSelectedWardName] = useState("");
+  const [detailAddress, setDetailAddress] = useState("");
 
   console.log(isCreateModalOpen);
 
@@ -31,14 +32,16 @@ const AddCustomer = (props: IProps) => {
     try {
       // Định dạng ngày sinh
       console.log(values.dateOfBirth);
-
       const result = await createCustomer(values);
 
       if (result.data) {
         const customer = result.data; // Lấy ID của khách hàng từ phản hồi
 
         const address = {
-          addressName: `${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`,
+          addressName:
+            detailAddress == ""
+              ? `${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`
+              : `${detailAddress} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`,
           cityCode: Number(selectedProvince), // Nếu cần chuyển đổi
           city: selectedProvinceName ?? "", // Lưu tên tỉnh vào đây
           districtCode: Number(selectedDistrict), // Nếu cần chuyển đổi
@@ -122,6 +125,11 @@ const AddCustomer = (props: IProps) => {
     setSelectedWardName(name);
   };
 
+  // Xử lý khi số nhà được chọn
+  const handleDetailAddressChange = (value: string) => {
+    setDetailAddress(value);
+  };
+
   // console.log(wards);
   return (
     <>
@@ -172,11 +180,7 @@ const AddCustomer = (props: IProps) => {
             name="dateOfBirth"
             rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
           >
-            <DatePicker
-              showTime
-              format="YYYY-MM-DD HH:mm:ss"
-              style={{ width: "100%" }}
-            />
+            <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} />
           </Form.Item>
 
           <Form.Item label="Giới tính" name="gender" initialValue="0">
@@ -194,6 +198,7 @@ const AddCustomer = (props: IProps) => {
             handleDistrictChange={handleDistrictChange}
             handleProvinceChange={handleProvinceChange}
             handleWardChange={handleWardChange}
+            handleDetailAddress={handleDetailAddressChange}
             selectedDistrict={selectedDistrict}
             selectedProvince={selectedProvince}
           />

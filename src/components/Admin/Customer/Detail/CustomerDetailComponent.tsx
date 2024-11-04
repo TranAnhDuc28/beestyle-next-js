@@ -1,14 +1,14 @@
 'use client'
 import useAppNotifications from '@/hooks/useAppNotifications';
 import { getDetailCustomer, URL_API_CUSTOMER } from '@/services/CustomerService';
-import { Layout } from 'antd';
+import { Breadcrumb, Layout } from 'antd';
 import Sider from 'antd/es/layout/Sider';
 import React, { useEffect } from 'react'
 import useSWR from 'swr';
 import InformationCustomer from './InformationCustomer';
 import Link from 'next/link';
 import AddressComponent from '../../Address/AddressComponent';
-import { TeamOutlined } from '@ant-design/icons';
+import { HomeOutlined, TeamOutlined } from '@ant-design/icons';
 
 
 const {Content} = Layout;
@@ -58,7 +58,13 @@ const CustomerDetailComponent = (props:IProps) => {
         </Sider>
         <Layout>
           <Content className="pt-5 pr-2.5 pb-2.5 pl-5 overflow-auto" style={{ marginLeft: 300 }}>
-            <p className="flex gap-2"><Link href={"/admin/customer"} ><TeamOutlined/> Khách hàng</Link>/<span className="font-medium">Chi tiết</span></p>
+          <Breadcrumb
+                items={[
+                    {href: '/admin', title: <HomeOutlined/>,},
+                    {title: 'Khách hàng',href:'/admin/customer'},
+                    {title: 'Chi tiết'},
+                ]}
+            />
             <AddressComponent />
           </Content>
         </Layout>

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import useAddress from "./hook/useAddress";
 import { updateAddress } from "@/services/AddressService";
 import { useParams } from "next/navigation";
+import TextArea from "antd/es/input/TextArea";
 
 interface IProps {
   mutate: any;
@@ -24,6 +25,7 @@ const UpdateAddress = (props: IProps) => {
   const [selectedProvinceName, setSelectedProvinceName] = useState("");
   const [selectedDistrictName, setSelectedDistrictName] = useState("");
   const [selectedWardName, setSelectedWardName] = useState("");
+  const [detailAddress, setDetailAddress] = useState("");
 
   console.log("initialValues", initialValues.default);
 
@@ -46,6 +48,10 @@ const UpdateAddress = (props: IProps) => {
     setSelectedWard(value);
     setSelectedWardName(name);
   };
+   // Xử lý khi số nhà được chọn
+   const handleDetailAddressChange = (value: string) => {
+    setDetailAddress(value);
+  };
 
   useEffect(() => {
     if (initialValues) {
@@ -55,7 +61,6 @@ const UpdateAddress = (props: IProps) => {
         province: initialValues.city,
         district: initialValues.district,
         ward: initialValues.commune,
-        
       });
     }
   }, [initialValues]);
@@ -74,7 +79,10 @@ const UpdateAddress = (props: IProps) => {
       } = value; // Giải cấu trúc các thuộc tính để tránh ghi đè
 
       const address = {
-        addressName: `${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`,
+        addressName:
+        detailAddress == ""
+          ? `${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`
+          : `${detailAddress} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`,
         city: selectedProvinceName ?? "", // Lưu tên tỉnh vào đây
         district: selectedDistrictName ?? "", // Lưu tên huyện vào đây
         commune: selectedWardName ?? "", // Tên xã
@@ -189,6 +197,12 @@ const UpdateAddress = (props: IProps) => {
               </Select.Option>
             ))}
           </Select>
+        </Form.Item>
+        <Form.Item label="Chi tiết" name="detail">
+          <TextArea
+            onChange={(e) => handleDetailAddressChange(e.target.value)}
+            placeholder="Nhập địa chỉ chi tiết"
+          />
         </Form.Item>
         <Space className="flex justify-center">
           <Button type="primary" htmlType="submit" disabled={!selectedProvince}>

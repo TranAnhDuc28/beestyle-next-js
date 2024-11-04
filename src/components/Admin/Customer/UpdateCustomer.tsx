@@ -42,13 +42,13 @@ const UpdateCustomer = (props: IProps) => {
           : null, // Hiển thị ngày theo múi giờ hiện tại
         gender: dataUpdate.gender,
         phoneNumber: dataUpdate.phoneNumber,
-        password: dataUpdate.password,
+        // password: dataUpdate.password,
         status: dataUpdate.status,
         email: dataUpdate.email,
-        address:
-          dataUpdate.addresses && dataUpdate.addresses.length > 0
-            ? dataUpdate.addresses[0].addressName
-            : "",
+        // address:
+        //   dataUpdate.addresses && dataUpdate.addresses.length > 0
+        //     ? dataUpdate.addresses[0].addressName
+        //     : "",
       });
       console.log("dataUpdate.address:", dataUpdate.address);
       console.log(dataUpdate);
@@ -67,7 +67,6 @@ const UpdateCustomer = (props: IProps) => {
       if (dataUpdate) {
         const data = {
           ...value,
-
            id: dataUpdate.id,
         };
         console.log(data);
@@ -115,22 +114,22 @@ const UpdateCustomer = (props: IProps) => {
           <Input />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           label="Password"
           name="password"
           rules={[{ required: true, message: "Vui lòng nhập password!" }]}
         >
           <Input.Password  />
-        </Form.Item>
+        </Form.Item> */}
 
-        <Form.Item
+        {/* <Form.Item
           label="Địa chỉ"
           name="address"
           rules={[{ required: true, message: "Vui lòng nhập address!" }]}
           
         >
           <Input disabled={true}/>
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item
           label="Sdt"

@@ -6,31 +6,35 @@ import { createAddress } from "@/services/AddressService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { useParams, useSearchParams } from "next/navigation";
 import { mutate } from "swr";
+import TextArea from "antd/es/input/TextArea";
 
 interface IProps {
   isCreateModalOpen: boolean;
   setIsCreateModalOpen: (value: boolean) => void;
-  mutate:any
+  mutate: any;
 }
 const CreateAddressModal = (props: IProps) => {
-  const { isCreateModalOpen, setIsCreateModalOpen ,mutate} = props;
-  const { provinces, districts, wards, fetchDistricts, fetchWards } = useAddress();
+  const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
+  const { provinces, districts, wards, fetchDistricts, fetchWards } =
+    useAddress();
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
   const [selectedProvinceName, setSelectedProvinceName] = useState("");
   const [selectedDistrictName, setSelectedDistrictName] = useState("");
   const [selectedWardName, setSelectedWardName] = useState("");
+  const [detailAddress, setDetailAddress] = useState("");
 
-  const { id } = useParams()
+  const { id } = useParams();
   console.log(id);
-  
+
   const { showNotification } = useAppNotifications();
   const [form] = Form.useForm();
   const handleCloseCreateModal = () => {
-    form.resetFields()
-    setSelectedProvince("")
-    setSelectedDistrict("")
+    form.resetFields();
+    setSelectedProvince("");
+    setSelectedDistrict("");
+    setDetailAddress("");
     setIsCreateModalOpen(false);
   };
 
@@ -51,27 +55,41 @@ const CreateAddressModal = (props: IProps) => {
     setSelectedWard(value);
     setSelectedWardName(name);
   };
-
-  const onFinish = async (value: IAddress) => {
-    const { city, district, commune,addressName,isDefault,customer,...rest } = value; // Giải cấu trúc các thuộc tính để tránh ghi đè
-
-  const address = {
-    addressName: `${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`,
-    city: selectedProvinceName ?? "", // Lưu tên tỉnh vào đây
-    district: selectedDistrictName ?? "", // Lưu tên huyện vào đây
-    commune: selectedWardName ?? "", // Tên xã
-    isDefault: false,
-    customer: {
-      id: id, // Thay đổi bằng ID thực tế
-    },
-    ...rest // Gộp các giá trị khác từ value vào đối tượng address
+  // Xử lý khi số nhà được chọn
+  const handleDetailAddressChange = (value: string) => {
+    setDetailAddress(value);
   };
+  const onFinish = async (value: IAddress) => {
+    const {
+      city,
+      district,
+      commune,
+      addressName,
+      isDefault,
+      customer,
+      ...rest
+    } = value; // Giải cấu trúc các thuộc tính để tránh ghi đè
+
+    const address = {
+      addressName:
+        detailAddress == ""
+          ? `${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`
+          : `${detailAddress} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`,
+      city: selectedProvinceName ?? "", // Lưu tên tỉnh vào đây
+      district: selectedDistrictName ?? "", // Lưu tên huyện vào đây
+      commune: selectedWardName ?? "", // Tên xã
+      isDefault: false,
+      customer: {
+        id: id, // Thay đổi bằng ID thực tế
+      },
+      ...rest, // Gộp các giá trị khác từ value vào đối tượng address
+    };
     console.log("Success:", address);
     try {
       const result = await createAddress(address);
       if (result.data) {
-          handleCloseCreateModal();
-          showNotification("success", {message: result.message});
+        handleCloseCreateModal();
+        showNotification("success", { message: result.message });
       }
       mutate();
     } catch (error: any) {
@@ -100,7 +118,15 @@ const CreateAddressModal = (props: IProps) => {
       onCancel={() => handleCloseCreateModal()}
       okButtonProps={{ style: { background: "#00b96b" } }}
     >
-      <Form form={form} onFinish={onFinish}>
+      <Form
+        form={form}
+        onFinish={onFinish}
+        layout="horizontal"
+        labelAlign="left"
+        labelWrap
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 20 }}
+      >
         <Form.Item
           label="Tỉnh"
           name="cityCode"
@@ -176,6 +202,12 @@ const CreateAddressModal = (props: IProps) => {
               </Select.Option>
             ))}
           </Select>
+        </Form.Item>
+        <Form.Item label="Chi tiết" name="detail">
+          <TextArea
+            onChange={(e) => handleDetailAddressChange(e.target.value)}
+            placeholder="Nhập địa chỉ chi tiết"
+          />
         </Form.Item>
       </Form>
     </Modal>
