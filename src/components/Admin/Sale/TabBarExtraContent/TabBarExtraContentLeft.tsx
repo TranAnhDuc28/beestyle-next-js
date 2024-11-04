@@ -1,7 +1,7 @@
 "use client"
 import React, {memo, useState} from "react";
 import {AutoComplete, AutoCompleteProps} from "antd";
-import {CloseIcon} from "next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon";
+import {SearchOutlined} from "@ant-design/icons";
 
 const mockVal = (str: string, repeat = 1) => ({
     value: str.repeat(repeat),
@@ -17,10 +17,11 @@ const TabBarExtraContentLeft: React.FC = () => {
         <>
             <AutoComplete
                 options={options}
-                style={{ width: 400, margin: "0px 20px 0px 10px" }}
+                style={{ width: 400, margin: "0px 20px 0px 20px" }}
                 onSearch={(text) => setOptions(getPanelValue(text))}
-                placeholder="Customized clear icon"
+                placeholder="Tm kiếm sản phẩm"
                 allowClear
+                suffixIcon={<SearchOutlined/>}
             />
         </>
     )

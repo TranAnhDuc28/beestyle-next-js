@@ -1,5 +1,5 @@
 "use client"
-import {App, Flex, Layout, notification, TableColumnsType, Tag, Tooltip} from "antd";
+import {Flex, Layout, TableColumnsType, Tag, Tooltip} from "antd";
 import useSWR from "swr";
 import {IBrand} from "@/types/IBrand";
 import {EditTwoTone} from "@ant-design/icons";
@@ -10,7 +10,6 @@ import {useSearchParams} from "next/navigation";
 import {STATUS} from "@/constants/Status";
 import CreateBrand from "@/components/Admin/Brand/CreateBrand";
 import UpdateBrand from "@/components/Admin/Brand/UpdateBrand";
-import HeaderMaterial from "@/components/Admin/Material/HeaderMaterial";
 import HeaderBrand from "@/components/Admin/Brand/HeaderBrand";
 import BrandFilter from "@/components/Admin/Brand/BrandFilter";
 import useAppNotifications from "@/hooks/useAppNotifications";
@@ -53,7 +52,7 @@ const BrandComponent = () => {
             title: 'Hành động', align: 'center', render: (record) => {
                 return (
                     <>
-                        <Tooltip placement="top" title="Chỉnh sửa">
+                        <Tooltip placement="top" title="Cập nhật">
                             <EditTwoTone
                                 twoToneColor={"#f57800"}
                                 style={{cursor: "pointer", padding: "5px", border: "1px solid #f57800", borderRadius: "5px"}}

@@ -3,6 +3,7 @@ import {IBrand} from "@/types/IBrand";
 
 export const URL_API_BRAND = {
     get: '/admin/brand',
+    option: '/admin/brand/brand-options',
     create: '/admin/brand/create',
     update: '/admin/brand/update',
     delete: '/admin/brand/delete',

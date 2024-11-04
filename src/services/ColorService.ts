@@ -3,6 +3,7 @@ import {IColor} from "@/types/IColor";
 
 export const URL_API_COLOR = {
     get: '/admin/color',
+    option: '/admin/color/color-options',
     create: '/admin/color/create',
     update: '/admin/color/update',
     delete: '/admin/color/delete',

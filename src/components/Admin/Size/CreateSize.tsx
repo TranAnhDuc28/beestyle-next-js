@@ -2,18 +2,20 @@
 import {memo} from 'react';
 import {App, Form, Input, Modal, notification} from 'antd';
 import {ISize} from "@/types/ISize";
-import {createSize} from "@/services/SizeService";
+import {createSize, URL_API_SIZE} from "@/services/SizeService";
 import useAppNotifications from "@/hooks/useAppNotifications";
+import {mutate} from "swr";
 
 interface IProps {
     isCreateModalOpen: boolean;
-    setIsCreateModalOpen: (value: boolean) => void;
-    mutate: any
+    setIsCreateModalOpen: (value: any) => void;
+    mutate?: any;
+    isLoadingSelectSize?: boolean;
 }
 
 const CreateSize = (props: IProps) => {
     const {showNotification} = useAppNotifications();
-    const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
+    const {isCreateModalOpen, setIsCreateModalOpen, mutate: mutateSize, isLoadingSelectSize} = props;
     const [form] = Form.useForm();
 
     const handleCloseCreateModal = () => {
@@ -25,11 +27,12 @@ const CreateSize = (props: IProps) => {
         // console.log('Success:', value);
         try {
             const result = await createSize(value);
-            mutate();
+            if(mutateSize) mutateSize();
             if (result.data) {
                 handleCloseCreateModal();
                 showNotification("success", {message: result.message});
             }
+            if (isLoadingSelectSize) await mutate(URL_API_SIZE.option);
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {

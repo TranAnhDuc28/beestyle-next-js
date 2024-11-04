@@ -1,8 +1,9 @@
 "use client"
 import React, {CSSProperties, useRef, useState} from "react";
-import {Button, Layout, TabPaneProps, Tabs, TabsProps, theme} from "antd";
+import {Layout, Tabs, TabsProps, theme} from "antd";
 import ContentTabPanelSale from "@/components/Admin/Sale/ContentTabPanelSale";
 import TabBarExtraContentLeft from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentLeft";
+import TabBarExtraContentRight from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentRight";
 
 const bills: TabsProps['items'] = [
     {label: 'Tab 1', children: <ContentTabPanelSale/>, key: '1'},
@@ -14,12 +15,12 @@ type PositionType = 'left' | 'right';
 const {Content} = Layout;
 
 const tabBarStyle: CSSProperties = {
-   // height: 50
+    height: 45,
 };
 
 const OperationsSlot: Record<PositionType, React.ReactNode> = {
     left: <TabBarExtraContentLeft/>,
-    right: <Button>Right Extra Action</Button>,
+    right: <TabBarExtraContentRight/>,
 };
 
 const SaleComponent: React.FC = () => {
@@ -69,25 +70,18 @@ const SaleComponent: React.FC = () => {
     };
 
     return (
-        <Layout className="h-screen p-3">
-            <Content>
-                <div style={{
-                    background: colorBgContainer,
-                    borderRadius: borderRadiusLG,
-                    padding: 8,
-                    height: "100%"
-                }}>
-                    <Tabs
-                        style={{height: "100%"}}
-                        type="editable-card"
-                        onChange={onChange}
-                        activeKey={activeKey}
-                        onEdit={onEdit}
-                        items={items}
-                        tabBarExtraContent={OperationsSlot}
-                        tabBarStyle={tabBarStyle}
-                    />
-                </div>
+        <Layout className="h-screen" style={{background: colorBgContainer}}>
+            <Content style={{background: colorBgContainer}}>
+                <Tabs
+                    className="h-full"
+                    type="editable-card"
+                    onChange={onChange}
+                    activeKey={activeKey}
+                    onEdit={onEdit}
+                    items={items}
+                    tabBarExtraContent={OperationsSlot}
+                    tabBarStyle={tabBarStyle}
+                />
             </Content>
         </Layout>
     );

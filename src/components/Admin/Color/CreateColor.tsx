@@ -1,19 +1,21 @@
 import React, {memo} from 'react';
-import {App, Form, Input, Modal, notification} from 'antd';
+import {Form, Input, Modal} from 'antd';
 import {IColor} from "@/types/IColor";
-import {createColor} from "@/services/ColorService";
+import {createColor, URL_API_COLOR} from "@/services/ColorService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import ColorPickerCustomize from "@/components/ColorPicker/ColorPickerCustomize";
+import {mutate} from "swr";
 
 interface IProps {
     isCreateModalOpen: boolean;
-    setIsCreateModalOpen: (value: boolean) => void;
-    mutate: any
+    setIsCreateModalOpen: (value: any) => void;
+    mutate?: any;
+    isLoadingSelectColor?: boolean;
 }
 
 const CreateColor = (props: IProps) => {
     const {showNotification} = useAppNotifications();
-    const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
+    const {isCreateModalOpen, setIsCreateModalOpen, mutate: mutateColor, isLoadingSelectColor} = props;
     const [form] = Form.useForm();
 
     const handleCloseCreateModal = () => {
@@ -25,12 +27,12 @@ const CreateColor = (props: IProps) => {
         // console.log('Success:', value);
         try {
             const result = await createColor(value);
-            mutate();
+            if(mutateColor) mutateColor();
             if (result.data) {
                 handleCloseCreateModal();
                 showNotification("success", {message: result.message});
             }
-
+            if (isLoadingSelectColor) await mutate(URL_API_COLOR.option);
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {

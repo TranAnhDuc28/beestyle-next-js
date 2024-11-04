@@ -1,10 +1,11 @@
 "use client"
 import {STATUS} from "@/constants/Status";
-import {App, Form, Input, Modal, notification, Radio, Select} from "antd";
+import {Form, Input, Modal, Select} from "antd";
 import {memo, useEffect} from "react";
 import {ISize} from "@/types/ISize";
-import {updateSize} from "@/services/SizeService";
+import {updateSize, URL_API_SIZE} from "@/services/SizeService";
 import useAppNotifications from "@/hooks/useAppNotifications";
+import {mutate} from "swr";
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -16,7 +17,7 @@ interface IProps {
 
 const UpdateSize = (props: IProps) => {
     const {showNotification} = useAppNotifications();
-    const {isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate} = props;
+    const {isUpdateModalOpen, setIsUpdateModalOpen, mutate: mutateSize, dataUpdate, setDataUpdate} = props;
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -38,16 +39,14 @@ const UpdateSize = (props: IProps) => {
         console.log(value);
         try {
             if (dataUpdate) {
-                const data = {
-                    ...value,
-                    id: dataUpdate.id
-                }
+                const data = {...value, id: dataUpdate.id}
                 const result = await updateSize(data);
-                mutate();
+                mutateSize();
                 if (result.data) {
                     handleCloseUpdateModal();
                     showNotification("success", {message: result.message});
                 }
+                await mutate(URL_API_SIZE.option, undefined, {revalidate: true});
             }
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;

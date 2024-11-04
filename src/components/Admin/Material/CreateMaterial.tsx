@@ -1,20 +1,29 @@
 "use client"
 import {memo} from 'react';
-import {App, Form, Input, Modal} from 'antd';
+import {Form, Input, Modal} from 'antd';
 import {IMaterial} from '@/types/IMaterial';
-import {createMaterial} from '@/services/MaterialService';
+import {createMaterial, URL_API_MATERIAL} from '@/services/MaterialService';
 import useAppNotifications from "@/hooks/useAppNotifications";
+import {mutate} from "swr";
 
 interface IProps {
     isCreateModalOpen: boolean;
-    setIsCreateModalOpen: (value: boolean) => void;
-    mutate: any
+    setIsCreateModalOpen: (value: any) => void;
+    mutate?: any;
+    isLoadingSelectMaterial?: boolean;
+    formName?: string;
 }
 
 const CreateMaterial = (props: IProps) => {
     // console.log("Create Material render");
+    const {
+        isCreateModalOpen,
+        setIsCreateModalOpen,
+        mutate: mutateMaterials,
+        isLoadingSelectMaterial,
+        formName = "createMaterial"
+    } = props;
     const {showNotification} = useAppNotifications();
-    const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
 
     const handleCloseCreateModal = () => {
@@ -26,12 +35,12 @@ const CreateMaterial = (props: IProps) => {
         // console.log('Success:', value);
         try {
             const result = await createMaterial(value);
-            mutate();
+            if (mutateMaterials) mutateMaterials();
             if (result.data) {
                 handleCloseCreateModal();
                 showNotification("success", {message: result.message});
             }
-
+            if (isLoadingSelectMaterial) await mutate(URL_API_MATERIAL.option);
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {
@@ -52,7 +61,7 @@ const CreateMaterial = (props: IProps) => {
                    onCancel={() => handleCloseCreateModal()}
                    okButtonProps={{style: {background: "#00b96b"}}}
             >
-                <Form form={form} name="createMaterial" layout="vertical" onFinish={onFinish}
+                <Form form={form} name={formName} layout="vertical" onFinish={onFinish}
                 >
                     <Form.Item name="materialName" label="Tên chất liệu"
                                rules={[{required: true, message: "Vui lòng nhập tên chất liệu!"}]}

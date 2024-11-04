@@ -8,7 +8,7 @@ import {getBrands} from "@/services/BrandService";
 import {useEffect, useState} from "react";
 import {useSearchParams} from "next/navigation";
 import {STATUS} from "@/constants/Status";
-import {URL_API_CATEGORY} from "@/services/CategoryService";
+import {getCategories, URL_API_CATEGORY} from "@/services/CategoryService";
 import HeaderCategory from "@/components/Admin/Category/HeaderCategory";
 import CreateCategory from "@/components/Admin/Category/CreateCategory";
 import UpdateCategory from "@/components/Admin/Category/UpdateCategory";
@@ -32,7 +32,7 @@ const CategoryComponent = () => {
     const {data, error, isLoading, mutate} =
         useSWR(
             `${URL_API_CATEGORY.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
-            getBrands,
+            getCategories,
             {
                 revalidateOnFocus: false,
             }
@@ -57,7 +57,7 @@ const CategoryComponent = () => {
             title: 'Hành động', align: 'center', render: (record) => {
                 return (
                     <>
-                        <Tooltip placement="top" title="Chỉnh sửa">
+                        <Tooltip placement="top" title="Cập nhật">
                             <EditTwoTone
                                 twoToneColor={"#FAAD14"}
                                 style={{
@@ -127,6 +127,7 @@ const CategoryComponent = () => {
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 mutate={mutate}
+                isLoadingSelectTreeCategory={true}
             />
 
             <UpdateCategory
