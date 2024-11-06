@@ -140,7 +140,6 @@ const CreateProduct = (props: IProps) => {
         }
     };
 
-
     useEffect(() => {
         if (selectedColors.length > 0 || selectedSizes.length > 0) {
             const variants = generateProductVariants(
