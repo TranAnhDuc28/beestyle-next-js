@@ -3,15 +3,19 @@ import {
     AutoComplete, AutoCompleteProps, Avatar, Button, Card, Col, Flex, Layout, List,
     Pagination, PaginationProps, Row, Space, Table, TableProps, Tag, theme, Tooltip, Typography
 } from "antd";
-import React, {memo, useState} from "react";
+import React, {memo, useCallback, useState} from "react";
 import CheckoutComponent from "@/components/Admin/Sale/CheckoutComponent";
 import {
     AppstoreOutlined, DeleteOutlined, FilterOutlined, PlusOutlined, SearchOutlined, UnorderedListOutlined
 } from "@ant-design/icons";
+import Marquee from "react-fast-marquee";
+import FilterProduct from "@/components/Admin/Sale/FilterProduct";
 
 const {Content} = Layout;
 const {Text, Paragraph, Title} = Typography;
 const {Meta} = Card;
+
+type DrawerOpen = "checkout" | "filter";
 
 const mockVal = (str: string, repeat = 1) => ({
     value: str.repeat(repeat),
@@ -64,7 +68,10 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
     const [dataCart, setDataCart] = useState<DataType[]>(dataTbl);
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
-    const [open, setOpen] = useState(false);
+    const [openDrawer, setOpenDrawer] = useState({
+        checkout: false,
+        filter: false,
+    });
     const [current, setCurrent] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [editableStr, setEditableStr] = useState('Ghi chú đơn hàng.');
@@ -87,13 +94,13 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
     const getPanelValue = (searchText: string) =>
         !searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)];
 
-    const showDrawer = () => {
-        setOpen(true);
-    };
+    const showDrawer = useCallback((drawerType: DrawerOpen, isOpen: boolean) => {
+        setOpenDrawer((prevDrawer) => ({...prevDrawer, [drawerType]: isOpen}));
+    }, []);
 
-    const onClose = () => {
-        setOpen(false);
-    };
+    const onClose = useCallback((drawerType: DrawerOpen, isOpen: boolean) => {
+        setOpenDrawer((prevDrawer) => ({...prevDrawer, [drawerType]: isOpen}));
+    }, []);
 
     const columns: TableProps<DataType>['columns'] = [
         {
@@ -191,7 +198,7 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
                 >
                     <Space direction="vertical" size="middle" style={{display: 'flex'}}>
                         <Flex justify="space-between" align="center" style={{width: "100%"}} wrap>
-                            <div style={{display: "flex", width: "70%"}}>
+                            <div style={{display: "flex", width: "60%"}}>
                                 <AutoComplete allowClear suffixIcon={<SearchOutlined/>} style={{width: "100%"}}
                                               options={options}
                                               onSearch={(text) => setOptions(getPanelValue(text))}
@@ -201,76 +208,82 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
                             </div>
                             <div>
                                 <Button icon={<UnorderedListOutlined/>} type="text" shape="circle"/>
-                                <Button icon={<FilterOutlined/>} type="text" shape="circle"/>
+                                <Tooltip placement="top" title="Lọc sản phẩm">
+                                    <Button icon={<FilterOutlined/>} type="text" shape="circle"
+                                            onClick={() => showDrawer("filter", true)}
+                                    />
+                                </Tooltip>
                                 <Button icon={<AppstoreOutlined/>} type="text" shape="circle"/>
                             </div>
                         </Flex>
 
                         <div style={{height: 660, overflowY: "auto", padding: 5}}>
                             {/* List */}
-                            {/*<List*/}
-                            {/*    style={{width: "100%"}}*/}
-                            {/*    dataSource={paginatedData}*/}
-                            {/*    renderItem={(item, index) => (*/}
-                            {/*        <List.Item style={{borderBottom: 'none', padding: "5px 0px"}}>*/}
-                            {/*            <Card style={{flex: "1", cursor: "pointer"}} styles={{body: {padding: 10}}}*/}
-                            {/*                  onClick={() => console.log("ID: " + item.id)}*/}
-                            {/*            >*/}
-                            {/*                <List.Item.Meta*/}
-                            {/*                    avatar={*/}
-                            {/*                        <Avatar shape="square" src="/BuiQuangLan.png"*/}
-                            {/*                                size={{xs: 24, sm: 32, md: 40, lg: 48, xl: 56, xxl: 64}}*/}
-                            {/*                        />*/}
-                            {/*                    }*/}
-                            {/*                    title={*/}
-                            {/*                        <Flex align="center" justify="space-between">*/}
-                            {/*                            {`${item.productCode} / ${item.productName}`}*/}
-                            {/*                            <Title level={5}>*/}
-                            {/*                                {`${item.price}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}*/}
-                            {/*                            </Title>*/}
-                            {/*                        </Flex>*/}
-                            {/*                    }*/}
-                            {/*                    description={`Tổng số: ${item.quantity}`}*/}
-                            {/*                />*/}
-                            {/*            </Card>*/}
-                            {/*        </List.Item>*/}
-                            {/*    )}*/}
-                            {/*/>*/}
-
-                            {/*  List Card  */}
                             <List
-                                grid={{
-                                    gutter: 8,
-                                    xs: 1,
-                                    sm: 2,
-                                    md: 3,
-                                    lg: 3,
-                                    xl: 4,
-                                    xxl: 5,
-                                }}
+                                style={{width: "100%"}}
                                 dataSource={paginatedData}
-                                renderItem={(item) => (
-                                    <List.Item>
-                                        <Card
-                                            hoverable
-                                            style={{flex: "1", cursor: "pointer"}}
-                                            styles={{body: {padding: 10}}}
-                                            cover={<img alt="example" src="/BuiQuangLan.png"/>}
-                                            onClick={() => console.log("ID: " + item.id)}
+                                renderItem={(item, index) => (
+                                    <List.Item style={{borderBottom: 'none', padding: "5px 0px"}}>
+                                        <Card style={{flex: "1", cursor: "pointer"}} styles={{body: {padding: 10}}}
+                                              onClick={() => console.log("ID: " + item.id)}
                                         >
-                                            <Space direction="vertical">
-                                                <Text strong>
-                                                    {`${item.productCode} / ${item.productName}`}
-                                                </Text>
-                                                <Text strong>
-                                                    {`${item.price}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                                </Text>
-                                                {`Tổng số: ${item.quantity}`}
-                                            </Space>
+                                            <List.Item.Meta
+                                                avatar={
+                                                    <Avatar shape="square" src="/BuiQuangLan.png"
+                                                            size={{xs: 24, sm: 32, md: 40, lg: 48, xl: 56, xxl: 64}}
+                                                    />
+                                                }
+                                                title={
+                                                    <Flex align="center" justify="space-between">
+                                                        {`${item.productCode} / ${item.productName}`}
+                                                        <Title level={5}>
+                                                            {`${item.price}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                                        </Title>
+                                                    </Flex>
+                                                }
+                                                description={`Tổng số: ${item.quantity}`}
+                                            />
                                         </Card>
                                     </List.Item>
                                 )}
                             />
+
+                            {/*  List Card  */}
+                            {/*<List*/}
+                            {/*    grid={{*/}
+                            {/*        gutter: 8,*/}
+                            {/*        xs: 1,*/}
+                            {/*        sm: 2,*/}
+                            {/*        md: 3,*/}
+                            {/*        lg: 3,*/}
+                            {/*        xl: 4,*/}
+                            {/*        xxl: 5,*/}
+                            {/*    }}*/}
+                            {/*    dataSource={paginatedData}*/}
+                            {/*    renderItem={(item) => (*/}
+                            {/*        <List.Item>*/}
+                            {/*            <Card*/}
+                            {/*                hoverable*/}
+                            {/*                style={{flex: "1", cursor: "pointer"}}*/}
+                            {/*                styles={{body: {padding: 10}}}*/}
+                            {/*                cover={<img alt="example" src="/BuiQuangLan.png"/>}*/}
+                            {/*                onClick={() => console.log("ID: " + item.id)}*/}
+                            {/*            >*/}
+                            {/*                <Space direction="vertical">*/}
+                            {/*                    <Marquee speed={30}>*/}
+                            {/*                        <Text strong style={{ marginRight: 30 }}>*/}
+                            {/*                            {`${item.productCode} / ${item.productName}`}*/}
+                            {/*                        </Text>*/}
+                            {/*                    </Marquee>*/}
+                            {/*                    <Text strong>*/}
+                            {/*                        {`${item.price}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}*/}
+                            {/*                    </Text>*/}
+                            {/*                    {`Tổng số: ${item.quantity}`}*/}
+                            {/*                </Space>*/}
+                            {/*            </Card>*/}
+                            {/*        </List.Item>*/}
+                            {/*    )}*/}
+                            {/*/>*/}
                         </div>
                         <Row gutter={[8, 8]} style={{display: "flex", alignItems: "center"}}>
                             <Col flex="1 1 200px">
@@ -286,7 +299,8 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
                                     total={data.length}/>
                             </Col>
                             <Col flex="1 1 200px" style={{display: "flex", justifyContent: "flex-end"}}>
-                                <Button size="large" type="primary" onClick={showDrawer} style={{width: "100%"}}>
+                                <Button size="large" type="primary" style={{width: "100%"}}
+                                        onClick={() => showDrawer("checkout", true)}>
                                     TIẾN HÀNH THANH TOÁN
                                 </Button>
                             </Col>
@@ -294,10 +308,15 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
                     </Space>
                 </Content>
             </Flex>
+
             <CheckoutComponent
-                title="Checkout regular sale"
-                open={open}
-                onClose={onClose}
+                open={openDrawer.checkout}
+                onClose={() => onClose("checkout", false)}
+            />
+
+            <FilterProduct
+                open={openDrawer.filter}
+                onClose={() => onClose("filter", false)}
             />
         </Layout>
     )

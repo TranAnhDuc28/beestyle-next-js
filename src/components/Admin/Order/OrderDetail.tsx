@@ -6,6 +6,7 @@ import useSWR from "swr";
 const InvoiceDetail: React.FC<{ record: any }> = ({record}) => {
     const [invoiceData, setInvoiceData] = useState([]);
     const [extraData, setExtraData] = useState(null);
+    console.log(record)
 
     const url = `${URL_API_ORDER.create}admin/order-item?id=${record.id}`;
     const {data: detail} = useSWR(url, getOrdersById, {
@@ -52,9 +53,9 @@ const InvoiceDetail: React.FC<{ record: any }> = ({record}) => {
         {title: 'Màu sắc', dataIndex: 'color', key: 'color'},
         {title: 'Kích thước', dataIndex: 'size', key: 'size'},
         {title: 'Số lượng', dataIndex: 'quantity', key: 'quantity'},
-        {title: 'Giá bán', dataIndex: 'price', key: 'price', render: (record) => record.toLocaleString()},
-        {title: 'Giảm giá', dataIndex: 'discount', key: 'discount', render: (record) => record.toLocaleString()},
-        {title: 'Thành tiền', dataIndex: 'total', key: 'total', render: (record) => record.toLocaleString()},
+        {title: 'Giá bán', dataIndex: 'price', key: 'price', render: (value) => value.toLocaleString()},
+        {title: 'Giảm giá', dataIndex: 'discount', key: 'discount', render: (value) => value.toLocaleString()},
+        {title: 'Thành tiền', dataIndex: 'total', key: 'total', render: (value) => value.toLocaleString()},
     ];
 
     return (

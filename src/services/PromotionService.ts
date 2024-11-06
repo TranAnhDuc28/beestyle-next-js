@@ -8,6 +8,7 @@ export const URL_API_PROMOTION = {
     delete: '/admin/promotion/delete',
     search: '/admin/promotion/search',
     searchByDate: '/admin/promotion/findbydate',
+    getProductIds: '/admin/products',
 };
 
 export const getPromotions = async (url: string) => {
@@ -43,6 +44,10 @@ export const findPromotionsByDate = async (startDate, endDate, page = 0, size = 
     });
     return response.data;
 }
-import axios from 'axios';
+export const getProductsByPromotionId = async (promotionId: string) => {
+    const response = await httpInstance.get(`${URL_API_PROMOTION.getProductIds}/${promotionId}`);
+    return response.data;
+};
+
 
 

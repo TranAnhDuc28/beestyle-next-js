@@ -1,5 +1,7 @@
 import React from "react";
-import {TfiSearch} from "react-icons/tfi";
+import {MdEmail, MdLocalPhone, MdLogin, MdOutlineAddLocationAlt} from 'react-icons/md';
+import {LuAlarmClock} from "react-icons/lu";
+import {AiOutlineUser} from "react-icons/ai";
 import Link from "next/link";
 
 export default function TopBar() {
@@ -10,18 +12,75 @@ export default function TopBar() {
                     <div className="col-lg-4 col-md-12 col-12">
                         <div className="top-left">
                             <ul className="list-main">
-                                <li><i className="ti-headphone-alt"></i> +060 (800) 801-582</li>
-                                <li><i className="ti-email"></i> support@shophub.com</li>
+                                <li>
+                                    <div className={"flex"}>
+                                        <MdLocalPhone
+                                            size={18}
+                                            style={{color: '#F7941D', marginRight: 7}}
+                                        />
+                                        +060 (800) 801-582
+                                    </div>
+                                </li>
+                                <li>
+                                    <div className={"flex"}>
+                                        <MdEmail
+                                            size={18}
+                                            style={{color: '#F7941D', marginRight: 7}}
+                                        />
+                                        support@shophub.com
+                                    </div>
+                                </li>
                             </ul>
                         </div>
                     </div>
                     <div className="col-lg-8 col-md-12 col-12">
                         <div className="right-content">
                             <ul className="list-main">
-                                <li><i className="ti-location-pin"></i> Hệ thống cửa hàng</li>
-                                <li><i className="ti-alarm-clock"></i> <a href="#">Giao dịch hàng ngày</a></li>
-                                <li><i className="ti-user"></i> <a href="#">Tài khoản của tôi</a></li>
-                                <li className="flex items-center space-x-2"><Link href="login.html">Đăng nhập</Link></li>
+                                <li>
+                                    <div className={"flex"}>
+                                        <MdOutlineAddLocationAlt
+                                            size={18}
+                                            style={{color: '#F7941D', marginRight: 7}}
+                                        />
+                                        <Link href="#" style={{textDecoration: 'none'}}>
+                                            Hệ thống cửa hàng
+                                        </Link>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div className={"flex"}>
+                                        <LuAlarmClock
+                                            size={18}
+                                            style={{color: '#F7941D', marginRight: 7}}
+
+                                        />
+                                        <Link href="#" style={{textDecoration: 'none'}}>
+                                            Giao dịch hàng ngày
+                                        </Link>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div className={"flex"}>
+                                        <AiOutlineUser
+                                            size={18}
+                                            style={{color: '#F7941D', marginRight: 7}}
+                                        />
+                                        <Link href="#" style={{textDecoration: 'none'}}>
+                                            Tài khoản của tôi
+                                        </Link>
+                                    </div>
+                                </li>
+                                <li className="flex items-center space-x-2">
+                                    <div className={"flex"}>
+                                        <MdLogin
+                                            size={18}
+                                            style={{color: '#F7941D', marginRight: 7}}
+                                        />
+                                        <Link href={"/login"} style={{textDecoration: 'none'}}>
+                                            Đăng nhập
+                                        </Link>
+                                    </div>
+                                </li>
                             </ul>
                         </div>
                     </div>

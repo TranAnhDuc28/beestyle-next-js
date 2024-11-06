@@ -1,4 +1,6 @@
 import React from "react";
+import Image from "next/image";
+import Link from "next/link";
 
 function ShopBlog() {
     return (
@@ -14,31 +16,31 @@ function ShopBlog() {
                 <div className="row">
                     <div className="col-lg-4 col-md-6 col-12">
                         <div className="shop-single-blog">
-                            <img src="/img370x300.png" alt="#" />
+                            <Image width={370} height={300} src="/img370x300.png" alt="#"/>
                             <div className="content">
                                 <p className="date">22 July , 2020. Monday</p>
-                                <a href="#" className="title">Sed adipiscing ornare.</a>
-                                <a href="#" className="more-btn">Continue Reading</a>
+                                <Link href="#" className="title link-no-decoration">Sed adipiscing ornare.</Link>
+                                <Link href="#" className="more-btn link-no-decoration">Continue Reading</Link>
                             </div>
                         </div>
                     </div>
                     <div className="col-lg-4 col-md-6 col-12">
                         <div className="shop-single-blog">
-                            <img src="/img370x300.png" alt="#" />
+                            <Image width={370} height={300} src="/img370x300.png" alt="#"/>
                             <div className="content">
                                 <p className="date">22 July, 2020. Monday</p>
-                                <a href="#" className="title">Man’s Fashion Winter Sale</a>
-                                <a href="#" className="more-btn">Continue Reading</a>
+                                <Link href="#" className="title link-no-decoration">Man’s Fashion Winter Sale</Link>
+                                <Link href="#" className="more-btn link-no-decoration">Continue Reading</Link>
                             </div>
                         </div>
                     </div>
                     <div className="col-lg-4 col-md-6 col-12">
                         <div className="shop-single-blog">
-                            <img src="/img370x300.png" alt="#" />
+                            <Image width={370} height={300} src="/img370x300.png" alt="#"/>
                             <div className="content">
                                 <p className="date">22 July, 2020. Monday</p>
-                                <a href="#" className="title">Women Fashion Festive</a>
-                                <a href="#" className="more-btn">Continue Reading</a>
+                                <Link href="#" className="title link-no-decoration">Women Fashion Festive</Link>
+                                <Link href="#" className="more-btn link-no-decoration">Continue Reading</Link>
                             </div>
                         </div>
                     </div>

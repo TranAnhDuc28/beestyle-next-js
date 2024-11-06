@@ -19,6 +19,7 @@ export interface IProductVariant {
     brandName?: string;
     materialId?: number;
     materialName?: string;
+    promotionName?: string;
 }
 
 export interface IProductVariantRows{
