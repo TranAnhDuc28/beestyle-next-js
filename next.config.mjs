@@ -3,9 +3,18 @@ const nextConfig = {
     images: {
         remotePatterns: [
             {
-                hostname: 'theme.hstatic.net',
+                hostname: 'theme.hstatic.net'
             },
-        ]
+            {
+                hostname: 'via.placeholder.com'
+            },
+            {
+                hostname: 'yody.vn'
+            },
+            {
+                hostname: 'm.yodycdn.com'
+            }
+        ],
     }
 };
 

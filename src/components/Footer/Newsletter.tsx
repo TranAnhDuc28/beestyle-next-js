@@ -1,4 +1,5 @@
 import React from "react";
+import {Form, Input} from "antd";
 
 export default function Newsletter() {
     return (
@@ -10,10 +11,10 @@ export default function Newsletter() {
                             <div className="inner">
                                 <h4>Newsletter</h4>
                                 <p> Subscribe to our newsletter and get <span>10%</span> off your first purchase</p>
-                                <form action="mail/mail.php" method="get" target="_blank" className="newsletter-inner">
-                                    <input name="EMAIL" placeholder="Your email address" required type="email" />
+                                <Form action="" method="get" target="_blank" className="newsletter-inner">
+                                    <Input className="newsletter-input" name="EMAIL" placeholder="Your email address" required type="email" />
                                     <button className="btn">Subscribe</button>
-                                </form>
+                                </Form>
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import SmallBaner from "./SmallBanner";
+import Link from "next/link";
 
 export default function Slider() {
     return (
@@ -14,9 +15,10 @@ export default function Slider() {
                                         <div className="col-lg-7 col-12">
                                             <div className="hero-text">
                                                 <h1><span>UP TO 50% OFF </span>Shirt For Man</h1>
-                                                <p>Maboriosam in a nesciung eget magnae <br /> dapibus disting tloctio in the find it pereri <br /> odiy maboriosm.</p>
+                                                <p>Maboriosam in a nesciung eget magnae <br/> dapibus disting tloctio in
+                                                    the find it pereri <br/> odiy maboriosm.</p>
                                                 <div className="button">
-                                                    <a href="#" className="btn">Shop Now!</a>
+                                                    <Link href="#" className="btn">Shop Now!</Link>
                                                 </div>
                                             </div>
                                         </div>
@@ -27,7 +29,7 @@ export default function Slider() {
                     </div>
                 </div>
             </section>
-            <SmallBaner />
+            <SmallBaner/>
         </>
     )
 }
