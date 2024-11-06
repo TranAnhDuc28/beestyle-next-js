@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 export default function CownDownArea() {
     return (
@@ -8,7 +9,7 @@ export default function CownDownArea() {
                     <div className="row">
                         <div className="col-lg-6 col-12 padding-right">
                             <div className="image">
-                                <img src="/img750x590.png" alt="#" />
+                                <Image src="/img750x590.png" alt="#" width={750} height={590}/>
                             </div>
                         </div>
                         <div className="col-lg-6 col-12 padding-left">
@@ -16,10 +17,11 @@ export default function CownDownArea() {
                                 <div className="heading-block">
                                     <p className="small-title">Deal of day</p>
                                     <h3 className="title">Beatutyful dress for women</h3>
-                                    <p className="text">Suspendisse massa leo, vestibulum cursus nulla sit amet, frungilla placerat lorem. Cars fermentum, sapien. </p>
+                                    <p className="text">Suspendisse massa leo, vestibulum cursus nulla sit amet,
+                                        frungilla placerat lorem. Cars fermentum, sapien. </p>
                                     <h1 className="price">$1200 <s>$1890</s></h1>
                                     <div className="coming-time">
-                                        <div className="clearfix" data-countdown="2021/02/30" />
+                                        <div className="clearfix" data-countdown="2021/02/30"/>
                                     </div>
                                 </div>
                             </div>
