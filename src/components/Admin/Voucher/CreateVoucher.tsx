@@ -4,8 +4,6 @@ import {Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, 
 import {createVoucher} from '@/services/VoucherService';
 import {EuroOutlined, PercentageOutlined} from '@ant-design/icons';
 import useAppNotifications from "../../../hooks/useAppNotifications";
-import {STATUS} from "@/constants/Status";
-import {DISCOUNTTYPE} from "@/constants/DiscountType";
 import {DISCOUNT_TYPE, DISCOUNTTYPE_KEYS} from "../../../constants/DiscountType";
 
 const {Option} = Select;

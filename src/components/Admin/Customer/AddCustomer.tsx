@@ -5,6 +5,7 @@ import { createCustomer } from "@/services/CustomerService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { createAddress } from "@/services/AddressService";
 import CreateAddress from "../Address/CreateAddress";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
@@ -30,7 +31,9 @@ const AddCustomer = (props: IProps) => {
 
   const handleSubmit = async (values: ICustomer) => {
     try {
-      // Định dạng ngày sinh
+      // Hiển thị lại dateOfBirth dưới dạng chuỗi cho đúng định dạng khi gửi lên server hoặc lưu trữ
+      values.dateOfBirth = dayjs(values.dateOfBirth).format("YYYY-MM-DD");
+
       console.log(values.dateOfBirth);
       const result = await createCustomer(values);
 
