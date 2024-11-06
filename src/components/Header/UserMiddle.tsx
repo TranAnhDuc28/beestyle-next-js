@@ -1,9 +1,9 @@
+import React from "react";
+import {FaRegHeart, FaRegUserCircle} from "react-icons/fa";
+import {TfiSearch} from "react-icons/tfi";
+import {AiOutlineShoppingCart} from "react-icons/ai";
 import Image from 'next/image';
 import Link from 'next/link';
-import {TfiSearch} from "react-icons/tfi";
-import React from "react";
-import {FaCartShopping, FaCircleUser} from "react-icons/fa6";
-import {FaRegHeart} from "react-icons/fa";
 import {Button, Form, Input} from "antd";
 
 export default function MiddleBar() {
@@ -39,10 +39,10 @@ export default function MiddleBar() {
                     </div>
                     <div className="col-lg-8 col-md-7 col-12">
                         <div className="search-bar-top">
-                            <div className="search-bar">
+                            <div className="search-bar" style={{borderRadius: 50}}>
                                 <Form layout="inline">
                                     <Form.Item style={{marginRight: 0}}>
-                                        <Input placeholder="Tìm kiếm sản phẩm tại đây....."/>
+                                        <Input placeholder="Tìm kiếm sản phẩm tại đây....." variant={"borderless"}/>
                                     </Form.Item>
                                     <Form.Item style={{marginRight: 0}}>
                                         <Button icon={<TfiSearch/>} className="btnn"/>
@@ -57,11 +57,12 @@ export default function MiddleBar() {
                                 <Link href="#" className="single-icon"><FaRegHeart aria-hidden="true"/></Link>
                             </div>
                             <div className="sinlge-bar">
-                                <Link href="#" className="single-icon"><FaCircleUser aria-hidden="true"/></Link>
+                                <Link href="#" className="single-icon"><FaRegUserCircle aria-hidden="true"/></Link>
                             </div>
                             <div className="sinlge-bar shopping">
-                                <Link href="#" className="single-icon"><FaCartShopping/><span
-                                    className="total-count">2</span></Link>
+                                <Link href="#" className="single-icon">
+                                    <AiOutlineShoppingCart size={24}/>
+                                    <span className="total-count">2</span></Link>
                                 <div className="shopping-item">
                                     <div className="dropdown-cart-header">
                                         <span>2 sản phẩm</span>

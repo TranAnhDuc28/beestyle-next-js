@@ -10,6 +10,9 @@ const nextConfig = {
             },
             {
                 hostname: 'yody.vn'
+            },
+            {
+                hostname: 'm.yodycdn.com'
             }
         ],
     }

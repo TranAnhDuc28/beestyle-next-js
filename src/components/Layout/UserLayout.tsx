@@ -1,4 +1,4 @@
-"use client"
+'use client';
 import {Layout} from 'antd';
 import UserHeader from '../Header/UserHeader';
 import UserFooter from '../Footer/UserFooter';

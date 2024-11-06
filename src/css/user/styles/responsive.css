@@ -8,14 +8,14 @@ Version:1.0
 /* Tablet Screen */
 @media only screen and (min-width: 768px) and (max-width: 991px) {
 .section{
-	padding:50px 0px;
+	padding:50px 0;
 }
 .shop.single {
 	padding: 30px 0 50px 0;
 }
 .section-title {
 	margin-bottom: 50px;
-	padding: 0px 109px;
+	padding: 0 109px;
 }
 .section-title h2 {
 	font-size: 26px;
@@ -488,7 +488,7 @@ Version:1.0
 	margin: 0;
 }
 .section{
-	padding:50px 0px;
+	padding:50px 0;
 }
 .section-title {
 	margin-bottom: 30px;
@@ -775,7 +775,6 @@ Version:1.0
 	padding:50px 0;
 }
 .shop-services .single-service {
-	padding: 42px 0 18px 0;
 	text-align: center;
 }
 .shop-services .single-service i {
@@ -785,7 +784,7 @@ Version:1.0
 	font-size: 24px;
 	top: 0;
 	left: 50%;
-	margin-left:-20px;
+	margin-left: 20px;
 }
 .shop-services.home {
 	padding: 25px 0;
@@ -936,7 +935,7 @@ Version:1.0
 }
 .shop-list .list-content .btn {
 	height: auto;
-	line-height: auto;
+	line-height: normal;
 	padding: 12px 32px;
 }
 .single-product {
@@ -1454,7 +1453,6 @@ Version:1.0
 }
 .shop .nice-select {
 	width: 100%;
-	display: ;
 	margin-top: 4px;
 }
 .shop .view-mode {
@@ -1473,7 +1471,6 @@ Version:1.0
 	width: 100%;
 	display: block;
 	display: inline-block;
-	display: ;
 }
 .shop .view-mode li a {
 	width: 80px;

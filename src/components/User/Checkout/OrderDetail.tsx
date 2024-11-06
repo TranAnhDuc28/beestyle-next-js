@@ -1,41 +1,62 @@
 import Image from "next/image";
-import Link from "next/link";
+import {Button, Form, Radio} from "antd";
+import React, {useState} from "react";
+import styles from '@/css/user/styles/checkout.module.css';
 
 const OrderDetail = () => {
+
+    const [selectedPayment, setSelectedPayment] = useState(null);
+
+    const handlePaymentChange = (e) => {
+        setSelectedPayment(e.target.value);
+    };
+
     return (
         <div className="order-details">
             <div className="single-widget">
-                <h2>CART TOTALS</h2>
+                <h2>THÔNG TIN</h2>
                 <div className="content">
                     <ul>
-                        <li>Sub Total<span>$330.00</span></li>
-                        <li>(+) Shipping<span>$10.00</span></li>
-                        <li className="last">Total<span>$340.00</span></li>
+                        <li>Tổng giá trị sản phẩm<span>330.000 VND</span></li>
+                        <li>Phí vận chuyển<span>20.000 VND</span></li>
+                        <li className="last fs-6">Tổng thanh toán<span>310.000 VND</span></li>
+                        <li>
+                            <span className="text-danger" style={{fontSize: 13}}>Bạn đã tiết kiệm được 20.000 VND</span>
+                        </li>
                     </ul>
                 </div>
             </div>
-            <div className="single-widget">
-                <h2>Payments</h2>
+            <div className="single-widget mt-5">
+                <h2>Phương thức thanh toán</h2>
                 <div className="content">
-                    <div className="checkbox">
-                        <label className="checkbox-inline" htmlFor="1"><input name="updates" id="1"
-                                                                              type="checkbox"/> Check Payments</label>
-                        <label className="checkbox-inline" htmlFor="2"><input name="news" id="2" type="checkbox"/> Cash
-                            On Delivery</label>
-                        <label className="checkbox-inline" htmlFor="3"><input name="news" id="3"
-                                                                              type="checkbox"/> PayPal</label>
+                    <div style={{ margin: '15px 40px' }}>
+                        <Radio.Group className="d-flex flex-column" onChange={handlePaymentChange} value={selectedPayment}>
+                            <label className="checkbox-inline mb-2">
+                                <Radio value="1">Check Payments</Radio>
+                            </label>
+                            <label className="checkbox-inline mb-2">
+                                <Radio value="2">Bank Transfer</Radio>
+                            </label>
+                            <label className="checkbox-inline mb-2">
+                                <Radio value="3">Credit Card</Radio>
+                            </label>
+                        </Radio.Group>
                     </div>
                 </div>
             </div>
             <div className="single-widget payement">
-                <div className="content">
-                    <Image width={50} height={50} alt="IMG" src="/favicon.png"/>
+                <div className="d-flex justify-content-center">
+                    <Image width={280} height={36} alt="IMG" src="/payment-method.png"/>
                 </div>
             </div>
             <div className="single-widget get-button">
                 <div className="content">
                     <div className="button">
-                        <Link href="#" className="btn">proceed to checkout</Link>
+                        <Form.Item>
+                            <Button className="btn btn-dark" htmlType="submit">
+                                THANH TOÁN NGAY
+                            </Button>
+                        </Form.Item>
                     </div>
                 </div>
             </div>

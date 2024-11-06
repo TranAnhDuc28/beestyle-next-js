@@ -13,7 +13,7 @@ export default function MediumBanner() {
                             <div className="content">
                                 <p>Man&#39;s Collectons</p>
                                 <h3>Man&#39;s items <br/>Up to<span> 50%</span></h3>
-                                <Link href="#">Shop Now</Link>
+                                <Link href="#" className="link-no-decoration">Shop Now</Link>
                             </div>
                         </div>
                     </div>

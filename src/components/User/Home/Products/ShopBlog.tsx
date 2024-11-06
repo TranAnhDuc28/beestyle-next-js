@@ -20,7 +20,7 @@ function ShopBlog() {
                             <div className="content">
                                 <p className="date">22 July , 2020. Monday</p>
                                 <Link href="#" className="title link-no-decoration">Sed adipiscing ornare.</Link>
-                                <Link href="#" className="more-btn">Continue Reading</Link>
+                                <Link href="#" className="more-btn link-no-decoration">Continue Reading</Link>
                             </div>
                         </div>
                     </div>
@@ -30,7 +30,7 @@ function ShopBlog() {
                             <div className="content">
                                 <p className="date">22 July, 2020. Monday</p>
                                 <Link href="#" className="title link-no-decoration">Man’s Fashion Winter Sale</Link>
-                                <Link href="#" className="more-btn">Continue Reading</Link>
+                                <Link href="#" className="more-btn link-no-decoration">Continue Reading</Link>
                             </div>
                         </div>
                     </div>
@@ -40,7 +40,7 @@ function ShopBlog() {
                             <div className="content">
                                 <p className="date">22 July, 2020. Monday</p>
                                 <Link href="#" className="title link-no-decoration">Women Fashion Festive</Link>
-                                <Link href="#" className="more-btn">Continue Reading</Link>
+                                <Link href="#" className="more-btn link-no-decoration">Continue Reading</Link>
                             </div>
                         </div>
                     </div>

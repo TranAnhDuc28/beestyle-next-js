@@ -1,3 +1,4 @@
+'use client';
 import CheckoutForm from './CheckoutForm';
 import OrderDetail from './OrderDetail';
 

@@ -1,20 +1,21 @@
 'use client';
 
-import React, {useEffect, useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+import Image from "next/image";
 
 const ProductGallery = () => {
-    const sliderRef = useRef(null);
+
     const settings = {
-        dots: true,
+        dots: false,
         infinite: true,
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
-        arrows: true,
+        arrows: false,
+        afterChange: (index) => setSelectedIndex(index)
     };
 
     const images = [
@@ -24,39 +25,56 @@ const ProductGallery = () => {
         "https://m.yodycdn.com/fit-in/filters:format(webp)/products/ao-thun-nu-TSN7301-DEN%20(13).JPG",
     ];
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (sliderRef.current) {
-                sliderRef.current.slickNext();
-            }
-        }, 3000);
+    const sliderRef = useRef(null);
+    const [selectedIndex, setSelectedIndex] = useState(0);
 
-        return () => clearInterval(interval);
-    }, []);
+    const handleThumbnailClick = (index) => {
+        setSelectedIndex(index);
+        sliderRef.current.slickGoTo(index);
+    };
 
     return (
-        <div className="product-gallery">
-            <Slider ref={sliderRef} {...settings}>
+        <div className="product-gallery d-flex">
+            <div
+                className="thumbnails"
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}
+            >
                 {images.map((image, index) => (
-                    <div key={index}>
-                        <img
-                            src={image}
-                            alt={`Product Image ${index + 1}`}
-                            style={{width: "100%", height: "auto"}}
-                        />
-                    </div>
-                ))}
-            </Slider>
-            <div className="thumbnails" style={{display: 'flex', justifyContent: 'center', marginTop: '10px'}}>
-                {images.map((image, index) => (
-                    <img
+                    <Image
                         key={index}
                         src={image}
+                        width={80}
+                        height={120}
                         alt={`Thumbnail ${index + 1}`}
-                        style={{width: "80px", height: "auto", cursor: 'pointer', margin: '0 5px'}}
-                        onClick={() => sliderRef.current.slickGoTo(index)}
+                        style={{
+                            cursor: 'pointer',
+                            margin: '5px 0',
+                            border: selectedIndex === index ? '2px solid #F7941D' : 'none',
+                        }}
+                        onClick={() => handleThumbnailClick(index)}
                     />
                 ))}
+            </div>
+            <div style={{flex: 1, width: '50%', marginLeft: 20}}>
+
+                <Slider ref={sliderRef} {...settings}>
+                    {images.map((image, index) => (
+                        <div key={index}>
+                            <Image
+                                src={image}
+                                alt={`Product Image ${index + 1}`}
+                                width={650}
+                                height={0}
+                                style={{border: 0}}
+                            />
+                        </div>
+                    ))}
+                </Slider>
             </div>
         </div>
     );

@@ -1,3 +1,6 @@
+import Image from "next/image";
+import {Form} from "antd";
+
 const ProductReviewsTab = () => {
     return (
         <div className="tab-pane fade" id="reviews" role="tabpanel">
@@ -11,7 +14,7 @@ const ProductReviewsTab = () => {
                             </div>
                             <div className="single-rating">
                                 <div className="rating-author">
-                                    <img src="https://via.placeholder.com/200x200" alt="#"/>
+                                    <Image width={200} height={200} src="https://via.placeholder.com/200x200" alt="#"/>
                                 </div>
                                 <div className="rating-des">
                                     <h6>Naimur Rahman</h6>
@@ -31,7 +34,7 @@ const ProductReviewsTab = () => {
                             </div>
                             <div className="single-rating">
                                 <div className="rating-author">
-                                    <img src="https://via.placeholder.com/200x200" alt="#"/>
+                                    <Image width={200} height={200} src="https://via.placeholder.com/200x200" alt="#"/>
                                 </div>
                                 <div className="rating-des">
                                     <h6>Advin Geri</h6>
@@ -68,7 +71,7 @@ const ProductReviewsTab = () => {
                                 </div>
                             </div>
                         </div>
-                        <form className="form" method="post" action="mail/mail.php">
+                        <Form className="form" method="post" action="">
                             <div className="row">
                                 <div className="col-lg-6 col-12">
                                     <div className="form-group">
@@ -77,7 +80,7 @@ const ProductReviewsTab = () => {
                                     </div>
                                 </div>
                                 <div className="col-lg-6 col-12">
-                                    <div class="form-group">
+                                    <div className="form-group">
                                         <label>Your Email<span>*</span></label>
                                         <input type="email" name="email" required="required" placeholder=""/>
                                     </div>
@@ -94,7 +97,7 @@ const ProductReviewsTab = () => {
                                     </div>
                                 </div>
                             </div>
-                        </form>
+                        </Form>
                     </div>
                 </div>
             </div>

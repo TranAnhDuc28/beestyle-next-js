@@ -1,13 +1,14 @@
 import ProductDescriptionTab from './ProductDescriptionTab';
 import ProductReviewsTab from './ProductReview';
+import Link from "next/link";
 
 const ProductInfoTabs = () => {
     return (
         <div className="product-info">
             <div className="nav-main">
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
-                    <li className="nav-item"><a className="nav-link active" data-toggle="tab" href="#description" role="tab">Description</a></li>
-                    <li className="nav-item"><a className="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews</a></li>
+                    <li className="nav-item"><Link className="nav-link active" data-toggle="tab" href="#" role="tab">Description</Link></li>
+                    <li className="nav-item"><Link className="nav-link" data-toggle="tab" href="#" role="tab">Reviews</Link></li>
                 </ul>
             </div>
             <div className="tab-content" id="myTabContent">
