@@ -6,7 +6,7 @@ import {App, FloatButton} from "antd";
 import {AntdRegistry} from "@ant-design/nextjs-registry";
 import {usePathname} from "next/navigation";
 import UserLoader from "@/components/Loader/UserLoader";
-import { Poppins } from 'next/font/google';
+import {Poppins} from 'next/font/google';
 
 const poppins = Poppins({
     subsets: ['latin'],
@@ -18,7 +18,7 @@ const poppins = Poppins({
 export default function RootLayout({children,}: Readonly<{ children: ReactNode; }>) {
     const [loading, setLoading] = useState<boolean>(true);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const pathname  = usePathname();
+    const pathname = usePathname();
 
     const handleLoad = () => setLoading(false);
 
@@ -38,12 +38,12 @@ export default function RootLayout({children,}: Readonly<{ children: ReactNode; 
     }, [pathname, loading]);
 
     return (
-        <html lang="en">
-        <body className={`${poppins.variable}`}>
+        <html lang="en" suppressHydrationWarning={true}>
+        <body className={`${poppins.variable}`} suppressHydrationWarning={true}>
         {
             loading ?
                 (
-                    isAdmin ? <AdminLoader /> : <UserLoader />
+                    isAdmin ? <AdminLoader/> : <UserLoader/>
                 ) : (
                     <AntdRegistry>
                         <App>

@@ -49,7 +49,6 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
                     columns={tbl.columns}
                     dataSource={tbl.data}
                     onChange={onChange}
-                    onRow={tbl.onRow}
                     rowSelection={rowSelection}
                     pagination={{
                         current: tbl.current || 1,

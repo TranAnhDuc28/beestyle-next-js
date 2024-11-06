@@ -31,11 +31,6 @@ const OrderComponent: React.FC = () => {
         }
     );
 
-    const expandedRowRender = (record: any) => {
-        return <InvoiceDetail record={record} />;
-    };
-
-
     const columns: TableColumnsType<IOrder> = [
             {
                 title: 'Mã đơn hàng',
@@ -82,9 +77,10 @@ const OrderComponent: React.FC = () => {
 
     const onRowClick = (record: IOrder) => {
         const newExpandedRowKeys = expandedRowKeys.includes(record.id) ? [] : [record.id];
-        setExpandedRowKeys([]);
         setExpandedRowKeys(newExpandedRowKeys);
     };
+
+    const expandedRowRender = (record: IOrder) => <InvoiceDetail record={record} />;
 
     const items: TabsProps['items'] = [
         {
@@ -144,12 +140,12 @@ const OrderComponent: React.FC = () => {
                     <div>
                         <HeaderOrder
                             setIsCreateModalOpen={setIsCreateModalOpen}
-                            // setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}
+                            setIsCategoryDisplayOrderModalOpen={setIsCategoryDisplayOrderModalOpen}
                         />
                     </div>
                     <TabsOrder
                         items={items}
-                        onChange={(key) => console.log(key)} // Đảm bảo có hàm onChange
+                        onChange={(key) => console.log(key)}
                     />
                 </Content>
             </Flex>
