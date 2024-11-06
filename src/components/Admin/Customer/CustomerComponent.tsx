@@ -15,7 +15,7 @@ import { ColumnType } from "antd/es/table";
 import useSWR, { mutate } from "swr";
 import { useEffect, useState } from "react";
 import TablePagination from "@/components/Table/TablePagination";
-import { EditTwoTone, EyeOutlined } from "@ant-design/icons";
+import { EditTwoTone, EyeOutlined, EyeTwoTone } from "@ant-design/icons";
 import { useSearchParams } from "next/navigation";
 import HeaderCustomer from "./HeaderCustomer";
 import AddCustomer from "./AddCustomer";
@@ -65,18 +65,18 @@ const CustomerComponent = () => {
       key: "addresses",
       render: (addresses) => {
         if (addresses && addresses.length > 0) {
-          
-
           // List danh sách địa chỉ của customer
           const listAddresses = addresses[0].customer.addresses || [];
-          console.log("danh sách địa chỉ của customer",listAddresses);
-          
+          console.log("danh sách địa chỉ của customer", listAddresses);
+
           // Lọc để lấy địa chỉ có isDefault: true
-          const defaultAddress = listAddresses.find((address:any) => address.default === true);
-    
+          const defaultAddress = listAddresses.find(
+            (address: any) => address.default === true
+          );
+
           // Kiểm tra nếu tồn tại defaultAddress, nếu không thì trả về rỗng
           const addressToDisplay = defaultAddress || "";
-    
+
           // Kiểm tra addressToDisplay trước khi truy cập addressName
           return `${addressToDisplay?.addressName}`;
         }
@@ -103,6 +103,18 @@ const CustomerComponent = () => {
       title: "Hành động",
       render: (text: any, record: ICustomer, index: number) => (
         <div className="flex gap-3">
+          <Tooltip placement="top" title="Chi tiết">
+            <Link href={`/admin/customer/${record.id}`}>
+              <EyeTwoTone
+                style={{
+                  cursor: "pointer",
+                  padding: "5px",
+                  border: "1px solid #1677FF",
+                  borderRadius: "5px",
+                }}
+              />
+            </Link>
+          </Tooltip>
           <Tooltip placement="top" title="Cập nhật">
             <EditTwoTone
               twoToneColor={"#f57800"}
@@ -118,19 +130,7 @@ const CustomerComponent = () => {
               }}
             />
           </Tooltip>
-          <Tooltip placement="top" title="Chi tiết">
-            <Link href={`/admin/customer/${record.id}`} >
-              <EyeOutlined
-                twoToneColor={"#f57800"}
-                style={{
-                  cursor: "pointer",
-                  padding: "5px",
-                  border: "1px solid #f57800",
-                  borderRadius: "5px",
-                }}
-              />
-            </Link>
-          </Tooltip>
+          
         </div>
       ),
     },
