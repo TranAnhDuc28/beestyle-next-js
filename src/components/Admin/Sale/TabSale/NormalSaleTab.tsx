@@ -208,69 +208,69 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
 
                         <div style={{height: 660, overflowY: "auto", padding: 5}}>
                             {/* List */}
-                            {/*<List*/}
-                            {/*    style={{width: "100%"}}*/}
-                            {/*    dataSource={paginatedData}*/}
-                            {/*    renderItem={(item, index) => (*/}
-                            {/*        <List.Item style={{borderBottom: 'none', padding: "5px 0px"}}>*/}
-                            {/*            <Card style={{flex: "1", cursor: "pointer"}} styles={{body: {padding: 10}}}*/}
-                            {/*                  onClick={() => console.log("ID: " + item.id)}*/}
-                            {/*            >*/}
-                            {/*                <List.Item.Meta*/}
-                            {/*                    avatar={*/}
-                            {/*                        <Avatar shape="square" src="/BuiQuangLan.png"*/}
-                            {/*                                size={{xs: 24, sm: 32, md: 40, lg: 48, xl: 56, xxl: 64}}*/}
-                            {/*                        />*/}
-                            {/*                    }*/}
-                            {/*                    title={*/}
-                            {/*                        <Flex align="center" justify="space-between">*/}
-                            {/*                            {`${item.productCode} / ${item.productName}`}*/}
-                            {/*                            <Title level={5}>*/}
-                            {/*                                {`${item.price}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}*/}
-                            {/*                            </Title>*/}
-                            {/*                        </Flex>*/}
-                            {/*                    }*/}
-                            {/*                    description={`Tổng số: ${item.quantity}`}*/}
-                            {/*                />*/}
-                            {/*            </Card>*/}
-                            {/*        </List.Item>*/}
-                            {/*    )}*/}
-                            {/*/>*/}
-
-                            {/*  List Card  */}
                             <List
-                                grid={{
-                                    gutter: 8,
-                                    xs: 1,
-                                    sm: 2,
-                                    md: 3,
-                                    lg: 3,
-                                    xl: 4,
-                                    xxl: 5,
-                                }}
+                                style={{width: "100%"}}
                                 dataSource={paginatedData}
-                                renderItem={(item) => (
-                                    <List.Item>
-                                        <Card
-                                            hoverable
-                                            style={{flex: "1", cursor: "pointer"}}
-                                            styles={{body: {padding: 10}}}
-                                            cover={<img alt="example" src="/BuiQuangLan.png"/>}
-                                            onClick={() => console.log("ID: " + item.id)}
+                                renderItem={(item, index) => (
+                                    <List.Item style={{borderBottom: 'none', padding: "5px 0px"}}>
+                                        <Card style={{flex: "1", cursor: "pointer"}} styles={{body: {padding: 10}}}
+                                              onClick={() => console.log("ID: " + item.id)}
                                         >
-                                            <Space direction="vertical">
-                                                <Text strong>
-                                                    {`${item.productCode} / ${item.productName}`}
-                                                </Text>
-                                                <Text strong>
-                                                    {`${item.price}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                                </Text>
-                                                {`Tổng số: ${item.quantity}`}
-                                            </Space>
+                                            <List.Item.Meta
+                                                avatar={
+                                                    <Avatar shape="square" src="/BuiQuangLan.png"
+                                                            size={{xs: 24, sm: 32, md: 40, lg: 48, xl: 56, xxl: 64}}
+                                                    />
+                                                }
+                                                title={
+                                                    <Flex align="center" justify="space-between">
+                                                        {`${item.productCode} / ${item.productName}`}
+                                                        <Title level={5}>
+                                                            {`${item.price}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                                        </Title>
+                                                    </Flex>
+                                                }
+                                                description={`Tổng số: ${item.quantity}`}
+                                            />
                                         </Card>
                                     </List.Item>
                                 )}
                             />
+
+                            {/*  List Card  */}
+                            {/*<List*/}
+                            {/*    grid={{*/}
+                            {/*        gutter: 8,*/}
+                            {/*        xs: 1,*/}
+                            {/*        sm: 2,*/}
+                            {/*        md: 3,*/}
+                            {/*        lg: 3,*/}
+                            {/*        xl: 4,*/}
+                            {/*        xxl: 5,*/}
+                            {/*    }}*/}
+                            {/*    dataSource={paginatedData}*/}
+                            {/*    renderItem={(item) => (*/}
+                            {/*        <List.Item>*/}
+                            {/*            <Card*/}
+                            {/*                hoverable*/}
+                            {/*                style={{flex: "1", cursor: "pointer"}}*/}
+                            {/*                styles={{body: {padding: 10}}}*/}
+                            {/*                cover={<img alt="example" src="/BuiQuangLan.png"/>}*/}
+                            {/*                onClick={() => console.log("ID: " + item.id)}*/}
+                            {/*            >*/}
+                            {/*                <Space direction="vertical">*/}
+                            {/*                    <Text strong>*/}
+                            {/*                        {`${item.productCode} / ${item.productName}`}*/}
+                            {/*                    </Text>*/}
+                            {/*                    <Text strong>*/}
+                            {/*                        {`${item.price}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}*/}
+                            {/*                    </Text>*/}
+                            {/*                    {`Tổng số: ${item.quantity}`}*/}
+                            {/*                </Space>*/}
+                            {/*            </Card>*/}
+                            {/*        </List.Item>*/}
+                            {/*    )}*/}
+                            {/*/>*/}
                         </div>
                         <Row gutter={[8, 8]} style={{display: "flex", alignItems: "center"}}>
                             <Col flex="1 1 200px">
