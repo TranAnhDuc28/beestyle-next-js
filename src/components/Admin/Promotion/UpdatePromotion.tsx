@@ -260,7 +260,7 @@ const UpdatePromotion = (props: IProps) => {
 
                         const updatePromises = numericDetailIds.map(async (detailId) => {
                             console.log("Selected Detail Products to Update:", detailId);
-                            return updateProductVariantUpdate(updatedPromotionId, [detailId]);
+                            return updateProductVariant(updatedPromotionId, [detailId]);
                         });
 
                         await Promise.all(updatePromises);
