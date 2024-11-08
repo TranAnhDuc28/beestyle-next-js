@@ -87,21 +87,7 @@ const AddressComponent = () => {
   const columns: ColumnType<IAddress>[] = [
     {
       title: "",
-      render: (text: any, record: IAddress, index: number) => (
-        <div className="flex gap-3">
-          <Tooltip placement="top" title="Cập nhật">
-            <EditTwoTone
-              twoToneColor={"#f57800"}
-              style={{
-                cursor: "pointer",
-                padding: "5px",
-                border: "1px solid #f57800",
-                borderRadius: "5px",
-              }}
-            />
-          </Tooltip>
-        </div>
-      ),
+
     },
     {
       title: "Địa chỉ",
@@ -109,7 +95,10 @@ const AddressComponent = () => {
       key: "addressName",
       render: (address, record) => (
         <div>
-          <span>{address}</span>
+          <span>
+            
+            { address?`${address}, ${record.commune || ""}, ${record.district || ""}, ${record.city || ""}`:`${record.commune || ""}, ${record.district || ""}, ${record.city || ""}`}
+          </span>
           {record.default && (
             <Tag color="green" style={{ marginLeft: 8 }}>
               Default
@@ -118,6 +107,7 @@ const AddressComponent = () => {
         </div>
       ),
     },
+    
     {
       title: "",
       dataIndex: "action",

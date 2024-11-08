@@ -109,11 +109,11 @@ const AddStaff = (props: IProps) => {
           <Form.Item
             label="Ngày sinh"
             name="dateOfBirth"
-            rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
+            // rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
           >
             <DatePicker
               showTime
-              format="YYYY-MM-DD HH:mm:ss"
+              format="YYYY-MM-DD"
               style={{ width: "100%" }}
             />
           </Form.Item>
@@ -131,7 +131,7 @@ const AddStaff = (props: IProps) => {
           <Form.Item
             label="Địa chỉ"
             name="address"
-            rules={[{ required: false, message: "Vui lòng nhập địa chỉ!" }]}
+            // rules={[{ required: false, message: "Vui lòng nhập địa chỉ!" }]}
           >
             <Input.TextArea rows={4} />
           </Form.Item>

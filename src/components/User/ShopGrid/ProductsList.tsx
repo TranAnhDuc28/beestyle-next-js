@@ -3,7 +3,7 @@ import Image from "next/image";
 import {TiChartPie, TiEye, TiHeart} from "react-icons/ti";
 import React from "react";
 
-const ProductList = ({product}) => {
+const ProductList = ({product}:any) => {
     return (
         <div className="single-product">
             <div className="product-img">
@@ -17,11 +17,11 @@ const ProductList = ({product}) => {
                 </Link>
                 <div className="button-head">
                     <div className="product-action-2 ml-2">
-                        <Link title="Add to cart" className="link-no-decoration link-action" href="#">
+                        <Link title="Add to cart" className="link-no-decoration link-action" href={"/cart"}>
                             Add to cart
                         </Link>
                     </div>
-                    <div className="product-action mt-3 mr-2">
+                    {/* <div className="product-action mt-3 mr-2">
                         <Link href="#" className="link-action" title="Quick View">
                             <TiEye size={18}/>
                             <span style={{marginLeft: '0.5rem'}}>Quick Shop</span>
@@ -34,7 +34,7 @@ const ProductList = ({product}) => {
                             <TiChartPie size={18}/>
                             <span style={{marginLeft: '0.5rem'}}>Add to Compare</span>
                         </Link>
-                    </div>
+                    </div> */}
                 </div>
 
             </div>

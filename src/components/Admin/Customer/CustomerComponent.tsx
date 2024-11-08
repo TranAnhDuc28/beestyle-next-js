@@ -76,9 +76,12 @@ const CustomerComponent = () => {
 
           // Kiểm tra nếu tồn tại defaultAddress, nếu không thì trả về rỗng
           const addressToDisplay = defaultAddress || "";
+          console.log("addressToDisplay ", addressToDisplay);
 
           // Kiểm tra addressToDisplay trước khi truy cập addressName
-          return `${addressToDisplay?.addressName}`;
+          return addressToDisplay.addressName
+            ? `${addressToDisplay?.addressName} - ${addressToDisplay?.commune} - ${addressToDisplay?.district} - ${addressToDisplay?.city}`
+            : `${addressToDisplay?.commune} - ${addressToDisplay?.district} - ${addressToDisplay?.city}`;
         }
         return ""; // Nếu không có địa chỉ nào trong mảng
       },
@@ -130,7 +133,6 @@ const CustomerComponent = () => {
               }}
             />
           </Tooltip>
-          
         </div>
       ),
     },

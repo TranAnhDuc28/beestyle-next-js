@@ -18,39 +18,55 @@ interface IProps {
 const AddCustomer = (props: IProps) => {
   const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
   const { showNotification } = useAppNotifications();
-  const [form] = Form.useForm();
-  const [selectedProvince, setSelectedProvince] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [selectedWard, setSelectedWard] = useState("");
-  const [selectedProvinceName, setSelectedProvinceName] = useState("");
-  const [selectedDistrictName, setSelectedDistrictName] = useState("");
-  const [selectedWardName, setSelectedWardName] = useState("");
-  const [detailAddress, setDetailAddress] = useState("");
+
+  const [selected, setSelected] = useState({
+    province: "",
+    district: "",
+    ward: "",
+  });
+  const [selectedName, setSelectedName] = useState({
+    province: "",
+    district: "",
+    ward: "",
+    addressName:""
+  });
+  // const [selectedProvince, setSelectedProvince] = useState("");
+  // const [selectedDistrict, setSelectedDistrict] = useState("");
+  // const [selectedWard, setSelectedWard] = useState("");
+
+  // const [selectedProvinceName, setSelectedProvinceName] = useState("");
+  // const [selectedDistrictName, setSelectedDistrictName] = useState("");
+  // const [selectedWardName, setSelectedWardName] = useState("");
+  // const [detailAddress, setDetailAddress] = useState("");
+
+  const [form] = Form.useForm(); // Form chính của khách hàng
+  const [addressForm] = Form.useForm(); // Form cho phần địa chỉ
 
   console.log(isCreateModalOpen);
 
   const handleSubmit = async (values: ICustomer) => {
     try {
       // Hiển thị lại dateOfBirth dưới dạng chuỗi cho đúng định dạng khi gửi lên server hoặc lưu trữ
-      values.dateOfBirth = dayjs(values.dateOfBirth).format("YYYY-MM-DD");
+      // values.dateOfBirth = dayjs(values.dateOfBirth).format("YYYY-MM-DD");
 
-      console.log(values.dateOfBirth);
+      // console.log(values.dateOfBirth);
       const result = await createCustomer(values);
 
       if (result.data) {
         const customer = result.data; // Lấy ID của khách hàng từ phản hồi
 
         const address = {
-          addressName:
-            detailAddress == ""
-              ? `${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`
-              : `${detailAddress} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`,
-          cityCode: Number(selectedProvince), // Nếu cần chuyển đổi
-          city: selectedProvinceName ?? "", // Lưu tên tỉnh vào đây
-          districtCode: Number(selectedDistrict), // Nếu cần chuyển đổi
-          district: selectedDistrictName ?? "", // Lưu tên huyện vào đây
-          communeCode: Number(selectedWard), // Cần lấy từ API nếu có
-          commune: selectedWardName ?? "", // Tên xã
+          addressName: selectedName.addressName,
+          // addressName:
+          //   detailAddress == ""
+          //     ? `${selectedName.ward} - ${selectedName.district} - ${selectedName.province}`
+          //     : `${detailAddress} - ${selected.ward} - ${selectedName.district} - ${selectedName.province}`,
+          cityCode: Number(selected.province), // Nếu cần chuyển đổi
+          city: selectedName.province ?? "", // Lưu tên tỉnh vào đây
+          districtCode: Number(selected.district), // Nếu cần chuyển đổi
+          district: selectedName.district ?? "", // Lưu tên huyện vào đây
+          communeCode: Number(selected.ward), // Cần lấy từ API nếu có
+          commune: selectedName.ward ?? "", // Tên xã
           isDefault: false,
           customer: {
             id: customer.id, // Thay đổi bằng ID thực tế
@@ -99,38 +115,45 @@ const AddCustomer = (props: IProps) => {
   };
   const handleCancelModal = () => {
     form.resetFields();
+    addressForm.resetFields()
+    setSelected({province:"",district:"",ward:""})
     setIsCreateModalOpen(false);
   };
 
-  useEffect(() => {
-    if (isCreateModalOpen) {
-      setSelectedProvince("");
-      setSelectedDistrict("");
-      setSelectedWard("");
-    }
-  }, [isCreateModalOpen]);
+
 
   // Xử lý khi tỉnh được chọn
   const handleProvinceChange = (value: any, name: string) => {
-    setSelectedProvince(value);
-    setSelectedProvinceName(name);
-    setSelectedDistrict(""); // Reset huyện khi tỉnh thay đổi
+    // setSelectedProvince(value);
+    // setSelectedProvinceName(name);
+    setSelected((prev) =>({...prev,province:value}))
+    console.log("province",value);
+    
+    setSelectedName((prev) =>({...prev,province:name}))
+    addressForm.setFieldsValue({ district: undefined, ward: undefined })
   };
 
   // Xử lý khi huyện được chọn
   const handleDistrictChange = (value: any, name: string) => {
-    setSelectedDistrict(value);
-    setSelectedDistrictName(name);
+    // setSelectedDistrict(value);
+    // setSelectedDistrictName(name);
+    setSelected((prev) =>({...prev,district:value}))
+    setSelectedName((prev) =>({...prev,district:name}))
+    console.log("district",value);
+    addressForm.setFieldsValue( {ward: undefined });
   };
   // Xử lý khi xã được chọn
   const handleWardChange = (value: any, name: string) => {
-    setSelectedWard(value);
-    setSelectedWardName(name);
+    // setSelectedWard(value);
+    // setSelectedWardName(name);
+    setSelected((prev) =>({...prev,ward:value}))
+    console.log("ward",value);
+    setSelectedName((prev) =>({...prev,ward:name}))
   };
 
   // Xử lý khi số nhà được chọn
   const handleDetailAddressChange = (value: string) => {
-    setDetailAddress(value);
+    setSelectedName((prev) =>({...prev,addressName:value}))
   };
 
   // console.log(wards);
@@ -158,7 +181,7 @@ const AddCustomer = (props: IProps) => {
           <Form.Item
             label="Họ tên"
             name="fullName"
-            rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
+            // rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
           >
             <Input />
           </Form.Item>
@@ -173,7 +196,7 @@ const AddCustomer = (props: IProps) => {
           <Form.Item
             label="Email"
             name="email"
-            rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+            // rules={[{ required: true, message: "Vui lòng nhập email!" }]}
           >
             <Input />
           </Form.Item>
@@ -181,7 +204,7 @@ const AddCustomer = (props: IProps) => {
           <Form.Item
             label="Ngày sinh"
             name="dateOfBirth"
-            rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
+            // rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
           >
             <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} />
           </Form.Item>
@@ -198,12 +221,13 @@ const AddCustomer = (props: IProps) => {
           </Form.Item>
 
           <CreateAddress
+          form={addressForm}
             handleDistrictChange={handleDistrictChange}
             handleProvinceChange={handleProvinceChange}
             handleWardChange={handleWardChange}
             handleDetailAddress={handleDetailAddressChange}
-            selectedDistrict={selectedDistrict}
-            selectedProvince={selectedProvince}
+            selected={selected}
+            setSelected={setSelected}
           />
         </Form>
       </Modal>

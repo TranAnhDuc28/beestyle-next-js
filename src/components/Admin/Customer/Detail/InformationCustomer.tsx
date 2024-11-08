@@ -18,7 +18,7 @@ const InformationCustomer = (props: IProps) => {
             </div>
             <div className="mt-5 text-sm font-semibold">
                 <p><UserOutlined/> {customer?.gender === "MALE" ? "Nam" : "Nữ"}</p>
-                <p><PhoneOutlined/> {customer?.email}</p>
+                <p><PhoneOutlined/> {customer?.phoneNumber}</p>
                 <p><CalendarOutlined/> {customer?.dateOfBirth?.toString()}</p>
                 <p><CheckOutlined/> {customer?.status === "ACTIVE" ? "Hoạt động" : "Ngừng hoạt động"}</p>
             </div>

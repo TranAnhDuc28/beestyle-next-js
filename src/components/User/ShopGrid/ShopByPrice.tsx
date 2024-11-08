@@ -32,7 +32,7 @@ const ShopByPrice = () => {
 
     return (
         <div className="single-widget range">
-            <h3 className="title">Shop by Price</h3>
+            <h3 className="title">Khoảng giá</h3>
             <div className="price-filter">
                 <div className="price-filter-inner">
                     <Slider

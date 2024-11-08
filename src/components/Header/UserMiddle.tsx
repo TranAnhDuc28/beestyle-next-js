@@ -66,7 +66,7 @@ export default function MiddleBar() {
                                 <div className="shopping-item">
                                     <div className="dropdown-cart-header">
                                         <span>2 sản phẩm</span>
-                                        <Link href="#" style={{textDecoration: 'none'}}>Xem giỏ hàng</Link>
+                                        <Link href="/cart" style={{textDecoration: 'none'}}>Xem giỏ hàng</Link>
                                     </div>
                                     <ul className="shopping-list">
                                         <li>
