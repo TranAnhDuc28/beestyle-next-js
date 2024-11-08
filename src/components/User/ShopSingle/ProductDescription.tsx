@@ -44,21 +44,18 @@ const ProductDescription = () => {
     return (
         <div className="product-des">
             <div className="short">
-                <h4>Nonstick Dishwasher PFOA</h4>
+                <h4>Tên sản phẩm</h4>
                 <div className="rating-main">
                     <ul className="rating">
                         <li><Rate disabled defaultValue={5} style={{marginLeft: -35}}/></li>
                     </ul>
-                    <Link href="#" className="total-review link-no-decoration">(102) Review</Link>
+                    <Link href="#" className="total-review link-no-decoration">(102) Đánh giá</Link>
                 </div>
                 <p className="price"><span className="discount">$70.00</span><s>$80.00</s></p>
-                <p className="description">eget velit. Donec ac tempus ante. Fusce ultricies massa massa. Fusce aliquam,
-                    purus eget sagittis vulputate, sapien libero hendrerit est, sed commodo augue nisi non neque. Lorem
-                    ipsum dolor sit amet, consectetur adipiscing elit. Sed tempor, lorem et placerat vestibulum, metus
-                    nisi posuere nisl, in</p>
+                <p className="description">Sản phẩm được thiết kế tiện lợi và phù hợp cho mọi gia đình...</p>
             </div>
             <div className="color">
-                <h4>Available Options <span>Color</span></h4>
+                <h4>Tùy chọn có sẵn <span>Màu sắc</span></h4>
                 <ul>
                     <li><Link href="#" className="one"><i className="ti-check"></i></Link></li>
                     <li><Link href="#" className="two"><i className="ti-check"></i></Link></li>
@@ -67,7 +64,7 @@ const ProductDescription = () => {
                 </ul>
             </div>
             <div className="size">
-                <h4>Size</h4>
+                <h4>Kích cỡ</h4>
                 <ul>
                     {['S', 'M', 'L', 'XL', 'XXL'].map((size) => (
                         <li key={size}>
@@ -91,7 +88,7 @@ const ProductDescription = () => {
             </div>
             <div className="product-buy">
                 <div className="quantity">
-                    <h6>Quantity :</h6>
+                    <h6>Số lượng :</h6>
                     <div className="input-group">
                         <div className="button minus">
                             <button
@@ -126,12 +123,10 @@ const ProductDescription = () => {
                     </div>
                 </div>
                 <div className="add-to-cart">
-                    <Link href={"/cart"} className="btn">Add to cart</Link>
-                    <Link href="#" className="btn min"><FaRegHeart size={24} className="mt-2"/></Link>
-                    <Link href="#" className="btn min"><LiaCompressArrowsAltSolid size={24} className="mt-2"/></Link>
+                    <Link href={"/cart"} className="btn">Thêm vào giỏ hàng</Link>
                 </div>
                 <p className="cat">Category :<Link href="#" className="link-no-decoration">Clothing</Link></p>
-                <p className="availability">Availability : 180 Products In Stock</p>
+                <p className="availability">Tình trạng : 180 Sản phẩm còn hàng</p>
             </div>
         </div>
     );
