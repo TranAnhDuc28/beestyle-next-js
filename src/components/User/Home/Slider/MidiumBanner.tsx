@@ -11,9 +11,9 @@ export default function MediumBanner() {
                         <div className="single-banner">
                             <Image src="/img600x370.png" alt="#" width={600} height={370}/>
                             <div className="content">
-                                <p>Man&#39;s Collectons</p>
-                                <h3>Man&#39;s items <br/>Up to<span> 50%</span></h3>
-                                <Link href="#" className="link-no-decoration">Shop Now</Link>
+                                <p>Thời trang nam</p>
+                                <h3>Giảm giá<br/>Lên đến<span> 50%</span></h3>
+                                <Link href="#" className="link-no-decoration">Mua ngay</Link>
                             </div>
                         </div>
                     </div>
@@ -21,9 +21,9 @@ export default function MediumBanner() {
                         <div className="single-banner">
                             <Image src="/img600x370.png" alt="#" width={600} height={370}/>
                             <div className="content">
-                                <p>shoes women</p>
-                                <h3>mid season <br/> up to <span>70%</span></h3>
-                                <Link href="#" className="btn">Shop Now</Link>
+                                <p>Thời trang nữ</p>
+                                <h3>Giảm giá <br/> lên đến <span>70%</span></h3>
+                                <Link href="#" className="btn">Mua ngay</Link>
                             </div>
                         </div>
                     </div>
