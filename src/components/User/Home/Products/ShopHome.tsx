@@ -4,15 +4,15 @@ import Link from "next/link";
 import {FiShoppingBag} from "react-icons/fi";
 
 const products = [
-    { id: 1, title: "Licity jelly leg flat Sandals", price: "$59", image: "/img115x140.png" },
-    { id: 2, title: "Licity jelly leg flat Sandals", price: "$44", image: "/img115x140.png" },
-    { id: 3, title: "Licity jelly leg flat Sandals", price: "$89", image: "/img115x140.png" },
-    { id: 4, title: "Licity jelly leg flat Sandals", price: "$65", image: "/img115x140.png" },
-    { id: 5, title: "Licity jelly leg flat Sandals", price: "$33", image: "/img115x140.png" },
-    { id: 6, title: "Licity jelly leg flat Sandals", price: "$77", image: "/img115x140.png" },
-    { id: 7, title: "Licity jelly leg flat Sandals", price: "$22", image: "/img115x140.png" },
-    { id: 8, title: "Licity jelly leg flat Sandals", price: "$35", image: "/img115x140.png" },
-    { id: 9, title: "Licity jelly leg flat Sandals", price: "$99", image: "/img115x140.png" },
+    { id: 1, title: "Jupe Ngắn Sợi Nổi Trắng", price: "550.000 VND", image: "/img115x140.png" },
+    { id: 2, title: "Jupe Ngắn Sợi Nổi Trắng", price: "550.000 VND", image: "/img115x140.png" },
+    { id: 3, title: "Jupe Ngắn Sợi Nổi Trắng", price: "550.000 VND", image: "/img115x140.png" },
+    { id: 4, title: "Jupe Ngắn Sợi Nổi Trắng", price: "550.000 VND", image: "/img115x140.png" },
+    { id: 5, title: "Jupe Ngắn Sợi Nổi Trắng", price: "550.000 VND", image: "/img115x140.png" },
+    { id: 6, title: "Jupe Ngắn Sợi Nổi Trắng", price: "550.000 VND", image: "/img115x140.png" },
+    { id: 7, title: "Jupe Ngắn Sợi Nổi Trắng", price: "550.000 VND", image: "/img115x140.png" },
+    { id: 8, title: "Jupe Ngắn Sợi Nổi Trắng", price: "550.000 VND", image: "/img115x140.png" },
+    { id: 9, title: "Jupe Ngắn Sợi Nổi Trắng", price: "550.000 VND", image: "/img115x140.png" },
 ];
 
 function ShopHome() {
@@ -23,17 +23,7 @@ function ShopHome() {
                     <div className="col-lg-5 d-flex">
                         <div className="col-10">
                             <div className="shop-section-title">
-                                <h1>On sale</h1>
-                            </div>
-                        </div>
-                        <div className="col-10">
-                            <div className="shop-section-title">
-                                <h1>Best Seller</h1>
-                            </div>
-                        </div>
-                        <div className="col-10">
-                            <div className="shop-section-title">
-                                <h1>Top viewed</h1>
+                                <h1>Ưu đãi</h1>
                             </div>
                         </div>
                     </div>
@@ -56,9 +46,9 @@ function ShopHome() {
                                     </div>
                                     <div className="col-lg-6 col-md-6 col-12 no-padding">
                                         <div className="content">
-                                            <h5 className="title"><Link href="#"
-                                                                        className="link-no-decoration">{product.title}</Link>
-                                            </h5>
+                                            <p className="title">
+                                                <Link href="#" className="link-no-decoration text-dark">{product.title}</Link>
+                                            </p>
                                             <p className="price with-discount">{product.price}</p>
                                         </div>
                                     </div>

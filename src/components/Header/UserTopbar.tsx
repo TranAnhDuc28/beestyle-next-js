@@ -18,7 +18,7 @@ export default function TopBar() {
                                             size={18}
                                             style={{color: '#F7941D', marginRight: 7}}
                                         />
-                                        +060 (800) 801-582
+                                        +84 123 456 789
                                     </div>
                                 </li>
                                 <li>
@@ -27,7 +27,7 @@ export default function TopBar() {
                                             size={18}
                                             style={{color: '#F7941D', marginRight: 7}}
                                         />
-                                        support@shophub.com
+                                        support@beestyle.com
                                     </div>
                                 </li>
                             </ul>

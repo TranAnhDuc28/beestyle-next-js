@@ -8,9 +8,8 @@ import {FaAngleDown, FaAngleUp} from "react-icons/fa";
 export default function NavBar() {
     const [isOpen, setIsOpen] = useState(false);
 
-    const toggleCategories = () => {
-        setIsOpen(!isOpen);
-    };
+    const openCategories = () => setIsOpen(true);
+    const closeCategories = () => setIsOpen(false);
 
     const pathname = usePathname();
 
@@ -19,41 +18,42 @@ export default function NavBar() {
             <div className="container">
                 <div className="row">
                     <div className="col-lg-3">
-                        <div className="all-category">
-                            <h3 className="cat-heading" onClick={toggleCategories}>
+                        <div
+                            className="all-category"
+                            onMouseEnter={openCategories}
+                            onMouseLeave={closeCategories}
+                        >
+                            <h3 className="cat-heading">
                                 {isOpen ? (
                                     <FaAngleUp className="mr-2 arrow-icon" aria-hidden="true"/>
                                 ) : (
                                     <FaAngleDown className="mr-2 arrow-icon" aria-hidden="true"/>
                                 )}
-                                CATEGORIES
+                                DANH MỤC
                             </h3>
                             {isOpen && (
                                 <ul className="main-category">
                                     <li>
-                                        <Link href="#" className="link-no-decoration">New Arrivals <i
-                                            className="fa fa-angle-right"
-                                            aria-hidden="true"></i></Link>
+                                        <Link href="#" className="link-no-decoration">
+                                            Hàng mới về <i className="fa fa-angle-right" aria-hidden="true"></i>
+                                        </Link>
                                         <ul className="sub-category">
-                                            <li><Link href="#" className="link-no-decoration">accessories</Link></li>
-                                            <li><Link href="#" className="link-no-decoration">best selling</Link></li>
-                                            <li><Link href="#" className="link-no-decoration">top 100 offer</Link></li>
-                                            <li><Link href="#" className="link-no-decoration">sunglass</Link></li>
-                                            <li><Link href="#" className="link-no-decoration">watch</Link></li>
-                                            <li><Link href="#" className="link-no-decoration">man’s product</Link></li>
-                                            <li><Link href="#" className="link-no-decoration">ladies</Link></li>
-                                            <li><Link href="#" className="link-no-decoration">westrn dress</Link></li>
-                                            <li><Link href="#" className="link-no-decoration">denim</Link></li>
+                                            <li><Link href="#" className="link-no-decoration">Phụ kiện</Link></li>
+                                            <li><Link href="#" className="link-no-decoration">Bán chạy</Link></li>
+                                            <li><Link href="#" className="link-no-decoration">Giảm giá sốc</Link></li>
+                                            <li><Link href="#" className="link-no-decoration">Áo thun nam</Link></li>
+                                            <li><Link href="#" className="link-no-decoration">Áo polo nam</Link></li>
+                                            <li><Link href="#" className="link-no-decoration">Áo thun nữ</Link></li>
+                                            <li><Link href="#" className="link-no-decoration">Áo polo nữ</Link></li>
                                         </ul>
                                     </li>
                                     <li className="main-mega">
-                                        <Link href="#" className="link-no-decoration">best selling <i
-                                            className="fa fa-angle-right"
-                                            aria-hidden="true"></i></Link>
+                                        <Link href="#" className="link-no-decoration">
+                                            Bán chạy nhất <i className="fa fa-angle-right" aria-hidden="true"></i>
+                                        </Link>
                                         <ul className="mega-menu">
                                             <li className="single-menu">
-                                                <Link href="#" className="title-link link-no-decoration">Shop
-                                                    Kid&#39;s</Link>
+                                                <Link href="#" className="title-link link-no-decoration">Trẻ em</Link>
                                                 <div className="image">
                                                     <Image width={225} height={155}
                                                            src="https://via.placeholder.com/225x155" alt="#"/>
@@ -67,8 +67,7 @@ export default function NavBar() {
                                                 </div>
                                             </li>
                                             <li className="single-menu">
-                                                <Link href="#" className="title-link link-no-decoration">Shop
-                                                    Men&#39;s</Link>
+                                                <Link href="#" className="title-link link-no-decoration">Shop Nam</Link>
                                                 <div className="image">
                                                     <Image width={225} height={155}
                                                            src="https://via.placeholder.com/225x155" alt="#"/>
@@ -81,8 +80,7 @@ export default function NavBar() {
                                                 </div>
                                             </li>
                                             <li className="single-menu">
-                                                <Link href="#" className="title-link link-no-decoration">Shop
-                                                    Women&#39;s</Link>
+                                                <Link href="#" className="title-link link-no-decoration">Shop Nữ</Link>
                                                 <div className="image">
                                                     <Image width={225} height={155}
                                                            src="https://via.placeholder.com/225x155" alt="#"/>
@@ -97,14 +95,8 @@ export default function NavBar() {
                                             </li>
                                         </ul>
                                     </li>
-                                    <li><Link href="#" className="link-no-decoration">accessories</Link></li>
-                                    <li><Link href="#" className="link-no-decoration">top 100 offer</Link></li>
-                                    <li><Link href="#" className="link-no-decoration">sunglass</Link></li>
-                                    <li><Link href="#" className="link-no-decoration">watch</Link></li>
-                                    <li><Link href="#" className="link-no-decoration">man’s product</Link></li>
-                                    <li><Link href="#" className="link-no-decoration">ladies</Link></li>
-                                    <li><Link href="#" className="link-no-decoration">westrn dress</Link></li>
-                                    <li><Link href="#" className="link-no-decoration">denim</Link></li>
+                                    <li><Link href="#" className="link-no-decoration">Thời trang nam</Link></li>
+                                    <li><Link href="#" className="link-no-decoration">Thời trang nữ</Link></li>
                                 </ul>
                             )}
                         </div>
@@ -116,69 +108,21 @@ export default function NavBar() {
                                     <div className="nav-inner">
                                         <ul className="nav main-menu menu navbar-nav">
                                             <li className={pathname === "/home" ? "active" : ""}>
-                                                <Link href={"/home"} className="link-no-decoration px-4">Home</Link>
+                                                <Link href={"/home"} className="link-no-decoration px-4">Trang
+                                                    chủ</Link>
                                             </li>
                                             <li className={pathname === "/category" ? "active" : ""}>
-                                                <Link href={"/category"} className="link-no-decoration">Product</Link>
-                                            </li>
-                                            <li className={pathname === "/service" ? "active" : ""}>
-                                                <Link href="#" className="link-no-decoration">Service</Link>
-                                            </li>
-                                            <li className={pathname?.startsWith("/shop") ? "active" : ""}>
-                                                <Link href="#" className="link-no-decoration">
-                                                    <div className="d-flex align-items-center">
-                                                        Shop <FaAngleDown className="ml-1"/>
-                                                    </div>
-                                                    <span className="new">New</span>
-                                                </Link>
-                                                <ul className="dropdown">
-                                                    <li><Link href="#" className="link-no-decoration">Shop Grid</Link>
-                                                    </li>
-                                                    <li><Link href="#" className="link-no-decoration">Shop List</Link>
-                                                    </li>
-                                                    <li><Link href="#" className="link-no-decoration">Shop Single</Link>
-                                                    </li>
-                                                    <li><Link href="#" className="link-no-decoration">Cart</Link></li>
-                                                    <li><Link href="#" className="link-no-decoration">Checkout</Link>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                            <li className={pathname?.startsWith("/pages") ? "active" : ""}>
-                                                <Link href="#" className="link-no-decoration">
-                                                    <div className="d-flex align-items-center">
-                                                        Pages <FaAngleDown className="ml-1"/>
-                                                    </div>
-                                                </Link>
-                                                <ul className="dropdown">
-                                                    <li><Link href="#" className="link-no-decoration">About Us</Link>
-                                                    </li>
-                                                    <li><Link href="#" className="link-no-decoration">Login</Link></li>
-                                                    <li><Link href="#" className="link-no-decoration">Register</Link>
-                                                    </li>
-                                                    <li><Link href="#" className="link-no-decoration">Mail
-                                                        Success</Link></li>
-                                                    <li><Link href="#" className="link-no-decoration">404</Link></li>
-                                                </ul>
+                                                <Link href={"/category"} className="link-no-decoration">Sản phẩm</Link>
                                             </li>
                                             <li className={pathname?.startsWith("/blog") ? "active" : ""}>
                                                 <Link href="#" className="link-no-decoration">
                                                     <div className="d-flex align-items-center">
-                                                        Blog <FaAngleDown className="ml-1"/>
+                                                        Tin thời trang
                                                     </div>
                                                 </Link>
-                                                <ul className="dropdown">
-                                                    <li><Link href="#" className="link-no-decoration">Blog Grid</Link>
-                                                    </li>
-                                                    <li><Link href="#" className="link-no-decoration">Blog Grid
-                                                        Sidebar</Link></li>
-                                                    <li><Link href="#" className="link-no-decoration">Blog Single</Link>
-                                                    </li>
-                                                    <li><Link href="#" className="link-no-decoration">Blog Single
-                                                        Sidebar</Link></li>
-                                                </ul>
                                             </li>
                                             <li className={pathname === "/contact" ? "active" : ""}>
-                                                <Link href={"/contact"} className="link-no-decoration">Contact Us</Link>
+                                                <Link href={"/contact"} className="link-no-decoration">Liên hệ</Link>
                                             </li>
                                         </ul>
                                     </div>

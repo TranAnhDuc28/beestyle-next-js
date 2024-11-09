@@ -14,11 +14,16 @@ export default function Slider() {
                                     <div className="row">
                                         <div className="col-lg-7 col-12">
                                             <div className="hero-text">
-                                                <h1><span>UP TO 50% OFF </span>Shirt For Man</h1>
-                                                <p>Maboriosam in a nesciung eget magnae <br/> dapibus disting tloctio in
-                                                    the find it pereri <br/> odiy maboriosm.</p>
+                                                <h1><span>GIẢM GIÁ LÊN ĐẾN 50% </span>Shirt For Women</h1>
+                                                <p>
+                                                    Đừng bỏ lỡ cơ hội sở hữu những trang phục yêu thích của bạn – từ áo
+                                                    khoác, quần jeans, váy, áo sơ
+                                                    mi đến phụ kiện thời trang phong cách. Chương trình chỉ diễn ra
+                                                    trong thời gian giới hạn, hãy nhanh <br/>
+                                                    tay để không bỏ lỡ ưu đãi hấp dẫn này.
+                                                </p>
                                                 <div className="button">
-                                                    <Link href="#" className="btn">Shop Now!</Link>
+                                                    <Link href="#" className="btn">Mua ngay</Link>
                                                 </div>
                                             </div>
                                         </div>
