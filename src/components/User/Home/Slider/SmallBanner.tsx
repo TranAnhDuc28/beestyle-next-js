@@ -15,9 +15,9 @@ export default function SmallBanner() {
                                 height={370}
                             />
                             <div className="content">
-                                <p>Man&#39;s Collectons</p>
-                                <h3>Summer travel <br/> collection</h3>
-                                <Link href="#" className={"link-no-decoration"}>Discover Now</Link>
+                                <p>Bộ sưu tập nổi bật</p>
+                                <h3>Bộ sưu tập <br/> Du lịch mùa hè</h3>
+                                <Link href="#" className={"link-no-decoration"}>Khám phá ngay</Link>
                             </div>
                         </div>
                     </div>
@@ -30,9 +30,9 @@ export default function SmallBanner() {
                                 height={370}
                             />
                             <div className="content">
-                                <p>Bag Collectons</p>
-                                <h3>Awesome Bag <br/> 2020</h3>
-                                <Link href="#" className={"link-no-decoration"}>Shop Now</Link>
+                                <p>Bộ sưu tập thời trang nữ</p>
+                                <h3>Sản phẩm bán chạy <br/> 2024</h3>
+                                <Link href="#" className={"link-no-decoration"}>Mua ngay</Link>
                             </div>
                         </div>
                     </div>
@@ -46,8 +46,8 @@ export default function SmallBanner() {
                             />
                             <div className="content">
                                 <p>Flash Sale</p>
-                                <h3>Mid Season <br/> Up to <span>40%</span> Off</h3>
-                                <Link href="#" className={"link-no-decoration"}>Discover Now</Link>
+                                <h3>Giảm giá sốc <br/> Lên đến <span>40%</span> cho áo thun</h3>
+                                <Link href="#" className={"link-no-decoration"}>Khám phá ngay</Link>
                             </div>
                         </div>
                     </div>

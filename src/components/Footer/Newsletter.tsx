@@ -9,11 +9,11 @@ export default function Newsletter() {
                     <div className="row">
                         <div className="col-lg-8 offset-lg-2 col-12">
                             <div className="inner">
-                                <h4>Newsletter</h4>
-                                <p> Subscribe to our newsletter and get <span>10%</span> off your first purchase</p>
+                                <h4 className="mb-3">Tin tức</h4>
+                                <p> Đăng ký nhận bản tin của chúng tôi để nhận được giảm giá <span>10%</span> cho lần mua hàng đầu tiên của bạn.</p>
                                 <Form action="" method="get" target="_blank" className="newsletter-inner">
-                                    <Input className="newsletter-input" name="EMAIL" placeholder="Your email address" required type="email" />
-                                    <button className="btn">Subscribe</button>
+                                    <Input className="newsletter-input" name="EMAIL" placeholder="Nhập email của bạn" required type="email" />
+                                    <button className="btn">Đăng ký ngay</button>
                                 </Form>
                             </div>
                         </div>

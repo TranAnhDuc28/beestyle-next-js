@@ -711,7 +711,7 @@
 }
 
 .header.shop .top-contact {
-    margin-top: 0px;
+    margin-top: 0;
 }
 
 /* Header Middle */
@@ -724,12 +724,28 @@
     display: inline-block;
     background: #fff;
     position: relative;
-    width: 535px;
-    height: 50px;
-    margin: 0;
+    width: 535px !important;
+    height: 55px;
     line-height: 45px;
-    border-radius: 5px;
+    border-radius: 50px;
     border: 1px solid #ececec;
+}
+
+.header.shop .search-bar:hover {
+    border: 1px solid #F7941D;
+}
+
+.header.shop .search-bar:hover .search-icon {
+    color: #F7941D;
+}
+
+.search-icon {
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 20px
+}
+
+.search-result:hover .search-prices {
+    color: #ffffff;
 }
 
 .header.shop .nice-select {
@@ -903,7 +919,7 @@
     background: #fff;
     width: 220px;
     position: absolute;
-    left: 238px;
+    left: 253px;
     top: 0;
     z-index: 999999;
     opacity: 0;
@@ -940,7 +956,7 @@
     display: inline-block;
     height: auto;
     position: absolute;
-    left: 238px;
+    left: 253px;
     top: 0;
     z-index: 99999;
     background: #fff;
@@ -1015,13 +1031,12 @@
 }
 
 .header.shop .main-category li .mega-menu .single-menu .inner-link a:last-child {
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .header.shop .menu-origin {
     float: none;
     display: inline-block;
-    float: right;
 }
 
 .header.shop .nav li {
@@ -3904,7 +3919,7 @@
 ========================================*/
 
 /*======================================
-   Login & Register CSS
+   Login & RegisterFormComponent CSS
 ========================================*/
 .shop.login {
     padding: 100px 0;
@@ -5436,7 +5451,7 @@
 }
 
 .contact-us .form-main {
-    box-shadow: 0px 0px 15px #0000001a;
+    box-shadow: 0 0 15px #0000001a;
     padding: 50px;
 }
 
@@ -5814,6 +5829,7 @@
 }
 
 .product-card {
+    height: 550px;
     background-color: #fff;
     border: 0;
     position: relative;
@@ -5950,6 +5966,31 @@
 .ant-checkbox-wrapper:hover .ant-checkbox .ant-checkbox-inner {
     border-color: #333 !important;
 }
+
+.price-hover:hover {
+    color: #ffffff !important;
+}
+
+.custom-tabs .ant-tabs-tab {
+    color: #333;
+}
+
+.custom-tabs .ant-tabs-tab-active {
+    color: #F7941D;
+}
+
+.custom-tabs .ant-tabs-ink-bar {
+    background-color: #F7941D;
+}
+
+.custom-tabs .ant-tabs-tab:nth-child(1).ant-tabs-tab-active {
+    color: #F7941D;
+}
+
+.custom-tabs .ant-tabs-tab:nth-child(1) .ant-tabs-ink-bar {
+    background-color: #F7941D;
+}
+
 
 
 

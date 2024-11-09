@@ -13,27 +13,23 @@ export default function MenuProductArea() {
             <ul className="nav nav-tabs" id="myTab" role="tablist">
                 <li className="nav-item">
                     <Link href="#" className={`nav-link ${pathname === '/home' ? 'active' : ''}`}
-                          role="tab">Man</Link>
+                          role="tab">Nam</Link>
                 </li>
                 <li className="nav-item">
                     <Link href="#" className={`nav-link ${pathname === '/woman' ? 'active' : ''}`}
-                          role="tab">Woman</Link>
+                          role="tab">Nữ</Link>
                 </li>
                 <li className="nav-item">
                     <Link href="#" className={`nav-link ${pathname === '/kids' ? 'active' : ''}`}
-                          role="tab">Kids</Link>
-                </li>
-                <li className="nav-item">
-                    <Link href="#" className={`nav-link ${pathname === '/accessories' ? 'active' : ''}`}
-                          role="tab">Accessories</Link>
+                          role="tab">Trẻ em</Link>
                 </li>
                 <li className="nav-item">
                     <Link href="#" className={`nav-link ${pathname === '/essential' ? 'active' : ''}`}
-                          role="tab">Essential</Link>
+                          role="tab">Phổ biến</Link>
                 </li>
                 <li className="nav-item">
                     <Link href="#" className={`nav-link ${pathname === '/prices' ? 'active' : ''}`}
-                          role="tab">Prices</Link>
+                          role="tab">Ưu đãi</Link>
                 </li>
             </ul>
         </div>
