@@ -7,6 +7,8 @@ export const URL_API_PRODUCT = {
     create: '/admin/product/create',
     update: '/admin/product/update',
     delete: '/admin/product/delete',
+    search: '/admin/product/search',
+    filter: '/admin/product/filter',
     productVariant: '/admin/productVariant',
     updateProductVariant: '/admin/productVariant/updates'
 };

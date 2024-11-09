@@ -1,10 +1,13 @@
 import {IProductImage} from "@/types/IProductImage";
-import {IProductVariant, IProductVariantCreate} from "@/types/IProductVariant";
+import {IProductVariantCreate} from "@/types/IProductVariant";
 
 export interface IProduct {
     id: number;
+    productCode?: string;
     productName?: string;
     imageUrl?: string;
+    totalProductInStock?: number;
+    minSalePrice?: number;
     categoryId?: number;
     categoryName?: string;
     gender?: string;

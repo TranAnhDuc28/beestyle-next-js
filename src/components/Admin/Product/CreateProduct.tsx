@@ -164,26 +164,26 @@ const CreateProduct = (props: IProps) => {
             productVariantRows.map(({key, productVariantName, ...rest}) => rest);
         const product: IProductCreate = {...value, productVariants};
         console.log('Success json:', JSON.stringify(product, null, 2));
-        // setConfirmLoading(true);
-        // try {
-        //     const result = await createProduct(product);
-        //     mutate();
-        //     if (result.data) {
-        //         handleCloseCreateModal();
-        //         setConfirmLoading(false);
-        //         showNotification("success", {message: result.message});
-        //     }
-        // } catch (error: any) {
-        //     setConfirmLoading(false);
-        //     const errorMessage = error?.response?.data?.message;
-        //     if (errorMessage && typeof errorMessage === 'object') {
-        //         Object.entries(errorMessage).forEach(([field, message]) => {
-        //             showNotification("error", {message: String(message)});
-        //         });
-        //     } else {
-        //         showNotification("error", {message: error?.message, description: errorMessage,});
-        //     }
-        // }
+        setConfirmLoading(true);
+        try {
+            const result = await createProduct(product);
+            mutate();
+            if (result.data) {
+                handleCloseCreateModal();
+                setConfirmLoading(false);
+                showNotification("success", {message: result.message});
+            }
+        } catch (error: any) {
+            setConfirmLoading(false);
+            const errorMessage = error?.response?.data?.message;
+            if (errorMessage && typeof errorMessage === 'object') {
+                Object.entries(errorMessage).forEach(([field, message]) => {
+                    showNotification("error", {message: String(message)});
+                });
+            } else {
+                showNotification("error", {message: error?.message, description: errorMessage,});
+            }
+        }
     }
 
     const itemTabs: TabsProps['items'] = [
