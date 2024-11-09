@@ -36,7 +36,7 @@ const useAddress = () => {
 
  
 
-  // Khởi tạo dữ liệu tỉnh khi hook khởi tạo
+  // Khởi tạo dữ liệu tỉnh khi hooks khởi tạo
   useEffect(() => {
     fetchProvinces();
   }, []);
