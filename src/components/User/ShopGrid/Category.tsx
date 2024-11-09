@@ -3,7 +3,7 @@ import Link from "next/link";
 const Category = () => {
     return (
         <div className="single-widget category">
-            <h3 className="title">Categories</h3>
+            <h3 className="title">Danh mục</h3>
             <ul className="categor-list">
                 <li><Link className="link-no-decoration" href="#">T-shirts</Link></li>
                 <li><Link className="link-no-decoration" href="#">jacket</Link></li>

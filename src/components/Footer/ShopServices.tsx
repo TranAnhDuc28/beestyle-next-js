@@ -12,8 +12,8 @@ export default function ShopServices() {
                             <div className="single-service">
                                 <i><IoRocketOutline/></i>
                                 <div className="ml-14">
-                                    <h4>Free Shipping</h4>
-                                    <p>Orders over $100</p>
+                                    <h4>Miễn phí vận chuyển</h4>
+                                    <p>Dành cho đơn hàng từ 500.000 đ</p>
                                 </div>
                             </div>
                         </div>
@@ -22,8 +22,8 @@ export default function ShopServices() {
                                 <div className="single-service">
                                     <i><IoReloadSharp/></i>
                                     <div className="ml-14">
-                                        <h4>Free Return</h4>
-                                        <p>Within 30 days returns</p>
+                                        <h4>Miễn phí đổi trả</h4>
+                                        <p>Trả hàng trong vòng 30 ngày</p>
                                     </div>
                                 </div>
                             </div>
@@ -33,8 +33,8 @@ export default function ShopServices() {
                                 <div className="single-service">
                                     <i><CiLock/></i>
                                     <div className="ml-14">
-                                        <h4>Secure Payment</h4>
-                                        <p>100% secure payment</p>
+                                        <h4>Thanh toán an toàn</h4>
+                                        <p>Thanh toán an toàn 100%</p>
                                     </div>
                                 </div>
                             </div>
@@ -43,8 +43,8 @@ export default function ShopServices() {
                             <div className="single-service">
                                 <i><IoPricetagsOutline/></i>
                                 <div className="ml-14">
-                                    <h4>Best Price</h4>
-                                    <p>Guaranteed price</p>
+                                    <h4>Giá tốt nhất</h4>
+                                    <p>Mua hàng ngay với mức giá ưu đãi</p>
                                 </div>
                             </div>
                         </div>
