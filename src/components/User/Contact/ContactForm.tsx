@@ -1,5 +1,6 @@
 import { Form, Input, Button } from 'antd';
 import '@/css/user/styles/checkout.module.css';
+import Image from "next/image";
 
 const ContactForm = () => {
     const [form] = Form.useForm();
@@ -11,9 +12,9 @@ const ContactForm = () => {
     return (
         <div className="col-lg-8 col-12">
             <div className="form-main">
-                <div className="title">
-                    <h4>Get in touch</h4>
-                    <h3>Write us a message</h3>
+                <div className="title mb-5">
+                    <h4 className="mb-2">Nếu bạn đang gặp vấn đề</h4>
+                    <h3>Gửi tin nhắn ngay cho chúng tôi</h3>
                 </div>
                 <Form
                     form={form}
@@ -25,55 +26,55 @@ const ContactForm = () => {
                         <div className="col-lg-6 col-12">
                             <Form.Item
                                 name="name"
-                                label="Your Name"
-                                rules={[{ required: true, message: 'Please enter your name' }]}
+                                label="Tên khách hàng"
+                                rules={[{ required: true, message: 'Vui lòng nhập tên của bạn!' }]}
                             >
-                                <Input rootClassName={"input-checkout"} placeholder="Your Name" />
+                                <Input rootClassName={"input-checkout"} placeholder="Nhập vào tên đầy đủ của bạn" />
                             </Form.Item>
                         </div>
                         <div className="col-lg-6 col-12">
                             <Form.Item
                                 name="subject"
-                                label="Your Subject"
-                                rules={[{ required: true, message: 'Please enter the subject' }]}
+                                label="Tiêu đề"
+                                rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}
                             >
-                                <Input rootClassName={"input-checkout"} placeholder="Your Subject" />
+                                <Input rootClassName={"input-checkout"} placeholder="Nhập vào chủ đề bạn muốn được hỗ trợ" />
                             </Form.Item>
                         </div>
-                        <div className="col-lg-6 col-12">
-                            <Form.Item
-                                name="email"
-                                label="Your Email"
-                                rules={[
-                                    { required: true, message: 'Please enter your email' },
-                                    { type: 'email', message: 'Please enter a valid email' }
-                                ]}
-                            >
-                                <Input rootClassName={"input-checkout"} placeholder="Your Email" />
-                            </Form.Item>
-                        </div>
-                        <div className="col-lg-6 col-12">
+                        <div className="col-lg-6 col-12 mt-2">
                             <Form.Item
                                 name="phone"
-                                label="Your Phone"
-                                rules={[{ required: true, message: 'Please enter your phone number' }]}
+                                label="Số điện thoại"
+                                rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
                             >
-                                <Input rootClassName={"input-checkout"} placeholder="Your Phone" />
+                                <Input rootClassName={"input-checkout"} placeholder="Nhập vào số điện thoại của bạn" />
                             </Form.Item>
                         </div>
-                        <div className="col-12">
+                        <div className="col-lg-6 col-12 mt-2">
+                            <Form.Item
+                                name="email"
+                                label="Email"
+                            >
+                                <Input rootClassName={"input-checkout"} placeholder="Nhập vào địa chỉ email của bạn" />
+                            </Form.Item>
+                        </div>
+                        <div className="col-12 mt-2">
                             <Form.Item
                                 name="message"
-                                label="Your Message"
-                                rules={[{ required: true, message: 'Please enter your message' }]}
+                                label="Nội dung"
+                                rules={[{ required: true, message: 'Vui lòng nhập nội dung!' }]}
                             >
-                                <Input.TextArea placeholder="Your Message" rows={4} />
+                                <Input.TextArea placeholder="Nhập vào mô tả cụ thể về vấn đề cần được hỗ trợ" rows={4} />
                             </Form.Item>
                         </div>
-                        <div className="col-12">
+                        <div className="col-12 mt-2">
                             <Form.Item className="form-group button">
-                                <Button type="primary" htmlType="submit">
-                                    Send Message
+                                <Button
+                                    type="primary"
+                                    className="btn btn-dark px-5"
+                                    htmlType="submit"
+                                >
+                                    Gửi yêu cầu
                                 </Button>
                             </Form.Item>
                         </div>
