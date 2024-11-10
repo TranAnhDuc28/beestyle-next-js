@@ -110,10 +110,6 @@ function MostPopularProduct() {
                                                             <TiEye size={20} className="icon-action"/>
                                                             <span className="action-tooltip">Quick Shop</span>
                                                         </a>
-                                                        <Link href="#" className="overlay-action">
-                                                            <TiChartPie size={20} className="icon-action"/>
-                                                            <span className="action-tooltip">So sánh</span>
-                                                        </Link>
                                                     </div>
                                                 </div>
                                             </div>

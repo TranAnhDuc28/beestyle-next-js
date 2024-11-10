@@ -242,6 +242,7 @@
     background-color: #fff;
     border-bottom: 1px solid #e2e2e2;
     padding: 15px 0;
+
 }
 
 /* Logo */
@@ -417,12 +418,12 @@
     color: #F7941D;
 }
 
-/* Topbar Left Nav */
-.header.shop .left-nav {
-}
-
 .header.shop .top-left .list-main li:first-child {
     padding-left: 0;
+}
+
+.list-main {
+    margin-bottom: 0 !important;
 }
 
 .header.shop .top-left .list-main li i {
@@ -1383,69 +1384,6 @@
     -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
     -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-}
-
-.hero-slider {
-    background: #fff;
-    overflow: hidden;
-}
-
-.hero-slider .single-slider {
-    height: auto;
-    background-image: url('https://bizweb.dktcdn.net/100/462/587/themes/880841/assets/slider_1.jpg?1724310613023');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 450px;
-}
-
-.hero-slider .text-inner {
-}
-
-.hero-slider .hero-text {
-    padding: 0 30px;
-    margin-top: 100px;
-}
-
-.hero-slider .hero-text h1 {
-    line-height: 50px;
-    font-size: 47px;
-    font-weight: 700;
-    color: #F7941D;
-    margin-bottom: 20px;
-}
-
-.hero-slider .hero-text h1 span {
-    font-size: 20px;
-    display: block;
-    margin-bottom: 12px;
-    color: #333;
-    font-weight: 700;
-    line-height: initial;
-}
-
-.hero-slider .hero-text p {
-    color: #333;
-    margin-bottom: 35px;
-}
-
-.hero-slider .hero-text .button {
-    margin: 0;
-}
-
-.hero-slider .hero-text .btn {
-    color: #fff;
-    background: #333;
-    padding: 13px 30px;
-    line-height: initial;
-    border: none;
-    height: auto;
-    z-index: 0;
-}
-
-.hero-slider .hero-text .btn:hover {
-    background: #F7941D;
-    color: #fff;
 }
 
 /* Start Hero Area 2 CSS */
@@ -3001,9 +2939,6 @@
 
 }
 
-.shop.single .single-des ul {
-}
-
 .shop.single .single-des ul li {
     color: #555;
     display: block;
@@ -3097,9 +3032,6 @@
     font-size: 14px;
     font-weight: 600;
     line-height: 18px;
-}
-
-.shop.single .ratting-main .single-rating ul {
 }
 
 .shop.single .ratting-main .single-rating ul li {
@@ -3608,9 +3540,6 @@
 
 .shopping-cart .total-amount .right {
     padding-left: 100px;
-}
-
-.shopping-cart .total-amount .right ul {
 }
 
 .shopping-cart .total-amount .right ul li {
@@ -4321,7 +4250,7 @@
 ========================================*/
 .shop-services.section {
     padding: 80px 0 0 0;
-    background: #fff;
+    background: #eee !important;
 }
 
 .shop-services.home {
@@ -5660,9 +5589,6 @@
     font-weight: 600;
 }
 
-.footer .links ul {
-}
-
 .footer .links ul li {
     display: block;
     margin-bottom: 8px;
@@ -5680,15 +5606,6 @@
 .footer .links ul li a:hover {
     color: #F7941D;
     padding-left: 10px;
-}
-
-.footer .social {
-}
-
-.footer .social .contact {
-}
-
-.footer .social .contact ul {
 }
 
 .footer .social .contact ul li {

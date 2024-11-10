@@ -52,12 +52,17 @@ const TabBarExtraContentLeft: React.FC = () => {
 
     useEffect(() => {
         // kiểm tra 2 mảng có giống nhau không
+        if (transformedOptions?.length !== options?.length) {
+            setOptions(transformedOptions);
+            return;
+        }
+
         const optionsChanged = transformedOptions.some((newOption, index) => {
             console.log(options?.[index]?.value);
             return newOption.value !== options?.[index]?.value;
         });
-
         if (optionsChanged) setOptions(transformedOptions);
+
     }, [debounceSearchValue, dataOptionSearchProduct]);
 
     return (
