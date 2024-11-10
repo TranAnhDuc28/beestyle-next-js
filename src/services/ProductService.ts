@@ -28,6 +28,9 @@ export const updateProduct = async (data: IProduct) => {
     return response.data;
 }
 
+
+
+
 export const getProductDetails = async (productId: number) => {
     try {
         const response = await httpInstance.get(`${URL_API_PRODUCT.productVariant}?productIds=${productId}`);

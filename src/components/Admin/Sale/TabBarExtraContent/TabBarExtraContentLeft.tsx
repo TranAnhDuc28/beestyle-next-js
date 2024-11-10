@@ -5,6 +5,7 @@ import {SearchOutlined} from "@ant-design/icons";
 import {useDebounce} from "use-debounce";
 import useSearchProduct from "@/components/Admin/Product/hooks/useSearchProduct";
 import {IProduct} from "@/types/IProduct";
+import ModalListProductVariant from "@/components/Admin/Sale/ModalListProductVariant";
 
 const {Text, Title} = Typography;
 
@@ -28,7 +29,7 @@ const transformOptions = (data: IProduct[]) => {
 }
 
 const TabBarExtraContentLeft: React.FC = () => {
-    const [open, setOpen] = useState(false);
+    const [isOpenModalListProductVariant, setOpenModalListProductVariant] = useState(false);
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debounceSearchValue] = useDebounce(searchTerm, 500);
@@ -42,7 +43,7 @@ const TabBarExtraContentLeft: React.FC = () => {
 
     const handleSelect = useCallback((value: string) => {
         console.log("Selected product ID:", value);
-        setOpen(true)
+        setOpenModalListProductVariant(true)
         setSearchTerm("");
         setOptions([]);
     }, []);
@@ -76,17 +77,10 @@ const TabBarExtraContentLeft: React.FC = () => {
                         <Empty description="Không có kết quả tìm kiếm"/> : null
                 }
             />
-            <Modal
-                title="Modal 1000px width"
-                maskClosable
-                style={{top: 100}}
-                open={open}
-                onOk={() => setOpen(false)}
-                onCancel={() => setOpen(false)}
-                width={1000}
-            >
-                <Title>some contents...</Title>
-            </Modal>
+            <ModalListProductVariant
+                isOpenModalListProductVariant={isOpenModalListProductVariant}
+                setOpenModalListProductVariant={setOpenModalListProductVariant}
+            />
         </>
     )
 }
