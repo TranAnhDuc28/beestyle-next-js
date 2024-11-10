@@ -87,7 +87,7 @@ export default function MiddleBar() {
     };
 
     return (
-        <div className="middle-inner">
+        <div className="middle-inner" style={{paddingBottom: 25}}>
             <div className="container">
                 <div className="row">
                     <div className="col-lg-2 col-md-2 col-12">
@@ -124,7 +124,6 @@ export default function MiddleBar() {
                                         value={value}
                                         options={options}
                                         onSelect={onSelect}
-                                        // onSearch={(text) => setOptions(getPanelValue(text))}
                                         onSearch={handleSearch}
                                         onChange={onChange}
                                         className="search-bar"
