@@ -18,22 +18,22 @@ const ProductList = ({product}) => {
                 <div className="button-head">
                     <div className="product-action-2 ml-2">
                         <Link title="Add to cart" className="link-no-decoration link-action" href="#">
-                            Add to cart
+                            Thêm vào giỏ hàng
                         </Link>
                     </div>
                     <div className="product-action mt-3 mr-2">
                         <Link href="#" className="link-action" title="Quick View">
                             <TiEye size={18}/>
-                            <span style={{marginLeft: '0.5rem'}}>Quick Shop</span>
+                            <span style={{marginLeft: '0.5rem'}}>Xem nhanh</span>
                         </Link>
-                        <Link href="#" className="link-action" title="Wishlist">
-                            <TiHeart size={18}/>
-                            <span style={{marginLeft: '0.5rem'}}>Add to Wishlist</span>
-                        </Link>
-                        <Link href="#" className="link-action" title="Compare">
-                            <TiChartPie size={18}/>
-                            <span style={{marginLeft: '0.5rem'}}>Add to Compare</span>
-                        </Link>
+                        {/*<Link href="#" className="link-action" title="Wishlist">*/}
+                        {/*    <TiHeart size={18}/>*/}
+                        {/*    <span style={{marginLeft: '0.5rem'}}>Add to Wishlist</span>*/}
+                        {/*</Link>*/}
+                        {/*<Link href="#" className="link-action" title="Compare">*/}
+                        {/*    <TiChartPie size={18}/>*/}
+                        {/*    <span style={{marginLeft: '0.5rem'}}>Add to Compare</span>*/}
+                        {/*</Link>*/}
                     </div>
                 </div>
 
