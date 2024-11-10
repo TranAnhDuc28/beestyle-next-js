@@ -3,7 +3,6 @@ import RecentPosts from './RecentPosts';
 import Manufacturers from './Manufacturers';
 import ProductList from './ProductsList';
 import FilterProduct from "@/components/User/ShopGrid/FilterProduct";
-import Newsletter from "@/components/Footer/Newsletter";
 import ShopByPrice from "@/components/User/ShopGrid/ShopByPrice";
 
 const Product = () => {
@@ -67,9 +66,6 @@ const Product = () => {
                             ))}
                         </div>
                     </div>
-                </div>
-                <div className="row mt-5">
-                    <Newsletter/>
                 </div>
             </div>
         </section>

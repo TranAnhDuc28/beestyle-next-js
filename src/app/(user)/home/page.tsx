@@ -7,7 +7,6 @@ import ShopBlog from "@/components/User/Home/Products/ShopBlog";
 import React from "react";
 import Slider from "@/components/User/Home/Slider/UserSlider";
 import ShopServices from "@/components/Footer/ShopServices";
-import Newsletter from "@/components/Footer/Newsletter";
 import {Content} from "antd/es/layout/layout";
 import {Metadata} from "next";
 
@@ -29,7 +28,6 @@ export default function HomeProduct() {
                 <ShopBlog/>
             </Content>
             <ShopServices/>
-            <Newsletter/>
         </>
     )
 }
