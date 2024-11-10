@@ -15,8 +15,9 @@ import {PlusOutlined} from "@ant-design/icons";
 import CreateCategory from "@/components/Admin/Category/CreateCategory";
 import CreateBrand from "@/components/Admin/Brand/CreateBrand";
 import CreateMaterial from "@/components/Admin/Material/CreateMaterial";
-import {updateProduct} from "@/services/ProductService";
+import {updateProduct, URL_API_PRODUCT} from "@/services/ProductService";
 import TextArea from "antd/es/input/TextArea";
+import {mutate} from "swr";
 
 type CreateFastModalType = "category" | "material" | "brand";
 
@@ -30,7 +31,7 @@ interface IProps {
 
 const UpdateProduct: React.FC<IProps> = (props) => {
     const {showNotification} = useAppNotifications();
-    const {isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate} = props;
+    const {isUpdateModalOpen, setIsUpdateModalOpen, mutate: mutateProduct, dataUpdate, setDataUpdate} = props;
     const [form] = Form.useForm();
 
     const [modalOpen, setModalOpen] = useState({
@@ -89,13 +90,19 @@ const UpdateProduct: React.FC<IProps> = (props) => {
                     ...value, id: dataUpdate.id
                 }
                 const result = await updateProduct(data);
-                mutate();
+                mutateProduct();
                 if (result.data) {
                     handleCloseUpdateModal();
                     setConfirmLoading(false);
                     showNotification("success", {message: result.message});
                 }
             }
+
+            // refresh product màn bán hàng
+            await mutate((key: any) => typeof key === 'string' && key.startsWith(URL_API_PRODUCT.filter), undefined,
+                {revalidate: true}
+            );
+
         } catch (error: any) {
             setConfirmLoading(false);
             const errorMessage = error?.response?.data?.message;

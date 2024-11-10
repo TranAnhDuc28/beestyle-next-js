@@ -7,6 +7,8 @@ export const URL_API_PRODUCT = {
     create: '/admin/product/create',
     update: '/admin/product/update',
     delete: '/admin/product/delete',
+    search: '/admin/product/search',
+    filter: '/admin/product/filter',
     productVariant: '/admin/productVariant',
     updateProductVariant: '/admin/productVariant/updates'
 };
@@ -25,6 +27,9 @@ export const updateProduct = async (data: IProduct) => {
     const response = await httpInstance.put(`${URL_API_PRODUCT.update}/${data.id}`, data);
     return response.data;
 }
+
+
+
 
 export const getProductDetails = async (productId: number) => {
     try {
