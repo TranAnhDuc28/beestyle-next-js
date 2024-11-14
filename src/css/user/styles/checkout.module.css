@@ -103,12 +103,15 @@
     font-weight: bold;
     color: #333;
 }
-
+.delivery-radio-group{
+    display: flex;
+    justify-content: space-around;
+}
 .delivery-radio-group .ant-radio-button-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 210px;
+    width: 200px;
     height: 90px;
     border: 1px solid #d9d9d9;
     border-radius: 8px;
@@ -129,6 +132,7 @@
 }
 
 .delivery-radio-group .ant-radio-button-wrapper:not(.selected) {
+    
     background-color: #fafafa;
 }
 

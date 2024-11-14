@@ -42,7 +42,7 @@ const TotalAmount = () => {
                         </ul>
                         <div className="button5">
                             <Link
-                                href="#"
+                                href="/checkout"
                                 className="btn btn-dark d-flex align-items-center justify-content-center"
                             >
                                 Thanh toán

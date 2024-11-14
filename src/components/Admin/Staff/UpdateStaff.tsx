@@ -143,7 +143,7 @@ const UpdateStaff = (props: IProps) => {
         <Form.Item
           label="Ngày sinh"
           name="dateOfBirth"
-          rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
+          // rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
         >
           <DatePicker format={"YYYY-MM-DD"} style={{ width: "100%" }} />
         </Form.Item>
@@ -151,7 +151,7 @@ const UpdateStaff = (props: IProps) => {
         <Form.Item
           label="Giới tính"
           name="gender"
-          rules={[{ required: true, message: "Vui lòng nhập giới tính!" }]}
+          // rules={[{ required: true, message: "Vui lòng nhập giới tính!" }]}
         >
           <Select
             options={(
@@ -162,7 +162,7 @@ const UpdateStaff = (props: IProps) => {
         <Form.Item
           name="status"
           label="Trạng thái"
-          rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
+          // rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
         >
           <Select
             options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
@@ -173,7 +173,7 @@ const UpdateStaff = (props: IProps) => {
         <Form.Item
           label="Địa chỉ"
           name="address"
-          rules={[{ required: false, message: "Vui lòng nhập địa chỉ!" }]}
+          // rules={[{ required: false, message: "Vui lòng nhập địa chỉ!" }]}
         >
           <Input.TextArea rows={4} />
         </Form.Item>

@@ -10,7 +10,7 @@ export const URL_API_ADDRESS = {
   }
 
   
-  export const createAddress = async (data: IAddress) => {
+  export const createAddress = async (data: any) => {
     const response = await httpInstance.post(URL_API_ADDRESS.creat,data)
     return response.data
   }

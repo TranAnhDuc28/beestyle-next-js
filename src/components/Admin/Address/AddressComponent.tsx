@@ -23,8 +23,7 @@ const AddressComponent = () => {
   const [expandedKey, setExpandedKey] = useState<number | null>(null);
 
 
-  const handleUpdate = (values: any) => {
-    console.log("Updated values:", values);
+  const handleUpdate = () => {
     setExpandedKey(null); // Đóng form sau khi cập nhật
   };
  
@@ -88,21 +87,7 @@ const AddressComponent = () => {
   const columns: ColumnType<IAddress>[] = [
     {
       title: "",
-      render: (text: any, record: IAddress, index: number) => (
-        <div className="flex gap-3">
-          <Tooltip placement="top" title="Cập nhật">
-            <EditTwoTone
-              twoToneColor={"#f57800"}
-              style={{
-                cursor: "pointer",
-                padding: "5px",
-                border: "1px solid #f57800",
-                borderRadius: "5px",
-              }}
-            />
-          </Tooltip>
-        </div>
-      ),
+
     },
     {
       title: "Địa chỉ",
@@ -110,7 +95,10 @@ const AddressComponent = () => {
       key: "addressName",
       render: (address, record) => (
         <div>
-          <span>{address}</span>
+          <span>
+            
+            { address?`${address}, ${record.commune || ""}, ${record.district || ""}, ${record.city || ""}`:`${record.commune || ""}, ${record.district || ""}, ${record.city || ""}`}
+          </span>
           {record.default && (
             <Tag color="green" style={{ marginLeft: 8 }}>
               Default
@@ -119,6 +107,7 @@ const AddressComponent = () => {
         </div>
       ),
     },
+    
     {
       title: "",
       dataIndex: "action",
@@ -152,12 +141,10 @@ const AddressComponent = () => {
     result = data?.data;
     console.log(result);
   }
-  // Lấy tất cả các mảng addresses từ items và gộp thành một mảng duy nhất
   const allAddresses = result?.items
-    .map((item: any) => item.customer?.addresses || []) // Lấy addresses từ từng customer hoặc mảng rỗng nếu không có
-    .flat(); // Gộp tất cả các mảng con thành một mảng duy nhất
-
-  console.log(allAddresses);
+  .map((item: any) => item.customer?.addresses || [])
+  .flat()
+  .sort((a: IAddress, b: IAddress) => (b.default ? 1 : 0) - (a.default ? 1 : 0)); // Sắp xếp để `default: true` lên đầu
 
   return (
     <div>
@@ -179,7 +166,7 @@ const AddressComponent = () => {
             expandedKey === record.id ? (
               <UpdateAddress
                 initialValues={record}
-                onSubmit={handleUpdate}
+                hanldeClose={handleUpdate}
                 key={record.id}
                 mutate={mutate}
               />
