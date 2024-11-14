@@ -1,7 +1,33 @@
 * {
     font-family: var(--font-poppins), sans-serif !important;
 }
-
+/* Tùy chỉnh pagination Ant Design */
+.ant-pagination .ant-pagination-item {
+    border-radius: 50%; /* Tạo hình tròn cho các nút */
+    width: 32px; /* Đặt kích thước cho các nút */
+    height: 32px;
+    line-height: 30px; /* Căn giữa nội dung trong nút */
+    text-align: center; /* Căn giữa chữ */
+    color: #333; /* Màu chữ mặc định là đen */
+  }
+  
+  /* Tùy chỉnh màu nền và chữ khi hover */
+  .ant-pagination .ant-pagination-item:hover {
+    background-color: #333; /* Màu nền khi hover */
+    color: white; /* Màu chữ khi hover */
+  }
+  
+  /* Tùy chỉnh màu nền và chữ khi nút đang được chọn */
+  .ant-pagination .ant-pagination-item-active {
+    background-color: #333; /* Màu nền khi nút đang được chọn */
+    color: white; /* Màu chữ khi nút đang được chọn */
+  }
+  
+  /* Loại bỏ viền dưới cho pagination */
+  .ant-pagination-item {
+    border: none;
+  }
+  
 .color-plate {
     position: fixed;
     display: block;
