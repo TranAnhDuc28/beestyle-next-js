@@ -89,7 +89,7 @@ function ProductArea() {
                                                                     <div className="product-action-2 ml-2">
                                                                         <Link title="Add to cart"
                                                                               className="link-no-decoration link-action"
-                                                                              href="#">
+                                                                              href="/cart">
                                                                             Thêm vào giỏ hàng
                                                                         </Link>
                                                                     </div>

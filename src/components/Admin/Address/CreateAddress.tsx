@@ -55,7 +55,7 @@ const CreateAddress = (props: IProps) => {
         name="province"
         rules={[{ required: true, message: "Vui lòng chọn tỉnh!" }]}
       >
-        <Spin spinning={loading.provinces}>
+        
           <Select
             onChange={(value) => {
               const province = provinces.find((prov) => prov.code === value);
@@ -67,6 +67,7 @@ const CreateAddress = (props: IProps) => {
             }}
             placeholder="Chọn tỉnh"
             style={{ width: "100%" }}
+            loading={loading.provinces}
           >
             {provinces.map((province) => (
               <Select.Option key={province.code} value={province.code}>
@@ -74,7 +75,6 @@ const CreateAddress = (props: IProps) => {
               </Select.Option>
             ))}
           </Select>
-        </Spin>
       </Form.Item>
 
       <Form.Item
@@ -82,7 +82,7 @@ const CreateAddress = (props: IProps) => {
         name="district"
         rules={[{ required: true, message: "Vui lòng chọn huyện!" }]}
       >
-        <Spin spinning={loading.districts}>
+        
           <Select
             onChange={(value) => {
               const district = districts.find((dist) => dist.code === value);
@@ -95,6 +95,7 @@ const CreateAddress = (props: IProps) => {
             placeholder="Chọn huyện"
             style={{ width: "100%" }}
             value={selected.district || undefined} // Đảm bảo hiển thị đúng giá trị hiện tại
+            loading={loading.districts}
           >
             {districts && districts.length > 0 ? (
               districts.map((district) => (
@@ -106,7 +107,6 @@ const CreateAddress = (props: IProps) => {
               <Select.Option disabled>Chọn huyện</Select.Option>
             )}
           </Select>
-        </Spin>
       </Form.Item>
 
       <Form.Item
@@ -114,7 +114,7 @@ const CreateAddress = (props: IProps) => {
         name="ward"
         rules={[{ required: true, message: "Vui lòng chọn xã!" }]}
       >
-        <Spin spinning={loading.wards}>
+       
           <Select
             onChange={(value) => {
               const ward = wards.find((war) => war.code === value);
@@ -126,6 +126,7 @@ const CreateAddress = (props: IProps) => {
             placeholder="Chọn xã"
             style={{ width: "100%" }}
             value={selected.ward || undefined} // Đảm bảo hiển thị đúng giá trị hiện tại
+            loading={loading.wards}
           >
             {wards && wards.length > 0 ? (
               wards.map((ward) => (
@@ -137,7 +138,6 @@ const CreateAddress = (props: IProps) => {
               <Select.Option disabled>Chọn xã</Select.Option>
             )}
           </Select>
-        </Spin>
       </Form.Item>
 
       <Form.Item label="Chi tiết" name="detail">

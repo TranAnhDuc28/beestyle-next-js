@@ -2501,6 +2501,18 @@
     color: #F7941D;
 }
 
+
+/* Pagination border-radius */
+.rounded-pagination .ant-pagination-item,
+  .rounded-pagination .ant-pagination-prev,
+  .rounded-pagination .ant-pagination-next {
+    border-radius: 50%; /* Bo tròn cho các nút */
+  }
+
+  .rounded-pagination .ant-pagination-item-active {
+    background-color: #1890ff; /* Màu nền cho nút đang được chọn */
+    color: #fff;
+  }
 /* Shop Topbar */
 .shop .shop-top {
     clear: both;
