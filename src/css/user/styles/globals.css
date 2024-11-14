@@ -1,7 +1,31 @@
 * {
     font-family: var(--font-poppins), sans-serif !important;
 }
-
+/* Tùy chỉnh pagination Ant Design */
+.ant-pagination .ant-pagination-item {
+    border-radius: 50%; /* Tạo hình tròn cho các nút */
+    width: 32px; /* Đặt kích thước cho các nút */
+    height: 32px;
+    line-height: 30px; /* Căn giữa nội dung trong nút */
+    text-align: center; /* Căn giữa chữ */
+    color: #333; /* Màu chữ mặc định là đen */
+  }
+  
+  /* Tùy chỉnh màu nền và chữ khi hover */
+  .ant-pagination .ant-pagination-item:hover {
+    color: white; /* Màu chữ khi hover */
+  }
+  
+  /* Tùy chỉnh màu nền và chữ khi nút đang được chọn */
+  .ant-pagination .ant-pagination-item-active {
+    color: white; /* Màu chữ khi nút đang được chọn */
+  }
+  
+  /* Loại bỏ viền dưới cho pagination */
+  .ant-pagination-item {
+    border: none;
+  }
+  
 .color-plate {
     position: fixed;
     display: block;
@@ -2439,6 +2463,18 @@
     color: #F7941D;
 }
 
+
+/* Pagination border-radius */
+.rounded-pagination .ant-pagination-item,
+  .rounded-pagination .ant-pagination-prev,
+  .rounded-pagination .ant-pagination-next {
+    border-radius: 50%; /* Bo tròn cho các nút */
+  }
+
+  .rounded-pagination .ant-pagination-item-active {
+    background-color: #1890ff; /* Màu nền cho nút đang được chọn */
+    color: #fff;
+  }
 /* Shop Topbar */
 .shop .shop-top {
     clear: both;

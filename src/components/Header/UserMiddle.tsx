@@ -145,13 +145,13 @@ export default function MiddleBar() {
                     <div className="col-lg-2 col-md-3 col-12">
                         <div className="right-bar">
                             <div className="sinlge-bar shopping">
-                                <Link href="#" className="single-icon">
+                                <Link href="/cart" className="single-icon">
                                     <AiOutlineShoppingCart size={30}/>
                                     <span className="total-count">2</span></Link>
                                 <div className="shopping-item">
                                     <div className="dropdown-cart-header">
                                         <span>2 sản phẩm</span>
-                                        <Link href={"/cart"} style={{textDecoration: 'none'}}>Xem giỏ hàng</Link>
+                                        <Link href="/cart" style={{textDecoration: 'none'}}>Xem giỏ hàng</Link>
                                     </div>
                                     <ul className="shopping-list">
                                         <li>
