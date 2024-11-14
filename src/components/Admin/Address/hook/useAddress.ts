@@ -74,28 +74,18 @@ const useAddress = () => {
   );
 
   // Fetch danh sách xã theo huyện
-  const fetchWards = useCallback(
-    async (districtCode: string) => {
-      if (!districtCode) return;
-      setWards([]);
-      setLoading((prev) => ({ ...prev, wards: true }));
-      setError(null);
+  const fetchWards = async (districtCode: string) => {
+    const response = await fetch(
+      `https://vn-public-apis.fpo.vn/wards/getByDistrict?districtCode=${districtCode}&limit=-1`
+    );
+    const data = await response.json();
+    setWards(data.data.data);
+  };
 
-      try {
-        const data = await fetchWithRetry(
-          `https://vn-public-apis.fpo.vn/wards/getByDistrict?districtCode=${districtCode}&limit=-1`
-        );
-        setWards(data.data.data);
-      } catch (err) {
-        setError("Không thể tải danh sách xã. Vui lòng thử lại.");
-        setWards([]);
-      } finally {
-        setLoading((prev) => ({ ...prev, wards: false }));
-      }
-    },
-    []
-  );
 
+ 
+
+  // Khởi tạo dữ liệu tỉnh khi hook khởi tạo
   useEffect(() => {
     fetchProvinces();
   }, [fetchProvinces]);

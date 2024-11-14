@@ -93,7 +93,7 @@ function ProductArea() {
                                                                             Thêm vào giỏ hàng
                                                                         </Link>
                                                                     </div>
-                                                                    <div className="product-action mt-3 mr-2">
+                                                                    <div className="product-action mt-3 mr-3">
                                                                         <a onClick={() => handleOpenModal(product)}
                                                                            className="link-action"
                                                                         >
@@ -101,14 +101,6 @@ function ProductArea() {
                                                                             <span
                                                                                 style={{marginLeft: '0.5rem'}}>Xem ngay</span>
                                                                         </a>
-                                                                        <Link
-                                                                            href="#"
-                                                                            className="link-action"
-                                                                        >
-                                                                            <TiChartPie size={18}/>
-                                                                            <span
-                                                                                style={{marginLeft: '0.5rem'}}>So sánh</span>
-                                                                        </Link>
                                                                     </div>
                                                                 </div>
 

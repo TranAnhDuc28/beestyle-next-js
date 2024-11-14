@@ -37,7 +37,7 @@ export default function UserFooter() {
                         <div className="col-lg-2 col-md-6 col-12">
                             <div className="single-footer links">
                                 <h4>Liên hệ</h4>
-                                <ul>
+                                <ul className="p-0">
                                     <li><Link className="link-no-decoration" href="#">Giới thiệu</Link></li>
                                     <li><Link className="link-no-decoration" href="#">Tin tức</Link></li>
                                     <li><Link className="link-no-decoration" href="#">Hệ thống khuyến mãi</Link></li>
@@ -48,7 +48,7 @@ export default function UserFooter() {
                         <div className="col-lg-2 col-md-6 col-12">
                             <div className="single-footer links">
                                 <h4>Dịch vụ khách hàng</h4>
-                                <ul>
+                                <ul className="p-0">
                                     <li><Link className="link-no-decoration" href="#">Hướng dẫn mua hàng</Link></li>
                                     <li><Link className="link-no-decoration" href="#">Đăng ký tài khoản</Link></li>
                                     <li><Link className="link-no-decoration" href="#">Chính sách giao hàng</Link></li>
@@ -62,7 +62,7 @@ export default function UserFooter() {
                             <div className="single-footer social">
                                 <h4>Thông tin</h4>
                                 <div className="contact">
-                                    <ul>
+                                    <ul className="p-0">
                                         <li className="d-flex mb-3"><IoHomeOutline size={30} className="mr-2"/> CÔNG TY
                                             CỔ PHẦN THỜI TRANG BEESTYLE
                                         </li>
@@ -74,7 +74,7 @@ export default function UserFooter() {
                                         </li>
                                     </ul>
                                 </div>
-                                <ul>
+                                <ul className="p-0">
                                     <li><Link className="link-no-decoration" href="#"><i
                                         className="ti-facebook"/></Link></li>
                                     <li><Link className="link-no-decoration" href="#"><i className="ti-twitter"/></Link>
