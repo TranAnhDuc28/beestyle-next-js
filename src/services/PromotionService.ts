@@ -49,5 +49,14 @@ export const getProductsByPromotionId = async (promotionId: string) => {
     return response.data;
 };
 
+export const getPromotionById = async (id: string) => {
+    try {
+        const response = await httpInstance.get(`${URL_API_PROMOTION.get}/${id}`);
+        return response.data;  // Trả về dữ liệu của promotion
+    } catch (error) {
+        console.error("Error fetching promotion by ID:", error);
+        throw error;  // Đảm bảo ném lỗi để dễ dàng xử lý ở nơi gọi hàm này
+    }
+};
 
 

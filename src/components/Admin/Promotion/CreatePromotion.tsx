@@ -1,3 +1,5 @@
+"use client";
+
 import React, {memo, useEffect, useState} from 'react';
 import {
     Form,
@@ -36,8 +38,8 @@ type SearchProps = GetProps<typeof Input.Search>;
 const {Option} = Select;
 
 interface IProps {
-    isCreateModalOpen: boolean;
-    setIsCreateModalOpen: (value: boolean) => void;
+    // isCreateModalOpen: boolean;
+    // setIsCreateModalOpen: (value: boolean) => void;
     mutate: any;
 }
 
@@ -48,6 +50,7 @@ const CreatePromotion = (props: IProps) => {
 
     const [products, setProducts] = useState<IProduct[]>([]);
     const [selectedProducts, setSelectedProducts] = useState<IProduct[]>([]);
+    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
     const [productDetails, setProductDetails] = useState<IProductVariant[]>([]);
     const [selectedDetailProducts, setSelectedDetailProducts] = useState([]);
 
@@ -117,6 +120,8 @@ const CreatePromotion = (props: IProps) => {
         const allProductDetails = await Promise.all(detailsPromises);
         setProductDetails(allProductDetails.flat());
     };
+
+
     const rowSelectionDetails = {
         selectedRowKeys: selectedDetailProducts,
         onChange: (selectedRowKeys) => {
@@ -358,6 +363,8 @@ const CreatePromotion = (props: IProps) => {
                                     rowSelection={rowSelectionDetails}
                                     bordered
                                     pagination={{ pageSize: 10 }}
+                                    showSizeChanger
+                                    pageSizeOptions={['10', '20', '50', '100']}
                                     style={{ backgroundColor: '#fafafa' }}
                                 />
                             </div>

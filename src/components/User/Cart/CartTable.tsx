@@ -25,8 +25,8 @@ const CartTable = () => {
         ),
         productName: (
             <>
-                <Link href="#" className="link-no-decoration">Women Dress</Link>
-                <p className="product-description">Maboriosam in a tonto nesciung eget distingy magndapibus.</p>
+                <Link href="#" className="link-no-decoration">Sản phẩm</Link>
+                <p className="product-description">Sản phẩm được thiết kế tiện lợi và phù hợp cho mọi gia đình..</p>
             </>
         ),
         unitPrice: "110.000 VND",
@@ -59,29 +59,29 @@ const CartTable = () => {
 
     const columns = [
         {
-            title: 'PRODUCT',
+            title: 'ẢNH',
             dataIndex: 'productImage',
             key: 'productImage',
         },
         {
-            title: 'NAME',
+            title: 'TÊN SẢN PHẨM',
             dataIndex: 'productName',
             key: 'productName',
         },
         {
-            title: 'UNIT PRICE',
+            title: 'ĐƠN GIÁ',
             dataIndex: 'unitPrice',
             key: 'unitPrice',
             align: 'center',
         },
         {
-            title: 'QUANTITY',
+            title: 'SỐ LƯỢNG',
             dataIndex: 'quantity',
             key: 'quantity',
             align: 'center',
         },
         {
-            title: 'TOTAL',
+            title: 'TỔNG',
             dataIndex: 'total',
             key: 'total',
             align: 'center',
