@@ -1,9 +1,11 @@
 import httpInstance from "@/utils/HttpInstance";
-import {URL_API_PRODUCT} from "./ProductService";
 
 export const URL_API_PRODUCT_VARIANT = {
+    get: (productId: string) => `/admin/product/${productId}/variant`,
+    filter: (productId: string) => `/admin/product/${productId}/filter/variant`,
     create: '/admin/product-variant/creates',
     update: '/admin/product-variant/update',
+
     productVariant: '/admin/productVariant',
     updateProductVariant: '/admin/productVariant/updates',
     updateProductVariantUpdate: '/admin/productVariant/updatess',
@@ -14,6 +16,8 @@ export const getProductVariantsByProductId = async (url: string) => {
     const response = await httpInstance.get(url);
     return response.data;
 }
+
+
 export const getProductDetails = async (productId: number) => {
     try {
         const response = await httpInstance.get(`${URL_API_PRODUCT_VARIANT.productVariant}?productIds=${productId}`);
@@ -24,6 +28,7 @@ export const getProductDetails = async (productId: number) => {
         throw error;
     }
 };
+
 export const updateProductVariant = async (promotionId: number, variantIds: number[]) => {
     try {
         const response = await httpInstance.put(URL_API_PRODUCT_VARIANT.updateProductVariant, {
@@ -37,6 +42,7 @@ export const updateProductVariant = async (promotionId: number, variantIds: numb
         throw error;
     }
 };
+
 export const updateProductVariantUpdate = async (promotionId: number, variantIds: number[]) => {
     try {
         const response = await httpInstance.put(URL_API_PRODUCT_VARIANT.updateProductVariantUpdate, {

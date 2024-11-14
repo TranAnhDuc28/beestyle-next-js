@@ -28,18 +28,6 @@ const getTagRender = (dataMap: Map<number, string | undefined>): TagRender => {
     }
 };
 
-
-interface OptionTag {
-    value: any;
-    label?: string;
-    code?: string;
-}
-
-
-const options: OptionTag[] = [
-    {value: 1, code: 'gold', label: 'gold'},
-];
-
 interface IProps {
     selectedValues: any[];
     data?: any[];
@@ -47,6 +35,7 @@ interface IProps {
     isLoading?: boolean;
     onChange?: (selectedOptions: { value: number; label: string }[]) => void;
     onClear?: () => void;
+    size?: string;
 }
 
 const ColorOptionSelect = (props: IProps) => {
@@ -67,6 +56,7 @@ const ColorOptionSelect = (props: IProps) => {
             value={selectedValues}
             showSearch
             allowClear
+            maxTagCount={7}
             style={{width: '100%'}}
             mode="multiple"
             placement="bottomLeft"
