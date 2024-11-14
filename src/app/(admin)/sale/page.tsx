@@ -1,6 +1,5 @@
 import {Suspense} from "react";
 import AdminLoader from "@/components/Loader/AdminLoader";
-import ProductComponent from "@/components/Admin/Product/ProductComponent";
 import {Metadata} from "next";
 import SaleComponent from "@/components/Admin/Sale/SaleComponent";
 

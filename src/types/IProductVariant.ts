@@ -4,6 +4,7 @@ export interface IProductVariant {
     productId?: number;
     productName?: string;
     colorId?: number;
+    colorCode?: string;
     colorName?: string;
     sizeId?: number;
     sizeName?: string;

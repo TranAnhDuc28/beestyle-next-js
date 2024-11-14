@@ -1,9 +1,12 @@
 import {Button, ButtonProps, ConfigProvider} from "antd";
-import React from "react";
+import React, {memo} from "react";
 import {TinyColor} from "@ctrl/tinycolor";
 
-const ColorButton = (
-    {bgColor, children, ...props}: { bgColor: string | undefined } & ButtonProps) => {
+interface IProps {
+    bgColor?: string;
+}
+
+const ColorButton: React.FC<IProps & ButtonProps> = ({bgColor, children, ...props}) => {
 
     const defaultColor: string = '#1890ff';
     const color: string = bgColor || defaultColor;
@@ -14,7 +17,7 @@ const ColorButton = (
                 token: {
                     colorPrimary: color,
                     colorPrimaryHover: new TinyColor(bgColor).lighten(5).toString(),
-                    colorPrimaryActive: new TinyColor(bgColor).darken(5).toString(),
+                    colorPrimaryActive: new TinyColor(bgColor).darken( 5).toString(),
                 },
             }}
         >
@@ -23,4 +26,4 @@ const ColorButton = (
     );
 }
 
-export default ColorButton;
+export default memo(ColorButton);

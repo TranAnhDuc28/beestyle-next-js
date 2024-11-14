@@ -29,6 +29,7 @@ import CreateMaterial from "@/components/Admin/Material/CreateMaterial";
 import CreateColor from "@/components/Admin/Color/CreateColor";
 import CreateSize from "@/components/Admin/Size/CreateSize";
 import {createProduct} from "@/services/ProductService";
+import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 
 const {Title} = Typography;
 
@@ -302,7 +303,7 @@ const CreateProduct = (props: IProps) => {
                                 <Form.Item label="Giá vốn" initialValue={0} layout="horizontal">
                                     <InputNumber<number>
                                         style={{width: '100%'}} min={0} placeholder={"0"}
-                                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                        formatter={(value) => `${value}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                                         parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as unknown as number}
                                         value={productPricingAndStock.originalPrice}
                                         onChange={(value) => handleInputChangePricingAndStock("originalPrice", value)}
@@ -311,7 +312,7 @@ const CreateProduct = (props: IProps) => {
                                 <Form.Item label="Giá bán" initialValue={0} layout="horizontal">
                                     <InputNumber<number>
                                         style={{width: '100%'}} min={0} placeholder={"0"}
-                                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                        formatter={(value) => `${value}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                                         parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as unknown as number}
                                         value={productPricingAndStock.salePrice}
                                         onChange={(value) => handleInputChangePricingAndStock("salePrice", value)}
@@ -320,7 +321,7 @@ const CreateProduct = (props: IProps) => {
                                 <Form.Item label="Tồn kho" initialValue={0} layout="horizontal">
                                     <InputNumber<number>
                                         style={{width: '100%'}} min={0} placeholder={"0"}
-                                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                        formatter={(value) => `${value}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                                         parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as unknown as number}
                                         value={productPricingAndStock.quantityInStock}
                                         onChange={(value) => handleInputChangePricingAndStock("quantityInStock", value)}

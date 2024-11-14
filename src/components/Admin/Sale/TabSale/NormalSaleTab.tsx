@@ -1,19 +1,17 @@
 "use client"
 import {
     AutoComplete, AutoCompleteProps, Button, Col, Flex, Layout,
-    Pagination, PaginationProps, Row, Space, Table, TableProps, theme, Tooltip, Typography
+    Pagination, PaginationProps, Row, Segmented, Space, Table, TableProps, theme, Tooltip, Typography
 } from "antd";
 import React, {memo, useCallback, useEffect, useMemo, useState} from "react";
 import CheckoutComponent from "@/components/Admin/Sale/CheckoutComponent";
 import {
-    AppstoreOutlined, DeleteOutlined, FilterOutlined, PlusOutlined, SearchOutlined, UnorderedListOutlined
+    AppstoreOutlined, BarsOutlined, DeleteOutlined, FilterOutlined, PlusOutlined, SearchOutlined, UnorderedListOutlined
 } from "@ant-design/icons";
 import useFilterProduct, {ParamFilterProduct} from "@/components/Admin/Product/hooks/useFilterProduct";
 import SubLoader from "@/components/Loader/SubLoader";
 import FilterProduct from "@/components/Admin/Sale/FilterProduct";
-import ModalListProductVariant from "@/components/Admin/Sale/ModalListProductVariant";
 import ProductCardView from "@/components/Admin/Sale/TypeDisplayList/ProductCardView";
-import ProductListView from "@/components/Admin/Sale/TypeDisplayList/ProductListView";
 
 const {Content} = Layout;
 const {Text, Paragraph, Title} = Typography;
@@ -57,14 +55,12 @@ interface IProps {
 
 const NormalSaleTab: React.FC<IProps> = (props) => {
     const {} = props;
-    const [isOpenModalListProductVariant, setOpenModalListProductVariant] = useState(false);
     const [dataCart, setDataCart] = useState<DataType[]>(dataTbl);
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
     const [openDrawer, setOpenDrawer] = useState({
-        checkout: false,
-        filter: false,
-    });
+        checkout: false, filter: false,});
+
     const [editableStr, setEditableStr] = useState('Ghi chú đơn hàng.');
 
     const [filerParam, setFilterParam] = useState<ParamFilterProduct>({...defaultFilterParam});
@@ -189,15 +185,19 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
                                 />
                                 <Button icon={<PlusOutlined/>} type="text" shape="circle"/>
                             </div>
-                            <div>
-                                <Button icon={<UnorderedListOutlined/>} type="text" shape="circle"/>
+                            <Space direction="horizontal" wrap>
                                 <Tooltip placement="top" title="Lọc sản phẩm">
                                     <Button icon={<FilterOutlined/>} type="text" shape="circle"
                                             onClick={() => showDrawer("filter", true)}
                                     />
                                 </Tooltip>
-                                <Button icon={<AppstoreOutlined/>} type="text" shape="circle"/>
-                            </div>
+                                <Segmented
+                                    options={[
+                                        { value: 'list', icon: <BarsOutlined /> },
+                                        { value: 'kanban', icon: <AppstoreOutlined /> },
+                                    ]}
+                                />
+                            </Space>
                         </Flex>
 
                         <div style={{height: 660, overflowY: "auto", padding: 5}}>
@@ -212,7 +212,6 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
 
                                         <ProductCardView
                                             dataSource={dataOptionFilterProduct?.items}
-                                            setOpenModalListProductVariant={setOpenModalListProductVariant}
                                         />
                                     </>
                                 )
@@ -251,10 +250,6 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
                 onClose={() => onClose("filter", false)}
             />
 
-            <ModalListProductVariant
-                isOpenModalListProductVariant={isOpenModalListProductVariant}
-                setOpenModalListProductVariant={setOpenModalListProductVariant}
-            />
         </Layout>
     )
 };
