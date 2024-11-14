@@ -13,13 +13,11 @@
   
   /* Tùy chỉnh màu nền và chữ khi hover */
   .ant-pagination .ant-pagination-item:hover {
-    background-color: #333; /* Màu nền khi hover */
     color: white; /* Màu chữ khi hover */
   }
   
   /* Tùy chỉnh màu nền và chữ khi nút đang được chọn */
   .ant-pagination .ant-pagination-item-active {
-    background-color: #333; /* Màu nền khi nút đang được chọn */
     color: white; /* Màu chữ khi nút đang được chọn */
   }
   
