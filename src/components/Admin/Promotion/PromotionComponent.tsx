@@ -13,12 +13,12 @@ import {STATUS} from "@/constants/Status";
 import {DISCOUNT_TYPE} from "@/constants/DiscountType";
 import {useSearchParams} from "next/navigation";
 import useAppNotifications from "../../../hooks/useAppNotifications";
-import CreatePromotion from "./CreatePromotion";
 import UpdatePromotion from "./UpdatePromotion";
 import {deletePromotion} from "../../../services/PromotionService";
-import VoucherFilter from "../Voucher/VoucherFilter";
+
 import PromotionFilter from "./PromotionFilter";
 import {DISCOUNT_STATUS} from "../../../constants/DiscountStastus";
+import Link from "next/link";
 
 
 const {Content} = Layout;
@@ -108,14 +108,6 @@ const PromotionComponent: React.FC<any> = (props: any) => {
                 `${record.discountValue} ${DISCOUNT_TYPE[record.discountType]}`
             )
         },
-        // {
-        //     title: 'Bắt đầu', dataIndex: 'startDate', key: 'startDate',
-        //     render: (date: string) => dayjs(date).format('DD-MM-YYYY')
-        // },
-        // {
-        //     title: 'Kết thúc', dataIndex: 'endDate', key: 'endDate',
-        //     render: (date: string) => dayjs(date).format('DD-MM-YYYY')
-        // },
         {
             title: 'Ngày bắt đầu',
             dataIndex: 'startDate',
@@ -153,21 +145,35 @@ const PromotionComponent: React.FC<any> = (props: any) => {
             align: 'center',
             render: (record: IPromotion) => (
                 <>
+                    {/*<Tooltip placement="top" title="Chỉnh sửa">*/}
+                    {/*    <EditTwoTone*/}
+                    {/*        twoToneColor={"#f57800"}*/}
+                    {/*        style={{*/}
+                    {/*            cursor: "pointer",*/}
+                    {/*            padding: "5px",*/}
+                    {/*            border: "1px solid #f57800",*/}
+                    {/*            borderRadius: "5px",*/}
+                    {/*            marginRight: "8px"*/}
+                    {/*        }}*/}
+                    {/*        onClick={() => {*/}
+                    {/*            setIsUpdateModalOpen(true);*/}
+                    {/*            setDataUpdate(record);*/}
+                    {/*        }}*/}
+                    {/*    />*/}
+                    {/*</Tooltip>*/}
                     <Tooltip placement="top" title="Chỉnh sửa">
-                        <EditTwoTone
-                            twoToneColor={"#f57800"}
-                            style={{
-                                cursor: "pointer",
-                                padding: "5px",
-                                border: "1px solid #f57800",
-                                borderRadius: "5px",
-                                marginRight: "8px"
-                            }}
-                            onClick={() => {
-                                setIsUpdateModalOpen(true);
-                                setDataUpdate(record);
-                            }}
-                        />
+                        <Link href ={`/admin/promotion/${record.id}/update`} style={{ textDecoration: 'none' }}>
+                            <EditTwoTone
+                                twoToneColor={"#f57800"}
+                                style={{
+                                    cursor: "pointer",
+                                    padding: "5px",
+                                    border: "1px solid #f57800",
+                                    borderRadius: "5px",
+                                    marginRight: "8px"
+                                }}
+                            />
+                        </Link>
                     </Tooltip>
                     <Tooltip placement="top" title="Xóa">
                         <DeleteTwoTone
@@ -211,11 +217,11 @@ const PromotionComponent: React.FC<any> = (props: any) => {
                     </TablePagination>
                 </Content>
             </Flex>
-            <CreatePromotion
-                isCreateModalOpen={isCreateModalOpen}
-                setIsCreateModalOpen={setIsCreateModalOpen}
-                mutate={mutate}
-            />
+            {/*<CreatePromotion*/}
+            {/*    isCreateModalOpen={isCreateModalOpen}*/}
+            {/*    setIsCreateModalOpen={setIsCreateModalOpen}*/}
+            {/*    mutate={mutate}*/}
+            {/*/>*/}
             <UpdatePromotion
                 isUpdateModalOpen={isUpdateModalOpen}
                 setIsUpdateModalOpen={setIsUpdateModalOpen}

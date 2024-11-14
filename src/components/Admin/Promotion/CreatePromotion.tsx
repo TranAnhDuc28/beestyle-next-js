@@ -1,3 +1,5 @@
+"use client";
+
 import React, {memo, useEffect, useState} from 'react';
 import {
     Form,
@@ -36,8 +38,8 @@ type SearchProps = GetProps<typeof Input.Search>;
 const {Option} = Select;
 
 interface IProps {
-    isCreateModalOpen: boolean;
-    setIsCreateModalOpen: (value: boolean) => void;
+    // isCreateModalOpen: boolean;
+    // setIsCreateModalOpen: (value: boolean) => void;
     mutate: any;
 }
 

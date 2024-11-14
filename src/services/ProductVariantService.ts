@@ -6,7 +6,8 @@ export const URL_API_PRODUCT_VARIANT = {
     update: '/admin/product-variant/update',
     productVariant: '/admin/productVariant',
     updateProductVariant: '/admin/productVariant/updates',
-    updateProductVariantUpdate: '/admin/productVariant/updatess'
+    updateProductVariantUpdate: '/admin/productVariant/updatess',
+    removePromotionFromNonSelectedVariants: '/admin/{promotionId}/delete',
 };
 
 export const getProductVariantsByProductId = async (url: string) => {
@@ -47,6 +48,19 @@ export const updateProductVariantUpdate = async (promotionId: number, variantIds
         return response.data;
     } catch (error) {
         console.error("Error updating product variant:", error);
+        throw error;
+    }
+};
+export const removePromotionFromNonSelectedVariants = async (promotionId, ids) => {
+    try {
+        const response = await httpInstance.put(
+            URL_API_PRODUCT_VARIANT.removePromotionFromNonSelectedVariants.replace("{promotionId}", promotionId),
+            ids
+        );
+        console.log("Promotion removed successfully:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Error removing promotion:", error);
         throw error;
     }
 };
