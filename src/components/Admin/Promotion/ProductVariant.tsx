@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo, useEffect, useState } from "react";
-import { Modal, Row, Col, Table, Image, Empty } from "antd";
+import {Modal, Row, Col, Table, Image, Empty, Tag} from "antd";
 import { getProductDetails } from "../../../services/ProductVariantService";
 import { IProductVariant } from "../../../types/IProductVariant";
 
@@ -80,6 +80,26 @@ const ProductVariant: React.FC<IProps> = ({
         { title: "Chất liệu", dataIndex: "materialName", key: "materialName" },
         { title: "Màu sắc", dataIndex: "colorName", key: "colorName" },
         { title: "Kích thước", dataIndex: "sizeName", key: "sizeName" },
+        // {
+        //     title: 'Tên', key: 'productVariantName',
+        //     render(record: IProductVariant) {
+        //         const colorName = record?.colorName ? record.colorName : "_";
+        //         const colorCode = record?.colorCode ? record.colorCode : "";
+        //         const sizeName = record?.sizeName ? record.sizeName : "_";
+        //         return (
+        //             <span>
+        //                 <Text>{record.productName}</Text> <br/>
+        //                 <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
+        //                     <span style={{marginInlineEnd: 4}}>
+        //                         {`Màu: ${colorName}`}
+        //                     </span>
+        //                     {colorCode ? <Tag className="custom-tag" color={colorCode}/> : ""} |
+        //                     {` Kích cỡ: ${sizeName}`}
+        //                 </Text>
+        //             </span>
+        //         );
+        //     }
+        // },
         { title: "Đang áp dụng", dataIndex: "promotionName", key: "promotionName" },
     ];
 

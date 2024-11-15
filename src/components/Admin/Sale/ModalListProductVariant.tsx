@@ -4,7 +4,7 @@ import {
     Card,
     Modal,
     Select,
-    type SelectProps,
+    type, SelectProps,
     Space,
     Table,
     TableColumnsType,
