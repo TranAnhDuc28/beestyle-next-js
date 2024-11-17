@@ -61,9 +61,7 @@ const OrderTable: React.FC<ITablePaginationProps> = (props) => {
                         style: {marginRight: 10},
                         showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
                     }}
-                    scroll={{x: true, y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true }}
-                    expandedRowKeys={tbl.expandedRowKeys}
-                    expandedRowRender={expandedRowRender}
+                    scroll={{x: true, y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true}}
                 />
             </div>
         </>

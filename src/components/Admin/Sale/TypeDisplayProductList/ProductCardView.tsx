@@ -3,6 +3,7 @@ import React, {memo, useState} from "react";
 import Marquee from "react-fast-marquee";
 import {IProduct} from "@/types/IProduct";
 import ModalListProductVariant from "@/components/Admin/Sale/ModalListProductVariant";
+import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 
 const {Text, Title} = Typography;
 
@@ -41,7 +42,7 @@ const ProductCardView: React.FC<IProps> = (props) => {
                                 <Text
                                     type="secondary">{`Tổng số: ${item.totalProductInStock ?? 0}`}</Text>
                                 <Title level={5} style={{textAlign: "right", display: "block", margin: 0}}>
-                                    {item.minSalePrice ? `${item.minSalePrice}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : 0}
+                                    {item.minSalePrice ? `${item.minSalePrice}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',') : 0}
                                 </Title>
                             </Space>
                         </Card>

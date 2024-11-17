@@ -1,22 +1,28 @@
 export interface IOrder {
     id: number;
-    customerName: string;
-    phoneNumber: string;
-    totalAmount: number;
-    paymentMethod: string;
-    shippingFee: number;
     orderTrackingNumber: string;
+    customerId: number;
+    customerName?: string;
+    voucherId?: string
+    voucherName?: string
+    phoneNumber: string;
+    shippingFee: number;
+    totalAmount: number;
+    paymentDate: Date;
+    paymentMethod: string;
     orderChannel: string
     orderStatus: string;
-    voucher?: string
-    status?: string;
-<<<<<<< HEAD
-    createAt?: string;
-    updateAt?: string;
+    note?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+    createdBy?: number;
+    updatedBy?: number;
 }
 
-=======
-    createdAt?: string;
-    updatedAt?: string;
+export interface IOrderCreate {
+    id: number;
+    orderTrackingNumber: string;
+    paymentDate: Date;
+    orderChannel: string
+    orderStatus: string;
 }
->>>>>>> be4cc2f8c258eb45a9281f7553538b4c4b206038

@@ -16,13 +16,10 @@ export interface IProductVariant {
     updatedAt?: Date;
     createdBy?: number;
     updatedBy?: number;
-    brandId?: number;
-    brandName?: string;
-    materialId?: number;
-    materialName?: string;
     promotionName?: string;
 }
 
+// dùng cho hiển thị lên bảng khi tạo bến thể
 export interface IProductVariantRows{
     key: string
     sku?: string;
@@ -35,6 +32,7 @@ export interface IProductVariantRows{
     quantityInStock?: number;
 }
 
+// dng khi lưu biến thể và db
 export interface IProductVariantCreate{
     sku?: string;
     productId?: number;
@@ -43,4 +41,18 @@ export interface IProductVariantCreate{
     originalPrice?: number;
     salePrice?: number;
     quantityInStock?: number;
+}
+
+export interface IProductVariantInCart{
+    id: number;
+    sku?: string;
+    productId?: number;
+    productName?: string;
+    colorId?: number;
+    colorCode?: string;
+    colorName?: string;
+    sizeId?: number;
+    sizeName?: string;
+    quantity?: number;
+    salePrice?: number;
 }
