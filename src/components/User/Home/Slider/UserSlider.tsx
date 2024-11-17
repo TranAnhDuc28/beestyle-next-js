@@ -2,7 +2,6 @@
 
 import React, {useState, useEffect, useCallback, useRef} from "react";
 import {FaChevronLeft, FaChevronRight} from "react-icons/fa";
-import Image from "next/image";
 
 export default function Slider() {
 
