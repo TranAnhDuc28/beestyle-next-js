@@ -58,7 +58,7 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
                         pageSizeOptions: [10, 25, 35, 50],
                         responsive: true,
                         style: {marginRight: 10},
-                        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+                        showTotal: (total, range) => `${range[0]}-${range[1]} trong số ${total} mục`,
                     }}
                     scroll={{y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true }}
                 />

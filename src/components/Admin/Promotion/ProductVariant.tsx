@@ -1,9 +1,21 @@
 "use client";
 
-import React, { memo, useEffect, useState } from "react";
-import {Modal, Row, Col, Table, Image, Empty, Tag} from "antd";
-import { getProductDetails } from "../../../services/ProductVariantService";
-import { IProductVariant } from "../../../types/IProductVariant";
+import React, {memo, useEffect, useState, useMemo} from "react";
+import {
+    Modal,
+    Row,
+    Col,
+    Table,
+    Empty,
+    Tag,
+    Typography,
+} from "antd";
+import {getProductDetails} from "../../../services/ProductVariantService";
+import {IProductVariant} from "../../../types/IProductVariant";
+import useOptionColor from "@/components/Admin/Color/hooks/useOptionColor";
+import useOptionSize from "@/components/Admin/Size/hooks/useOptionSize";
+
+const {Text} = Typography;
 
 interface IProps {
     isProductVariantOpen: boolean;
@@ -17,11 +29,16 @@ const ProductVariant: React.FC<IProps> = ({
                                               isProductVariantOpen,
                                               setIsProductVariantOpen,
                                               productId,
-                                              onSelectProductVariants,
                                               onProductSelect,
                                           }) => {
     const [productDetails, setProductDetails] = useState<IProductVariant[]>([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+
+    // Fetch color and size options
+    const {dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor}
+        = useOptionColor(isProductVariantOpen);
+    const colorMap = useMemo(() => new Map(dataOptionColor.map(item => [item.label, item.code])), [dataOptionColor]);
+
 
     const handleCloseProductVariantModal = () => {
         setIsProductVariantOpen(false);
@@ -31,7 +48,7 @@ const ProductVariant: React.FC<IProps> = ({
 
     useEffect(() => {
         if (isProductVariantOpen) {
-            setSelectedRowKeys([]); // Reset lựa chọn khi mở modal
+            setSelectedRowKeys([]);
         }
     }, [isProductVariantOpen]);
 
@@ -74,35 +91,42 @@ const ProductVariant: React.FC<IProps> = ({
     };
 
     const detailColumns = [
-        { title: "SKU", dataIndex: "sku", key: "sku" },
-        { title: "Tên sản phẩm", dataIndex: "productVariantName", key: "productVariantName" },
-        { title: "Thương hiệu", dataIndex: "brandName", key: "brandName" },
-        { title: "Chất liệu", dataIndex: "materialName", key: "materialName" },
-        { title: "Màu sắc", dataIndex: "colorName", key: "colorName" },
-        { title: "Kích thước", dataIndex: "sizeName", key: "sizeName" },
-        // {
-        //     title: 'Tên', key: 'productVariantName',
-        //     render(record: IProductVariant) {
-        //         const colorName = record?.colorName ? record.colorName : "_";
-        //         const colorCode = record?.colorCode ? record.colorCode : "";
-        //         const sizeName = record?.sizeName ? record.sizeName : "_";
-        //         return (
-        //             <span>
-        //                 <Text>{record.productName}</Text> <br/>
-        //                 <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
-        //                     <span style={{marginInlineEnd: 4}}>
-        //                         {`Màu: ${colorName}`}
-        //                     </span>
-        //                     {colorCode ? <Tag className="custom-tag" color={colorCode}/> : ""} |
-        //                     {` Kích cỡ: ${sizeName}`}
-        //                 </Text>
-        //             </span>
-        //         );
-        //     }
-        // },
-        { title: "Đang áp dụng", dataIndex: "promotionName", key: "promotionName" },
+        {title: "SKU", dataIndex: "sku", key: "sku"},
+        {
+            title: "Tên sản phẩm",
+            key: "productVariantName",
+            render: (record: IProductVariant) => {
+                const colorName = record?.colorName || "_";
+                const colorCode = colorMap.get(record?.colorName) || "";
+                const sizeName = record?.sizeName ? record.sizeName : "_";
+                return (
+                    <span>
+                        <Text>{record.productVariantName}</Text>
+                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
+                            <span style={{marginInlineEnd: 4}}>
+                                {`Màu: ${colorName}`}
+                            </span>
+                            {colorCode ? <Tag className="custom-tag" color={colorCode}/> : ""} |
+                            {` Kích cỡ: ${sizeName}`}
+                        </Text>
+                    </span>
+                );
+            },
+        },
+        {
+            title: "Đang áp dụng",
+            dataIndex: "promotionName",
+            key: "promotionName",
+            render: (promotion: string) => (
+                <Tag color={promotion ? "green" : "red"}>
+                    {promotion || "Không có khuyến mãi"}
+                </Tag>
+            ),
+        },
     ];
-
+    useEffect(() => {
+        console.log(dataOptionColor);
+    }, [dataOptionColor]);
     const rowSelection = {
         selectedRowKeys,
         onChange: (newSelectedRowKeys: number[]) => {
@@ -119,10 +143,10 @@ const ProductVariant: React.FC<IProps> = ({
             cancelText="Hủy"
             okText="Chọn"
             okButtonProps={{
-                style: { background: "#00b96b" },
+                style: {background: "#00b96b"},
             }}
             width={1000}
-            style={{ top: 20 }}
+            style={{top: 20}}
         >
             <Row>
                 <Col span={24}>
@@ -134,14 +158,15 @@ const ProductVariant: React.FC<IProps> = ({
                                 ...variant,
                                 key: variant.id,
                             }))}
-                            rowKey="key"
+                            rowKey="id"
                             bordered
-                            style={{ backgroundColor: "#fafafa" }}
+                            pagination={{pageSize: 5}}
+                            style={{backgroundColor: "#fafafa"}}
                         />
                     ) : (
                         <Empty
                             description="Không có dữ liệu chi tiết sản phẩm."
-                            style={{ padding: "20px" }}
+                            style={{padding: "20px"}}
                         />
                     )}
                 </Col>

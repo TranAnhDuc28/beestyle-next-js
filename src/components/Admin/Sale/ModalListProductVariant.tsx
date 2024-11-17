@@ -121,6 +121,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
                 const colorName = record?.colorName ? record.colorName : "_";
                 const colorCode = record?.colorCode ? record.colorCode : "";
                 const sizeName = record?.sizeName ? record.sizeName : "_";
+
                 return (
                     <span>
                         <Text>{record.productName}</Text> <br/>
