@@ -10,9 +10,9 @@ import {
     Table,
     Tag,
     Image,
-    Space, GetProps, Pagination, Breadcrumb, Button, Tooltip
+    Space, GetProps, Pagination, Breadcrumb, Button, Tooltip, Card, Typography
 } from "antd";
-import React, {memo, useEffect, useState} from "react";
+import React, {memo, useEffect, useMemo, useState} from "react";
 import {IProduct} from "../../../../../../types/IProduct";
 import {IProductVariant} from "../../../../../../types/IProductVariant";
 import {getProducts} from "../../../../../../services/ProductService";
@@ -33,9 +33,13 @@ import {
 import {IPromotion} from "../../../../../../types/IPromotion";
 import ProductVariant from "../../../../../../components/Admin/Promotion/ProductVariant";
 import {mutate} from "swr";
+import useOptionColor from "../../../../../../components/Admin/Color/hooks/useOptionColor";
+import {Suspense} from "react";
+import AdminLoader from "../../../../../../components/Loader/AdminLoader";
 
 type SearchProps = GetProps<typeof Input.Search>;
 const {Option} = Select;
+const {Text} = Typography;
 
 interface IProps {
     mutate: any;
@@ -50,7 +54,7 @@ const UpdatePromotion = (props: IProps) => {
 
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { id } = useParams()
+    const {id} = useParams()
 
     const [promotionData, setPromotionData] = useState<IPromotion | null>(null);
     const [isProductVariantOpen, setIsProductVariantOpen] = useState<boolean>(false);
@@ -60,6 +64,9 @@ const UpdatePromotion = (props: IProps) => {
     const [productDetails, setProductDetails] = useState<IProductVariant[]>([]);
     const [selectedProducts, setSelectedProducts] = useState<React.Key[]>([]);
     const [selectedDetailProducts, setSelectedDetailProducts] = useState<React.Key[]>([]);
+    const {dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor}
+        = useOptionColor(isProductVariantOpen);
+    const colorMap = useMemo(() => new Map(dataOptionColor.map(item => [item.label, item.code])), [dataOptionColor]);
 
 
     const pathname = usePathname();
@@ -93,7 +100,7 @@ const UpdatePromotion = (props: IProps) => {
             try {
                 if (promotionData?.data?.id) {
                     const promotionId = promotionData.data.id;
-                    const { productIds, productDetailIds } = await getProductsByPromotionId(promotionId);
+                    const {productIds, productDetailIds} = await getProductsByPromotionId(promotionId);
                     console.log("productIds:", productIds);
                     console.log("productDetailIds:", productDetailIds);
 
@@ -112,7 +119,7 @@ const UpdatePromotion = (props: IProps) => {
                             }
                         }
                     } else {
-                        console.warn("Invalid productIds or productDetailIds format:", { productIds, productDetailIds });
+                        console.warn("Invalid productIds or productDetailIds format:", {productIds, productDetailIds});
                     }
                 } else {
                     console.warn("Invalid promotionData or missing ID:", promotionData);
@@ -197,6 +204,21 @@ const UpdatePromotion = (props: IProps) => {
         console.log(productId)
     };
     const productColumns = [
+        {
+            title: '', dataIndex: 'imageUrl', key: 'imageUrl', align: 'center', width: 70,
+            render: (value, record) => {
+                return (
+                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <Image width={35} height={35}
+                               src={value ? value : "/no-img.png"}
+                               fallback="/no-img.png"
+                        />
+                    </div>
+                );
+            }
+        },
+
+        {title: 'Mã sản phẩm', dataIndex: 'productCode', key: 'productCode'},
         {title: 'Tên sản phẩm', dataIndex: 'productName', key: 'productName'},
         {
             title: 'Giới tính', dataIndex: 'genderProduct', key: 'genderProduct',
@@ -206,39 +228,47 @@ const UpdatePromotion = (props: IProps) => {
                 );
             },
         },
-        {title: 'Thương hiệu', dataIndex: 'brandName', key: 'brandName',},
-        {title: 'Chất liệu', dataIndex: 'materialName', key: 'materialName'},
-        {
-            title: 'Hành động',
-            align: 'center',
-            render: (record: IProduct) => (
-                <>
-                    <Tooltip placement="top" title="Chọn">
-                        <CheckCircleTwoTone
-                            twoToneColor={"#f57800"}
-                            style={{
-                                cursor: "pointer",
-                                padding: "5px",
-                                border: "1px solid #f57800",
-                                borderRadius: "5px",
-                                marginRight: "8px"
-                            }}
-                            onClick={() => handleProductClick(record.id)}
-                        />
-                    </Tooltip>
-                </>
-            )
-        },
     ];
 
     const detailColumns = [
         {title: "SKU", dataIndex: "sku", key: "sku"},
-        {title: "Tên sản phẩm", dataIndex: "productVariantName", key: "productVariantName"},
+        {
+            title: "Tên sản phẩm",
+            key: "productVariantName",
+            render: (record: IProductVariant) => {
+                const colorName = record?.colorName || "_";
+                const colorCode = colorMap.get(record?.colorName) || "";
+                const sizeName = record?.sizeName ? record.sizeName : "_";
+                console.log("màu: ", colorCode)
+                console.log("màu: ", colorMap)
+                return (
+                    <span>
+                        <Text>{record.productVariantName}</Text>
+                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
+                            <span style={{marginInlineEnd: 4}}>
+                                {`Màu: ${colorName}`}
+                            </span>
+                            {colorCode ? <Tag className="custom-tag" color={colorCode}/> : ""} |
+                            {` Kích cỡ: ${sizeName}`}
+                        </Text>
+                    </span>
+                );
+            },
+        },
         {title: 'Thương hiệu', dataIndex: 'brandName', key: 'brandName',},
         {title: 'Chất liệu', dataIndex: 'materialName', key: 'materialName'},
-        {title: "Màu sắc", dataIndex: "colorName", key: "colorName"},
-        {title: "Kích thước", dataIndex: "sizeName", key: "sizeName"},
-        {title: "Đang áp dụng", dataIndex: "promotionName", key: "promotionName"},
+        // {title: "Màu sắc", dataIndex: "colorName", key: "colorName"},
+        // {title: "Kích thước", dataIndex: "sizeName", key: "sizeName"},
+        {
+            title: "Đang áp dụng",
+            dataIndex: "promotionName",
+            key: "promotionName",
+            render: (promotion: string) => (
+                <Tag color={promotion ? "green" : "red"}>
+                    {promotion || "Không có khuyến mãi"}
+                </Tag>
+            ),
+        },
         {
             title: 'Hành động',
             align: 'center',
@@ -260,16 +290,9 @@ const UpdatePromotion = (props: IProps) => {
             )
         },
     ];
-    // const onDelete = (record) => {
-    //     setProductDetails((prevDetails) => {
-    //         return prevDetails.filter((detail) => detail.id !== record.id);
-    //     });
-    //     // Nếu cần, cập nhật lại selectedProducts để đồng bộ với chi tiết
-    //     setSelectedProducts((prevProducts) => {
-    //         return prevProducts.filter((product) => product.id !== record.id);
-    //     });
-    // };
-    const onDelete = async (record) => {id
+
+    const onDelete = async (record) => {
+        id
         try {
             await removePromotionFromNonSelectedVariants(id, record.id);
             setProductDetails((prevDetails) => {
@@ -339,16 +362,16 @@ const UpdatePromotion = (props: IProps) => {
 
     const onFinish = async (values: any) => {
         try {
-            const { startDate, endDate } = values;
+            const {startDate, endDate} = values;
 
             // Kiểm tra ngày hợp lệ
             if (startDate && !startDate.isValid()) {
-                showNotification("error", { message: "Ngày bắt đầu không hợp lệ!" });
+                showNotification("error", {message: "Ngày bắt đầu không hợp lệ!"});
                 return;
             }
 
             if (endDate && !endDate.isValid()) {
-                showNotification("error", { message: "Ngày kết thúc không hợp lệ!" });
+                showNotification("error", {message: "Ngày kết thúc không hợp lệ!"});
                 return;
             }
 
@@ -382,19 +405,18 @@ const UpdatePromotion = (props: IProps) => {
 
                     mutate();
                     handleCloseUpdateModal();
-                    showNotification("success", { message: "Sửa thành công!" });
+                    showNotification("success", {message: "Sửa thành công!"});
                     router.push('/admin/promotion');
                 } else {
-                    showNotification("error", { message: "Không tìm thấy ID khuyến mãi để cập nhật!" });
+                    showNotification("error", {message: "Không tìm thấy ID khuyến mãi để cập nhật!"});
                 }
             }
         } catch (error: any) {
 
             const errorMessage = error?.response?.data?.message || error.message;
-            showNotification("error", { message: "Có lỗi xảy ra!", description: errorMessage });
+            showNotification("error", {message: "Có lỗi xảy ra!", description: errorMessage});
         }
     };
-
 
 
     const onSearch: SearchProps['onSearch'] = (value, _e, info) => {
@@ -442,208 +464,196 @@ const UpdatePromotion = (props: IProps) => {
         breadcrumbTitle = 'Khuyến mại';
     }
     return (
-        <>
-            <Breadcrumb
-                items={[
-                    { title: <Link href="/admin"><HomeOutlined /></Link> },
-                    { title: <Link href="/admin/promotion">Khuyến mại</Link> },
-                    { title: breadcrumbTitle },
-                ]}
-            />
-            <Row gutter={16}>
-                {/* Form thêm mới */}
-                <Col span={10}>
-                    <h2 style={{fontWeight: 'bold', marginBottom: '16px'}}>Cập nhât đợt giảm giá</h2>
-                    <Form
-                        form={form}
-                        name="updatePromotion"
-                        layout="vertical"
-                        onFinish={onFinish}
-                    >
-                        <Form.Item
-                            label="Tên khuyến mại"
-                            name="promotionName"
-                            rules={[{required: true, message: 'Vui lòng nhập tên khuyến mại'}]}
+        <Suspense fallback={<AdminLoader/>}>
+            <>
+                <Breadcrumb
+                    style={{marginBottom: '10px'}}
+                    items={[
+                        {title: <Link href="/admin"><HomeOutlined/></Link>},
+                        {title: <Link href="/admin/promotion">Khuyến mại</Link>},
+                        {title: breadcrumbTitle},
+                    ]}
+                />
+                <Row gutter={16}>
+                    {/* Form thêm mới */}
+                    <Col span={10}>
+                        <Card
+                            title="Cập nhật đợt giảm giá"
+                            style={{backgroundColor: '#fff', borderRadius: '8px'}}
                         >
-                            <Input placeholder="Nhập tên khuyến mại"/>
-                        </Form.Item>
+                            <Form
+                                form={form}
+                                name="updatePromotion"
+                                layout="vertical"
+                                onFinish={onFinish}
+                            >
+                                <Form.Item name="promotionName" label="Tên chương trình"
+                                           rules={[{required: true, message: 'Vui lòng nhập tên chương trình'}]}>
+                                    <Input placeholder="Nhập tên chương trình"/>
+                                </Form.Item>
 
-                        <Form.Item
-                            label="Giá trị giảm giá"
-                            rules={[{required: true, message: "Vui lòng nhập giá trị giảm giá và chọn kiểu!"}]}
-                        >
-                            <Space.Compact style={{width: '100%'}}>
                                 <Form.Item
-                                    name="discountValue"
-                                    noStyle
+                                    label="Giá trị giảm giá"
+                                    rules={[{required: true, message: "Vui lòng nhập giá trị giảm giá và chọn kiểu!"}]}
+                                >
+                                    <Space.Compact style={{width: '100%'}}>
+                                        <Form.Item
+                                            name="discountValue"
+                                            noStyle
+                                            rules={[{required: true, message: "Giá trị giảm là bắt buộc!"}]}
+                                        >
+                                            <InputNumber style={{width: '70%'}} placeholder="Giá trị giảm"/>
+                                        </Form.Item>
+                                        <Form.Item
+                                            name="discountType"
+                                            noStyle
+                                            rules={[{required: true, message: "Kiểu giảm là bắt buộc!"}]}
+                                        >
+                                            <Select style={{width: '30%'}} placeholder="Chọn kiểu" suffixIcon={null}>
+                                                {Object.keys(DISCOUNT_TYPE).map((key) => (
+                                                    <Option key={key} value={key}>
+                                                        {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE]}
+                                                    </Option>
+                                                ))}
+                                            </Select>
+                                        </Form.Item>
+                                    </Space.Compact>
+                                </Form.Item>
+
+                                <Form.Item
+                                    name="startDate"
+                                    label="Ngày bắt đầu"
+                                    rules={[{required: true, message: "Vui lòng chọn ngày bắt đầu!"}]}
+                                >
+                                    <DatePicker
+                                        style={{width: '100%'}}
+                                        showTime
+                                        format="YYYY-MM-DD HH:mm:ss"
+                                        disabledDate={current => current && current < dayjs().startOf('day')}
+                                    />
+                                </Form.Item>
+
+                                <Form.Item
+                                    name="endDate"
+                                    label="Ngày kết thúc"
+                                    dependencies={['startDate']}
                                     rules={[
-                                        {required: true, message: "Giá trị giảm là bắt buộc!"},
+                                        {required: true, message: "Vui lòng chọn ngày kết thúc!"},
                                         ({getFieldValue}) => ({
                                             validator(_, value) {
-                                                if (getFieldValue("discountType") === "PERCENTAGE" && value > 100) {
-                                                    return Promise.reject(new Error("Giá trị giảm không được vượt quá 100%"));
+                                                const startDate = getFieldValue("startDate");
+                                                if (!value || !startDate || value.isAfter(startDate)) {
+                                                    return Promise.resolve();
                                                 }
-                                                return Promise.resolve();
+                                                return Promise.reject(
+                                                    new Error("Ngày kết thúc phải lớn hơn ngày bắt đầu!")
+                                                );
                                             },
                                         }),
                                     ]}
                                 >
-                                    <InputNumber style={{width: '70%'}} placeholder="Giá trị giảm"/>
+                                    <DatePicker
+                                        style={{width: '100%'}}
+                                        showTime
+                                        format="YYYY-MM-DD HH:mm:ss"
+                                        disabledDate={current => current && current < dayjs().startOf('day')}
+                                    />
                                 </Form.Item>
-                                <Form.Item
-                                    name="discountType"
-                                    noStyle
-                                    rules={[{required: true, message: "Kiểu giảm là bắt buộc!"}]}
+
+                                <Form.Item name="description" label="Mô tả">
+                                    <Input.TextArea rows={3} placeholder="Nhập mô tả"/>
+                                </Form.Item>
+                            </Form>
+                            <div style={{textAlign: 'center', marginTop: '16px'}}>
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    form="updatePromotion"
+                                    style={{backgroundColor: '#00b96b', borderColor: '#1890ff'}}
                                 >
-                                    <Select
-                                        style={{width: '30%'}}
-                                        placeholder="Chọn kiểu"
-                                        suffixIcon={null}
-                                    >
-                                        {Object.keys(DISCOUNT_TYPE).map((key) => (
-                                            <Option key={key} value={key}>
-                                                {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE]}
-                                            </Option>
-                                        ))}
-                                    </Select>
-                                </Form.Item>
-                            </Space.Compact>
-                        </Form.Item>
+                                    Lưu
+                                </Button>
+                            </div>
+                        </Card>
+                    </Col>
 
-                        <Form.Item
-                            name="startDate"
-                            label="Ngày bắt đầu"
-                            rules={[{required: true, message: "Vui lòng chọn ngày bắt đầu!"}]}
-
+                    {/* Danh Sách Sản Phẩm */}
+                    <Col span={14}>
+                        <Card
+                            title="Danh sách sản phẩm"
+                            style={{backgroundColor: '#fff', borderRadius: '8px'}}
                         >
-                            <DatePicker
-                                style={{width: '100%'}}
-                                showTime
-                                format="YYYY-MM-DD HH:mm:ss"
-                                disabledDate={current => current && current < dayjs().startOf('day')}
-                            />
-                        </Form.Item>
+                            <div>
+                                <div className="flex-grow max-w-96" style={{marginBottom: '10px'}}>
+                                    <Search
+                                        placeholder="Tìm kiếm theo tên sản phẩm"
+                                        allowClear
+                                        onSearch={onSearch}
+                                        style={{width: '100%'}}
+                                    />
+                                </div>
+                                <Table
 
-                        <Form.Item
-                            name="endDate"
-                            label="Ngày kết thúc"
-                            dependencies={['startDate']}
-                            rules={[
-                                {required: true, message: "Vui lòng chọn ngày kết thúc!"},
-                                ({getFieldValue}) => ({
-                                    validator(_, value) {
-                                        const startDate = getFieldValue("startDate");
-                                        if (!value || !startDate || value.isAfter(startDate)) {
-                                            return Promise.resolve();
-                                        }
-                                        return Promise.reject(
-                                            new Error("Ngày kết thúc phải lớn hơn ngày bắt đầu!")
-                                        );
-                                    },
-                                }),
-                            ]}
+                                    columns={productColumns}
+                                    dataSource={filteredProducts}
+                                    rowKey="id"
+                                    rowSelection={{
+                                        type: 'checkbox',
+                                        selectedRowKeys: selectedProducts,
+                                        onChange: handleRowSelectionChange,
+                                    }}
+                                    pagination={{
+                                        current: currentPage,
+                                        pageSize: pageSize,
+                                        total: totalItems,
+                                        onChange: handlePageChange,
+                                        showSizeChanger: true,
+                                        pageSizeOptions: ['10', '20', '50', '100'],
+                                    }}
+                                    onRow={(record) => ({
+                                        onDoubleClick: () => handleProductClick(record.id),
+                                    })}
+                                    scroll={{y: 350}}
+                                />
+                            </div>
+                        </Card>
+                    </Col>
+                    <Suspense fallback={<AdminLoader/>}>
+                        <ProductVariant
+                            isProductVariantOpen={isProductVariantOpen}
+                            setIsProductVariantOpen={setIsProductVariantOpen}
+                            productId={selectedProductId}
+                            onSelectProductVariants={handleAddProductDetails}
+                            onProductSelect={handleAddProductDetails}
+                        />
+                    </Suspense>
+                </Row>
+
+                {/* Danh Sách Chi Tiết Sản Phẩm */}
+                <Row>
+                    <Col span={24}>
+                        <Card
+                            title="Chi tiết sản phẩm đã chọn"
+                            style={{backgroundColor: '#fff', borderRadius: '8px', marginTop: '20px'}}
                         >
-                            <DatePicker
-                                style={{width: '100%'}}
-                                showTime
-                                format="YYYY-MM-DD HH:mm:ss"
-                            />
-                        </Form.Item>
-
-                        <Form.Item name="description" label="Mô tả">
-                            <Input.TextArea placeholder="Nhập mô tả"/>
-                        </Form.Item>
-                    </Form>
-                </Col>
-
-                {/* Danh Sách Sản Phẩm */}
-                <Col span={14}>
-                    <h2 style={{fontWeight: 'bold', marginBottom: '16px'}}>Danh sách sản phẩm</h2>
-                    <div>
-                        <div className="flex-grow max-w-96" style={{marginBottom: '10px'}}>
-                            <Search
-                                placeholder="Theo tên sản phẩm"
-                                allowClear
-                                onSearch={onSearch}
-                                style={{width: '100%'}}
-                            />
-                        </div>
-                        <Table
-
-                            columns={productColumns}
-                            dataSource={filteredProducts}
-                            rowKey="id"
-                            rowSelection={{
-                                type: 'checkbox',
-                                selectedRowKeys: selectedProducts,
-                                onChange: handleRowSelectionChange,
-                            }}
-                            pagination={false}
-                            scroll={{y: 350}}
-                        />
-                        <Pagination
-                            current={currentPage}
-                            pageSize={pageSize}
-                            total={totalItems}
-                            onChange={handlePageChange}
-                            showSizeChanger
-                            pageSizeOptions={['10', '20', '50', '100']}
-                        />
-
-                    </div>
-                </Col>
-                <ProductVariant
-                    isProductVariantOpen={isProductVariantOpen}
-                    setIsProductVariantOpen={setIsProductVariantOpen}
-                    productId={selectedProductId}
-                    onSelectProductVariants={handleAddProductDetails}
-                    onProductSelect={handleAddProductDetails}
-                />
-            </Row>
-
-            {/* Danh Sách Chi Tiết Sản Phẩm */}
-            <Row>
-                <Col span={24}>
-                    <>
-                        <div style={{marginTop: '20px'}}>
-                            <h2 style={{fontWeight: 'bold', marginBottom: '16px'}}>Chi tiết sản phẩm đã chọn</h2>
-
                             <Table
                                 columns={detailColumns}
                                 dataSource={productDetails.map((variant) => ({
                                     ...variant,
-                                    key: variant.id,
+                                    key: variant.id, // Tạo key duy nhất cho mỗi dòng
                                 }))}
                                 rowKey="key"
                                 bordered
-                                pagination={{ pageSize: 10 }}
+                                pagination={{pageSize: 10}}
                                 showSizeChanger
                                 pageSizeOptions={['10', '20', '50', '100']}
-                                style={{ backgroundColor: '#fafafa' }}
+                                style={{backgroundColor: '#fafafa'}}
                             />
-
-                        </div>
-                    </>
-                </Col>
-            </Row>
-            <Row justify="end" style={{marginTop: '20px'}}>
-                <Col>
-                    <Button type="default"
-                            style={{marginRight: '10px', backgroundColor: '#fadb14', borderColor: '#d9d9d9'}}>
-                        <Link href="/admin/promotion">Quay lại</Link>
-                    </Button>
-
-                    <Button
-                        type="primary"
-                        htmlType="submit"
-                        form="updatePromotion"
-                        style={{backgroundColor: '#00b96b', borderColor: '#1890ff'}}
-                    >
-                        Lưu
-                    </Button>
-                </Col>
-            </Row>
-        </>
+                        </Card>
+                    </Col>
+                </Row>
+            </>
+        </Suspense>
     );
 };
 
