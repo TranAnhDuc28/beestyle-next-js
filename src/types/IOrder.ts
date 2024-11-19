@@ -20,9 +20,16 @@ export interface IOrder {
 }
 
 export interface IOrderCreate {
-    id: number;
-    orderTrackingNumber: string;
-    paymentDate: Date;
-    orderChannel: string
-    orderStatus: string;
+    id?: number;
+    orderTrackingNumber?: string;
+    customerId?: number;
+    voucherId?: string
+    phoneNumber?: string;
+    shippingFee?: number;
+    totalAmount?: number;
+    paymentDate?: Date;
+    paymentMethod?: string;
+    orderChannel?: string
+    orderStatus?: string;
+    note?: string;
 }

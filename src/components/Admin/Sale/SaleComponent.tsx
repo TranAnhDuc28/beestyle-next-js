@@ -4,11 +4,14 @@ import {Layout, Tabs, TabsProps, theme} from "antd";
 import ContentTabPanelSale from "@/components/Admin/Sale/ContentTabPanelSale";
 import TabBarExtraContentLeft from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentLeft";
 import TabBarExtraContentRight from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentRight";
-import {IProductVariant, IProductVariantInCart} from "@/types/IProductVariant";
+import {IProductVariant} from "@/types/IProductVariant";
 import useSWR from "swr";
 import {getOrders, URL_API_ORDER} from "@/services/OrderService";
-import {IOrder} from "@/types/IOrder";
+import {IOrder, IOrderCreate} from "@/types/IOrder";
 import useAppNotifications from "@/hooks/useAppNotifications";
+import {IOrderItem} from "@/types/IOrderItem";
+import useOrder from "@/components/Admin/Order/hooks/useOrder";
+import {ORDER_STATUS} from "@/constants/OrderStatus";
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 type PositionType = 'left' | 'right';
@@ -24,8 +27,9 @@ const OperationsSlot: Record<PositionType, React.ReactNode> = {
 };
 
 interface HandleCartContextType {
-    dataCart: IProductVariantInCart[];
-    setDataCart: React.Dispatch<React.SetStateAction<IProductVariantInCart[]>>;
+    orderActiveTabKey: any;
+    dataCart: IOrderItem[];
+    setDataCart: React.Dispatch<React.SetStateAction<IOrderItem[]>>;
     handleDeleteProductInCart: (id: number) => void;
     handleAddProductInCart: (productVariantSelected: IProductVariant[]) => void;
 }
@@ -45,8 +49,9 @@ const SaleComponent: React.FC = () => {
             }
         );
 
-    const [dataCart, setDataCart] = useState<IProductVariantInCart[]>([])
-    const [activeKey, setActiveKey] = useState<string | undefined>(undefined);
+    const {handleCreateOrder, handleUpdateOrder} = useOrder();
+    const [dataCart, setDataCart] = useState<IOrderItem[]>([])
+    const [orderActiveTabKey, setOrderActiveTabKey] = useState<string | undefined>(undefined);
     const [items, setItems] = useState<TabsProps['items']>([]);
     const newTabIndex = useRef(0);
 
@@ -69,7 +74,7 @@ const SaleComponent: React.FC = () => {
             }));
             setItems(newItems);
             if (newItems.length > 0) {
-                setActiveKey(newItems[0].key);
+                setOrderActiveTabKey(newItems[0].key);
             }
         }
     }, [data, isLoading]);
@@ -83,7 +88,7 @@ const SaleComponent: React.FC = () => {
             const updatedCart = [...prevValue];
             productVariantSelected.forEach((selectedProduct) => {
                 const existingProductVariantId = updatedCart.findIndex(
-                    (product) => product.id === selectedProduct.id
+                    (oderItem) => oderItem.productVariantId === selectedProduct.id
                 );
 
                 const stockQuantity = selectedProduct.quantityInStock || 0;
@@ -95,7 +100,23 @@ const SaleComponent: React.FC = () => {
                     // Đảm bảo số lượng không vượt quá số lượng trong kho
                     updatedCart[existingProductVariantId].quantity = Math.min(newQuantity, stockQuantity);
                 } else {
-                    updatedCart.push({...selectedProduct, quantity: 1});
+                    updatedCart.push({
+                        id: 1,
+                        orderId: Number(orderActiveTabKey),
+                        productVariantId: selectedProduct.id,
+                        sku: selectedProduct.sku,
+                        productId: selectedProduct.productId,
+                        productName: selectedProduct.productName,
+                        colorId: selectedProduct.colorId,
+                        colorCode: selectedProduct.colorCode,
+                        colorName: selectedProduct.colorName,
+                        sizeId: selectedProduct.sizeId,
+                        sizeName: selectedProduct.sizeName,
+                        quantity: 1,
+                        salePrice: selectedProduct.salePrice,
+                        discountPrice: undefined,
+                        note: undefined,
+                    });
                 }
             });
             return updatedCart;
@@ -104,19 +125,27 @@ const SaleComponent: React.FC = () => {
 
     const onChange = (newActiveKey: string) => {
         console.log(newActiveKey);
-        setActiveKey(newActiveKey);
+        setOrderActiveTabKey(newActiveKey);
     };
 
     const add = () => {
-        const newActiveKey = `newTab${newTabIndex.current++}`;
-        const newPanes = [...items ?? []];
-        newPanes.push({label: 'New Tab', children: <ContentTabPanelSale/>, key: newActiveKey});
-        setItems(newPanes);
-        setActiveKey(newActiveKey);
+        const defaultOrderPending: IOrderCreate = {
+            orderTrackingNumber: `HD${Date.now()}`,
+            shippingFee: 0,
+            totalAmount: 0,
+            orderChannel: "OFFLINE",
+            orderStatus: "PENDING",
+        }
+        handleCreateOrder(defaultOrderPending);
+        // const newActiveKey = `${newTabIndex.current++}`;
+        // const newPanes = [...items ?? []];
+        // newPanes.push({label: , children: <ContentTabPanelSale/>, key: newActiveKey});
+        // setItems(newPanes);
+        // setOrderActiveTabKey(newActiveKey);
     };
 
     const remove = (targetKey: TargetKey) => {
-        let newActiveKey = activeKey;
+        let newActiveKey = orderActiveTabKey;
         let lastIndex = -1;
         items?.forEach((item, i) => {
             if (item.key === targetKey) {
@@ -132,7 +161,7 @@ const SaleComponent: React.FC = () => {
             }
         }
         setItems(newPanes);
-        setActiveKey(newActiveKey);
+        setOrderActiveTabKey(newActiveKey);
     };
 
     const onEdit = (targetKey: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') => {
@@ -145,13 +174,13 @@ const SaleComponent: React.FC = () => {
 
     return (
         <Layout className="h-screen" style={{background: colorBgContainer}}>
-            <HandleCart.Provider value={{dataCart, setDataCart, handleDeleteProductInCart, handleAddProductInCart}}>
+            <HandleCart.Provider value={{orderActiveTabKey, dataCart, setDataCart, handleDeleteProductInCart, handleAddProductInCart}}>
                 <Content style={{background: colorBgContainer}}>
                     <Tabs
                         className="h-full"
                         type="editable-card"
                         onChange={onChange}
-                        activeKey={activeKey}
+                        activeKey={orderActiveTabKey}
                         onEdit={onEdit}
                         tabBarExtraContent={OperationsSlot}
                         tabBarStyle={tabBarStyle}

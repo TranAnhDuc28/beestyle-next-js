@@ -2,9 +2,7 @@ import React, {memo, useCallback, useContext, useMemo, useRef, useState} from "r
 import {Card, Modal, Select, type SelectProps, Space, Table, TableColumnsType, TableProps, Tag, Typography} from "antd";
 import {IProduct} from "@/types/IProduct";
 import {IProductVariant} from "@/types/IProductVariant";
-import useFilterProductVariant, {
-    ParamFilterProductVariant
-} from "@/components/Admin/Product/Variant/hooks/useFilterProductVariant";
+import useFilterProductVariant, {ParamFilterProductVariant} from "@/components/Admin/Product/Variant/hooks/useFilterProductVariant";
 import useOptionColor from "@/components/Admin/Color/hooks/useOptionColor";
 import useOptionSize from "@/components/Admin/Size/hooks/useOptionSize";
 import ColorButton from "@/components/Button/ColorButton";
@@ -12,9 +10,8 @@ import {HandleCart} from "@/components/Admin/Sale/SaleComponent";
 import type {DraggableData, DraggableEvent} from 'react-draggable';
 import Draggable from 'react-draggable';
 
-const {Title, Text} = Typography;
+const {Text} = Typography;
 
-type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
 type TagRender = SelectProps['tagRender'];
 
 const getTagRender = (dataMap: Map<number, string | undefined>): TagRender => {
@@ -259,7 +256,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
                         />
                     </Space>
                 </Card>
-                <Card title="Danh sách sản phẩm">
+                <Card title="Danh sách sản phẩm" size="small">
                     <Table<IProductVariant>
                         rowKey={"id"}
                         loading={isLoading}

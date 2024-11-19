@@ -43,16 +43,16 @@ export interface IProductVariantCreate{
     quantityInStock?: number;
 }
 
-export interface IProductVariantInCart{
-    id: number;
-    sku?: string;
-    productId?: number;
-    productName?: string;
-    colorId?: number;
-    colorCode?: string;
-    colorName?: string;
-    sizeId?: number;
-    sizeName?: string;
-    quantity?: number;
-    salePrice?: number;
-}
+// export interface IProductVariantInCart{
+//     id: number;
+//     sku?: string;
+//     productId?: number;
+//     productName?: string;
+//     colorId?: number;
+//     colorCode?: string;
+//     colorName?: string;
+//     sizeId?: number;
+//     sizeName?: string;
+//     quantity?: number;
+//     salePrice?: number;
+// }
