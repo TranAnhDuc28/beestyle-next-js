@@ -3,5 +3,3 @@ export const STATUS_PRODUCT = {
     INACTIVE: "Ngừng kinh doanh",
 } as const;
 
-
-export type StatusProductKeys = keyof typeof STATUS_PRODUCT;

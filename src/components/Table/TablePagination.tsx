@@ -3,7 +3,6 @@ import {Table, TableColumnsType, TableProps } from "antd";
 import React, {memo} from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-
 export interface ITablePaginationProps {
     columns?: TableColumnsType<any>,
     data?: any[] | [],
@@ -14,7 +13,6 @@ export interface ITablePaginationProps {
     onRow?: (record: any) => { [key: string]: (event: React.MouseEvent<HTMLElement>) => void },
     expandedRowKeys?: number[],
     expandedRowRender?: React.FC
-
 }
 
 const rowSelection: TableProps<any>['rowSelection'] = {

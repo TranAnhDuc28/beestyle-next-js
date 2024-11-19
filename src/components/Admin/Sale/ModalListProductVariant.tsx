@@ -1,30 +1,17 @@
-import React, {memo, useCallback, useMemo, useState} from "react";
-import {
-    Badge, Button,
-    Card,
-    Modal,
-    Select,
-    type, SelectProps,
-    Space,
-    Table,
-    TableColumnsType,
-    TableProps,
-    Tag,
-    Typography
-} from "antd";
+import React, {memo, useCallback, useContext, useMemo, useRef, useState} from "react";
+import {Card, Modal, Select, type SelectProps, Space, Table, TableColumnsType, TableProps, Tag, Typography} from "antd";
 import {IProduct} from "@/types/IProduct";
 import {IProductVariant} from "@/types/IProductVariant";
-import useFilterProductVariant, {
-    ParamFilterProductVariant
-} from "@/components/Admin/Product/Variant/hooks/useFilterProductVariant";
+import useFilterProductVariant, {ParamFilterProductVariant} from "@/components/Admin/Product/Variant/hooks/useFilterProductVariant";
 import useOptionColor from "@/components/Admin/Color/hooks/useOptionColor";
 import useOptionSize from "@/components/Admin/Size/hooks/useOptionSize";
 import ColorButton from "@/components/Button/ColorButton";
-import {PlusOutlined} from "@ant-design/icons";
+import {HandleCart} from "@/components/Admin/Sale/SaleComponent";
+import type {DraggableData, DraggableEvent} from 'react-draggable';
+import Draggable from 'react-draggable';
 
-const {Title, Text} = Typography;
+const {Text} = Typography;
 
-type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
 type TagRender = SelectProps['tagRender'];
 
 const getTagRender = (dataMap: Map<number, string | undefined>): TagRender => {
@@ -52,7 +39,6 @@ const getTagRender = (dataMap: Map<number, string | undefined>): TagRender => {
                 bordered={false}
             >
                 <Tag style={{height: 15, width: 15, borderRadius: "50%"}} color={color ?? "default"}/> {label}
-                {/*<Badge color={color ?? "default"} text={label}/>*/}
             </Tag>
         );
     }
@@ -60,9 +46,9 @@ const getTagRender = (dataMap: Map<number, string | undefined>): TagRender => {
 
 const defaultFilterParam: ParamFilterProductVariant = {
     page: 1,
-    pageSize: 10,
-    color: undefined,
-    size: undefined,
+    size: 7,
+    colorIds: undefined,
+    sizeIds: undefined,
     minPrice: undefined,
     maxPrice: undefined,
 };
@@ -74,8 +60,14 @@ interface IProps {
 }
 
 const ModalListProductVariant: React.FC<IProps> = (props) => {
+    const handleCart = useContext(HandleCart);
     const {product, isOpenModalListProductVariant, setOpenModalListProductVariant} = props;
+    const [disabled, setDisabled] = useState(true);
+    const [bounds, setBounds] = useState({left: 0, top: 0, bottom: 0, right: 0});
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const draggleRef = useRef<HTMLDivElement>(null);
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+    const [selectedRows, setSelectedRows] = useState<IProductVariant[]>([]);
 
     const {dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor}
         = useOptionColor(isOpenModalListProductVariant);
@@ -86,32 +78,67 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
     const memoizedTagRender = useMemo(() => getTagRender(dataMap), [dataMap]);
 
     const [filterParam, setFilterParam] = useState<ParamFilterProductVariant>({...defaultFilterParam});
-    const {dataOptionFilterProductVariant, isLoading} = useFilterProductVariant(product?.id.toString(), filterParam)
+    const {dataOptionFilterProductVariant, isLoading} = useFilterProductVariant(product?.id.toString(), filterParam);
+
+    const onStart = (_event: DraggableEvent, uiData: DraggableData) => {
+        const {clientWidth, clientHeight} = window.document.documentElement;
+        const targetRect = draggleRef.current?.getBoundingClientRect();
+        if (!targetRect) {
+            return;
+        }
+        setBounds({
+            left: -targetRect.left + uiData.x,
+            right: clientWidth - (targetRect.right - uiData.x),
+            top: -targetRect.top + uiData.y,
+            bottom: clientHeight - (targetRect.bottom - uiData.y),
+        });
+    };
+
+    const onStop = (_event: DraggableEvent, uiData: DraggableData) => {
+        setPosition({ x: uiData.x, y: uiData.y });
+    };
 
     const handleCloseModal = () => {
         setOpenModalListProductVariant(false);
+        setSelectedRowKeys([]);
+        setSelectedRows([]);
         setFilterParam(defaultFilterParam);
+        setPosition({ x: 0, y: 0 });
+        setBounds({left: 0, top: 0, bottom: 0, right: 0})
     }
 
-    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-        console.log('selectedRowKeys changed: ', newSelectedRowKeys);
-        setSelectedRowKeys(newSelectedRowKeys);
-    };
-
-    const rowSelection: TableRowSelection<IProductVariant> = {
+    const rowSelection: TableProps<IProductVariant>['rowSelection'] = {
         selectedRowKeys,
-        onChange: onSelectChange,
-    };
+        onChange: (newSelectedRowKeys: React.Key[], selectedRows: IProductVariant[]) => {
+            console.log('selectedRowKeys: ', newSelectedRowKeys);
+            console.log('selectedRows: ', selectedRows);
+            setSelectedRowKeys(newSelectedRowKeys);
+            setSelectedRows(selectedRows);
+        }
+    }
 
     const handleSelectedColorsChange = useCallback((value: string[]) => {
         console.log(`selected ${value}`);
-        setFilterParam((prevState) => ({...prevState, color: value}));
+        setFilterParam((prevState) => ({...prevState, colorIds: value}));
     }, []);
 
     const handleSelectedSizesChange = useCallback((value: string[]) => {
         console.log(`selected ${value}`);
-        setFilterParam((prevState) => ({...prevState, size: value}));
+        setFilterParam((prevState) => ({...prevState, sizeIds: value}));
     }, []);
+
+    const onChangePagination = useCallback((pagination: any) => {
+        setFilterParam((prevValue) => ({...prevValue, page: pagination?.current ?? 1}));
+    }, []);
+
+    const handleOkAndClose = () => {
+        handleCart?.handleAddProductInCart(selectedRows);
+        handleCloseModal();
+    }
+
+    const handleOkAndContinue = () => {
+        handleCart?.handleAddProductInCart(selectedRows);
+    }
 
     const columns: TableColumnsType<IProductVariant> = [
         {title: 'SKU', dataIndex: 'sku', key: 'sku', width: 150},
@@ -140,23 +167,54 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
         {title: 'Tồn kho', dataIndex: 'quantityInStock', key: 'quantityInStock', width: 100},
     ];
 
-
     return (
         <Modal
-            title={product?.productName ?? "Sản phẩm"}
+            title={
+                <div
+                    style={{width: '100%', cursor: 'move'}}
+                    onMouseOver={() => {
+                        if (disabled) {
+                            setDisabled(false);
+                        }
+                    }}
+                    onMouseOut={() => {setDisabled(true);}}
+                    onFocus={() => {}}
+                    onBlur={() => {}}
+                >
+                    {product?.productName ?? "Sản phẩm"}
+                </div>
+            }
             maskClosable
-            style={{top: 50}}
+            style={{top: 20}}
             open={isOpenModalListProductVariant}
             onCancel={handleCloseModal}
+            onOk={() => handleOkAndClose()}
             width={1000}
-            okText="Xác nhận"
+            okText="Thêm vào giỏ"
+            cancelText="Đóng"
             okButtonProps={{style: {background: "#00b96b"}}}
-            footer={(_, {OkBtn, CancelBtn }) => (
+            footer={(_, {OkBtn, CancelBtn}) => (
                 <>
-                    <ColorButton bgColor="#00b96b" type="primary">Xác nhận và tiếp tục</ColorButton>
                     <OkBtn/>
-                    <CancelBtn />
+                    <ColorButton bgColor="#00b96b" type="primary"
+                                 onClick={() => handleOkAndContinue()}
+                    >
+                        Thêm vào giỏ và tiếp tục
+                    </ColorButton>
+                    <CancelBtn/>
                 </>
+            )}
+            modalRender={(modal) => (
+                <Draggable
+                    disabled={disabled}
+                    bounds={bounds}
+                    nodeRef={draggleRef}
+                    onStart={(event, uiData) => onStart(event, uiData)}
+                    onStop={(event, uiData) => onStop(event, uiData)}
+                    position={isOpenModalListProductVariant ? position : { x: 0, y: 0 }}
+                >
+                    <div ref={draggleRef}>{modal}</div>
+                </Draggable>
             )}
         >
             <Space direction="vertical" style={{width: "100%"}}>
@@ -168,7 +226,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
                             mode="multiple"
                             maxTagCount={3}
                             style={{width: '100%'}}
-                            value={filterParam.color}
+                            value={filterParam.colorIds}
                             placeholder={isLoadingDataOptionColor ? "Đang tải..." : "Lọc theo màu sắc"}
                             onChange={handleSelectedColorsChange}
                             options={dataOptionColor}
@@ -189,7 +247,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
                             mode="multiple"
                             maxTagCount={6}
                             style={{width: '100%'}}
-                            value={filterParam.size}
+                            value={filterParam.sizeIds}
                             placeholder={isLoadingDataOptionSize ? "Đang tải..." : "Lọc theo kích thước"}
                             onChange={handleSelectedSizesChange}
                             options={dataOptionSize}
@@ -199,19 +257,23 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
                         />
                     </Space>
                 </Card>
-                <Card title="Danh sách sản phẩm">
-                    <Table
+                <Card title="Danh sách sản phẩm" size="small">
+                    <Table<IProductVariant>
                         rowKey={"id"}
                         loading={isLoading}
                         size="small"
                         rowSelection={rowSelection}
                         columns={columns}
                         dataSource={dataOptionFilterProductVariant?.items}
+                        onChange={onChangePagination}
                         pagination={{
                             position: ["bottomCenter"],
                             size: "default",
-                            defaultPageSize: 10,
-                            showSizeChanger: false
+                            current: filterParam.page,
+                            defaultPageSize: filterParam.size,
+                            total: dataOptionFilterProductVariant?.totalElements,
+                            showSizeChanger: false,
+                            responsive: true,
                         }}
                     />
                 </Card>
