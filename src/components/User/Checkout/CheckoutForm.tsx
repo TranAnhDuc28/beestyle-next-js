@@ -14,7 +14,12 @@ import TextArea from "antd/es/input/TextArea";
 
 const { Option } = Select;
 
-const CheckoutForm = () => {
+interface IProps {
+  addressForm: any;
+  userForm: any;
+}
+const CheckoutForm = (props: IProps) => {
+  const { addressForm, userForm } = props;
   const [selectedMethod, setSelectedMethod] = useState("home");
   const [selectedShipping, setSelectedShipping] = useState("standard");
   const [selected, setSelected] = useState({
@@ -39,8 +44,7 @@ const CheckoutForm = () => {
   } = useAddress();
   const [shippingPrice, setShippingPrice] = useState(20000); // Mặc định là 20.000đ
 
-  const [addressForm] = Form.useForm(); // Form cho phần địa chỉ
-  const onChangeMethod = (e) => {
+  const onChangeMethod = (e:any) => {
     const value = e.target.value;
     setSelectedMethod(value);
 
@@ -54,7 +58,7 @@ const CheckoutForm = () => {
       });
     }
   };
-  const onChangeShipping = (e) => {
+  const onChangeShipping = (e:any) => {
     setSelectedShipping(e.target.value);
   };
 
@@ -96,10 +100,9 @@ const CheckoutForm = () => {
         Người nhận
       </h3>
       <Form
-        
         layout="horizontal"
         className={styles["form"]}
-        method="post"
+        form={userForm}
         action="#"
       >
         <Form.Item
@@ -131,7 +134,7 @@ const CheckoutForm = () => {
             className={styles["input-checkout"]}
           />
         </Form.Item>
-
+        </Form>
         <div className={`${styles["delivery-method"]} mt-5`}>
           <h3 className={styles["heading"]}>Hình thức nhận hàng</h3>
           <Radio.Group
@@ -176,137 +179,143 @@ const CheckoutForm = () => {
 
         {selectedMethod === "home" ? (
           <>
-            <Form
-              form={addressForm}
-              className="mb-[100px] mt-9"
-              layout="vertical"
-              labelAlign="left"
-              labelWrap
-            >
+          
               <h3 className={styles["heading"]}>Địa chỉ nhận hàng</h3>
-              <Row gutter={16} className="mb-3">
-                <Col span={8}>
-                  {" "}
-                  <Form.Item
-                    label="Tỉnh"
-                    name="province"
-                    rules={[{ required: true, message: "Vui lòng chọn tỉnh!" }]}
-                  >
-                    <Select
-                      onChange={(value) => {
-                        const province = provinces.find(
-                          (prov) => prov.code === value
-                        );
-                        if (province) {
-                          handleProvinceChange(value, province.name);
-                          setSelected({
-                            province: value,
-                            district: "",
-                            ward: "",
-                          }); // Đặt lại giá trị district và ward
-                          fetchDistricts(value);
-                        }
-                      }}
-                      placeholder="Chọn tỉnh"
-                      style={{ width: "100%"}}
-                      loading={loading.provinces}
+              <Form
+                layout="horizontal"
+                className={styles["form"]}
+                form={addressForm}
+                action="#"
+              >
+                <Row gutter={16} className="mb-3">
+                  <Col span={8}>
+                    {" "}
+                    <Form.Item
+                      // label="Tỉnh"
+                      name="province"
+                      rules={[
+                        { required: true, message: "Vui lòng chọn tỉnh!" },
+                      ]}
                     >
-                      {provinces.map((province) => (
-                        <Select.Option
-                          key={province.code}
-                          value={province.code}
-                        >
-                          {province.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item
-                    label="Huyện"
-                    name="district"
-                    rules={[
-                      { required: true, message: "Vui lòng chọn huyện!" },
-                    ]}
-                  >
-                    <Select
-                      onChange={(value) => {
-                        const district = districts.find(
-                          (dist) => dist.code === value
-                        );
-                        if (district) {
-                          handleDistrictChange(value, district.name);
-                          setSelected((prev) => ({
-                            ...prev,
-                            district: value,
-                            ward: "",
-                          })); // Đặt lại ward
-                          fetchWards(value);
-                        }
-                      }}
-                      placeholder="Chọn huyện"
-                      style={{ width: "100%" }}
-                      loading={loading.districts}
-                      value={selected.district || undefined} // Đảm bảo hiển thị đúng giá trị hiện tại
-                    >
-                      {districts && districts.length > 0 ? (
-                        districts.map((district) => (
+                      <Select
+                      size="large"
+                        onChange={(value) => {
+                          const province = provinces.find(
+                            (prov) => prov.code === value
+                          );
+                          if (province) {
+                            handleProvinceChange(value, province.name);
+                            setSelected({
+                              province: value,
+                              district: "",
+                              ward: "",
+                            }); // Đặt lại giá trị district và ward
+                            fetchDistricts(value);
+                          }
+                        }}
+                        placeholder="Chọn tỉnh"
+                        style={{ width: "100%" }}
+                        loading={loading.provinces}
+                      >
+                        {provinces.map((province) => (
                           <Select.Option
-                            key={district.code}
-                            value={district.code}
+                            key={province.code}
+                            value={province.code}
                           >
-                            {district.name}
+                            {province.name}
                           </Select.Option>
-                        ))
-                      ) : (
-                        <Select.Option disabled>Chọn huyện</Select.Option>
-                      )}
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item
-                    label="Xã"
-                    name="ward"
-                    rules={[{ required: true, message: "Vui lòng chọn xã!" }]}
-                  >
-                    <Select
-                      onChange={(value) => {
-                        const ward = wards.find((war) => war.code === value);
-                        if (ward) {
-                          handleWardChange(value, ward.name);
-                          setSelected((prev) => ({ ...prev, ward: value }));
-                        }
-                      }}
-                      placeholder="Chọn xã"
-                      style={{ width: "100%" }}
-                      value={selected.ward || undefined} // Đảm bảo hiển thị đúng giá trị hiện tại
-                      loading={loading.wards}
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item
+                      // label="Huyện"
+                      name="district"
+                      rules={[
+                        { required: true, message: "Vui lòng chọn huyện!" },
+                      ]}
                     >
-                      {wards && wards.length > 0 ? (
-                        wards.map((ward) => (
-                          <Select.Option key={ward.code} value={ward.code}>
-                            {ward.name}
-                          </Select.Option>
-                        ))
-                      ) : (
-                        <Select.Option disabled>Chọn xã</Select.Option>
-                      )}
-                    </Select>
-                  </Form.Item>
-                </Col>
-              </Row>
+                      <Select
+                       size="large"
+                        onChange={(value) => {
+                          const district = districts.find(
+                            (dist) => dist.code === value
+                          );
+                          if (district) {
+                            handleDistrictChange(value, district.name);
+                            setSelected((prev) => ({
+                              ...prev,
+                              district: value,
+                              ward: "",
+                            })); // Đặt lại ward
+                            fetchWards(value);
+                          }
+                        }}
+                        placeholder="Chọn huyện"
+                        style={{ width: "100%" }}
+                        loading={loading.districts}
+                        value={selected.district || undefined} // Đảm bảo hiển thị đúng giá trị hiện tại
+                      >
+                        {districts && districts.length > 0 ? (
+                          districts.map((district) => (
+                            <Select.Option
+                              key={district.code}
+                              value={district.code}
+                            >
+                              {district.name}
+                            </Select.Option>
+                          ))
+                        ) : (
+                          <Select.Option disabled>Chọn huyện</Select.Option>
+                        )}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item
+                      // label="Xã"
+                      name="ward"
+                      rules={[{ required: true, message: "Vui lòng chọn xã!" }]}
+                    >
+                      <Select
+                       size="large"
+                        onChange={(value) => {
+                          const ward = wards.find((war) => war.code === value);
+                          if (ward) {
+                            handleWardChange(value, ward.name);
+                            setSelected((prev) => ({ ...prev, ward: value }));
+                          }
+                        }}
+                        placeholder="Chọn xã"
+                        style={{ width: "100%" }}
+                        value={selected.ward || undefined} // Đảm bảo hiển thị đúng giá trị hiện tại
+                        loading={loading.wards}
+                      >
+                        {wards && wards.length > 0 ? (
+                          wards.map((ward) => (
+                            <Select.Option key={ward.code} value={ward.code}>
+                              {ward.name}
+                            </Select.Option>
+                          ))
+                        ) : (
+                          <Select.Option disabled>Chọn xã</Select.Option>
+                        )}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+             
 
-              <Form.Item label="Chi tiết" name="detail">
+              <Form.Item  name="detail">
                 <TextArea
                   onChange={(e) => handleDetailAddressChange(e.target.value)}
                   placeholder="Nhập địa chỉ chi tiết"
                   className={styles["input-checkout"]}
                 />
               </Form.Item>
-            </Form>
-            {selected.province ? (
+              </Form>
+            {/* {selected.province ? (
               <div className={styles["shipping-method"]}>
                 <h3 className={styles["heading"]}>Phương thức vận chuyển</h3>
 
@@ -367,10 +376,10 @@ const CheckoutForm = () => {
               </div>
             ) : (
               ""
-            )}
+            )} */}
           </>
         ) : null}
-      </Form>
+    
     </div>
   );
 };
