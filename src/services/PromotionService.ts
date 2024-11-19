@@ -8,6 +8,7 @@ export const URL_API_PROMOTION = {
     delete: '/admin/promotion/delete',
     search: '/admin/promotion/search',
     searchByDate: '/admin/promotion/findbydate',
+    getProductIds: '/admin/products',
 };
 
 export const getPromotions = async (url: string) => {
@@ -43,6 +44,19 @@ export const findPromotionsByDate = async (startDate, endDate, page = 0, size = 
     });
     return response.data;
 }
-import axios from 'axios';
+export const getProductsByPromotionId = async (promotionId: string) => {
+    const response = await httpInstance.get(`${URL_API_PROMOTION.getProductIds}/${promotionId}`);
+    return response.data;
+};
+
+export const getPromotionById = async (id: string) => {
+    try {
+        const response = await httpInstance.get(`${URL_API_PROMOTION.get}/${id}`);
+        return response.data;  // Trả về dữ liệu của promotion
+    } catch (error) {
+        console.error("Error fetching promotion by ID:", error);
+        throw error;  // Đảm bảo ném lỗi để dễ dàng xử lý ở nơi gọi hàm này
+    }
+};
 
 

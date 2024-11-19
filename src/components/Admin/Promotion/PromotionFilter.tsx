@@ -3,6 +3,7 @@ import {STATUS} from "@/constants/Status";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {memo, useEffect, useState} from "react";
 import {DISCOUNT_TYPE} from "../../../constants/DiscountType";
+import {DISCOUNT_STATUS} from "../../../constants/DiscountStastus";
 
 const {Title} = Typography;
 interface IProps {
@@ -60,10 +61,10 @@ const VoucherFilter = (props: IProps) => {
                                           <Col key={"ALL"} span={24} style={{marginBottom: 10}}>
                                               <Radio value={undefined} style={{marginLeft: 10}}>Tất cả</Radio>
                                           </Col>
-                                          {Object.keys(STATUS).map((key) => (
+                                          {Object.keys(DISCOUNT_STATUS).map((key) => (
                                               <Col key={key} span={24} style={{marginBottom: 10}}>
                                                   <Radio value={key} style={{marginLeft: 10}}>
-                                                      {STATUS[key as keyof typeof STATUS]}
+                                                      {DISCOUNT_STATUS[key as keyof typeof DISCOUNT_STATUS]}
                                                   </Radio>
                                               </Col>
                                           ))}

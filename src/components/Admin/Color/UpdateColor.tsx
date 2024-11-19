@@ -6,6 +6,7 @@ import {updateColor, URL_API_COLOR} from "@/services/ColorService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import ColorPickerCustomize from "@/components/ColorPicker/ColorPickerCustomize";
 import {mutate} from "swr"
+import {URL_API_PRODUCT} from "@/services/ProductService";
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -50,7 +51,10 @@ const UpdateColor = (props: IProps) => {
                     handleCloseUpdateModal();
                     showNotification("success", {message: result.message});
                 }
-                await mutate(URL_API_COLOR.option, undefined, {revalidate: true});
+
+                await mutate((key: any) => typeof key === 'string' && key.startsWith(URL_API_COLOR.option), undefined,
+                    {revalidate: true}
+                );
             }
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;

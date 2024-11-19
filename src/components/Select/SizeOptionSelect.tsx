@@ -24,12 +24,13 @@ const SizeOptionSelect: React.FC<IProps> = (props) => {
     return (
         <Space style={{ width: '100%' }} direction="vertical">
             <Select
-                value={selectedValues}
-                style={{width: '100%'}}
                 showSearch
                 mode="multiple"
                 placement="bottomLeft"
                 size="large"
+                maxTagCount={7}
+                value={selectedValues}
+                style={{width: '100%'}}
                 allowClear
                 loading={isLoading}
                 placeholder={isLoading ? "Đang tải..." : "---Lựa chọn---"}

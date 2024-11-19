@@ -4,9 +4,8 @@ import {Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, 
 import {createVoucher} from '@/services/VoucherService';
 import {EuroOutlined, PercentageOutlined} from '@ant-design/icons';
 import useAppNotifications from "../../../hooks/useAppNotifications";
-import {STATUS} from "@/constants/Status";
-import {DISCOUNTTYPE} from "@/constants/DiscountType";
 import {DISCOUNT_TYPE, DISCOUNTTYPE_KEYS} from "../../../constants/DiscountType";
+import dayjs from "dayjs";
 
 const {Option} = Select;
 
@@ -162,7 +161,8 @@ const CreateVoucher = (props: IProps) => {
                                 <DatePicker
                                     style={{ width: '100%' }}
                                     showTime
-                                    format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                                    format="YYYY-MM-DD HH:mm:ss"
+                                    disabledDate={current => current && current < dayjs().startOf('day')}
                                 />
                             </Form.Item>
 
@@ -172,15 +172,28 @@ const CreateVoucher = (props: IProps) => {
                             <Form.Item
                                 name="endDate"
                                 label="Ngày kết thúc"
-                                rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
+                                dependencies={['startDate']}
+                                rules={[
+                                    { required: true, message: "Vui lòng chọn ngày kết thúc!" },
+                                    ({ getFieldValue }) => ({
+                                        validator(_, value) {
+                                            const startDate = getFieldValue("startDate");
+                                            if (!value || !startDate || value.isAfter(startDate)) {
+                                                return Promise.resolve();
+                                            }
+                                            return Promise.reject(
+                                                new Error("Ngày kết thúc phải lớn hơn ngày bắt đầu!")
+                                            );
+                                        },
+                                    }),
+                                ]}
                             >
                                 <DatePicker
                                     style={{ width: '100%' }}
                                     showTime
-                                    format="YYYY-MM-DD HH:mm:ss" // Định dạng hiển thị cho ngày và giờ
+                                    format="YYYY-MM-DD HH:mm:ss"
                                 />
                             </Form.Item>
-
 
                         </Col>
                     </Row>
@@ -206,32 +219,6 @@ const CreateVoucher = (props: IProps) => {
                                 <InputNumber style={{width: '100%'}}/>
                             </Form.Item>
                         </Col>
-                    </Row>
-                    <Row gutter={16}>
-
-                        <Col span={12}>
-                            <Form.Item
-                                name="usagePerUser"
-                                label="Số lần sử dụng mỗi người"
-                                rules={[{required: true, message: "Vui lòng nhập số lần sử dụng mỗi người!"}]}
-                            >
-                                <InputNumber style={{width: '100%'}}/>
-                            </Form.Item>
-                        </Col>
-
-
-                        {/*<Col span={12}>*/}
-                        {/*    <Form.Item*/}
-                        {/*        name="status"*/}
-                        {/*        label="Trạng thái"*/}
-                        {/*        rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}*/}
-                        {/*    >*/}
-                        {/*        <Select placeholder="Chọn trạng thái" style={{width: '100%'}}>*/}
-                        {/*            <Option value={1}>Đang diễn ra </Option>*/}
-                        {/*            <Option value={0}>Kết thúc </Option>*/}
-                        {/*        </Select>*/}
-                        {/*    </Form.Item>*/}
-                        {/*</Col>*/}
                     </Row>
 
                 </Form>

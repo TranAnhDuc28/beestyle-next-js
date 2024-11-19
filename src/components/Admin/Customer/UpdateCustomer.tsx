@@ -42,13 +42,13 @@ const UpdateCustomer = (props: IProps) => {
           : null, // Hiển thị ngày theo múi giờ hiện tại
         gender: dataUpdate.gender,
         phoneNumber: dataUpdate.phoneNumber,
-        password: dataUpdate.password,
+        // password: dataUpdate.password,
         status: dataUpdate.status,
         email: dataUpdate.email,
-        address:
-          dataUpdate.addresses && dataUpdate.addresses.length > 0
-            ? dataUpdate.addresses[0].addressName
-            : "",
+        // address:
+        //   dataUpdate.addresses && dataUpdate.addresses.length > 0
+        //     ? dataUpdate.addresses[0].addressName
+        //     : "",
       });
       console.log("dataUpdate.address:", dataUpdate.address);
       console.log(dataUpdate);
@@ -67,7 +67,6 @@ const UpdateCustomer = (props: IProps) => {
       if (dataUpdate) {
         const data = {
           ...value,
-
            id: dataUpdate.id,
         };
         console.log(data);
@@ -115,22 +114,22 @@ const UpdateCustomer = (props: IProps) => {
           <Input />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           label="Password"
           name="password"
           rules={[{ required: true, message: "Vui lòng nhập password!" }]}
         >
           <Input.Password  />
-        </Form.Item>
+        </Form.Item> */}
 
-        <Form.Item
+        {/* <Form.Item
           label="Địa chỉ"
           name="address"
           rules={[{ required: true, message: "Vui lòng nhập address!" }]}
           
         >
           <Input disabled={true}/>
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item
           label="Sdt"
@@ -142,14 +141,14 @@ const UpdateCustomer = (props: IProps) => {
         <Form.Item
           label="Email"
           name="email"
-          rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+          // rules={[{ required: true, message: "Vui lòng nhập email!" }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           label="Ngày sinh"
           name="dateOfBirth"
-          rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
+          // rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
         >
           <DatePicker format={"YYYY-MM-DD"} style={{ width: "100%" }} />
         </Form.Item>
@@ -157,7 +156,7 @@ const UpdateCustomer = (props: IProps) => {
         <Form.Item
           label="Giới tính"
           name="gender"
-          rules={[{ required: true, message: "Vui lòng nhập giới tính!" }]}
+          // rules={[{ required: true, message: "Vui lòng nhập giới tính!" }]}
         >
          <Select
             options={(Object.keys(GENDER_KEY) as Array<keyof typeof GENDER_KEY>).map(
@@ -168,7 +167,7 @@ const UpdateCustomer = (props: IProps) => {
         <Form.Item
           name="status"
           label="Trạng thái"
-          rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
+          // rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
         >
           <Select
             options={(Object.keys(STATUS) as Array<keyof typeof STATUS>).map(
