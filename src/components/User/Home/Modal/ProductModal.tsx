@@ -7,7 +7,7 @@ const {Option} = Select;
 const ProductModal = ({visible, onClose, product}) => {
     if (!product) return null;
 
-    const images = product.images || [product.image];
+    const images = Array.isArray(product.imageUrl) ? product.imageUrl : [product.imageUrl];
 
     const [quantity, setQuantity] = useState(1);
 
@@ -40,22 +40,25 @@ const ProductModal = ({visible, onClose, product}) => {
                         infinite={false}
                         style={{textAlign: 'center'}}
                     >
-                        {images.map((imgSrc, index) => (
+                        {images ? images.map((imgSrc, index) => (
                             <div key={index}>
-                                <Image width={569} height={528} src={imgSrc} alt={product.title}/>
+                                <Image width={569} height={528} src={imgSrc} alt={product.productName}/>
                             </div>
-                        ))}
+                        )) : (
+                            <Image width={569} height={528} src="" alt={product.productName}/>
+                        )
+                        }
                     </Carousel>
                 </div>
 
                 <div style={{flex: 1}}>
-                    <h2>{product.title}</h2>
+                    <h2>{product.productName}</h2>
                     <div style={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
                         <span><Rate disabled defaultValue={5} style={{fontSize: 13}}/></span>
                         <span style={{marginLeft: '8px'}}>(2 lượt đánh giá)</span>
                         <span style={{marginLeft: '8px', color: '#28a745'}}>Còn 23 sản phẩm</span>
                     </div>
-                    <h3 style={{color: '#333'}}>{product.price}</h3>
+                    <h3 style={{color: '#333'}}>{product.salePrice}</h3>
                     <p className="mt-4">
                         Khám phá sự kết hợp hoàn hảo giữa phong cách và thoải mái với Áo Thun Basic Comfort từ Beestyle.
                         Được thiết kế tinh tế dành cho cả nam và nữ, chiếc áo thun này là lựa chọn lý tưởng để làm mới
