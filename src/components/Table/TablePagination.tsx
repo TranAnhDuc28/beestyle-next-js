@@ -3,7 +3,6 @@ import {Table, TableColumnsType, TableProps } from "antd";
 import React, {memo} from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-
 export interface ITablePaginationProps {
     columns?: TableColumnsType<any>,
     data?: any[] | [],
@@ -14,7 +13,6 @@ export interface ITablePaginationProps {
     onRow?: (record: any) => { [key: string]: (event: React.MouseEvent<HTMLElement>) => void },
     expandedRowKeys?: number[],
     expandedRowRender?: React.FC
-
 }
 
 const rowSelection: TableProps<any>['rowSelection'] = {
@@ -58,7 +56,7 @@ const TablePagination: React.FC<ITablePaginationProps> = (props) => {
                         pageSizeOptions: [10, 25, 35, 50],
                         responsive: true,
                         style: {marginRight: 10},
-                        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+                        showTotal: (total, range) => `${range[0]}-${range[1]} trong số ${total} mục`,
                     }}
                     scroll={{y: 'calc(100vh - 270px)', scrollToFirstRowOnChange: true }}
                 />

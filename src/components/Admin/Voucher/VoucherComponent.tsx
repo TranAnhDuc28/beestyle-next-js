@@ -1,7 +1,13 @@
 "use client";
 
 import { Flex, Layout, notification, TableColumnsType, Tooltip, Modal, Tag } from "antd";
-import { EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
+import {
+    EditTwoTone,
+    DeleteTwoTone,
+    PercentageOutlined,
+    DollarCircleOutlined,
+    QuestionOutlined
+} from "@ant-design/icons";
 import type { IVoucher } from "@/types/IVoucher";
 import TablePagination from "@/components/Table/TablePagination";
 import { getVouchers, URL_API_VOUCHER } from "@/services/VoucherService";
@@ -12,7 +18,7 @@ import UpdateVoucher from "./UpdateVoucher";
 import HeaderVoucher from "@/components/Admin/Voucher/HeaderVoucher";
 import { DatePicker, Typography } from "antd";
 import { deleteVoucher } from '@/services/VoucherService';
-import { useSearchParams } from "next/navigation"; // Thêm dòng này
+import { useSearchParams } from "next/navigation";
 import useAppNotifications from "../../../hooks/useAppNotifications";
 import {STATUS} from "@/constants/Status";
 import {DISCOUNTTYPE} from "@/constants/DiscountType";
@@ -102,14 +108,37 @@ const VoucherComponent = () => {
             dataIndex: 'voucherName'
         },
         {
+            title: ' Giá trị giảm',
+            dataIndex: 'discountValue',
+            key: 'discountValue',
+            width: 100,
+            align: 'center',
+            render: (value: number) => `${value}`,
+        },
+        {
             title: 'Loại giảm',
-            render: (text: string, record: IVoucher) => (
-                `${record.discountValue} ${DISCOUNT_TYPE[record.discountType]}`
-            )
+            dataIndex: 'discountType',
+            key: 'discountType',
+            width: 100,
+            align: 'center',
+            render: (value: keyof typeof DISCOUNT_TYPE) => {
+                const icons = {
+                    PERCENTAGE: <PercentageOutlined style={{ color: '#52c41a',fontSize: '18px' }} />,
+                    CASH: <DollarCircleOutlined style={{ color: '#faad14',fontSize: '18px' }} />,
+                };
+
+                return (
+                    <Tooltip title={DISCOUNT_TYPE[value]}>
+                        {icons[value] || <QuestionOutlined style={{ color: '#ff4d4f',fontSize: '18px' }} />}
+                    </Tooltip>
+                );
+            },
         },
         {
             title: 'Số lượng',
-            dataIndex: 'usageLimit'
+            dataIndex: 'usageLimit',
+            width: 100,
+            align: 'center',
         },
         {
             title: 'Ngày bắt đầu',

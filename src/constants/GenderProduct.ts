@@ -4,7 +4,5 @@ export const GENDER_PRODUCT = {
     UNISEX: "Unisex" ,
 } as const;
 
-export const STATUS_KEYS = Object.keys(GENDER_PRODUCT);
-
 
 
