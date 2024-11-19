@@ -18,6 +18,7 @@ export const getProducts = async (url: string) => {
     return response.data;
 }
 
+
 export const createProduct = async (data: IProductCreate) => {
     const response = await httpInstance.post(URL_API_PRODUCT.create, data);
     return response.data;

@@ -13,12 +13,12 @@
   
   /* Tùy chỉnh màu nền và chữ khi hover */
   .ant-pagination .ant-pagination-item:hover {
-    color: white; /* Màu chữ khi hover */
+    color: black; /* Màu chữ khi hover */
   }
   
   /* Tùy chỉnh màu nền và chữ khi nút đang được chọn */
   .ant-pagination .ant-pagination-item-active {
-    color: white; /* Màu chữ khi nút đang được chọn */
+    color: black; /* Màu chữ khi nút đang được chọn */
   }
   
   /* Loại bỏ viền dưới cho pagination */
@@ -3876,7 +3876,7 @@
     text-align: center;
     border-radius: 0;
     text-transform: uppercase;
-    color: #fff;
+    /* color: #fff; */
 }
 
 /*======================================
