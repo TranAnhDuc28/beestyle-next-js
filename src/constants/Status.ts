@@ -3,4 +3,3 @@ export const STATUS = {
     INACTIVE: "Ngừng hoạt động",
 } as const;
 
-export type StatusKeys = keyof typeof STATUS;

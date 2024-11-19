@@ -22,8 +22,6 @@ const useFilterProduct = (param: ParamFilterProduct) => {
         }
     });
 
-    console.log(paramString.toString());
-
     const {data, error, isLoading} = useSWR(`${URL_API_PRODUCT.filter}?${paramString.toString()}`, getProducts,
         {
             revalidateIfStale: false,
