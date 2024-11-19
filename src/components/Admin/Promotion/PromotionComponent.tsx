@@ -1,6 +1,6 @@
 "use client";
 import {Flex, Layout, notification, TableColumnsType, Tooltip, Modal, Tag} from "antd";
-import {EditTwoTone, DeleteTwoTone} from "@ant-design/icons";
+import {EditTwoTone, DeleteTwoTone, PercentageOutlined, DollarCircleOutlined} from "@ant-design/icons";
 import type {IPromotion} from "@/types/IPromotion";
 import TablePagination from "@/components/Table/TablePagination";
 import {getPromotions, URL_API_PROMOTION} from "@/services/PromotionService";
@@ -102,12 +102,35 @@ const PromotionComponent: React.FC<any> = (props: any) => {
     };
     const columns: TableColumnsType<IPromotion> = [
         {title: 'Tên chương trình', dataIndex: 'promotionName', key: 'promotionName'},
+
         {
-            title: 'Giảm',
-            render: (text: string, record: IPromotion) => (
-                `${record.discountValue} ${DISCOUNT_TYPE[record.discountType]}`
-            )
+            title: ' Giá trị giảm',
+            dataIndex: 'discountValue',
+            key: 'discountValue',
+            width: 100,
+            align: 'center',
+            render: (value: number) => `${value}`,
         },
+        {
+            title: 'Loại giảm',
+            dataIndex: 'discountType',
+            key: 'discountType',
+            width: 100,
+            align: 'center',
+            render: (value: keyof typeof DISCOUNT_TYPE) => {
+                const icons = {
+                    PERCENTAGE: <PercentageOutlined style={{ color: '#52c41a',fontSize: '18px' }} />,
+                    CASH: <DollarCircleOutlined style={{ color: '#faad14',fontSize: '18px' }} />,
+                };
+
+                return (
+                    <Tooltip title={DISCOUNT_TYPE[value]}>
+                        {icons[value] || <QuestionOutlined style={{ color: '#ff4d4f',fontSize: '18px' }} />}
+                    </Tooltip>
+                );
+            },
+        },
+
         {
             title: 'Ngày bắt đầu',
             dataIndex: 'startDate',
@@ -125,7 +148,7 @@ const PromotionComponent: React.FC<any> = (props: any) => {
                 let color: string;
 
                 if (value === 'UPCOMING') {
-                    color = 'yellow';
+                    color = 'blue';
                 } else if (value === 'ONGOING') {
                     color = 'green';
                 } else if (value === 'ENDED') {

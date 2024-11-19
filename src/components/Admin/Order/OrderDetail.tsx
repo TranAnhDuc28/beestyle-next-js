@@ -1,9 +1,9 @@
 import {Card, Descriptions, Table, Statistic, Row, Col, Button} from 'antd';
-import React, {useEffect, useState} from "react";
+import React, {memo, useEffect, useState} from "react";
 import {getOrdersById, URL_API_ORDER} from "@/services/OrderService";
 import useSWR from "swr";
 
-const InvoiceDetail: React.FC<{ record: any }> = ({record}) => {
+const OrderDetail: React.FC<{ record: any }> = ({record}) => {
     const [invoiceData, setInvoiceData] = useState([]);
     const [extraData, setExtraData] = useState(null);
     console.log(record)
@@ -19,23 +19,23 @@ const InvoiceDetail: React.FC<{ record: any }> = ({record}) => {
             setExtraData(detail.data.items);
         }
     }, [detail]);
-
-    useEffect(() => {
-        if (extraData && extraData.length > 0) {
-            const invoices = extraData.map(d => ({
-                key: d.id,
-                code: d.productVariant.sku,
-                name: d.productResponse.productName,
-                color: d.productVariant.color.colorName,
-                size: d.productVariant.size.sizeName,
-                quantity: d.quantity,
-                price: d.originalPrice,
-                discount: d.discountedPrice,
-                total: (d.originalPrice - d.discountedPrice),
-            }));
-            setInvoiceData(invoices);
-        }
-    }, [extraData]);
+    //
+    // useEffect(() => {
+    //     if (extraData && extraData.length > 0) {
+    //         const invoices = extraData.map(d => ({
+    //             key: d.id,
+    //             code: d.productVariant.sku,
+    //             name: d.productResponse.productName,
+    //             color: d.productVariant.color.colorName,
+    //             size: d.productVariant.size.sizeName,
+    //             quantity: d.quantity,
+    //             price: d.originalPrice,
+    //             discount: d.discountedPrice,
+    //             total: (d.originalPrice - d.discountedPrice),
+    //         }));
+    //         setInvoiceData(invoices);
+    //     }
+    // }, [extraData]);
 
     const ordInfo = {
         code: record.orderTrackingNumber,
@@ -53,9 +53,9 @@ const InvoiceDetail: React.FC<{ record: any }> = ({record}) => {
         {title: 'Màu sắc', dataIndex: 'color', key: 'color'},
         {title: 'Kích thước', dataIndex: 'size', key: 'size'},
         {title: 'Số lượng', dataIndex: 'quantity', key: 'quantity'},
-        {title: 'Giá bán', dataIndex: 'price', key: 'price', render: (value) => value.toLocaleString()},
-        {title: 'Giảm giá', dataIndex: 'discount', key: 'discount', render: (value) => value.toLocaleString()},
-        {title: 'Thành tiền', dataIndex: 'total', key: 'total', render: (value) => value.toLocaleString()},
+        {title: 'Giá bán', dataIndex: 'price', key: 'price', render: (value: any) => value.toLocaleString()},
+        {title: 'Giảm giá', dataIndex: 'discount', key: 'discount', render: (value: any) => value.toLocaleString()},
+        {title: 'Thành tiền', dataIndex: 'total', key: 'total', render: (value: any) => value.toLocaleString()},
     ];
 
     return (
@@ -82,7 +82,7 @@ const InvoiceDetail: React.FC<{ record: any }> = ({record}) => {
                             Tổng tiền hàng:
                         </Table.Summary.Cell>
                         <Table.Summary.Cell index={2}>
-                            {(invoiceData.reduce((sum, item) => sum + item.total, 0)).toLocaleString()}
+                            {/*{(invoiceData.reduce((sum, item) => sum + item.total, 0)).toLocaleString()}*/}
                         </Table.Summary.Cell>
                     </Table.Summary.Row>
                 )}
@@ -104,4 +104,4 @@ const InvoiceDetail: React.FC<{ record: any }> = ({record}) => {
     );
 };
 
-export default InvoiceDetail;
+export default memo(OrderDetail);

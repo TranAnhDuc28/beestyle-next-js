@@ -1,18 +1,16 @@
 import {Flex, GetProps, Input, Space, Typography} from "antd";
 import Search from "antd/es/input/Search";
-import {memo} from "react";
+import React, {memo} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 
 type SearchProps = GetProps<typeof Input.Search>;
 const {Title} = Typography;
 
 interface IProps {
-    setIsCreateModalOpen: (value: boolean) => void;
+
 }
 
-const HeaderOrder = (props: IProps) => {
-    // console.log("HeaderOrder render");
-    const {setIsCreateModalOpen} = props;
+const HeaderOrder: React.FC<IProps> = (props) => {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const {replace} = useRouter();
