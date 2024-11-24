@@ -5,7 +5,7 @@ import {IProductVariant} from "@/types/IProductVariant";
 const useProductVariant = () => {
     const {showNotification, showMessage} = useAppNotifications();
 
-    const handleUpdateQuantityInStockProductVariant= async (value: IProductVariant, action: StockAction) => {
+    const handleUpdateQuantityInStockProductVariant= async (value: {id: number, quantity: number}, action: StockAction) => {
         try {
             const result = await updateQuantityInStockProductVariants(value, action);
             return result;

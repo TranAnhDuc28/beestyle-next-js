@@ -14,7 +14,6 @@ const useOrder = () => {
         try {
             await delay();
             const result = await createOrder(value);
-            // await mutate(`${URL_API_ORDER.get}/sale/order-pending`);
             if (result.data) showMessage("success", result.message);
             return result.data;
         } catch (error: any) {
@@ -26,7 +25,7 @@ const useOrder = () => {
             } else {
                 showNotification("error", {message: error?.message, description: errorMessage});
             }
-            return null;
+            throw new Error(error);
         } finally {
             setLoading(false);
         }

@@ -6,7 +6,7 @@ export const URL_API_ORDER_ITEM = {
     create: `/admin/order-item/create`,
     update: (orderItemId: string) => `/admin/order-item/${orderItemId}`,
     patchQuantity: `/admin/order-item/update-quantity`,
-    delete: (orderItemId: string) => `/admin/order-item/delete/${orderItemId}`,
+    delete: (orderItemId: string) => `/admin/order-item/${orderItemId}/delete`,
 };
 
 export const getOrderItemsByOrderId = async (url: string) => {

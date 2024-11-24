@@ -24,7 +24,7 @@ export interface IProductVariantRows{
     key: string
     sku?: string;
     productVariantName?: string;
-    productId: number;
+    productId?: number;
     colorId?: number;
     sizeId?: number;
     originalPrice?: number;
@@ -32,7 +32,7 @@ export interface IProductVariantRows{
     quantityInStock?: number;
 }
 
-// dng khi lưu biến thể và db
+// dùng khi lưu biến thể và db
 export interface IProductVariantCreate{
     sku?: string;
     productId?: number;

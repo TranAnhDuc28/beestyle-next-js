@@ -1,20 +1,17 @@
-import React, {LegacyRef, memo, useContext, useEffect, useMemo, useRef, useState} from "react";
-import {Flex, Form, InputNumber, InputNumberProps, Table, TableProps, Tag, theme, Typography} from "antd";
+import React, {memo, useContext, useEffect, useMemo, useRef, useState} from "react";
+import {InputNumber, Table, TableProps, Tag, theme, Typography} from "antd";
 import {Content} from "antd/es/layout/layout";
 import {DeleteOutlined} from "@ant-design/icons";
 import {HandleCart} from "@/components/Admin/Sale/SaleComponent";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 import {IOrderItem, IUpdateOrderItem} from "@/types/IOrderItem";
 import useSWR, {mutate} from "swr";
-import {getOrderItemsByOrderId, updateQuantityOrderItem, URL_API_ORDER_ITEM} from "@/services/OrderItemService";
+import {getOrderItemsByOrderId, URL_API_ORDER_ITEM} from "@/services/OrderItemService";
 import {useDebounce} from "use-debounce";
 import useOrderItem from "@/components/Admin/Order/hooks/useOrderItem";
 import useAppNotifications from "@/hooks/useAppNotifications";
-import {
-    StockAction,
-    updateQuantityInStockProductVariants,
-    URL_API_PRODUCT_VARIANT
-} from "@/services/ProductVariantService";
+import {StockAction, URL_API_PRODUCT_VARIANT} from "@/services/ProductVariantService";
+import useProductVariant from "@/components/Admin/Product/Variant/hooks/useProductVariant";
 
 const {Text} = Typography;
 
@@ -24,11 +21,12 @@ const AdminCart: React.FC = () => {
     const inputRefs = useRef<Map<number, HTMLInputElement>>(new Map());
     const handleCart = useContext(HandleCart);
     const [initialQuantities, setInitialQuantities] = useState<Map<number, number>>(new Map());
-    const {handleUpdateQuantityOrderItem} = useOrderItem();
+    const {handleUpdateQuantityOrderItem, handleDeleteOrderItem} = useOrderItem();
+    const {handleUpdateQuantityInStockProductVariant} = useProductVariant();
     const [orderItemUpdateQuantity, setOrderItemUpdateQuantity] = useState<IUpdateOrderItem | null>(null);
     const [debouncedOrderItemUpdateQuantity] = useDebounce(orderItemUpdateQuantity, 500);
 
-    const {data, error, isLoading, mutate: nutateDataCart} =
+    const {data, error, isLoading, mutate: mutateDataCart} =
         useSWR(handleCart?.orderActiveTabKey ? URL_API_ORDER_ITEM.get(handleCart.orderActiveTabKey) : null,
             getOrderItemsByOrderId,
             {
@@ -59,7 +57,7 @@ const AdminCart: React.FC = () => {
                     showMessage("error", "Thay đổi số lượng thất bại.");
 
                     // Refresh lại dữ liệu từ server khi cập nhật thất bại
-                    await nutateDataCart(handleCart?.orderActiveTabKey ? URL_API_ORDER_ITEM.get(handleCart.orderActiveTabKey) : null,
+                    await mutateDataCart(handleCart?.orderActiveTabKey ? URL_API_ORDER_ITEM.get(handleCart.orderActiveTabKey) : null,
                         {revalidate: true});
                 });
         }
@@ -81,29 +79,43 @@ const AdminCart: React.FC = () => {
             const oldValue = initialQuantities.get(orderItemId);
             if (newValue !== oldValue) {
                 // Tính toán số lượng thay đổi
-                const quantityChange = newValue - (oldValue || 0);
-
-                console.log({id: orderItemId, productVariantId, quantity: newValue});
-
-                // cập nhật số lượng mới cho sản phẩm trong giỏ
-                setOrderItemUpdateQuantity({id: orderItemId, productVariantId, quantity: newValue});
-
-                // Cập nhật số lượng ban đầu mới
-                setInitialQuantities(prev => new Map(prev.set(orderItemId, newValue)));
+                let quantityChange = newValue - (oldValue || 0);
 
                 // Cập nhật số lượng sản phẩm trong kho
                 let action: StockAction;
                 if (quantityChange > 0) {
-                    action = 'decrease'; // Giảm số lượng kho khi tăng số lượng trong giỏ
+                    action = 'minus'; // Giảm số lượng kho khi tăng số lượng trong giỏ
                 } else {
-                    action = 'increase'; // Tăng số lượng kho khi giảm số lượng trong giỏ
+                    quantityChange = -quantityChange;
+                    console.log(quantityChange)
+                    action = 'plus'; // Tăng số lượng kho khi giảm số lượng trong giỏ
                 }
 
-                updateQuantityInStockProductVariants({id: productVariantId, quantityInStock: quantityChange}, action)
-                    .then(async () => {
-                        await mutate(`${URL_API_PRODUCT_VARIANT.filter(productId.toString())}`, null, {revalidate: true});
-                    })
+                console.log({id: orderItemId, productVariantId, quantity: newValue});
+                console.log(productId);
 
+                handleUpdateQuantityInStockProductVariant({id: productVariantId, quantity: quantityChange}, action)
+                    .then(async () => {
+                        // cập nhật số lượng mới cho sản phẩm trong giỏ
+                        setOrderItemUpdateQuantity({id: orderItemId, productVariantId, quantity: newValue});
+
+                        // Cập nhật số lượng ban đầu mới
+                        setInitialQuantities(prev => new Map(prev.set(orderItemId, newValue)));
+
+                        // cập tổng số lượng sản phẩm
+                        // await mutate(key =>
+                        //         typeof key === 'string' && key.startsWith(`${URL_API_PRODUCT.filter}`),
+                        //     undefined,
+                        //     {revalidate: true}
+                        // );
+
+                        // Cập nhật lại số lượng biến thể sản phẩm trong hiển thị cho danh sách biến thể sản phẩm
+                        await mutate(key =>
+                                typeof key === 'string' && key.startsWith(`${URL_API_PRODUCT_VARIANT.filter(productId.toString())}`),
+                            undefined,
+                            {revalidate: true}
+                        );
+                    })
             }
         }
     };
@@ -112,6 +124,18 @@ const AdminCart: React.FC = () => {
         // nhấn enter sẽ blur ra ngoài input kích hoạt sự kiện blur và update số lượng
         const input = inputRefs.current.get(orderItemId);
         input?.blur();
+    };
+
+    const handleDeleteOrderItemCart = async (id: number, productId: number) => {
+        handleCart?.setDataCart((prevCart) => prevCart.filter((item) => item.id !== id));
+
+        await handleDeleteOrderItem(id);
+
+        await mutate(key =>
+                typeof key === 'string' && key.startsWith(`${URL_API_PRODUCT_VARIANT.filter(productId.toString())}`),
+            undefined,
+            {revalidate: true}
+        );
     };
 
     const columns: TableProps<IOrderItem>['columns'] = useMemo(() => [
@@ -141,6 +165,7 @@ const AdminCart: React.FC = () => {
             render: (_, record) => {
                 return (
                     <InputNumber<number>
+                        className="custom-input"
                         key={record.id}
                         ref={(el) => {
                             if (el) {
@@ -185,7 +210,7 @@ const AdminCart: React.FC = () => {
                 (_, record) => (
                     <DeleteOutlined
                         style={{cursor: "pointer", padding: "5px", borderRadius: "5px"}}
-                        onClick={() => handleCart?.handleDeleteOrderItemCart(record.id)}
+                        onClick={() => handleDeleteOrderItemCart(record.id, record.productId)}
                     />
                 ),
         },

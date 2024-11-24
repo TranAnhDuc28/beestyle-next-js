@@ -1,7 +1,7 @@
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {ICreateOrderItem, IUpdateOrderItem} from "@/types/IOrderItem";
 import {
-    createOrderItem,
+    createOrderItem, deleteOrderItem,
     updateOrderItem,
     updateQuantityOrderItem,
 } from "@/services/OrderItemService";
@@ -53,6 +53,23 @@ const useOrderItem = () => {
         }
     }
 
+    const handleDeleteOrderItem = async (id: number) => {
+        try {
+            const result = await deleteOrderItem(id);
+            return result;
+        } catch (error: any) {
+            const errorMessage = error?.response?.data?.message;
+            if (errorMessage && typeof errorMessage === 'object') {
+                Object.entries(errorMessage).forEach(([field, message]) => {
+                    showNotification("error", {message: String(message)});
+                });
+            } else {
+                showNotification("error", {message: error?.message, description: errorMessage});
+            }
+            throw new Error(error);
+        }
+    }
+
     const handleUpdateQuantityOrderItem = async (value: IUpdateOrderItem) => {
         try {
             const result = await updateQuantityOrderItem(value);
@@ -70,6 +87,8 @@ const useOrderItem = () => {
         }
     }
 
-    return {handleCreateOrderItem, handleUpdateOrderItem, handleUpdateQuantityOrderItem};
+
+
+    return {handleCreateOrderItem, handleUpdateOrderItem, handleUpdateQuantityOrderItem, handleDeleteOrderItem};
 }
 export default useOrderItem;
