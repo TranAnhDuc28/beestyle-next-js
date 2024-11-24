@@ -1,7 +1,7 @@
 export interface IProductVariant {
     id: number;
     sku?: string;
-    productId?: number;
+    productId: number;
     productName?: string;
     colorId?: number;
     colorCode?: string;
@@ -32,7 +32,7 @@ export interface IProductVariantRows{
     quantityInStock?: number;
 }
 
-// dng khi lưu biến thể và db
+// dùng khi lưu biến thể và db
 export interface IProductVariantCreate{
     sku?: string;
     productId?: number;
