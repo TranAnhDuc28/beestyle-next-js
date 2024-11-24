@@ -1,10 +1,14 @@
 import httpInstance from "@/utils/HttpInstance";
+import {IProductVariant} from "@/types/IProductVariant"
+
+export type StockAction = 'increase' | 'decrease';
 
 export const URL_API_PRODUCT_VARIANT = {
     get: (productId: string) => `/admin/product/${productId}/variant`,
     filter: (productId: string) => `/admin/product/${productId}/filter/variant`,
     create: '/admin/product-variant/creates',
     update: '/admin/product-variant/update',
+    patchUpdateQuantityInStock: `/admin/product-variant/update-quantity-in-stock`,
 
     productVariant: '/admin/productVariant',
     updateProductVariant: '/admin/productVariant/updates',
@@ -16,6 +20,13 @@ export const getProductVariantsByProductId = async (url: string) => {
     const response = await httpInstance.get(url);
     return response.data;
 }
+
+export const updateQuantityInStockProductVariants = async (data: IProductVariant, stockAction: StockAction) => {
+    const response = await httpInstance.patch(`URL_API_PRODUCT_VARIANT.patchUpdateQuantityInStock?action=${stockAction}`, data);
+    return response.data;
+}
+
+
 
 
 export const getProductDetails = async (productId: number) => {
@@ -57,7 +68,7 @@ export const updateProductVariantUpdate = async (promotionId: number, variantIds
         throw error;
     }
 };
-export const removePromotionFromNonSelectedVariants = async (promotionId, ids) => {
+export const removePromotionFromNonSelectedVariants = async (promotionId: any, ids: any) => {
     try {
         const response = await httpInstance.put(
             URL_API_PRODUCT_VARIANT.removePromotionFromNonSelectedVariants.replace("{promotionId}", promotionId),

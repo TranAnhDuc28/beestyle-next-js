@@ -132,12 +132,12 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
     }, []);
 
     const handleOkAndClose = () => {
-        handleCart?.handleAddProductInCart(selectedRows);
+        handleCart?.handleAddOrderItemCart(selectedRows);
         handleCloseModal();
     }
 
     const handleOkAndContinue = () => {
-        handleCart?.handleAddProductInCart(selectedRows);
+        handleCart?.handleAddOrderItemCart(selectedRows);
     }
 
     const columns: TableColumnsType<IProductVariant> = [
@@ -196,9 +196,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
             footer={(_, {OkBtn, CancelBtn}) => (
                 <>
                     <OkBtn/>
-                    <ColorButton bgColor="#00b96b" type="primary"
-                                 onClick={() => handleOkAndContinue()}
-                    >
+                    <ColorButton bgColor="#00b96b" type="primary" onClick={() => handleOkAndContinue()}>
                         Thêm vào giỏ và tiếp tục
                     </ColorButton>
                     <CancelBtn/>
