@@ -6,10 +6,12 @@ import useAppNotifications from "@/hooks/useAppNotifications";
 
 interface IProps {
   handleSubmit: (payement: string) => Promise<void>;
+  
+  shippingCost: number;  // Nhận chi phí vận chuyển từ prop
 }
 
 const OrderDetail = (props: IProps) => {
-  const { handleSubmit } = props;
+  const { handleSubmit,shippingCost} = props;
   const [selectedPayment, setSelectedPayment] = useState(null);
 
   const { showNotification } = useAppNotifications();
@@ -34,15 +36,15 @@ const OrderDetail = (props: IProps) => {
       <div className="single-widget">
         <h2>THÔNG TIN</h2>
         <div className="content">
-          <ul>
+        <ul>
             <li>
               Tổng giá trị sản phẩm<span>330.000 VND</span>
             </li>
             <li>
-              Phí vận chuyển<span>20.000 VND</span>
+              Phí vận chuyển<span>{shippingCost} VND</span>  {/* Hiển thị chi phí vận chuyển đã cập nhật */}
             </li>
             <li className="last fs-6">
-              Tổng thanh toán<span>310.000 VND</span>
+              Tổng thanh toán<span>{330000 + shippingCost} VND</span>
             </li>
             <li>
               <span className="text-danger" style={{ fontSize: 13 }}>

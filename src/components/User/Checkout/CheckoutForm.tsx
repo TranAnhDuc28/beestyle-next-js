@@ -8,19 +8,20 @@ import {
     ShopOutlined,
 } from "@ant-design/icons";
 import styles from "@/css/user/styles/checkout.module.css";
-import CreateAddress from "@/components/Admin/Address/CreateAddress";
 import useAddress from "@/components/Admin/Address/hook/useAddress";
 import TextArea from "antd/es/input/TextArea";
+import { calculateShippingFee } from "@/services/GHTKService";
 
 const {Option} = Select;
 
 interface IProps {
     addressForm: any;
     userForm: any;
+    onShippingCostChange: (cost: number) => void; // Nhận callback thay đổi chi phí vận chuyển
 }
 
 const CheckoutForm = (props: IProps) => {
-    const {addressForm, userForm} = props;
+    const {addressForm, userForm,onShippingCostChange} = props;
     const [selectedMethod, setSelectedMethod] = useState("home");
     const [selectedShipping, setSelectedShipping] = useState("standard");
     const [selected, setSelected] = useState({
@@ -78,10 +79,26 @@ const CheckoutForm = (props: IProps) => {
     };
 
     // Xử lý khi huyện được chọn
-    const handleDistrictChange = (value: any, name: string) => {
+    const handleDistrictChange = async (value: any, name: string) => {
         setSelected((prev) => ({...prev, district: value}));
         setSelectedName((prev) => ({...prev, district: name}));
         addressForm.setFieldsValue({ward: undefined}); // Reset ward khi district thay đổi
+        try {
+            const params = {
+              pick_province: "Hà Nội",
+              pick_district: "Huyện Hoài Đức",
+              province: selectedName.province,
+              district: name,
+              address: "123 Đường ABC",
+              weight: 100,
+              value: 500000,
+              transport: "road",
+            };
+            const fee = await calculateShippingFee(params);
+            console.log(fee);
+            
+            onShippingCostChange(fee.fee) 
+          } catch (error) {}
     };
 
     // Xử lý khi xã được chọn
