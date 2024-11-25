@@ -1,8 +1,6 @@
 import { IMaterial } from "@/types/IMaterial";
 import httpInstance from "@/utils/HttpInstance";
 
-const delay = () => new Promise<void>(res => setTimeout(() => res(), 1000));
-
 export const URL_API_MATERIAL = {
     get: '/admin/material',
     option: '/admin/material/material-options',
