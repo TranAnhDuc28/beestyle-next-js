@@ -45,9 +45,9 @@ const HeaderPromotion = (props: IProps) => {
     return (
         <>
             <Breadcrumb
+                style={{ marginBottom: '10px' }}
                 items={[
                     { title: <Link href="/admin"><HomeOutlined /></Link> },
-                    // { title: <Link href="/admin/promotion">Khuyến mại</Link> },
                     { title: breadcrumbTitle },
                 ]}
             />

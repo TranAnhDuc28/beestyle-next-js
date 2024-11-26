@@ -4,9 +4,9 @@ import {useMemo} from "react";
 
 export interface ParamFilterProductVariant {
     page?: number;
-    pageSize?: number;
-    color?: string[];
-    size?: string[];
+    size?: number;
+    colorIds?: string[];
+    sizeIds?: string[];
     minPrice?: number;
     maxPrice?: number;
 }

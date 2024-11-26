@@ -6,7 +6,7 @@ import type {MenuProps} from 'antd';
 import styles from './css/navbar.module.css';
 import Image from "next/image";
 import {LuShoppingBag} from "react-icons/lu";
-import CartDrawer from "@/components/Header/cart/CartDrawer";
+import CartDrawer from "@/components/User/Cart/CartDrawer";
 import {CART_KEY} from "@/services/user/ShoppingCartService";
 
 const {Header} = Layout;
@@ -27,12 +27,19 @@ export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
 
-    useEffect(() => {
+    const fetchCartItems = () => {
         const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
         setCartCount(cartItems.length);
+    };
+
+    useEffect(() => {
+
+        fetchCartItems();
+
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 50);
-        };
+            fetchCartItems();
+        };   
 
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);

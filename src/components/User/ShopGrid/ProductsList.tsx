@@ -28,14 +28,14 @@ const ProductList = ({ product }: any) => {
               width={550}
               height={750}
               className="default-img"
-              src={product.image}
+              src={product.imageUrl}
               alt={product.title}
             />
             <Image
               width={550}
               height={750}
               className="hover-img"
-              src={product.image}
+              src={product.imageUrl}
               alt={product.title}
             />
           </Link>
@@ -57,17 +57,17 @@ const ProductList = ({ product }: any) => {
                 <TiEye size={18} />
                 <span style={{ marginLeft: "0.5rem" }}>Xem ngay</span>
               </a>
-              <Link href="#" className="link-action">
+              {/* <Link href="#" className="link-action">
                 <TiChartPie size={18} />
                 <span style={{ marginLeft: "0.5rem" }}>So sánh</span>
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>
         <div className="product-content">
           <h3>
             <Link href="#" className="link-action link-no-decoration">
-              {product.title}
+              {product.productName}
             </Link>
           </h3>
           <div className="product-price">

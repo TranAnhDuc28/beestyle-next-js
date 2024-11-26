@@ -82,19 +82,19 @@ const VariantComponent: React.FC<IProps> = (props) => {
             title: 'Hành động', align: 'center', width: 100,
             render: (record) => {
                 return (
-                    <Col>
-                        <Tooltip placement="top" title="Chỉnh sửa">
-                            <EditTwoTone
-                                twoToneColor={"#f57800"}
-                                style={{
-                                    cursor: "pointer",
-                                    padding: "5px",
-                                    border: "1px solid #f57800",
-                                    borderRadius: "5px"
-                                }}
-                            />
-                        </Tooltip>
-                    </Col>
+
+                    <Tooltip placement="top" title="Chỉnh sửa">
+                        <EditTwoTone
+                            twoToneColor={"#f57800"}
+                            style={{
+                                cursor: "pointer",
+                                padding: "5px",
+                                border: "1px solid #f57800",
+                                borderRadius: "5px"
+                            }}
+                        />
+                    </Tooltip>
+
                 )
             }
         },

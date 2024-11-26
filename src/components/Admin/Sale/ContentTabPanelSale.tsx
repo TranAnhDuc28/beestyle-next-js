@@ -1,8 +1,8 @@
-import React, {CSSProperties, memo, useState} from "react";
+import React, {CSSProperties, memo} from "react";
 import {ClockCircleOutlined, PhoneOutlined} from "@ant-design/icons";
 import DeliverySaleTab from "@/components/Admin/Sale/TabSale/DeliverySaleTab";
 import NormalSaleTab from "@/components/Admin/Sale/TabSale/NormalSaleTab";
-import {ConfigProvider, Tabs, theme} from "antd";
+import {Tabs} from "antd";
 
 
 interface IProps {

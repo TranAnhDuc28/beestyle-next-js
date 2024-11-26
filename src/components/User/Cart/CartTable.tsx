@@ -5,7 +5,7 @@ import {FaTrash} from 'react-icons/fa';
 import {Table, Button} from "antd";
 import {removeItemFromCart} from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
-import QuantityControl from "@/components/Header/cart/QuantityControl";
+import QuantityControl from "@/components/User/Cart/QuantityControl";
 
 const CartTable = ({cartItems, updateCartItems}: any) => {
     const {showModal} = useAppNotifications();

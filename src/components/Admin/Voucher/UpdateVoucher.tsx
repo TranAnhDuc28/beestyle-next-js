@@ -250,6 +250,7 @@ const UpdateVoucher = (props: IProps) => {
                                     style={{ width: '100%' }}
                                     showTime
                                     format="YYYY-MM-DD HH:mm:ss"
+                                    disabledDate={current => current && current < dayjs().startOf('day')}
                                 />
                             </Form.Item>
 

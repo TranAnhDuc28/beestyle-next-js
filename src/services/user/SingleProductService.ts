@@ -2,6 +2,7 @@ import httpInstance from "@/utils/HttpInstance";
 import useSWR from 'swr';
 
 interface ProductVariantDetail {
+    salePrice: string;
     productId: string;
     productName: string;
     productCode: string;

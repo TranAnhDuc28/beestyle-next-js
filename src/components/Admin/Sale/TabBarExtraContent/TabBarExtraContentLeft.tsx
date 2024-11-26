@@ -25,11 +25,14 @@ const transformOptions = (data: IProduct[]) => {
                 </Flex>
             </Flex>
         ),
+        product: product
     }));
 }
 
+
 const TabBarExtraContentLeft: React.FC = () => {
     const [isOpenModalListProductVariant, setOpenModalListProductVariant] = useState(false);
+    const [productSelected, setProductSelected] = useState<IProduct | undefined>(undefined);
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debounceSearchValue] = useDebounce(searchTerm, 500);
@@ -42,11 +45,14 @@ const TabBarExtraContentLeft: React.FC = () => {
     }, []);
 
     const handleSelect = useCallback((value: string) => {
-        console.log("Selected product ID:", value);
-        setOpenModalListProductVariant(true)
+        const selectedProduct = dataOptionSearchProduct?.find((product: any) => product.id.toString() === value);
+        if (selectedProduct) {
+            setProductSelected(selectedProduct);
+            setOpenModalListProductVariant(true)
+        }
         setSearchTerm("");
         setOptions([]);
-    }, []);
+    }, [dataOptionSearchProduct]);
 
     const transformedOptions = useMemo(() => transformOptions(dataOptionSearchProduct), [dataOptionSearchProduct]);
 
@@ -58,7 +64,6 @@ const TabBarExtraContentLeft: React.FC = () => {
         }
 
         const optionsChanged = transformedOptions.some((newOption, index) => {
-            console.log(options?.[index]?.value);
             return newOption.value !== options?.[index]?.value;
         });
         if (optionsChanged) setOptions(transformedOptions);
@@ -78,11 +83,12 @@ const TabBarExtraContentLeft: React.FC = () => {
                 value={searchTerm}
                 style={{width: 500, margin: "0px 20px 0px 20px"}}
                 notFoundContent={
-                    isLoading ? <Skeleton/> : (searchTerm && !options?.length) ?
+                    isLoading ? <Skeleton/> : (searchTerm && options?.length === 0) ?
                         <Empty description="Không có kết quả tìm kiếm"/> : null
                 }
             />
             <ModalListProductVariant
+                product={productSelected}
                 isOpenModalListProductVariant={isOpenModalListProductVariant}
                 setOpenModalListProductVariant={setOpenModalListProductVariant}
             />

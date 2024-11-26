@@ -12,27 +12,29 @@ export interface ParamFilterProduct {
     maxPrice?: number;
 }
 
-const useFilterProduct = (param: ParamFilterProduct) => {
+const useFilterProduct = (param?: ParamFilterProduct) => {
     const paramString = new URLSearchParams();
 
-    Object.keys(param).forEach((key) => {
-        const value = param[key as keyof ParamFilterProduct];
-        if (value !== undefined && value !== null) {
-            paramString.append(key, value.toString());
-        }
-    });
+    if (param) {
+        Object.keys(param).forEach((key) => {
+            const value = param[key as keyof ParamFilterProduct];
+            if (value !== undefined && value !== null) {
+                paramString.append(key, value.toString());
+            }
+        });
+    }
 
-    console.log(paramString.toString());
-
-    const {data, error, isLoading} = useSWR(`${URL_API_PRODUCT.filter}?${paramString.toString()}`, getProducts,
-        {
-            revalidateIfStale: false,
-            revalidateOnFocus: false,
-            revalidateOnReconnect: false,
-        }
-    );
+    const {data, error, isLoading, mutate: mutateProduct} =
+        useSWR(`${URL_API_PRODUCT.filter}?${paramString.toString()}`,
+            getProducts,
+            {
+                revalidateIfStale: false,
+                revalidateOnFocus: false,
+                revalidateOnReconnect: false,
+            }
+        );
 
     const dataOptionFilterProduct = !isLoading && data?.data ? data.data : [];
-    return {dataOptionFilterProduct, error, isLoading};
+    return {dataOptionFilterProduct, error, isLoading, mutateProduct};
 }
 export default useFilterProduct;

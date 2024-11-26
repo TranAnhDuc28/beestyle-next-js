@@ -2,10 +2,10 @@ import {useEffect, useState} from 'react';
 import {Drawer, Button, Progress, Empty} from 'antd';
 import {CloseOutlined} from '@ant-design/icons';
 import Link from 'next/link';
-import styles from '../css/cartdrawer.module.css';
+import styles from './css/cartdrawer.module.css';
 import Image from "next/image";
 import {CART_KEY, removeItemFromCart} from "@/services/user/ShoppingCartService";
-import QuantityControl from "@/components/Header/cart/QuantityControl";
+import QuantityControl from "@/components/User/Cart/QuantityControl";
 import {FaShippingFast} from "react-icons/fa";
 
 interface CartDrawerProps {

@@ -1,7 +1,7 @@
 "use client"
 import React, {useEffect, useState} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {Checkbox, Col, Collapse, type, GetProp, Radio, RadioChangeEvent, Row, Space, Typography} from "antd";
+import {Checkbox, Col, Collapse, GetProp, Radio, RadioChangeEvent, Row, Space, Typography} from "antd";
 import {STATUS_PRODUCT} from "@/constants/StatusProduct";
 import useOptionColor from "@/components/Admin/Color/hooks/useOptionColor";
 import useOptionSize from "@/components/Admin/Size/hooks/useOptionSize";
@@ -34,20 +34,20 @@ const VariantFilter: React.FC<IProps> = (props) => {
 
     const onChangeColorFilter: GetProp<typeof Checkbox.Group, 'onChange'> = (checkedValues) => {
         if (checkedValues.length > 0 && checkedValues.length < dataOptionColor.length) {
-            params.set("color", checkedValues.toString());
+            params.set("colorIds", checkedValues.toString());
             params.set("page", "1");
         } else {
-            params.delete("color");
+            params.delete("colorIds");
         }
         replace(`${pathname}?${params.toString()}`);
     };
 
     const onChangeSizeFilter: GetProp<typeof Checkbox.Group, 'onChange'> = (checkedValues) => {
         if (checkedValues.length > 0 && checkedValues.length < dataOptionColor.length) {
-            params.set("size", checkedValues.toString());
+            params.set("sizeIds", checkedValues.toString());
             params.set("page", "1");
         } else {
-            params.delete("size");
+            params.delete("sizeIds");
         }
         replace(`${pathname}?${params.toString()}`);
     };
