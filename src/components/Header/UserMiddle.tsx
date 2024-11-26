@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import {AiOutlineShoppingCart} from "react-icons/ai";
 import Image from "next/image";
 import Link from "next/link";
 import {AutoComplete, AutoCompleteProps, Form, Input} from "antd";
@@ -7,10 +6,9 @@ import {SearchOutlined} from "@ant-design/icons";
 import {
     findProduct,
     URL_API_PRODUCT_SEARCH,
-} from "@/services/user/home/ProductAreaService";
+} from "@/services/user/ProductAreaService";
 import useSWR from "swr";
 import {FaInbox} from "react-icons/fa";
-import {ImCross} from "react-icons/im";
 import CartModal from "@/components/User/Home/Modal/CartModal";
 
 let debounceTimer: NodeJS.Timeout;
@@ -28,16 +26,16 @@ export default function MiddleBar() {
         revalidateOnMount: true,
     });
 
-    useEffect(() => {
-        const cachedProducts = localStorage.getItem("products");
-
-        if (cachedProducts) {
-            setAllProducts(JSON.parse(cachedProducts));
-        } else {
-            setAllProducts(products);
-            localStorage.setItem("products", JSON.stringify(products));
-        }
-    }, [products]);
+    // useEffect(() => {
+    //     const cachedProducts = localStorage.getItem("findProducts");
+    //
+    //     if (cachedProducts) {
+    //         setAllProducts(JSON.parse(cachedProducts));
+    //     } else {
+    //         setAllProducts(products);
+    //         localStorage.setItem("findProducts", JSON.stringify(products));
+    //     }
+    // }, [products]);
 
     const handleSearch = (value: string) => {
         setValue(value);

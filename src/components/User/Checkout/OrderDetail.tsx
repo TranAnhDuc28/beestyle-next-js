@@ -1,11 +1,15 @@
 import Image from "next/image";
 import {Button, Form, Radio} from "antd";
 import React, {useState} from "react";
-import styles from '@/css/user/styles/checkout.module.css';
+import {CART_KEY} from "@/services/user/ShoppingCartService";
 
 const OrderDetail = () => {
 
     const [selectedPayment, setSelectedPayment] = useState(null);
+
+    const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+
+    const totalAmount = cartItems.reduce((total, item) => total + item.total_price, 0);
 
     const handlePaymentChange = (e) => {
         setSelectedPayment(e.target.value);
@@ -17,11 +21,12 @@ const OrderDetail = () => {
                 <h2>THÔNG TIN</h2>
                 <div className="content">
                     <ul>
-                        <li>Tổng giá trị sản phẩm<span>330.000 VND</span></li>
-                        <li>Phí vận chuyển<span>20.000 VND</span></li>
-                        <li className="last fs-6">Tổng thanh toán<span>310.000 VND</span></li>
+                        <li>Tổng giá trị sản phẩm<span>{totalAmount} VND</span></li>
+                        <li>Phí vận chuyển<span>30.000 VND</span></li>
+                        <li>Voucher giảm giá<span className="text-danger"> - 5.000 VND</span></li>
+                        <li className="last fs-6">Tổng thanh toán<span>{(totalAmount + 30000) - 5000} VND</span></li>
                         <li>
-                            <span className="text-danger" style={{fontSize: 13}}>Bạn đã tiết kiệm được 20.000 VND</span>
+                            <span className="text-danger" style={{fontSize: 13}}>Bạn đã tiết kiệm được 5.000 đ</span>
                         </li>
                     </ul>
                 </div>
@@ -29,16 +34,17 @@ const OrderDetail = () => {
             <div className="single-widget mt-5">
                 <h2>Phương thức thanh toán</h2>
                 <div className="content">
-                    <div style={{ margin: '15px 40px' }}>
-                        <Radio.Group className="d-flex flex-column" onChange={handlePaymentChange} value={selectedPayment}>
+                    <div style={{margin: '15px 40px'}}>
+                        <Radio.Group className="d-flex flex-column" onChange={handlePaymentChange}
+                                     value={selectedPayment}>
                             <label className="checkbox-inline mb-2">
-                                <Radio value="1">Check Payments</Radio>
+                                <Radio value="1">Chuyển khoản</Radio>
                             </label>
                             <label className="checkbox-inline mb-2">
-                                <Radio value="2">Bank Transfer</Radio>
+                                <Radio value="2">Thanh toán khi nhận hàng (COD)</Radio>
                             </label>
                             <label className="checkbox-inline mb-2">
-                                <Radio value="3">Credit Card</Radio>
+                                <Radio value="3">Cổng thanh toán VNPay</Radio>
                             </label>
                         </Radio.Group>
                     </div>

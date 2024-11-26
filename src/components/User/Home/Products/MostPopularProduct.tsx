@@ -6,14 +6,51 @@ import {Card} from 'antd';
 import Slider from "react-slick";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import {TiEye, TiArrowLeft, TiArrowRight} from 'react-icons/ti';
 import React, {useState} from "react";
 import ProductModal from "@/components/User/Home/Modal/ProductModal";
 import useSWR from "swr";
-import {
-    getSellingProduct,
-    URL_API_PRODUCT_SELLER
-} from "@/services/user/home/ProductAreaService";
+import {getSellingProduct, URL_API_PRODUCT_SELLER} from "@/services/user/ProductAreaService";
+import {TiEye, TiArrowLeft, TiArrowRight} from 'react-icons/ti';
+
+const CustomPrevArrow = ({onClick}) => (
+    <div
+        className="custom-arrow prev-arrow"
+        onClick={onClick}
+        style={{
+            position: "absolute",
+            left: "-25px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            backgroundColor: "#FFA500",
+            padding: "10px",
+            borderRadius: "50%",
+            cursor: "pointer",
+            zIndex: 2,
+        }}
+    >
+        <TiArrowLeft size={25} color="white"/>
+    </div>
+);
+
+const CustomNextArrow = ({onClick}) => (
+    <div
+        className="custom-arrow next-arrow"
+        onClick={onClick}
+        style={{
+            position: "absolute",
+            right: "-25px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            backgroundColor: "#FFA500",
+            padding: "10px",
+            borderRadius: "50%",
+            cursor: "pointer",
+            zIndex: 2,
+        }}
+    >
+        <TiArrowRight size={25} color="white"/>
+    </div>
+);
 
 function MostPopularProduct() {
 
@@ -29,14 +66,13 @@ function MostPopularProduct() {
         slidesToShow: 4,
         slidesToScroll: 1,
         arrows: true,
-        prevArrow: <TiArrowLeft/>,
-        nextArrow: <TiArrowRight/>
+        prevArrow: <CustomPrevArrow/>,
+        nextArrow: <CustomNextArrow/>
     };
 
     const handleOpenModal = (product) => {
         setSelectedProduct(product);
         setIsModalVisible(true);
-        console.log(product)
     };
 
     const handleCloseModal = () => {
@@ -78,8 +114,10 @@ function MostPopularProduct() {
                                                     </Link>
                                                     <div className="product-overlay">
                                                         <div className="overlay-actions">
-                                                            <a onClick={() => handleOpenModal(product)}
-                                                               className="overlay-action">
+                                                            <a
+                                                                onClick={() => handleOpenModal(product)}
+                                                                className="overlay-action"
+                                                            >
                                                                 <TiEye size={20} className="icon-action"/>
                                                                 <span className="action-tooltip">Quick Shop</span>
                                                             </a>
@@ -88,18 +126,20 @@ function MostPopularProduct() {
                                                 </div>
                                                 <div className="product-content">
                                                     <h3>
-                                                        <Link href="#" className="product-title fs-6 text-uppercase">{product.productName}</Link>
+                                                        <Link href="#" className="product-title fs-6 text-uppercase">
+                                                            {product.productName}
+                                                        </Link>
                                                     </h3>
                                                     <div className="product-price">
                                                         {product?.originalPrice && (
                                                             <span className="old-price">{product.originalPrice} đ</span>
                                                         )}
-                                                        <span className="current-price ml-2">{product.salePrice} đ</span>
+                                                        <span
+                                                            className="current-price ml-2">{product.salePrice} đ</span>
                                                     </div>
                                                 </div>
                                             </Card>
                                         </div>
-
                                     ))
                                 ) : (
                                     <div>No products available</div>

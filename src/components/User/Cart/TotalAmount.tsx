@@ -1,44 +1,60 @@
 import React from 'react';
+import {Button, Col, Form, Input, Row, Typography} from "antd";
 import Link from "next/link";
-import {Button, Checkbox, Form, Input} from "antd";
 
-const TotalAmount = () => {
+const TotalAmount = ({cartItems}: any) => {
+
+    const {Text} = Typography;
+
+    const totalAmount = cartItems.reduce((total, item) => total + item.total_price, 0);
+
     return (
         <div className="total-amount">
             <div className="row">
-                <div className="col-lg-8 col-md-5 col-12">
-                    <div className="left">
-                        <div className="coupon">
-                            <Form action="#" target="_blank">
-                                <Input name="Coupon" placeholder="Nhập mã giảm giá của bạn" style={{width: 300}}/>
-                                <Button className="btn">Áp dụng</Button>
-                            </Form>
-                        </div>
-
+                <div className="left mb-5" style={{marginTop: -25}}>
+                    <div className="coupon">
+                        <Form action="#" target="_blank">
+                            <Input name="Coupon" placeholder="Nhập mã giảm giá của bạn" style={{width: 300}}/>
+                            <Button className="btn">Áp dụng</Button>
+                        </Form>
                     </div>
                 </div>
-                <div className="col-lg-4 col-md-7 col-12">
-                    <div className="right">
-                        <ul>
-                            <li>Tổng tiền<span>330.000 VND</span></li>
-                            <li>Phí vận chuyển<span>Miễn phí</span></li>
-                            <li>Tiết kiệm<span>20.000 VND</span></li>
-                            <li className="last">Bạn phải trả<span>310.000 VND</span></li>
-                        </ul>
-                        <div className="button5">
-                            <Link
-                                href="/checkout"
-                                className="btn btn-dark d-flex align-items-center justify-content-center"
-                            >
-                                Thanh toán
-                            </Link>
-                            <Link
-                                href="/category"
-                                className="btn btn-dark d-flex align-items-center justify-content-center"
-                            >
-                                Tiếp tục mua hàng
-                            </Link>
-                        </div>
+            </div>
+            <div className="row">
+                <div>
+                    <div style={{
+                        padding: '20px',
+                        borderTop: '1px solid #e8e8e8',
+                        display: 'flex',
+                        justifyContent: 'space-around',
+                        alignItems: 'center'
+                    }}>
+                        <Row gutter={16}>
+                            <Col>
+                                <Link href="/" className="btn" style={{borderColor: '#333'}}>
+                                    TIẾP TỤC MUA HÀNG
+                                </Link>
+                            </Col>
+                        </Row>
+
+                        <Row align="middle">
+                            <Col>
+                                <div className="text-center">
+                                    <Text>Tổng đơn đặt hàng {totalAmount} VND</Text>
+                                    <br/>
+                                    <Text type="secondary">* Đã bao gồm thuế VAT</Text>
+                                </div>
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col>
+                                <Link href={"/checkout"} className="btn text-white"
+                                      style={{backgroundColor: '#000', borderColor: '#000'}}>
+                                    THANH TOÁN
+                                </Link>
+                            </Col>
+                        </Row>
                     </div>
                 </div>
             </div>
