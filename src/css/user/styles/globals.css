@@ -1,31 +1,40 @@
 /* Tùy chỉnh pagination Ant Design */
 .ant-pagination .ant-pagination-item {
-  border-radius: 50%; /* Tạo hình tròn cho các nút */
-  width: 32px; /* Đặt kích thước cho các nút */
+ border-radius: 50%;
+  /* Tạo hình tròn cho các nút */
+  width: 32px;
+  /* Đặt kích thước cho các nút */
   height: 32px;
-  line-height: 30px; /* Căn giữa nội dung trong nút */
-  text-align: center; /* Căn giữa chữ */
-  color: #333; /* Màu chữ mặc định là đen */
+  line-height: 30px;
+  /* Căn giữa nội dung trong nút */
+  text-align: center;
+  /* Căn giữa chữ */
+  color: #333;
+  /* Màu chữ mặc định là đen */
 }
 
 /* Tùy chỉnh màu nền và chữ khi hover */
 .ant-pagination .ant-pagination-item:hover {
-  color: white; /* Màu chữ khi hover */
+  color: white;
+  /* Màu chữ khi hover */
 }
 
 /* Tùy chỉnh màu nền và chữ khi nút đang được chọn */
 .ant-pagination .ant-pagination-item-active {
-  color: white; /* Màu chữ khi nút đang được chọn */
+  color: white;
+  /* Màu chữ khi nút đang được chọn */
 }
 
 /* Tùy chỉnh màu nền và chữ khi hover */
 .ant-pagination .ant-pagination-item:hover {
-  color: black; /* Màu chữ khi hover */
+  color: black;
+  /* Màu chữ khi hover */
 }
 
 /* Tùy chỉnh màu nền và chữ khi nút đang được chọn */
 .ant-pagination .ant-pagination-item-active {
-  color: black; /* Màu chữ khi nút đang được chọn */
+  color: black;
+  /* Màu chữ khi nút đang được chọn */
 }
 
 /* Loại bỏ viền dưới cho pagination */
@@ -33,7 +42,24 @@
   border: none;
 }
 
-.color-plate {
+/* Tùy chỉnh màu nền và chữ khi hover */
+.ant-pagination .ant-pagination-item:hover {
+  color: black;
+  /* Màu chữ khi hover */
+}
+
+/* Tùy chỉnh màu nền và chữ khi nút đang được chọn */
+.ant-pagination .ant-pagination-item-active {
+  color: black;
+  /* Màu chữ khi nút đang được chọn */
+}
+
+/* Loại bỏ viền dưới cho pagination */
+.ant-pagination-item {
+  border: none;
+}
+
+ .color-plate {
   position: fixed;
   display: block;
   z-index: 99998;
@@ -1060,13 +1086,7 @@
   background: transparent;
 }
 
-.header.shop
-  .main-category
-  li
-  .mega-menu
-  .single-menu
-  .inner-link
-  a:last-child {
+.header.shop .main-category li .mega-menu .single-menu .inner-link a:last-child {
   margin-bottom: 0;
 }
 
@@ -1345,8 +1365,7 @@
   z-index: 999;
 }
 
-.header.sticky .all-category {
-}
+.header.sticky .all-category {}
 
 .header.sticky .all-category h3 {
   cursor: pointer;
@@ -1490,8 +1509,7 @@
   color: #fff;
 }
 
-.hero-area2 .single-slider .content .button {
-}
+.hero-area2 .single-slider .content .button {}
 
 .hero-area2 .single-slider .content .button .btn {
   padding: 9px 25px;
@@ -1547,8 +1565,7 @@
 }
 
 /* Hero Area 3 */
-.hero-area3 {
-}
+.hero-area3 {}
 
 .hero-area3 .big-content {
   background-image: url("https://via.placeholder.com/850x530");
@@ -1580,8 +1597,7 @@
   color: #f7941d;
 }
 
-.hero-area3 .big-content .des {
-}
+.hero-area3 .big-content .des {}
 
 .hero-area3 .big-content .button {
   margin-top: 40px;
@@ -1628,8 +1644,7 @@
   color: #f7941d;
 }
 
-.hero-area3 .small-content .des {
-}
+.hero-area3 .small-content .des {}
 
 .hero-area3 .small-content .button {
   margin-top: 10px;
@@ -1679,8 +1694,7 @@
   color: #f7941d;
 }
 
-.hero-area4 .big-content .des {
-}
+.hero-area4 .big-content .des {}
 
 .hero-area4 .big-content .button {
   margin-top: 40px;
@@ -2382,8 +2396,7 @@
   margin-top: 10px;
 }
 
-.shop-sidebar .categor-list li {
-}
+.shop-sidebar .categor-list li {}
 
 .shop-sidebar .categor-list li {
   margin-bottom: 10px;
@@ -2476,11 +2489,13 @@
 .rounded-pagination .ant-pagination-item,
 .rounded-pagination .ant-pagination-prev,
 .rounded-pagination .ant-pagination-next {
-  border-radius: 50%; /* Bo tròn cho các nút */
+  border-radius: 50%;
+  /* Bo tròn cho các nút */
 }
 
 .rounded-pagination .ant-pagination-item-active {
-  background-color: #1890ff; /* Màu nền cho nút đang được chọn */
+  background-color: #1890ff;
+  /* Màu nền cho nút đang được chọn */
   color: #fff;
 }
 
@@ -2511,8 +2526,7 @@
   font-weight: 500;
 }
 
-.shop .single-shorter option {
-}
+.shop .single-shorter option {}
 
 .shop .nice-select {
   clear: initial;
@@ -2650,8 +2664,7 @@
   border-bottom: 1px solid #eee;
 }
 
-.shop.single .product-des {
-}
+.shop.single .product-des {}
 
 .shop.single .product-des .total-review {
   font-size: 14px;
@@ -2702,8 +2715,7 @@
   margin-top: 40px;
 }
 
-.shop.single .product-des .product-buy {
-}
+.shop.single .product-des .product-buy {}
 
 .shop.single .product-des .color {
   display: inline-block;
@@ -2962,8 +2974,7 @@
   border-color: transparent;
 }
 
-.shop.single .tab-single {
-}
+.shop.single .tab-single {}
 
 .shop.single .single-des {
   margin-top: 35px;
@@ -2994,29 +3005,24 @@
   border-radius: 50%;
 }
 
-.shop.single .single-des p {
-}
+.shop.single .single-des p {}
 
 .shop.single .item-info {
   width: 100%;
 }
 
-.shop.single .item-info tbody {
-}
+.shop.single .item-info tbody {}
 
-.shop.single .item-info tbody tr {
-}
+.shop.single .item-info tbody tr {}
 
 .shop.single .item-info tbody td {
   border: 1px solid #e6e6e6;
   padding: 10px;
 }
 
-.shop.single .item-info tbody strong {
-}
+.shop.single .item-info tbody strong {}
 
-.shop.single .ratting-main {
-}
+.shop.single .ratting-main {}
 
 .shop.single .avg-ratting {
   margin-bottom: 20px;
@@ -3153,8 +3159,7 @@
   color: #333;
 }
 
-.shop.single .avg-ratting {
-}
+.shop.single .avg-ratting {}
 
 .shop.single .form .form-group input {
   width: 100%;
@@ -3419,8 +3424,7 @@
   transform: rotate(360deg);
 }
 
-.shopping-cart .border {
-}
+.shopping-cart .border {}
 
 .shopping-cart .table .remove-icon {
   font-size: 16px;
@@ -3436,8 +3440,7 @@
   text-align: center;
 }
 
-.shopping-summery tbody .price span {
-}
+.shopping-summery tbody .price span {}
 
 .shopping-cart tbody .qty .input-group {
   width: 175px;
@@ -3492,8 +3495,7 @@
   text-align: center;
 }
 
-.shopping-summery tbody .total-amount span {
-}
+.shopping-summery tbody .total-amount span {}
 
 .shopping-summery tbody .action {
   text-align: center;
@@ -3507,14 +3509,11 @@
   margin-top: 50px;
 }
 
-.shopping-cart .total-amount .left {
-}
+.shopping-cart .total-amount .left {}
 
-.shopping-cart .total-amount .left .coupon {
-}
+.shopping-cart .total-amount .left .coupon {}
 
-.shopping-cart .total-amount .left .coupon form {
-}
+.shopping-cart .total-amount .left .coupon form {}
 
 .shopping-cart .total-amount .left .coupon form input {
   width: 220px;
@@ -3642,8 +3641,7 @@
   margin-bottom: 30px;
 }
 
-.shop.checkout .form {
-}
+.shop.checkout .form {}
 
 .shop.checkout .form .form-group {
   margin-bottom: 25px;
@@ -3675,8 +3673,7 @@
   background: #f6f7fb;
 }
 
-.shop.checkout .form .form-group input:hover {
-}
+.shop.checkout .form .form-group input:hover {}
 
 .shop.checkout .nice-select {
   width: 100%;
@@ -3694,8 +3691,7 @@
   overflow: scroll;
 }
 
-.shop.checkout .nice-select .list li {
-}
+.shop.checkout .nice-select .list li {}
 
 .shop.checkout .nice-select .list li.option {
   color: #333;
@@ -3870,6 +3866,13 @@
 }
 
 .shop.checkout .single-widget.get-button .btn {
+  height: 46px;
+  width: 100%;
+  line-height: 19px;
+  text-align: center;
+  border-radius: 0;
+  text-transform: uppercase;
+  /* color: #fff; */
   height: 46px;
   width: 100%;
   line-height: 19px;
@@ -4063,8 +4066,7 @@
   margin-top: 50px;
 }
 
-.shop-list .list-content .product-price {
-}
+.shop-list .list-content .product-price {}
 
 .shop-list .list-content .product-price span {
   font-size: 14px;
@@ -4104,8 +4106,7 @@
   margin-left: 3px;
 }
 
-.shop-list .list-content .des {
-}
+.shop-list .list-content .des {}
 
 .shop-list .list-content .btn {
   margin-top: 22px;
@@ -4168,8 +4169,7 @@
   font-size: 13px;
 }
 
-.pagination .pagination-list li a i {
-}
+.pagination .pagination-list li a i {}
 
 .blog-grids.pagination {
   margin-top: 50px;
@@ -4804,8 +4804,7 @@
   margin-top: 15px;
 }
 
-.main-sidebar .categor-list li {
-}
+.main-sidebar .categor-list li {}
 
 .main-sidebar .categor-list li {
   margin-bottom: 10px;
@@ -4845,8 +4844,7 @@
 }
 
 /* Recent Post */
-.main-sidebar .recent-post {
-}
+.main-sidebar .recent-post {}
 
 .main-sidebar .single-post {
   position: relative;
@@ -4860,8 +4858,7 @@
   border: none;
 }
 
-.main-sidebar .single-post .image {
-}
+.main-sidebar .single-post .image {}
 
 .main-sidebar .single-post .image img {
   float: left;
@@ -4893,8 +4890,7 @@
   color: #f7941d;
 }
 
-.main-sidebar .single-post .content .comment {
-}
+.main-sidebar .single-post .content .comment {}
 
 .main-sidebar .single-post .content .comment li {
   color: #888;
@@ -4914,8 +4910,7 @@
 }
 
 /* Blog Tags */
-.main-sidebar .side-tags {
-}
+.main-sidebar .side-tags {}
 
 .main-sidebar .side-tags .tag {
   margin-top: 40px;
@@ -4944,8 +4939,7 @@
 }
 
 /* Blog Newslatter CSS */
-.main-sidebar .newsletter {
-}
+.main-sidebar .newsletter {}
 
 .main-sidebar .newsletter .letter-inner {
   position: relative;
@@ -5179,8 +5173,7 @@
   background: #f7941d;
 }
 
-.blog-single .comments {
-}
+.blog-single .comments {}
 
 .blog-single .comments .single-comment {
   position: relative;
@@ -5201,8 +5194,7 @@
   left: 0;
 }
 
-.blog-single .single-comment .content {
-}
+.blog-single .single-comment .content {}
 
 .blog-single .single-comment .content h4 {
   color: #333;
@@ -5234,8 +5226,7 @@
   line-height: 22px;
 }
 
-.blog-single .single-comment .content .button {
-}
+.blog-single .single-comment .content .button {}
 
 .blog-single .single-comment .content .btn {
   display: inline-block;
@@ -5598,8 +5589,7 @@
   margin-bottom: 20px;
 }
 
-.footer .about .logo img {
-}
+.footer .about .logo img {}
 
 .footer .about .text {
   color: #fff;
@@ -5676,15 +5666,11 @@
 }
 
 /* Copyright */
-.footer .copyright {
-}
+.footer .copyright {}
 
 .footer .copyright .inner {
   border-top: 1px solid #eeeeee3d;
   padding: 20px 0;
-}
-
-.footer .copyright .left {
 }
 
 .footer .copyright .right {
@@ -5720,7 +5706,7 @@
   text-decoration: none;
 }
 
-.custom-table-header .ant-table-thead > tr > th {
+.custom-table-header .ant-table-thead>tr>th {
   background-color: #f7941d;
   color: white;
   font-weight: bold;
