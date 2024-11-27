@@ -5,7 +5,7 @@ import {
     Tabs, TabsProps, Tooltip, TreeSelect, Typography, UploadFile
 } from "antd";
 import useAppNotifications from "@/hooks/useAppNotifications";
-import React, {memo, useCallback, useEffect, useLayoutEffect, useRef, useState} from "react";
+import React, {memo, useCallback, useEffect, useLayoutEffect, useState} from "react";
 import {IProductCreate} from "@/types/IProduct";
 import UploadImage from "@/components/Upload/UploadImage";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";

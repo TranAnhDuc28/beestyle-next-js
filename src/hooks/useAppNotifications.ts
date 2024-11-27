@@ -1,4 +1,4 @@
-import { App } from 'antd';
+import {App} from 'antd';
 import {NotificationPlacement} from "antd/es/notification/interface";
 import {ReactNode} from "react";
 
@@ -12,7 +12,7 @@ const defaultNotificationConfig = {
 };
 
 const useAppNotifications = () => {
-    const { notification, message, modal } = App.useApp();
+    const {notification, message, modal} = App.useApp();
 
     const showNotification = (type: NotificationType, config = {}) => {
         notification[type]({
@@ -32,6 +32,6 @@ const useAppNotifications = () => {
         });
     };
 
-    return {showNotification, showMessage, showModal,};
+    return {showNotification, showMessage, showModal};
 };
 export default useAppNotifications;

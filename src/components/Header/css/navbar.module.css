@@ -1,0 +1,69 @@
+.navbar {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    border-bottom: 1px solid #f0f0f0;
+    position: fixed;
+    top: 94px;
+    width: 100%;
+    z-index: 1000;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: top 0.4s ease-in-out, transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+}
+
+.navbar.scrolled {
+    top: 0;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.logo {
+    height: 32px;
+}
+
+.menuContainer {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.menu :global(.ant-menu-horizontal) {
+    border-bottom: none;
+    line-height: 80px;
+}
+
+.menu :global(.ant-menu-item) {
+    padding: 0 20px !important;
+    font-size: 15px !important;
+}
+
+.menu :global(.ant-menu-item:hover) {
+    color: #000 !important;
+}
+
+.menu :global(.ant-menu-item-selected) {
+    color: #000 !important;
+}
+
+.menu :global(.ant-menu-item-selected::after) {
+    border-bottom: 2px solid #000 !important;
+}
+
+.iconGroup {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.iconButton :global(.ant-btn-text) {
+    font-size: 20px;
+    padding: 4px 8px;
+}
+
+.iconButton :global(.ant-btn-text:hover) {
+    background: rgba(0, 0, 0, 0.05);
+}

@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useContext, useMemo, useRef, useState} from "react";
+import React, {memo, useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {Card, Modal, Select, type SelectProps, Space, Table, TableColumnsType, TableProps, Tag, Typography} from "antd";
 import {IProduct} from "@/types/IProduct";
 import {IProductVariant} from "@/types/IProductVariant";
@@ -63,6 +63,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
     const handleCart = useContext(HandleCart);
     const {product, isOpenModalListProductVariant, setOpenModalListProductVariant} = props;
     const [disabled, setDisabled] = useState(true);
+    const [dataSource, setDataSource] = useState([]);
     const [bounds, setBounds] = useState({left: 0, top: 0, bottom: 0, right: 0});
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const draggleRef = useRef<HTMLDivElement>(null);
@@ -79,6 +80,12 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
 
     const [filterParam, setFilterParam] = useState<ParamFilterProductVariant>({...defaultFilterParam});
     const {dataOptionFilterProductVariant, isLoading} = useFilterProductVariant(product?.id.toString(), filterParam);
+
+    useEffect(() => {
+        if (!isLoading && dataOptionFilterProductVariant?.items) {
+            setDataSource(dataOptionFilterProductVariant.items);
+        }
+    }, [dataOptionFilterProductVariant, isLoading]);
 
     const onStart = (_event: DraggableEvent, uiData: DraggableData) => {
         const {clientWidth, clientHeight} = window.document.documentElement;
@@ -132,12 +139,12 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
     }, []);
 
     const handleOkAndClose = () => {
-        handleCart?.handleAddProductInCart(selectedRows);
+        handleCart?.handleAddOrderItemCart(selectedRows);
         handleCloseModal();
     }
 
     const handleOkAndContinue = () => {
-        handleCart?.handleAddProductInCart(selectedRows);
+        handleCart?.handleAddOrderItemCart(selectedRows);
     }
 
     const columns: TableColumnsType<IProductVariant> = [
@@ -196,9 +203,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
             footer={(_, {OkBtn, CancelBtn}) => (
                 <>
                     <OkBtn/>
-                    <ColorButton bgColor="#00b96b" type="primary"
-                                 onClick={() => handleOkAndContinue()}
-                    >
+                    <ColorButton bgColor="#00b96b" type="primary" onClick={() => handleOkAndContinue()}>
                         Thêm vào giỏ và tiếp tục
                     </ColorButton>
                     <CancelBtn/>
@@ -264,7 +269,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
                         size="small"
                         rowSelection={rowSelection}
                         columns={columns}
-                        dataSource={dataOptionFilterProductVariant?.items}
+                        dataSource={dataSource}
                         onChange={onChangePagination}
                         pagination={{
                             position: ["bottomCenter"],

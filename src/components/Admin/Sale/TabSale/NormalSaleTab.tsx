@@ -6,7 +6,14 @@ import {
 import React, {createContext, memo, useCallback, useContext, useEffect, useMemo, useState} from "react";
 import CheckoutComponent from "@/components/Admin/Sale/CheckoutComponent";
 import {
-    AppstoreOutlined, BarsOutlined, DeleteOutlined, FilterOutlined, PlusOutlined, SearchOutlined, UnorderedListOutlined
+    AppstoreOutlined,
+    BarsOutlined,
+    DeleteOutlined,
+    FilterOutlined,
+    PlusOutlined,
+    ReloadOutlined,
+    SearchOutlined,
+    UnorderedListOutlined
 } from "@ant-design/icons";
 import useFilterProduct, {ParamFilterProduct} from "@/components/Admin/Product/hooks/useFilterProduct";
 import SubLoader from "@/components/Loader/SubLoader";
@@ -14,6 +21,8 @@ import FilterProduct from "@/components/Admin/Sale/FilterProduct";
 import ProductCardView from "@/components/Admin/Sale/TypeDisplayProductList/ProductCardView";
 import AdminCart from "@/components/Admin/Sale/AdminCart";
 import {HandleCart} from "@/components/Admin/Sale/SaleComponent";
+import {mutate} from "swr";
+import {URL_API_PRODUCT} from "@/services/ProductService";
 
 const {Content} = Layout;
 const {Text, Paragraph, Title} = Typography;
@@ -37,7 +46,6 @@ const defaultFilterParam: ParamFilterProduct = {
     minPrice: undefined,
     maxPrice: undefined,
 };
-
 
 
 interface IProps {
@@ -99,16 +107,27 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
                     }}
                 >
                     <Space direction="vertical" size="middle" style={{display: 'flex'}}>
-                        <Flex justify="space-between" align="center" style={{width: "100%"}} wrap>
-                            <div style={{display: "flex", width: "60%"}}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                            <div style={{ flex: 1, display: 'flex', gap: 5, width: "100%" }}>
                                 <AutoComplete allowClear suffixIcon={<SearchOutlined/>} style={{width: "100%"}}
                                               options={options}
                                     // onSearch={}
                                               placeholder="Tìm khách hàng"
                                 />
                                 <Button icon={<PlusOutlined/>} type="text" shape="circle"/>
-                            </div>
-                            <Space direction="horizontal" wrap>
+                            </div >
+                            <Space direction="horizontal">
+                                <Tooltip placement="top" title="Tải danh sách sản phẩm">
+                                    <Button icon={<ReloadOutlined/>} type="text" shape="circle"
+                                            onClick={async () => {
+                                                await mutate(key =>
+                                                        typeof key === 'string' && key.startsWith(`${URL_API_PRODUCT.filter}`),
+                                                    undefined,
+                                                    {revalidate: true}
+                                                )
+                                            }}
+                                    />
+                                </Tooltip>
                                 <Tooltip placement="top" title="Lọc sản phẩm">
                                     <Button icon={<FilterOutlined/>} type="text" shape="circle"
                                             onClick={() => showDrawer("filter", true)}
@@ -121,25 +140,23 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
                                     ]}
                                 />
                             </Space>
-                        </Flex>
+                        </div >
 
                         <div style={{height: 660, overflowY: "auto", padding: 5}}>
-                                {
-                                    isLoading ? (
-                                        <SubLoader size="small" spinning={isLoading}/>
-                                    ) : (
-                                        <>
-                                            {/*<ProductListView*/}
-                                            {/*    dataSource={dataOptionFilterProduct?.items}*/}
-                                            {/*    setOpenModalListProductVariant={setOpenModalListProductVariant}*/}
-                                            {/*/>*/}
+                            {
+                                isLoading ? (
+                                    <SubLoader size="small" spinning={isLoading}/>
+                                ) : (
+                                    <>
+                                        {/*<ProductListView*/}
+                                        {/*    dataSource={dataOptionFilterProduct?.items}*/}
+                                        {/*    setOpenModalListProductVariant={setOpenModalListProductVariant}*/}
+                                        {/*/>*/}
 
-                                            <ProductCardView
-                                                dataSource={dataOptionFilterProduct?.items}
-                                            />
-                                        </>
-                                    )
-                                }
+                                        <ProductCardView dataSource={dataOptionFilterProduct?.items}/>
+                                    </>
+                                )
+                            }
                         </div>
                         <Row gutter={[8, 8]} style={{display: "flex", alignItems: "center"}}>
                             <Col flex="1 1 200px">

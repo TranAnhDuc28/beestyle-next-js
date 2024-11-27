@@ -24,8 +24,9 @@ export default function UserFooter() {
                                     lượng đẳng cấp. Đến với Beestyle, khách hàng không chỉ tìm thấy những bộ trang phục
                                     hoàn hảo mà còn khám phá được phong cách độc đáo của riêng mình.
                                 </p>
+
+                                <h6 className="text-white">Góp ý khiếu nại</h6>
                                 <p className="call">
-                                    <h6>Góp ý khiếu nại</h6>
                                     <span className="mt-3">
                                         <Link className="d-flex" href="tel:123456789">
                                             <FaPhone className="mr-2"/> 0123 456 789

@@ -1,143 +1,104 @@
-import React from "react";
-import {useState} from 'react';
-import Link from "next/link";
+import {useEffect, useState} from 'react';
+import Link from 'next/link';
+import {Layout, Menu, Badge, Button, Dropdown} from 'antd';
+import {SearchOutlined, UserOutlined} from '@ant-design/icons';
+import type {MenuProps} from 'antd';
+import styles from './css/navbar.module.css';
 import Image from "next/image";
-import {usePathname} from 'next/navigation';
-import {FaAngleDown, FaAngleUp} from "react-icons/fa";
+import {LuShoppingBag} from "react-icons/lu";
+import CartDrawer from "@/components/User/Cart/CartDrawer";
+import {CART_KEY} from "@/services/user/ShoppingCartService";
 
-export default function NavBar() {
-    const [isOpen, setIsOpen] = useState(false);
+const {Header} = Layout;
 
-    const openCategories = () => setIsOpen(true);
-    const closeCategories = () => setIsOpen(false);
+const categories: MenuProps['items'] = [
+    {key: '1', label: 'Áo sơ mi'},
+    {key: '2', label: 'Áo thun'},
+    {key: '3', label: 'Áo khoác'},
+];
 
-    const pathname = usePathname();
+const collections: MenuProps['items'] = [
+    {key: '1', label: 'Xuân Hè 2024'},
+    {key: '2', label: 'Thu Đông 2023'},
+];
+
+export default function Navbar() {
+    const [cartCount, setCartCount] = useState<number>(0);
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
+
+    const fetchCartItems = () => {
+        const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+        setCartCount(cartItems.length);
+    };
+
+    useEffect(() => {
+
+        fetchCartItems();
+
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 50);
+            fetchCartItems();
+        };   
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     return (
-        <div className="header-inner">
-            <div className="container">
-                <div className="row">
-                    <div className="col-lg-3" style={{marginLeft: 160}}>
-                        <div
-                            className="all-category"
-                            onMouseEnter={openCategories}
-                            onMouseLeave={closeCategories}
-                        >
-                            <h3 className="cat-heading">
-                                {isOpen ? (
-                                    <FaAngleUp className="mr-2 arrow-icon" aria-hidden="true"/>
-                                ) : (
-                                    <FaAngleDown className="mr-2 arrow-icon" aria-hidden="true"/>
-                                )}
-                                DANH MỤC
-                            </h3>
-                            {isOpen && (
-                                <ul className="main-category">
-                                    <li>
-                                        <Link href="#" className="link-no-decoration ">
-                                            Hàng mới về <i className="fa fa-angle-right" aria-hidden="true"></i>
-                                        </Link>
-                                        <ul className="sub-category">
-                                            <li><Link href="#" className="link-no-decoration ">Phụ kiện</Link></li>
-                                            <li><Link href="#" className="link-no-decoration ">Bán chạy</Link></li>
-                                            <li><Link href="#" className="link-no-decoration ">Giảm giá sốc</Link></li>
-                                            <li><Link href="#" className="link-no-decoration ">Áo thun nam</Link></li>
-                                            <li><Link href="#" className="link-no-decoration ">Áo polo nam</Link></li>
-                                            <li><Link href="#" className="link-no-decoration ">Áo thun nữ</Link></li>
-                                            <li><Link href="#" className="link-no-decoration ">Áo polo nữ</Link></li>
-                                        </ul>
-                                    </li>
-                                    <li className="main-mega">
-                                        <Link href="#" className="link-no-decoration ">
-                                            Bán chạy nhất <i className="fa fa-angle-right" aria-hidden="true"></i>
-                                        </Link>
-                                        <ul className="mega-menu">
-                                            <li className="single-menu">
-                                                <Link href="#" className="title-link link-no-decoration ">Trẻ em</Link>
-                                                <div className="image">
-                                                    <Image width={225} height={155}
-                                                           src="https://via.placeholder.com/225x155" alt="#"/>
-                                                </div>
-                                                <div className="inner-link">
-                                                    <Link href="#" className="link-no-decoration ">Kids Toys</Link>
-                                                    <Link href="#" className="link-no-decoration ">Kids Travel
-                                                        Car</Link>
-                                                    <Link href="#" className="link-no-decoration ">Kids Color
-                                                        Shape</Link>
-                                                    <Link href="#" className="link-no-decoration ">Kids Tent</Link>
-                                                </div>
-                                            </li>
-                                            <li className="single-menu">
-                                                <Link href="#" className="title-link link-no-decoration ">Shop
-                                                    Nam</Link>
-                                                <div className="image">
-                                                    <Image width={225} height={155}
-                                                           src="https://via.placeholder.com/225x155" alt="#"/>
-                                                </div>
-                                                <div className="inner-link">
-                                                    <Link href="#" className="link-no-decoration ">Watch</Link>
-                                                    <Link href="#" className="link-no-decoration ">T-shirt</Link>
-                                                    <Link href="#" className="link-no-decoration ">Hoodies</Link>
-                                                    <Link href="#" className="link-no-decoration ">Formal Pant</Link>
-                                                </div>
-                                            </li>
-                                            <li className="single-menu">
-                                                <Link href="#" className="title-link link-no-decoration ">Shop Nữ</Link>
-                                                <div className="image">
-                                                    <Image width={225} height={155}
-                                                           src="https://via.placeholder.com/225x155" alt="#"/>
-                                                </div>
-                                                <div className="inner-link">
-                                                    <Link href="#" className="link-no-decoration ">Ladies Shirt</Link>
-                                                    <Link href="#" className="link-no-decoration ">Ladies Frog</Link>
-                                                    <Link href="#" className="link-no-decoration ">Ladies Sun
-                                                        Glass</Link>
-                                                    <Link href="#" className="link-no-decoration ">Ladies Watch</Link>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li><Link href="#" className="link-no-decoration ">Thời trang nam</Link></li>
-                                    <li><Link href="#" className="link-no-decoration ">Thời trang nữ</Link></li>
-                                </ul>
-                            )}
-                        </div>
-                    </div>
-                    <div className="col-lg-7 col-12">
-                        <div className="menu-area">
-                            <nav className="navbar navbar-expand-lg">
-                                <div className="navbar-collapse">
-                                    <div className="nav-inner" style={{width: 600}}>
-                                        <ul className="nav main-menu menu navbar-nav">
-                                            <li className={pathname === "/home" ? "active m-0" : "m-0"}>
-                                                <Link href={"/home"} className="link-no-decoration text-center"
-                                                      style={{width: 150}}>Trang
-                                                    chủ</Link>
-                                            </li>
-                                            <li className={pathname === "/category" ? "active m-0" : "m-0"}>
-                                                <Link href={"/category"} className="link-no-decoration text-center"
-                                                      style={{width: 150}}>Sản phẩm</Link>
-                                            </li>
-                                            <li className={pathname?.startsWith("/blog") ? "active m-0" : "m-0"}>
-                                                <Link href="#" className="link-no-decoration text-center"
-                                                      style={{width: 150}}>
-                                                    <div className="d-flex align-items-center">
-                                                        Tin thời trang
-                                                    </div>
-                                                </Link>
-                                            </li>
-                                            <li className={pathname === "/contact" ? "active" : ""}>
-                                                <Link href={"/contact"} className="link-no-decoration text-center"
-                                                      style={{width: 150}}>Liên hệ</Link>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </nav>
-                        </div>
-                    </div>
+        <Header className={`${styles.navbar} ${isScrolled ? styles.scrolled : ''}`}>
+            <Link href="/">
+                <Image src="/logo.png" alt="BeeStyle" className={styles.logo} width={100} height={90}/>
+            </Link>
+
+            <div className={styles.menuContainer}>
+                <div className={styles.menu}>
+                    <Menu mode="horizontal" className="border-none w-auto">
+                        <Menu.Item key="product">
+                            <Link href="" className="link-no-decoration">Sản phẩm</Link>
+                        </Menu.Item>
+                        <Menu.Item key="sale">
+                            <Link className="link-no-decoration" href="">Sale</Link>
+                        </Menu.Item>
+                        <Menu.Item key="category">
+                            <Dropdown menu={{items: categories}}>
+                                <span>Danh mục</span>
+                            </Dropdown>
+                        </Menu.Item>
+                        <Menu.Item key="collection">
+                            <Dropdown menu={{items: collections}}>
+                                <span>Bộ sưu tập</span>
+                            </Dropdown>
+                        </Menu.Item>
+                        <Menu.Item key="news">
+                            <span>Tin thời trang</span>
+                        </Menu.Item>
+                        <Menu.Item key="contact">
+                            <Link href="" className="link-no-decoration">Liên hệ</Link>
+                        </Menu.Item>
+                    </Menu>
                 </div>
             </div>
-        </div>
-    )
+
+            <div className={styles.iconGroup}>
+                <div className={styles.iconButton}>
+                    <Button type="text" icon={<SearchOutlined style={{fontSize: 20}}/>}/>
+                </div>
+                <div className={styles.iconButton}>
+                    <Button type="text" icon={<UserOutlined style={{fontSize: 20}}/>}/>
+                </div>
+                <div className={styles.iconButton} style={{marginTop: 5}}>
+                    <Badge count={cartCount} size="default" style={{backgroundColor: '#F7941D'}}>
+                        <Button type="text"
+                                icon={<LuShoppingBag style={{fontSize: 20}} onClick={() => setIsCartOpen(true)}/>}/>
+                    </Badge>
+
+                    <CartDrawer
+                        open={isCartOpen}
+                        onClose={() => setIsCartOpen(false)}
+                    />
+                </div>
+            </div>
+        </Header>
+    );
 }

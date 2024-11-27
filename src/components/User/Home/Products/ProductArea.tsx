@@ -7,7 +7,7 @@ import {TiEye} from 'react-icons/ti';
 import MenuProductArea from "@/components/User/Home/Products/MenuProductArea";
 import ProductModal from "@/components/User/Home/Modal/ProductModal";
 import useSWR from 'swr';
-import {getProductForUser, URL_API_PRODUCT_AREA} from "@/services/user/home/ProductAreaService";
+import {getProductForUser, URL_API_PRODUCT_AREA} from "@/services/user/ProductAreaService";
 
 function ProductArea() {
 
@@ -51,7 +51,9 @@ function ProductArea() {
                                                              className="col-xl-3 col-lg-4 col-md-4 col-12">
                                                             <div className="single-product">
                                                                 <div className="product-img">
-                                                                    <Link href={"/product"}>
+                                                                    <Link
+                                                                        href={`/product/${product.id}/variant`}
+                                                                    >
                                                                         <Image
                                                                             width={550}
                                                                             height={750}
@@ -96,8 +98,10 @@ function ProductArea() {
                                                                         </Link>
                                                                     </h3>
                                                                     <div className="product-price">
-                                                                        <span className="old-price">{product.originalPrice} đ</span>
-                                                                        <span className="current-price ml-2">{product.salePrice} đ</span>
+                                                                        <span
+                                                                            className="old-price">{product.originalPrice} đ</span>
+                                                                        <span
+                                                                            className="current-price ml-2">{product.salePrice} đ</span>
                                                                     </div>
                                                                 </div>
                                                             </div>

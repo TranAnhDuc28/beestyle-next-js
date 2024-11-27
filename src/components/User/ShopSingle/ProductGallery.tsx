@@ -1,12 +1,10 @@
-'use client';
-
 import React, {useRef, useState} from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Image from "next/image";
 
-const ProductGallery = () => {
+const ProductGallery = (props: any) => {
 
     const settings = {
         dots: false,
@@ -14,16 +12,8 @@ const ProductGallery = () => {
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
-        arrows: false,
-        afterChange: (index) => setSelectedIndex(index)
+        arrows: false
     };
-
-    const images = [
-        "https://m.yodycdn.com/fit-in/filters:format(webp)/products/ao-thun-nu-TSN7301-DEN%20(10).JPG",
-        "https://m.yodycdn.com/fit-in/filters:format(webp)/products/ao-thun-nu-TSN7301-DEN%20(11).JPG",
-        "https://m.yodycdn.com/fit-in/filters:format(webp)/products/ao-thun-nu-TSN7301-DEN%20(12).JPG",
-        "https://m.yodycdn.com/fit-in/filters:format(webp)/products/ao-thun-nu-TSN7301-DEN%20(13).JPG",
-    ];
 
     const sliderRef = useRef(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -32,6 +22,8 @@ const ProductGallery = () => {
         setSelectedIndex(index);
         sliderRef.current.slickGoTo(index);
     };
+
+    const isSingleImage = props.images?.length === 1;
 
     return (
         <div className="product-gallery d-flex">
@@ -44,12 +36,13 @@ const ProductGallery = () => {
                     alignItems: 'center'
                 }}
             >
-                {images.map((image, index) => (
+                {!isSingleImage && props.images?.map((image, index) => (
                     <Image
                         key={index}
-                        src={image}
-                        width={80}
-                        height={120}
+                        src={image.imageUrl}
+                        width={50}
+                        height={65}
+                        unoptimized
                         alt={`Thumbnail ${index + 1}`}
                         style={{
                             cursor: 'pointer',
@@ -60,21 +53,32 @@ const ProductGallery = () => {
                     />
                 ))}
             </div>
-            <div style={{flex: 1, width: '50%', marginLeft: 20}}>
-
-                <Slider ref={sliderRef} {...settings}>
-                    {images.map((image, index) => (
-                        <div key={index}>
-                            <Image
-                                src={image}
-                                alt={`Product Image ${index + 1}`}
-                                width={650}
-                                height={0}
-                                style={{border: 0}}
-                            />
-                        </div>
-                    ))}
-                </Slider>
+            <div style={{flex: 1, width: '490px', marginLeft: 15}}>
+                {isSingleImage ? (
+                    <Image
+                        src={props.images[0].imageUrl}
+                        alt="Product Image"
+                        width={490}
+                        height={650}
+                        style={{border: 0}}
+                        unoptimized
+                    />
+                ) : (
+                    <Slider ref={sliderRef} {...settings}>
+                        {props.images?.map((image, index) => (
+                            <div key={index}>
+                                <Image
+                                    src={image.imageUrl}
+                                    alt={`Product Image ${index + 1}`}
+                                    width={490}
+                                    height={650}
+                                    style={{border: 0}}
+                                    unoptimized
+                                />
+                            </div>
+                        ))}
+                    </Slider>
+                )}
             </div>
         </div>
     );
