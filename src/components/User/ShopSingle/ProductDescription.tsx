@@ -2,23 +2,29 @@
 
 import React, {useState} from 'react';
 import Link from "next/link";
-import {Button, Input, Rate} from 'antd';
+import {Input, Progress, Rate} from 'antd';
 import {AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
-import {FaRegHeart} from "react-icons/fa";
-import {LiaCompressArrowsAltSolid} from "react-icons/lia";
+import {useProduct} from "@/services/user/SingleProductService";
+import {useParams} from "next/navigation";
+import ColorPickers from "@/components/User/ShopSingle/Properties/ColorPickers";
+import SizePickers from "@/components/User/ShopSingle/Properties/SizePickers";
+import {addToCart} from "@/services/user/ShoppingCartService";
+import {EyeOutlined} from "@ant-design/icons";
+import InfoSection from "@/components/User/ShopSingle/Properties/InfoSession";
 
-const ProductDescription = () => {
-
-    const [selectedSize, setSelectedSize] = useState(null);
+const ProductDescription = (props: any) => {
+    const params = useParams();
+    const productId = params?.id;
     const [quantity, setQuantity] = useState(1);
-
-    const handleSizeClick = (size) => {
-        setSelectedSize(size);
-    };
+    const [selectedColor, setSelectedColor] = useState<string | null>(null);
+    const [selectedSize, setSelectedSize] = useState<string | null>(null);
+    const {data: product, error} = useProduct(productId, selectedColor, selectedSize);
 
     const handleDecrement = () => {
         setQuantity(prevQuantity => Math.max(prevQuantity - 1, 1));
     };
+
+    console.log(selectedSize)
 
     const handleIncrement = () => {
         setQuantity(prevQuantity => Math.min(prevQuantity + 1, 1000));
@@ -31,137 +37,99 @@ const ProductDescription = () => {
         }
     };
 
-    const handleInputBlur = () => {
+    const handleInputBlur = (total: number) => {
         let value = parseInt(String(quantity), 10);
         if (isNaN(value) || value < 1) {
             value = 1;
-        } else if (value > 1000) {
-            value = 1000;
+        } else if (value > total) {
+            value = total;
         }
         setQuantity(value);
+    };
+
+    const handleColorSelect = (color: string) => {
+        setSelectedColor(color);
+    };
+
+    const handleSizeSelect = (size: string) => {
+        setSelectedSize(size);
     };
 
     return (
         <div className="product-des">
             <div className="short">
-                <h4>Tên sản phẩm</h4>
-                <div className="rating-main">
-                    <ul className="rating">
-                        <li><Rate disabled defaultValue={5} style={{marginLeft: -35}}/></li>
+                <h6 className="text-capitalize fw-bold mb-0">{product?.productName || 'No product variant'}</h6>
+                <div className="rating-main" style={{fontSize: '13px'}}>
+                    <span className="pe-2" style={{borderRight: '2px solid #EDF0F5'}}>
+                        SKU: SMN6166-XAH-S
+                    </span>
+
+                    <ul className="rating ps-5">
+                        <li>
+                            <div>
+                                <Rate disabled defaultValue={5}
+                                      style={{marginLeft: -35, fontSize: 16, color: '#FCAF17'}}/>
+                                <span className="ps-2">
+                                    <span className="fw-bold me-2">4.9</span>
+                                    <span style={{color: '#7a7a7a'}}>({Math.floor(Math.random() * 120) + 1})</span>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div className="ml-2" style={{borderLeft: '2px solid #EDF0F5'}}>
+                                <span className="ml-2">Đã bán</span>
+                                <span className="fw-bold"> 178</span>
+                            </div>
+                        </li>
                     </ul>
-                    <Link href="#" className="total-review link-no-decoration">(102) Đánh giá</Link>
                 </div>
-                <p className="price"><span className="discount">$70.00</span><s>$80.00</s></p>
-                <p className="description">Sản phẩm được thiết kế tiện lợi và phù hợp cho mọi gia đình...</p>
-            </div>
-            <div
-                className="color"
-                style={{
-                    marginBottom: "20px",
-                    padding: "10px",
-                }}
-            >
-                <h4
-                    style={{
-                        fontSize: "18px",
-                        fontWeight: "bold",
-                        marginBottom: "10px",
-                    }}
-                >
-                    Tùy chọn có sẵn <span>Màu sắc</span>
-                </h4>
-                <ul
-                    style={{
-                        display: "flex",
-                        listStyle: "none",
-                        padding: "0",
-                        margin: "0",
-                    }}
-                >
-                    <li
-                        style={{
-                            marginRight: "10px",
-                        }}
-                    >
-                        <Link href="#" className="one">
-                            <i className="ti-check"></i>
-                        </Link>
-                    </li>
-                    <li
-                        style={{
-                            marginRight: "10px",
-                        }}
-                    >
-                        <Link href="#" className="two">
-                            <i className="ti-check"></i>
-                        </Link>
-                    </li>
-                    <li
-                        style={{
-                            marginRight: "10px",
-                        }}
-                    >
-                        <Link href="#" className="three">
-                            <i className="ti-check"></i>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link href="#" className="four">
-                            <i className="ti-check"></i>
-                        </Link>
-                    </li>
-                </ul>
+                <p className="price px-3 py-4 m-0" style={{backgroundColor: '#FAFAFA', borderRadius: '5px'}}>
+                    <span className="discount text-center">
+                         {product?.salePrice ? product?.salePrice + ' đ' : '0 đ'}
+                    </span>
+                    <s className={product?.originalPrice ? "" : "hidden"}>{product?.originalPrice + ' đ'}</s>
+                </p>
             </div>
 
-            <div
-                className="size"
-                style={{
-                    marginBottom: "20px",
-                    padding: "10px",
-                }}
-            >
-                <h4
-                    style={{
-                        fontSize: "18px",
-                        fontWeight: "bold",
-                        marginBottom: "10px",
-                    }}
-                >
-                    Kích cỡ
-                </h4>
-                <ul
-                    style={{
-                        display: "flex",
-                        listStyle: "none",
-                        padding: "0",
-                        margin: "0",
-                    }}
-                >
-                    {['S', 'M', 'L', 'XL', 'XXL'].map((size) => (
-                        <li key={size} style={{ marginRight: "10px" }}>
-                            <Link
-                                href="#"
-                                className={
-                                    selectedSize === size
-                                        ? 'selected-size link-no-decoration'
-                                        : 'link-no-decoration'
-                                }
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleSizeClick(size);
-                                }}
-                            >
-                                {size}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+            <div className="mt-4">
+                <div className="flex items-center mb-4">
+                    <EyeOutlined style={{fontSize: 20}}/>
+                    <span className="ml-2"><b>{Math.floor(Math.random() * 50) + 1}</b> người đang xem sản phẩm này</span>
+                </div>
+
+                <div className="mb-4">
+                    <span className="text-gray-800">Chỉ còn <b>78</b> sản phẩm trong kho!</span>
+                    <Progress
+                        percent={78}
+                        strokeColor="#ff4d4f"
+                        showInfo={false}
+                        strokeWidth={4}
+                    />
+                </div>
+            </div>
+
+            <div className="d-flex flex-column">
+                <div className="color mb-4">
+                    <ColorPickers
+                        productId={productId}
+                        selectedColor={selectedColor}
+                        onColorSelect={handleColorSelect}
+                    />
+                </div>
+
+                <div className="size">
+                    <SizePickers
+                        productId={productId}
+                        selectedSize={selectedSize}
+                        onSizeSelect={handleSizeSelect}
+                    />
+                </div>
             </div>
 
             <div className="product-buy">
                 <div className="quantity">
-                    <h6>Số lượng :</h6>
-                    <div className="input-group">
+                    <h6>Số lượng:</h6>
+                    <div className="input-group me-4">
                         <div className="button minus">
                             <button
                                 type="button"
@@ -178,7 +146,7 @@ const ProductDescription = () => {
                             className="input-number"
                             value={quantity}
                             onInput={handleInputChange}
-                            onBlur={handleInputBlur}
+                            onBlur={() => handleInputBlur(product?.quantity)}
                             style={{border: '1px solid #333', textAlign: 'center'}}
                             variant={"borderless"}
                         />
@@ -187,43 +155,47 @@ const ProductDescription = () => {
                                 type="button"
                                 className="btn btn-primary btn-number"
                                 onClick={handleIncrement}
-                                disabled={quantity >= 1000}
+                                disabled={quantity >= product?.quantity}
                             >
                                 <AiOutlinePlus size={20}/>
                             </button>
                         </div>
                     </div>
-                    {/*<div className="input-group">*/}
-                    {/*    <Button*/}
-                    {/*        icon={<AiOutlineMinus style={{color: '#fff'}} />}*/}
-                    {/*        onClick={handleDecrement}*/}
-                    {/*        disabled={quantity <= 1}*/}
-                    {/*        style={{background: '#F7941D', height: "50px"}}*/}
-                    {/*    />*/}
-                    {/*    <Input*/}
-                    {/*        type="text"*/}
-                    {/*        name="quant[1]"*/}
-                    {/*        className="input-number"*/}
-                    {/*        value={quantity}*/}
-                    {/*        onInput={handleInputChange}*/}
-                    {/*        onBlur={handleInputBlur}*/}
-                    {/*        style={{width: "60px", border: '1px solid #333', textAlign: "center"}}*/}
-                    {/*        readOnly*/}
-                    {/*    />*/}
-                    {/*    <Button*/}
-                    {/*        icon={<AiOutlinePlus style={{color: '#fff'}} />}*/}
-                    {/*        onClick={handleIncrement}*/}
-                    {/*        disabled={quantity >= 1000}*/}
-                    {/*        style={{background: '#F7941D'}}*/}
-                    {/*    />*/}
-                    {/*</div>*/}
+                    <div className="add-to-cart">
+                        <Link
+                            href="#"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                addToCart(product, quantity, props.images);
+                            }}
+                            className="btn"
+                            style={{marginBottom: '2px'}}
+                        >
+                            Thêm vào giỏ hàng
+                        </Link>
+                    </div>
+                </div>
+                <div className="add-to-cart mt-3">
+                    <Link
+                        href="#"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            addToCart(product, quantity, props.images);
+                        }}
+                        className="btn"
+                        style={{marginBottom: '2px', width: '635px'}}
+                    >
+                        Mua ngay
+                    </Link>
+                </div>
 
-                </div>
-                <div className="add-to-cart">
-                    <Link href={"/cart"} className="btn">Thêm vào giỏ hàng</Link>
-                </div>
-                <p className="cat">Danh mục :<Link href="#" className="link-no-decoration">Áo</Link></p>
-                <p className="availability">Tình trạng : 180 Sản phẩm còn hàng</p>
+                <InfoSection/>
+
+                {/*<p className="cat">Danh mục :<Link href="#" className="link-no-decoration">Áo</Link></p>*/}
+                {/*<p className="availability">Tình trạng : {*/}
+                {/*    product?.quantity > 0 ? 'Còn ' + product?.quantity + ' sản phẩm' : 'Hết hàng'}*/}
+                {/*</p>*/}
+                {/*<p className="description">{product?.description || 'No description'}</p>*/}
             </div>
         </div>
     );

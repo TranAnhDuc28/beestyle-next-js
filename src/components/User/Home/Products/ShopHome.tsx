@@ -8,7 +8,7 @@ import useSWR from "swr";
 import {
     getOfferingProduct,
     URL_API_PRODUCT_OFFER
-} from "@/services/user/home/ProductAreaService";
+} from "@/services/user/ProductAreaService";
 
 function ShopHome() {
 

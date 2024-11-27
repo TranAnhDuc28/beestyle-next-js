@@ -71,7 +71,7 @@ const AppSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
             >
                 <div className="flex justify-center items-center h-16 w-full du">
                     <div
-                        className={`transition-all duration-500 ${collapsed ? 'text-xs font-black' : 'text-3xl font-bold'}`}>
+                        className={`transition-all duration-500 ${collapsed ? 'text-xs fonts-black' : 'text-3xl fonts-bold'}`}>
                         BeeStyle
                     </div>
                 </div>
