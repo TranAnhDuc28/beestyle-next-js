@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import {useSearchParams} from 'next/navigation';
-import {handleFetch} from "@/services/user/home/ProductAreaService";
+import {handleFetch} from "@/services/user/ProductAreaService";
 
 export default function MenuProductArea() {
 
