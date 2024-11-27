@@ -4,7 +4,7 @@ import {Content} from "antd/es/layout/layout";
 import {DeleteOutlined} from "@ant-design/icons";
 import {HandleCart} from "@/components/Admin/Sale/SaleComponent";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
-import {IOrderItem, IUpdateOrderItem} from "@/types/IOrderItem";
+import {ICreateOrUpdateOrderItem, IOrderItem} from "@/types/IOrderItem";
 import useSWR, {mutate} from "swr";
 import {getOrderItemsByOrderId, URL_API_ORDER_ITEM} from "@/services/OrderItemService";
 import {useDebounce} from "use-debounce";
@@ -23,7 +23,7 @@ const AdminCart: React.FC = () => {
     const [initialQuantities, setInitialQuantities] = useState<Map<number, number>>(new Map());
     const {handleUpdateQuantityOrderItem, handleDeleteOrderItem} = useOrderItem();
     const {handleUpdateQuantityInStockProductVariant} = useProductVariant();
-    const [orderItemUpdateQuantity, setOrderItemUpdateQuantity] = useState<IUpdateOrderItem | null>(null);
+    const [orderItemUpdateQuantity, setOrderItemUpdateQuantity] = useState<ICreateOrUpdateOrderItem | null>(null);
     const [debouncedOrderItemUpdateQuantity] = useDebounce(orderItemUpdateQuantity, 500);
 
     const {data, error, isLoading, mutate: mutateDataCart} =
@@ -205,7 +205,7 @@ const AdminCart: React.FC = () => {
             }
         },
         {
-            title: 'Action', key: 'action', align: "center", width: 70,
+            title: 'Hành động', key: 'action', align: "center", width: 70,
             render:
                 (_, record) => (
                     <DeleteOutlined
