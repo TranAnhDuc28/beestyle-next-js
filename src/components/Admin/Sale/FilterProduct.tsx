@@ -1,4 +1,4 @@
-import {Button, Drawer} from "antd";
+import {Drawer} from "antd";
 import React, {memo} from "react";
 
 interface IProps {

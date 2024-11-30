@@ -1,14 +1,36 @@
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {ICreateOrUpdateOrderItem} from "@/types/IOrderItem";
 import {
-    createOrderItem, createOrderItems, deleteOrderItem,
+    createOrderItem, createOrderItems, deleteOrderItem, getOrderItemsByOrderId,
     updateOrderItem,
     updateQuantityOrderItem, URL_API_ORDER_ITEM,
 } from "@/services/OrderItemService";
+import useSWR from "swr";
 
 
 const useOrderItem = () => {
     const {showNotification, showMessage} = useAppNotifications();
+
+    const handleGetOrderItemsByOrderId = (orderId: string | undefined) => {
+        // const {data, error, isLoading, mutate} =
+        //     useSWR(orderId ? URL_API_ORDER_ITEM.get(orderId) : null,
+        //     getOrderItemsByOrderId,
+        //     {
+        //         revalidateIfStale: false,
+        //         revalidateOnFocus: false,
+        //         revalidateOnReconnect: false
+        //     }
+        // );
+        //
+        // if (error) {
+        //     showNotification("error", {
+        //         message: error?.message,
+        //         description: error?.response?.data?.message || "Error fetching order items",
+        //     });
+        // }
+        //
+        // return {data, error, isLoading, mutate};
+    }
 
     const handleCreateOrderItem =  async (value: ICreateOrUpdateOrderItem) => {
         if (value.orderId && !isNaN(value.orderId)) throw new Error("ID hóa đơn không hợp lệ, Vui lòng chọn hóa đơn thêm sản phẩm.");
@@ -25,14 +47,16 @@ const useOrderItem = () => {
             } else {
                 showNotification("error", {message: error?.message, description: errorMessage});
             }
-            return null;
+            throw new Error(error);
         }
     }
 
     const handleCreateOrderItems =  async (orderId: number, value: ICreateOrUpdateOrderItem[]) => {
         const paramString = new URLSearchParams();
 
-        if (!orderId || isNaN(orderId)) throw new Error("ID hóa đơn không hợp lệ, Vui lòng chọn hóa đơn thêm sản phẩm.");
+        if (!orderId || isNaN(orderId)) {
+            throw new Error("ID hóa đơn không hợp lệ, Vui lòng chọn hóa đơn thêm sản phẩm.");
+        }
 
         paramString.append("orderId", orderId.toString());
 
@@ -48,7 +72,7 @@ const useOrderItem = () => {
             } else {
                 showNotification("error", {message: error?.message, description: errorMessage});
             }
-            return null;
+            throw new Error(error);
         }
     }
 
@@ -106,6 +130,7 @@ const useOrderItem = () => {
 
 
 
-    return {handleCreateOrderItem, handleCreateOrderItems, handleUpdateOrderItem, handleUpdateQuantityOrderItem, handleDeleteOrderItem};
+    return {handleGetOrderItemsByOrderId, handleCreateOrderItem, handleCreateOrderItems, handleUpdateOrderItem,
+        handleUpdateQuantityOrderItem, handleDeleteOrderItem};
 }
 export default useOrderItem;

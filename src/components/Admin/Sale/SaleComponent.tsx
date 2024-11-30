@@ -5,14 +5,16 @@ import ContentTabPanelSale from "@/components/Admin/Sale/ContentTabPanelSale";
 import TabBarExtraContentLeft from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentLeft";
 import TabBarExtraContentRight from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentRight";
 import {IProductVariant} from "@/types/IProductVariant";
-import useSWR, {KeyedMutator} from "swr";
+import useSWR, {KeyedMutator, mutate} from "swr";
 import {getOrders, URL_API_ORDER} from "@/services/OrderService";
 import {IOrder, IOrderCreate} from "@/types/IOrder";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {ICreateOrUpdateOrderItem, IOrderItem} from "@/types/IOrderItem";
 import useOrder from "@/components/Admin/Order/hooks/useOrder";
 import useOrderItem from "@/components/Admin/Order/hooks/useOrderItem";
-import SubLoader from "@/components/Loader/SubLoader";
+import {URL_API_PRODUCT_VARIANT} from "@/services/ProductVariantService";
+import {URL_API_ORDER_ITEM} from "@/services/OrderItemService";
+
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 type PositionType = 'left' | 'right';
@@ -103,72 +105,116 @@ const SaleComponent: React.FC = () => {
         }
     }, [data]);
 
-    const handleAddOrderItemCart = (productVariantSelected: IProductVariant[]) => {
+    const handleAddOrderItemCart = async (productVariantSelected: IProductVariant[]) => {
         let newOrderItemsCreateOrUpdate: ICreateOrUpdateOrderItem[] = [];
 
         const cartMap = new Map<number, IOrderItem>(
             dataCart.map(item => [item.productVariantId, item])
         );
+        // console.log("current cart", cartMap)
+
+
+        // Lưu trữ bản sao của cartMap để rollback khi cần
+        const cartMapBackup = new Map(cartMap);
 
         for (const selectedProduct of productVariantSelected) {
-            const stockQuantity = selectedProduct.quantityInStock || 0;
+            const quantityInStock = selectedProduct.quantityInStock || 0;
+            // console.log('quantity in stock: ', stockQuantity);
 
             if (cartMap.has(selectedProduct.id)) {
+                // console.log("product variant id" , selectedProduct.id)
                 const existingOrderItem = cartMap.get(selectedProduct.id)!;
-                const newQuantity = Math.min(existingOrderItem.quantity + 1, stockQuantity);
+                // console.log("current cart quantity" + selectedProduct.sku , existingOrderItem.quantity)
+                if (quantityInStock > 0) {
+                    let newQuantity: number = existingOrderItem.quantity + 1;
 
-                // Cập nhật số lượng trong Map
-                cartMap.set(selectedProduct.id, {
-                    ...existingOrderItem,
-                    quantity: newQuantity
-                })
+                    // console.log(`new cart quantity ${selectedProduct.sku}: ${newQuantity}`);
 
-                newOrderItemsCreateOrUpdate.push({
-                    id: existingOrderItem.id,
-                    productVariantId: selectedProduct.id,
-                    quantity: 1,
-                    salePrice: selectedProduct.salePrice,
-                });
+                    // Cập nhật số lượng trong Map
+                    cartMap.set(selectedProduct.id, {
+                        ...existingOrderItem,
+                        quantity: newQuantity
+                    })
+                    // console.log("product after update", cartMap.get(selectedProduct.id));
+
+                    newOrderItemsCreateOrUpdate.push({
+                        id: existingOrderItem.id,
+                        productVariantId: selectedProduct.id,
+                        quantity: 1,
+                        salePrice: selectedProduct.salePrice,
+                    });
+                } else {
+                    showMessage("warning", `Sản phẩm mã ${selectedProduct.sku} - ${selectedProduct.productName} đã hết hàng`);
+                    return;
+                }
             } else {
-                // Thêm sản phẩm mới vào giỏ hàng
-                newOrderItemsCreateOrUpdate.push({
-                    productVariantId: selectedProduct.id,
-                    quantity: 1,
-                    salePrice: selectedProduct.salePrice,
-                });
+                // Thêm sản phẩm mới vào giỏ hàng nếu tồn kho lớn hơn 0
+                if (quantityInStock > 0) {
+                    let quantityToAdd: number = 1;  // Thêm mặc định 1 sản phẩm
+
+                    newOrderItemsCreateOrUpdate.push({
+                        productVariantId: selectedProduct.id,
+                        quantity: quantityToAdd,
+                        salePrice: selectedProduct.salePrice,
+                    });
+                } else {
+                    // Nếu tồn kho = 0, cảnh báo người dùng
+                    showMessage("warning", `Sản phẩm ${selectedProduct.sku} - ${selectedProduct.productName} đã hết hàng`);
+                    return;
+                }
             }
         }
 
-        if (newOrderItemsCreateOrUpdate.length > 0) {
-            handleCreateOrderItems(Number(orderActiveTabKey), newOrderItemsCreateOrUpdate)
-                .then(response => {
-                    if (response) {
-                        productVariantSelected.forEach((selectedProduct) => {
-                            const orderItemId = response[selectedProduct.id];
+        try {
+            if (newOrderItemsCreateOrUpdate.length > 0) {
+                let response = await handleCreateOrderItems(Number(orderActiveTabKey), newOrderItemsCreateOrUpdate)
+                if (response) {
+                    productVariantSelected.forEach((selectedProduct) => {
+                        const orderItemId = response[selectedProduct.id];
+                        // console.log(orderItemId)
+                        // console.log(orderItemId && !cartMap.has(selectedProduct.id))
+                        if (orderItemId && !cartMap.has(selectedProduct.id)) {
+                            cartMap.set(selectedProduct.id, {
+                                id: orderItemId,
+                                orderId: Number(orderActiveTabKey),
+                                productVariantId: selectedProduct.id,
+                                sku: selectedProduct.sku,
+                                productId: selectedProduct.productId,
+                                productName: selectedProduct.productName,
+                                colorId: selectedProduct.colorId,
+                                colorCode: selectedProduct.colorCode,
+                                colorName: selectedProduct.colorName,
+                                sizeId: selectedProduct.sizeId,
+                                sizeName: selectedProduct.sizeName,
+                                quantity: 1,
+                                salePrice: selectedProduct.salePrice,
+                            });
+                        }
+                    });
+                }
+            }
 
-                            if (orderItemId && !cartMap.has(orderItemId)) {
-                                cartMap.set(selectedProduct.id, {
-                                    id: orderItemId,
-                                    orderId: Number(orderActiveTabKey),
-                                    productVariantId: selectedProduct.id,
-                                    sku: selectedProduct.sku,
-                                    productId: selectedProduct.productId,
-                                    productName: selectedProduct.productName,
-                                    colorId: selectedProduct.colorId,
-                                    colorCode: selectedProduct.colorCode,
-                                    colorName: selectedProduct.colorName,
-                                    sizeId: selectedProduct.sizeId,
-                                    sizeName: selectedProduct.sizeName,
-                                    quantity: 1,
-                                    salePrice: selectedProduct.salePrice,
-                                });
-                            }
-                        });
-                    }
-                })
-                .catch((error) => showMessage("error", error.message));
+            if (productVariantSelected.length > 0) {
+                const productId = productVariantSelected[0].productId;
+                await mutate((key: any) => typeof key === 'string' && productId &&
+                        key.startsWith(`${URL_API_PRODUCT_VARIANT.filter(productId?.toString())}`),
+                    undefined,
+                    {revalidate: true}
+                );
+            }
+
+            // console.log("new cart", Array.from(cartMap.values()))
+            setDataCart([...Array.from(cartMap.values())]);
+
+            await mutate((key: any) => typeof key === 'string' && key.startsWith(`${URL_API_ORDER_ITEM.get(orderActiveTabKey)}`),
+                undefined,
+                {revalidate: true}
+            );
+        } catch (error: any) {
+            // Rollback giỏ hàng về trạng thái trước khi thay đổi
+            setDataCart([...Array.from(cartMapBackup.values())]);
+            showMessage("error", error.message || "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng. Vui lòng thử lại!");
         }
-        setDataCart([...Array.from(cartMap.values())]);
     }
 
     const onChange = (newActiveKey: string) => {
@@ -219,7 +265,7 @@ const SaleComponent: React.FC = () => {
     };
 
     return (
-        <Layout className="h-screen" style={{background: colorBgContainer}}>
+        <Layout style={{background: colorBgContainer}}>
             <HandleCart.Provider
                 value={{
                     orderActiveTabKey,
@@ -231,7 +277,6 @@ const SaleComponent: React.FC = () => {
                 <Content style={{background: colorBgContainer}}>
                     <Spin size="default" spinning={loading}>
                         <Tabs
-                            className="h-full"
                             type="editable-card"
                             onChange={onChange}
                             activeKey={orderActiveTabKey}
