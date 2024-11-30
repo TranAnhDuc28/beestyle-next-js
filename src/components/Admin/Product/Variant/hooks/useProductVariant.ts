@@ -1,11 +1,10 @@
 import useAppNotifications from "@/hooks/useAppNotifications";
-import {StockAction, updateQuantityInStockProductVariants} from "@/services/ProductVariantService";
-import {IProductVariant} from "@/types/IProductVariant";
+import {updateQuantityInStockProductVariants} from "@/services/ProductVariantService";
 
 const useProductVariant = () => {
     const {showNotification, showMessage} = useAppNotifications();
 
-    const handleUpdateQuantityInStockProductVariant= async (value: {id: number, quantity: number}, action: StockAction) => {
+    const handleUpdateQuantityInStockProductVariant= async (value: {id: number, quantity: number}, action: string) => {
         try {
             const result = await updateQuantityInStockProductVariants(value, action);
             return result;

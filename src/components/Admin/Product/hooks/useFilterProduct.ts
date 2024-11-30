@@ -31,6 +31,7 @@ const useFilterProduct = (param?: ParamFilterProduct) => {
                 revalidateIfStale: false,
                 revalidateOnFocus: false,
                 revalidateOnReconnect: false,
+                refreshInterval: 1000 * 60 * 30, // 30 minute
             }
         );
 

@@ -9,6 +9,8 @@ import ColorButton from "@/components/Button/ColorButton";
 import {HandleCart} from "@/components/Admin/Sale/SaleComponent";
 import type {DraggableData, DraggableEvent} from 'react-draggable';
 import Draggable from 'react-draggable';
+import {mutate} from "swr";
+import {URL_API_PRODUCT_VARIANT} from "@/services/ProductVariantService";
 
 const {Text} = Typography;
 
@@ -85,7 +87,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
         if (!isLoading && dataOptionFilterProductVariant?.items) {
             setDataSource(dataOptionFilterProductVariant.items);
         }
-    }, [dataOptionFilterProductVariant, isLoading]);
+    }, [dataOptionFilterProductVariant.items, isLoading]);
 
     const onStart = (_event: DraggableEvent, uiData: DraggableData) => {
         const {clientWidth, clientHeight} = window.document.documentElement;
@@ -111,7 +113,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
         setSelectedRows([]);
         setFilterParam(defaultFilterParam);
         setPosition({ x: 0, y: 0 });
-        setBounds({left: 0, top: 0, bottom: 0, right: 0})
+        setBounds({left: 0, top: 0, bottom: 0, right: 0});
     }
 
     const rowSelection: TableProps<IProductVariant>['rowSelection'] = {
@@ -138,12 +140,12 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
         setFilterParam((prevValue) => ({...prevValue, page: pagination?.current ?? 1}));
     }, []);
 
-    const handleOkAndClose = () => {
+    const handleOkAndClose = async () => {
         handleCart?.handleAddOrderItemCart(selectedRows);
         handleCloseModal();
     }
 
-    const handleOkAndContinue = () => {
+    const handleOkAndContinue = async () => {
         handleCart?.handleAddOrderItemCart(selectedRows);
     }
 

@@ -1,76 +1,75 @@
-"use client";
-import {Form} from "antd";
+"use client"
+
+
+import React, { useState } from "react";
 import CheckoutForm from "./CheckoutForm";
 import OrderDetail from "./OrderDetail";
-import {useState} from "react";
-import {createVNPayPayment} from "@/services/VNPayService";
-import useAppNotifications from "@/hooks/useAppNotifications";
+import { Form } from "antd";
+import { createVNPayPayment } from "@/services/VNPayService";
 
 const Checkout = () => {
-    const [addressForm] = Form.useForm();
-    const [userForm] = Form.useForm();
+  const [addressForm] = Form.useForm();
+  const [userForm] = Form.useForm();
 
-    const {showNotification} = useAppNotifications();
-    const [orderId, setOrderId] = useState("");
-    const [amount, setAmount] = useState(200000);
-    const [selectedBank, setSelectedBank] = useState("NCB");
+  const [orderId, setOrderId] = useState("");
+  const [amount, setAmount] = useState(200000);
+  const [shippingCost, setShippingCost] = useState(0);
 
-    const handleSubmit = async (payment: string) => {
+  const handleShippingCostChange = (newCost: number) => {
+    setShippingCost(newCost);
+  };
+
+  const handleSubmit = async (payment: string) => {
+    try {
+      // Xác thực và lấy dữ liệu từ cả hai form
+      const addressData = await addressForm.validateFields();
+      const userData = await userForm.validateFields();
+
+      console.log("Address Form Data:", addressData);
+      console.log("User Form Data:", userData);
+      console.log(payment);
+
+      if (payment === "2") {
         try {
-            // Validate addressForm
-            //   const addressValues = await addressForm.validateFields();
-            //   console.log("Address Form Values:", addressValues);
-
-            //   // Validate userForm
-            //   const userValues = await userForm.validateFields();
-            //   console.log("User Form Values:", userValues);
-            console.log(payment);
-
-            if (payment == "2") {
-                try {
-                    const ipAddress = "127.0.0.1"; // Thay bằng IP thực tế của client
-                    const data = await createVNPayPayment(
-                        orderId,
-                        amount,
-                        ipAddress,
-                        selectedBank
-                    );
-
-                    if (data && data.paymentUrl) {
-                        console.log("Redirecting to VNPay payment URL:", data.paymentUrl);
-                        window.location.href = data.paymentUrl;
-                    } else {
-                        console.error("Không có paymentUrl trong dữ liệu trả về.");
-                        showNotification("error", {
-                            message: "Lỗi tạo thanh toán, vui lòng thử lại.",
-                        });
-                    }
-                } catch (error) {
-                    console.error("Lỗi khi tạo thanh toán:", error);
-                    showNotification("error", {
-                        message: "Đã xảy ra lỗi trong quá trình thanh toán, vui lòng thử lại."
-                    });
-                }
-            }
+          const ipAddress = "127.0.0.1"; // Địa chỉ IP tạm thời
+          const data = await createVNPayPayment(orderId, amount, ipAddress);
+          if (data && data.paymentUrl) {
+            // Chuyển hướng người dùng tới VNPay
+            window.location.href = data.paymentUrl;
+          } else {
+            alert("Có lỗi khi tạo thanh toán, vui lòng thử lại.");
+          }
         } catch (error) {
-            // Nếu có lỗi (form không hợp lệ), thông báo cho người dùng
-            console.log("Form validation failed:", error);
+          alert("Lỗi thanh toán, vui lòng thử lại.");
         }
-    };
-    return (
-        <section className="shop checkout section">
-            <div className="container">
-                <div className="row">
-                    <div className="col-lg-8 col-12">
-                        <CheckoutForm addressForm={addressForm} userForm={userForm}/>
-                    </div>
-                    <div className="col-lg-4 col-12">
-                        <OrderDetail handleSubmit={handleSubmit}/>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
+      }
+    } catch (error) {
+      // console.log("Xác thực form thất bại:", error);
+    }
+  };
+
+  return (
+    <section className="shop checkout section">
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-8 col-12">
+            <CheckoutForm 
+              addressForm={addressForm} 
+              userForm={userForm} 
+              onShippingCostChange={handleShippingCostChange} 
+            />
+          </div>
+          <div className="col-lg-4 col-12">
+            <OrderDetail 
+              handleSubmit={handleSubmit} 
+              shippingCost={shippingCost} 
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default Checkout;
+
