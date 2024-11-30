@@ -9,6 +9,7 @@ type ModalType = 'success' | 'info' | 'warning' | 'error' | 'confirm';
 const defaultNotificationConfig = {
     showProgress: true,
     placement: "bottomRight" as NotificationPlacement,
+
 };
 
 const useAppNotifications = () => {

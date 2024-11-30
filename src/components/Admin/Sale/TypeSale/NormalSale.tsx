@@ -23,6 +23,7 @@ import AdminCart from "@/components/Admin/Sale/AdminCart";
 import {HandleCart} from "@/components/Admin/Sale/SaleComponent";
 import {mutate} from "swr";
 import {URL_API_PRODUCT} from "@/services/ProductService";
+import ProductListView from "@/components/Admin/Sale/TypeDisplayProductList/ProductListView";
 
 const {Content} = Layout;
 const {Text, Paragraph, Title} = Typography;
@@ -52,7 +53,7 @@ interface IProps {
 
 }
 
-const NormalSaleTab: React.FC<IProps> = (props) => {
+const NormalSale: React.FC<IProps> = (props) => {
     const {} = props;
     const handleCart = useContext(HandleCart);
     const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
@@ -61,7 +62,7 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
         checkout: false, filter: false,
     });
 
-    const [editableStr, setEditableStr] = useState('Ghi chú đơn hàng.');
+    const [editableStr, setEditableStr] = useState('Ghi chú đơn hàng');
 
     const [filerParam, setFilterParam] = useState<ParamFilterProduct>({...defaultFilterParam});
     const {dataOptionFilterProduct, isLoading} = useFilterProduct(filerParam);
@@ -79,11 +80,20 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
     }, []);
 
     return (
-        <Layout className="px-1.5" style={{height: 785, backgroundColor: colorBgContainer}}>
+        <Layout className="px-1.5" style={{backgroundColor: colorBgContainer}}>
             <Flex gap={10} style={{height: '100%'}}>
-                <Space direction="vertical" style={{width: "60%", height: "100%"}}>
-
-                    <AdminCart/>
+                <div style={{width: "60%", display: "flex", flexDirection: "column", gap: 10}}>
+                    <Content
+                        style={{
+                            borderRadius: borderRadiusLG,
+                            boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
+                            padding: "10px 10px 0px 10px",
+                            overflow: "auto",
+                            flexBasis: "80%",
+                        }}
+                    >
+                        <AdminCart/>
+                    </Content>
 
                     <Content
                         style={{
@@ -91,12 +101,13 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
                             borderRadius: borderRadiusLG,
                             padding: "10px 20px",
                             minHeight: 40,
-                            height: 60
+                            flexBasis: "20%",
+                            overflowY: "auto"
                         }}
                     >
                         <Paragraph>{editableStr}</Paragraph>
                     </Content>
-                </Space>
+                </div>
                 <Content
                     style={{
                         boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
@@ -142,18 +153,15 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
                             </Space>
                         </div >
 
-                        <div style={{height: 660, overflowY: "auto", padding: 5}}>
+                        <div style={{height: 'calc(100vh - 200px)', overflowY: "auto", padding: 5}}>
                             {
                                 isLoading ? (
                                     <SubLoader size="small" spinning={isLoading}/>
                                 ) : (
                                     <>
-                                        {/*<ProductListView*/}
-                                        {/*    dataSource={dataOptionFilterProduct?.items}*/}
-                                        {/*    setOpenModalListProductVariant={setOpenModalListProductVariant}*/}
-                                        {/*/>*/}
+                                        <ProductListView dataSource={dataOptionFilterProduct?.items}/>
 
-                                        <ProductCardView dataSource={dataOptionFilterProduct?.items}/>
+                                        {/*<ProductCardView dataSource={dataOptionFilterProduct?.items}/>*/}
                                     </>
                                 )
                             }
@@ -194,4 +202,4 @@ const NormalSaleTab: React.FC<IProps> = (props) => {
         </Layout>
     )
 };
-export default memo(NormalSaleTab);
+export default memo(NormalSale);
