@@ -40,7 +40,7 @@ const TabBarExtraContentLeft: React.FC = () => {
     const {dataOptionSearchProduct, isLoading} = useSearchProduct(debounceSearchValue);
 
     const handleSearch = useCallback((value: string) => {
-        setSearchTerm(value.trim());
+        setSearchTerm(value);
         if (value?.trim().length === 0) setOptions([]);
     }, []);
 

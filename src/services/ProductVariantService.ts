@@ -1,6 +1,5 @@
 import httpInstance from "@/utils/HttpInstance";
-
-export type StockAction = "plus" | "minus";
+import {STOCK_ACTION} from "@/constants/StockAction";
 
 export const URL_API_PRODUCT_VARIANT = {
     get: (productId: string) => `/admin/product/${productId}/variant`,
@@ -20,7 +19,7 @@ export const getProductVariantsByProductId = async (url: string) => {
     return response.data;
 }
 
-export const updateQuantityInStockProductVariants = async (data: {id: number, quantity: number}, stockAction: StockAction) => {
+export const updateQuantityInStockProductVariants = async (data: {id: number, quantity: number}, stockAction: string) => {
     const response = await httpInstance.patch(`${URL_API_PRODUCT_VARIANT.patchUpdateQuantityInStock}?action=${stockAction}`, data);
     return response.data;
 }

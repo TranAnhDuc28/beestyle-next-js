@@ -5,7 +5,7 @@ import CheckoutComponent from "@/components/Admin/Sale/CheckoutComponent";
 interface IProps {
 }
 
-const DeliverySaleTab: React.FC<IProps> = (props) => {
+const DeliverySale: React.FC<IProps> = (props) => {
     const {} = props;
     const [open, setOpen] = useState(false);
 
@@ -31,4 +31,4 @@ const DeliverySaleTab: React.FC<IProps> = (props) => {
     )
 };
 
-export default memo(DeliverySaleTab);
+export default memo(DeliverySale);

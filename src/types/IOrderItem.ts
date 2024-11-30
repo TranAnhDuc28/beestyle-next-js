@@ -17,16 +17,8 @@ export interface IOrderItem {
     note?: string;
 }
 
-export interface ICreateOrderItem {
-    orderId?: number;
-    productVariantId?: number;
-    quantity?: number;
-    salePrice?: number;
-    discountPrice?: number;
-}
-
-export interface IUpdateOrderItem {
-    id: number;
+export interface ICreateOrUpdateOrderItem {
+    id?: number;
     orderId?: number;
     productVariantId?: number;
     quantity?: number;
