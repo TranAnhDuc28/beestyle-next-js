@@ -39,8 +39,7 @@ const ProductCardView: React.FC<IProps> = (props) => {
                                         {`${item.productCode} - ${item.productName}`}
                                     </Text>
                                 </Marquee>
-                                <Text
-                                    type="secondary">{`Tổng số: ${item.totalProductInStock ?? 0}`}</Text>
+                                <Text type="secondary">{`Tổng số: ${item.totalProductInStock ?? 0}`}</Text>
                                 <Title level={5} style={{textAlign: "right", display: "block", margin: 0}}>
                                     {item.minSalePrice ? `${item.minSalePrice}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',') : 0}
                                 </Title>
