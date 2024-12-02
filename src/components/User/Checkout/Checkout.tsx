@@ -29,10 +29,12 @@ const Checkout = () => {
       console.log("User Form Data:", userData);
       console.log(payment);
 
-      if (payment === "2") {
+      if (payment.selectedPayment === "3") {
         try {
           const ipAddress = "127.0.0.1"; // Địa chỉ IP tạm thời
           const data = await createVNPayPayment(orderId, amount, ipAddress);
+          console.log(data);
+          
           if (data && data.paymentUrl) {
             // Chuyển hướng người dùng tới VNPay
             window.location.href = data.paymentUrl;
