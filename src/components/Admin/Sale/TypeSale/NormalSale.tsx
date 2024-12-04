@@ -17,7 +17,7 @@ import {
 } from "@ant-design/icons";
 import useFilterProduct, {ParamFilterProduct} from "@/components/Admin/Product/hooks/useFilterProduct";
 import SubLoader from "@/components/Loader/SubLoader";
-import FilterProduct from "@/components/Admin/Sale/FilterProduct";
+import FilterProduct from "@/components/Admin/Sale/FilterProductSale";
 import ProductCardView from "@/components/Admin/Sale/TypeDisplayProductList/ProductCardView";
 import AdminCart from "@/components/Admin/Sale/AdminCart";
 import {HandleCart} from "@/components/Admin/Sale/SaleComponent";
@@ -37,7 +37,7 @@ interface DataType {
     price: number;
 }
 
-const defaultFilterParam: ParamFilterProduct = {
+export const defaultFilterParam: ParamFilterProduct = {
     page: 1,
     size: 20,
     category: undefined,
@@ -64,8 +64,8 @@ const NormalSale: React.FC<IProps> = (props) => {
 
     const [editableStr, setEditableStr] = useState('Ghi chú đơn hàng');
 
-    const [filerParam, setFilterParam] = useState<ParamFilterProduct>({...defaultFilterParam});
-    const {dataOptionFilterProduct, isLoading} = useFilterProduct(filerParam);
+    const [filterParam, setFilterParam] = useState<ParamFilterProduct>({...defaultFilterParam});
+    const {dataOptionFilterProduct, isLoading} = useFilterProduct(filterParam);
 
     const onChange: PaginationProps['onChange'] = (page, pageSize) => {
         setFilterParam((prevValue) => ({...prevValue, page: page, size: pageSize}));
@@ -101,7 +101,7 @@ const NormalSale: React.FC<IProps> = (props) => {
                             borderRadius: borderRadiusLG,
                             padding: "10px 20px",
                             minHeight: 40,
-                            flexBasis: "20%",
+                            flexBasis: "10%",
                             overflowY: "auto"
                         }}
                     >
@@ -171,10 +171,10 @@ const NormalSale: React.FC<IProps> = (props) => {
                                 <Pagination
                                     size="small"
                                     simple={{readOnly: true}}
-                                    current={filerParam.page ?? 1}
+                                    current={filterParam.page ?? 1}
                                     onChange={onChange}
                                     showSizeChanger={false}
-                                    defaultPageSize={filerParam.size ?? 20}
+                                    defaultPageSize={filterParam.size ?? 20}
                                     total={dataOptionFilterProduct?.totalElements}
                                 />
                             </Col>
@@ -197,6 +197,8 @@ const NormalSale: React.FC<IProps> = (props) => {
             <FilterProduct
                 open={openDrawer.filter}
                 onClose={() => onClose("filter", false)}
+                filterParam={filterParam}
+                setFilterParam={setFilterParam}
             />
 
         </Layout>

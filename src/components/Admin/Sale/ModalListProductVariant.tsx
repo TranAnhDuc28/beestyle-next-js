@@ -119,20 +119,20 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
     const rowSelection: TableProps<IProductVariant>['rowSelection'] = {
         selectedRowKeys,
         onChange: (newSelectedRowKeys: React.Key[], selectedRows: IProductVariant[]) => {
-            console.log('selectedRowKeys: ', newSelectedRowKeys);
-            console.log('selectedRows: ', selectedRows);
+            // console.log('selectedRowKeys: ', newSelectedRowKeys);
+            // console.log('selectedRows: ', selectedRows);
             setSelectedRowKeys(newSelectedRowKeys);
             setSelectedRows(selectedRows);
         }
     }
 
     const handleSelectedColorsChange = useCallback((value: string[]) => {
-        console.log(`selected ${value}`);
+        // console.log(`selected ${value}`);
         setFilterParam((prevState) => ({...prevState, colorIds: value}));
     }, []);
 
     const handleSelectedSizesChange = useCallback((value: string[]) => {
-        console.log(`selected ${value}`);
+        // console.log(`selected ${value}`);
         setFilterParam((prevState) => ({...prevState, sizeIds: value}));
     }, []);
 
