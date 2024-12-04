@@ -1,4 +1,4 @@
-import {Card, List, Space, Typography} from "antd";
+import {Card, List, Space, Tooltip, Typography} from "antd";
 import React, {memo, useState} from "react";
 import Marquee from "react-fast-marquee";
 import {IProduct} from "@/types/IProduct";
@@ -19,7 +19,7 @@ const ProductCardView: React.FC<IProps> = (props) => {
     return (
         <>
             <List
-                grid={{gutter: 8, xs: 1, sm: 1, md: 1, lg: 2, xl: 3, xxl: 5}}
+                grid={{gutter: 8, xs: 1, sm: 1, md: 2, lg: 3, xl: 3, xxl: 4}}
                 dataSource={dataSource}
                 renderItem={(item: IProduct) => (
                     <List.Item>
@@ -34,12 +34,20 @@ const ProductCardView: React.FC<IProps> = (props) => {
                             }}
                         >
                             <Space direction="vertical">
-                                <Marquee speed={30} pauseOnHover={true}>
-                                    <Text strong style={{marginRight: 30}}>
-                                        {`${item.productCode} - ${item.productName}`}
-                                    </Text>
-                                </Marquee>
-                                <Text type="secondary">{`Tổng số: ${item.totalProductInStock ?? 0}`}</Text>
+                                <Tooltip title={item.productName}>
+                                    <div>
+                                        <Marquee speed={30} pauseOnHover={true}>
+                                            <Text strong style={{marginRight: 30}}>
+                                                {item.productName}
+                                            </Text>
+                                        </Marquee>
+                                    </div>
+                                </Tooltip>
+                                <Text type="secondary">
+                                    <span>{`Mã: ${item.productCode}`}</span>
+                                    <br/>
+                                    <span>{`Tổng số: ${item.totalProductInStock ?? 0}`}</span>
+                                </Text>
                                 <Title level={5} style={{textAlign: "right", display: "block", margin: 0}}>
                                     {item.minSalePrice ? `${item.minSalePrice}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',') : 0}
                                 </Title>

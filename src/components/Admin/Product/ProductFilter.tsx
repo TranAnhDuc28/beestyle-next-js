@@ -7,10 +7,10 @@ import {
 import type {GetProp} from 'antd';
 import {GENDER_PRODUCT} from "@/constants/GenderProduct";
 import styles from "./css/product.module.css";
-import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
-import useOptionBrand from "@/components/Admin/Brand/hooks/useOptionBrand";
+import useCategory from "@/components/Admin/Category/hooks/useCategory";
+import useBrand from "@/components/Admin/Brand/hooks/useBrand";
 import StatusFilter from "@/components/Filter/StatusFilter";
-import useOptionMaterial from "@/components/Admin/Material/hooks/useOptionMaterial";
+import useMaterial from "@/components/Admin/Material/hooks/useMaterial";
 import {DownOutlined} from "@ant-design/icons";
 
 const {Title} = Typography;
@@ -45,11 +45,11 @@ const ProductFilter = (props: IProps) => {
     const params = new URLSearchParams(searchParams);
 
     const {dataTreeSelectCategory, error: errorDataTreeSelectCategory, isLoading: isLoadingDataTreeSelectCategory}
-        = useTreeSelectCategory(error ? false : true);
+        = useCategory(error ? false : true);
     const {dataOptionBrand, error: errorDataOptionBrand, isLoading: isLoadingDataOptionBrand}
-        = useOptionBrand(error ? false : true);
+        = useBrand(error ? false : true);
     const {dataOptionMaterial, error: errorDataOptionMaterial, isLoading: isLoadingDataOptionMaterial}
-        = useOptionMaterial(error ? false : true);
+        = useMaterial(error ? false : true);
 
     const [isErrorNetWork, setErrorNetWork] = useState(false);
     const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);

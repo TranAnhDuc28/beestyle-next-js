@@ -3,7 +3,7 @@ import {App, Form, Input, Modal, notification, Radio, Select, TreeSelect} from "
 import {memo, useEffect} from "react";
 import {ICategory} from "@/types/ICategory";
 import {updateCategory, URL_API_CATEGORY} from "@/services/CategoryService";
-import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
+import useCategory from "@/components/Admin/Category/hooks/useCategory";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {mutate} from "swr";
 
@@ -19,7 +19,7 @@ const UpdateCategory = (props: IProps) => {
     const {showNotification} = useAppNotifications();
     const {isUpdateModalOpen, setIsUpdateModalOpen, mutate: mutateCategories, dataUpdate, setDataUpdate} = props;
     const [form] = Form.useForm();
-    const {dataTreeSelectCategory, error, isLoading} = useTreeSelectCategory(isUpdateModalOpen);
+    const {dataTreeSelectCategory, error, isLoading} = useCategory(isUpdateModalOpen);
 
     useEffect(() => {
         if (error && isUpdateModalOpen) {

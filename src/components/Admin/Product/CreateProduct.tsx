@@ -9,10 +9,10 @@ import React, {memo, useCallback, useEffect, useLayoutEffect, useState} from "re
 import {IProductCreate} from "@/types/IProduct";
 import UploadImage from "@/components/Upload/UploadImage";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
-import useOptionMaterial from "@/components/Admin/Material/hooks/useOptionMaterial";
-import useOptionBrand from "@/components/Admin/Brand/hooks/useOptionBrand";
+import useMaterial from "@/components/Admin/Material/hooks/useMaterial";
+import useBrand from "@/components/Admin/Brand/hooks/useBrand";
 import {GENDER_PRODUCT} from "@/constants/GenderProduct";
-import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
+import useCategory from "@/components/Admin/Category/hooks/useCategory";
 import TableEditRows from "@/components/Admin/Product/CreateProductVariantTable";
 import ColorOptionSelect from "@/components/Select/ColorOptionSelect";
 import {IProductImageCreate} from "@/types/IProductImage";
@@ -82,11 +82,11 @@ const CreateProduct = (props: IProps) => {
     const [confirmLoading, setConfirmLoading] = useState(false);
 
     const {dataOptionBrand, error: errorDataOptionBrand, isLoading: isLoadingDataOptionBrand}
-        = useOptionBrand(isCreateModalOpen);
+        = useBrand(isCreateModalOpen);
     const {dataTreeSelectCategory, error: errorDataTreeSelectCategory, isLoading: isLoadingDataTreeSelectCategory}
-        = useTreeSelectCategory(isCreateModalOpen);
+        = useCategory(isCreateModalOpen);
     const {dataOptionMaterial, error: errorDataOptionMaterial, isLoading: isLoadingDataOptionMaterial}
-        = useOptionMaterial(isCreateModalOpen);
+        = useMaterial(isCreateModalOpen);
     const {dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor}
         = useOptionColor(isCreateModalOpen);
     const {dataOptionSize, error: errorDataOptionSize, isLoading: isLoadingDataOptionSize}

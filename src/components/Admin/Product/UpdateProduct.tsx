@@ -4,9 +4,9 @@ import {STATUS_PRODUCT} from "@/constants/StatusProduct";
 import React, {memo, useCallback, useEffect, useState} from "react";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {IProduct} from "@/types/IProduct";
-import useOptionBrand from "@/components/Admin/Brand/hooks/useOptionBrand";
-import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
-import useOptionMaterial from "@/components/Admin/Material/hooks/useOptionMaterial";
+import useBrand from "@/components/Admin/Brand/hooks/useBrand";
+import useCategory from "@/components/Admin/Category/hooks/useCategory";
+import useMaterial from "@/components/Admin/Material/hooks/useMaterial";
 import UploadImage from "@/components/Upload/UploadImage";
 import {IProductImageCreate} from "@/types/IProductImage";
 import {GENDER_PRODUCT} from "@/constants/GenderProduct";
@@ -40,11 +40,11 @@ const UpdateProduct: React.FC<IProps> = (props) => {
     const [confirmLoading, setConfirmLoading] = useState(false);
 
     const {dataOptionBrand, error: errorDataOptionBrand, isLoading: isLoadingDataOptionBrand}
-        = useOptionBrand(isUpdateModalOpen);
+        = useBrand(isUpdateModalOpen);
     const {dataTreeSelectCategory, error: errorDataTreeSelectCategory, isLoading: isLoadingDataTreeSelectCategory}
-        = useTreeSelectCategory(isUpdateModalOpen);
+        = useCategory(isUpdateModalOpen);
     const {dataOptionMaterial, error: errorDataOptionMaterial, isLoading: isLoadingDataOptionMaterial}
-        = useOptionMaterial(isUpdateModalOpen);
+        = useMaterial(isUpdateModalOpen);
 
     useEffect(() => {
         if (dataUpdate) {
@@ -86,9 +86,7 @@ const UpdateProduct: React.FC<IProps> = (props) => {
         setConfirmLoading(true);
         try {
             if (dataUpdate) {
-                const data = {
-                    ...value, id: dataUpdate.id
-                }
+                const data = {...value, id: dataUpdate.id};
                 const result = await updateProduct(data);
                 mutateProduct();
                 if (result.data) {
@@ -104,7 +102,6 @@ const UpdateProduct: React.FC<IProps> = (props) => {
             );
 
         } catch (error: any) {
-            setConfirmLoading(false);
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {
                 Object.entries(errorMessage).forEach(([field, message]) => {
@@ -113,6 +110,8 @@ const UpdateProduct: React.FC<IProps> = (props) => {
             } else {
                 showNotification("error", {message: error?.message, description: errorMessage,});
             }
+        } finally {
+            setConfirmLoading(false);
         }
     };
 

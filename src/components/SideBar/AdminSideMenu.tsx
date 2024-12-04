@@ -69,9 +69,9 @@ const AppSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
                 width={250}
                 aria-label="Main navigation"
             >
-                <div className="flex justify-center items-center h-16 w-full du">
+                <div className="flex justify-center items-center h-16 w-full fon">
                     <div
-                        className={`transition-all duration-500 ${collapsed ? 'text-xs fonts-black' : 'text-3xl fonts-bold'}`}>
+                        className={`transition-all duration-500 ${collapsed ? 'text-xs font-black' : 'text-3xl font-bold'}`}>
                         BeeStyle
                     </div>
                 </div>
