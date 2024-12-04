@@ -23,7 +23,7 @@ html {
     box-sizing: border-box;
     scrollbar-width: thin;
     scrollbar-color: unset;
-    font-family: var(--font-poppins) !important;
+    font-family: var(--font-poppins);
 }
 
 body {
@@ -48,5 +48,9 @@ body {
     border: none;
     border-radius: 0;
     border-bottom: 2px solid var(--primary);
+}
+
+.custom-input:focus {
+    border: none !important;
 }
 

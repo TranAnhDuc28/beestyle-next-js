@@ -11,20 +11,21 @@ const transformData = (data: any) => {
     }));
 };
 
-const useTreeSelectCategory = (isLoadTree: boolean) => {
+const useCategory = (isLoadTree: boolean) => {
     const {data, error, isLoading} = useSWR(
         isLoadTree ? URL_API_CATEGORY.option : null,
         getCategoryOptions,
         {
-            revalidateIfStale:false,
+            revalidateIfStale: false,
             revalidateOnFocus: false,
             revalidateOnReconnect: false,
         }
     );
 
-    const  dataTreeSelectCategory = !isLoading && data?.data ? transformData(data?.data) : [];
+    const dataCategory = !isLoading && data?.data ? data.data : [];
+    const dataTreeSelectCategory = !isLoading && data?.data ? transformData(data?.data) : [];
 
-    return {dataTreeSelectCategory, error, isLoading};
+    return {dataCategory, dataTreeSelectCategory, error, isLoading};
 }
 
-export default useTreeSelectCategory;
+export default useCategory;

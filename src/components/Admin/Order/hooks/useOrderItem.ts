@@ -107,7 +107,6 @@ const useOrderItem = () => {
             } else {
                 showNotification("error", {message: error?.message, description: errorMessage});
             }
-            throw new Error(error);
         }
     }
 
