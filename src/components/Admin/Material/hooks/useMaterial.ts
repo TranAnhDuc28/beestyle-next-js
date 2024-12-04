@@ -12,7 +12,7 @@ const transformData = (data: IMaterial[]) => {
     }));
 };
 
-const useOptionMaterial = (isLoadOption: boolean) => {
+const useMaterial = (isLoadOption: boolean) => {
     const {data, error, isLoading} = useSWR(
         isLoadOption ? `${URL_API_MATERIAL.option}` : null,
         getMaterials,
@@ -23,8 +23,9 @@ const useOptionMaterial = (isLoadOption: boolean) => {
         }
     );
 
+    const dataMaterial = !isLoading && data?.data ? data.data : [];
     const dataOptionMaterial = !isLoading && data?.data ? transformData(data.data) : [];
 
-    return {dataOptionMaterial, error, isLoading};
+    return {dataMaterial, dataOptionMaterial, error, isLoading};
 }
-export default useOptionMaterial;
+export default useMaterial;

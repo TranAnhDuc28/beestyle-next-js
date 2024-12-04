@@ -1,29 +1,27 @@
 "use client"
 import {
     AutoComplete, AutoCompleteProps, Button, Col, Flex, Layout,
-    Pagination, PaginationProps, Row, Segmented, Space, Table, TableProps, Tag, theme, Tooltip, Typography
+    Pagination, PaginationProps, Row, Segmented, Space, theme, Tooltip, Typography
 } from "antd";
-import React, {createContext, memo, useCallback, useContext, useEffect, useMemo, useState} from "react";
+import React, {memo, useCallback, useContext, useState} from "react";
 import CheckoutComponent from "@/components/Admin/Sale/CheckoutComponent";
 import {
     AppstoreOutlined,
     BarsOutlined,
-    DeleteOutlined,
     FilterOutlined,
     PlusOutlined,
     ReloadOutlined,
     SearchOutlined,
-    UnorderedListOutlined
 } from "@ant-design/icons";
 import useFilterProduct, {ParamFilterProduct} from "@/components/Admin/Product/hooks/useFilterProduct";
 import SubLoader from "@/components/Loader/SubLoader";
-import FilterProduct from "@/components/Admin/Sale/FilterProduct";
-import ProductCardView from "@/components/Admin/Sale/TypeDisplayProductList/ProductCardView";
+import FilterProduct from "@/components/Admin/Sale/FilterProductSale";
 import AdminCart from "@/components/Admin/Sale/AdminCart";
-import {HandleCart} from "@/components/Admin/Sale/SaleComponent";
 import {mutate} from "swr";
 import {URL_API_PRODUCT} from "@/services/ProductService";
 import ProductListView from "@/components/Admin/Sale/TypeDisplayProductList/ProductListView";
+import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
+import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 
 const {Content} = Layout;
 const {Text, Paragraph, Title} = Typography;
@@ -37,7 +35,7 @@ interface DataType {
     price: number;
 }
 
-const defaultFilterParam: ParamFilterProduct = {
+export const defaultFilterParam: ParamFilterProduct = {
     page: 1,
     size: 20,
     category: undefined,
@@ -55,17 +53,15 @@ interface IProps {
 
 const NormalSale: React.FC<IProps> = (props) => {
     const {} = props;
-    const handleCart = useContext(HandleCart);
+    const handleSale = useContext(HandleSale);
     const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const [openDrawer, setOpenDrawer] = useState({
         checkout: false, filter: false,
     });
 
-    const [editableStr, setEditableStr] = useState('Ghi chú đơn hàng');
-
-    const [filerParam, setFilterParam] = useState<ParamFilterProduct>({...defaultFilterParam});
-    const {dataOptionFilterProduct, isLoading} = useFilterProduct(filerParam);
+    const [filterParam, setFilterParam] = useState<ParamFilterProduct>({...defaultFilterParam});
+    const {dataOptionFilterProduct, isLoading} = useFilterProduct(filterParam);
 
     const onChange: PaginationProps['onChange'] = (page, pageSize) => {
         setFilterParam((prevValue) => ({...prevValue, page: page, size: pageSize}));
@@ -101,11 +97,19 @@ const NormalSale: React.FC<IProps> = (props) => {
                             borderRadius: borderRadiusLG,
                             padding: "10px 20px",
                             minHeight: 40,
-                            flexBasis: "20%",
+                            flexBasis: "10%",
                             overflowY: "auto"
                         }}
                     >
-                        <Paragraph>{editableStr}</Paragraph>
+                        <Flex justify="space-between" align="center" style={{width: "100%"}} wrap>
+                            <Paragraph>Ghi chú đơn hàng</Paragraph>
+                            <Flex justify="space-between" align="center" wrap>
+                                <Text style={{fontSize: 16, marginInlineEnd: 10}}>Tổng tiền hàng</Text>
+                                <Text style={{fontSize: 20}} strong>
+                                    {`${handleSale?.orderCreateOrUpdate.totalAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                </Text>
+                            </Flex>
+                        </Flex>
                     </Content>
                 </div>
                 <Content
@@ -118,15 +122,15 @@ const NormalSale: React.FC<IProps> = (props) => {
                     }}
                 >
                     <Space direction="vertical" size="middle" style={{display: 'flex'}}>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                            <div style={{ flex: 1, display: 'flex', gap: 5, width: "100%" }}>
+                        <div style={{display: 'flex', flexWrap: 'wrap', gap: 8}}>
+                            <div style={{flex: 1, display: 'flex', gap: 5, width: "100%"}}>
                                 <AutoComplete allowClear suffixIcon={<SearchOutlined/>} style={{width: "100%"}}
                                               options={options}
                                     // onSearch={}
                                               placeholder="Tìm khách hàng"
                                 />
                                 <Button icon={<PlusOutlined/>} type="text" shape="circle"/>
-                            </div >
+                            </div>
                             <Space direction="horizontal">
                                 <Tooltip placement="top" title="Tải danh sách sản phẩm">
                                     <Button icon={<ReloadOutlined/>} type="text" shape="circle"
@@ -151,7 +155,7 @@ const NormalSale: React.FC<IProps> = (props) => {
                                     ]}
                                 />
                             </Space>
-                        </div >
+                        </div>
 
                         <div style={{height: 'calc(100vh - 200px)', overflowY: "auto", padding: 5}}>
                             {
@@ -171,10 +175,10 @@ const NormalSale: React.FC<IProps> = (props) => {
                                 <Pagination
                                     size="small"
                                     simple={{readOnly: true}}
-                                    current={filerParam.page ?? 1}
+                                    current={filterParam.page ?? 1}
                                     onChange={onChange}
                                     showSizeChanger={false}
-                                    defaultPageSize={filerParam.size ?? 20}
+                                    defaultPageSize={filterParam.size ?? 20}
                                     total={dataOptionFilterProduct?.totalElements}
                                 />
                             </Col>
@@ -197,6 +201,8 @@ const NormalSale: React.FC<IProps> = (props) => {
             <FilterProduct
                 open={openDrawer.filter}
                 onClose={() => onClose("filter", false)}
+                filterParam={filterParam}
+                setFilterParam={setFilterParam}
             />
 
         </Layout>

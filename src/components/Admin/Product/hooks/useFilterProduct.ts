@@ -24,6 +24,8 @@ const useFilterProduct = (param?: ParamFilterProduct) => {
         });
     }
 
+    // console.log(`${URL_API_PRODUCT.filter}?${paramString.toString()}`);
+
     const {data, error, isLoading, mutate: mutateProduct} =
         useSWR(`${URL_API_PRODUCT.filter}?${paramString.toString()}`,
             getProducts,
@@ -36,6 +38,7 @@ const useFilterProduct = (param?: ParamFilterProduct) => {
         );
 
     const dataOptionFilterProduct = !isLoading && data?.data ? data.data : [];
+
     return {dataOptionFilterProduct, error, isLoading, mutateProduct};
 }
 export default useFilterProduct;
