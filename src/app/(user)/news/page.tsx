@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function Home() {
     return (
         <Suspense fallback={<UserLoader/>}>
-            ABOUT
+            Tin thời trang
         </Suspense>
     );
 }

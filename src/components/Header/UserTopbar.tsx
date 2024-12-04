@@ -39,30 +39,7 @@ export default function TopBar() {
                         </div>
                         <div className="col-lg-6 col-md-12 col-12">
                             <div className="right-content">
-                                <ul className="list-main">
-                                    {/*<li>*/}
-                                    {/*    <div className={"flex"}>*/}
-                                    {/*        <MdOutlineAddLocationAlt*/}
-                                    {/*            size={18}*/}
-                                    {/*            style={{color: '#F7941D', marginRight: 7}}*/}
-                                    {/*        />*/}
-                                    {/*        <Link href="#" style={{textDecoration: 'none'}}>*/}
-                                    {/*            Hệ thống cửa hàng*/}
-                                    {/*        </Link>*/}
-                                    {/*    </div>*/}
-                                    {/*</li>*/}
-                                    {/*<li>*/}
-                                    {/*    <div className={"flex"}>*/}
-                                    {/*        <LuAlarmClock*/}
-                                    {/*            size={18}*/}
-                                    {/*            style={{color: '#F7941D', marginRight: 7}}*/}
-
-                                    {/*        />*/}
-                                    {/*        <Link href="#" style={{textDecoration: 'none'}}>*/}
-                                    {/*            Giao dịch hàng ngày*/}
-                                    {/*        </Link>*/}
-                                    {/*    </div>*/}
-                                    {/*</li>*/}
+                                <ul className="list-main">                          
                                     <li>
                                         <div className={"flex"}>
                                             <AiOutlineUser

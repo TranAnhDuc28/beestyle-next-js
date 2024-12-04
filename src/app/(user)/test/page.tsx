@@ -1,14 +1,12 @@
-'use client';
+"use client";
 
 import React from "react";
-import UploadImageTest from "@/components/Upload/UploadImageTest";
-import CloudinaryPage from "@/components/Upload/ImageShow";
+import ImageUpload from "@/components/Upload/ImageUpload";
 
 export default function UploadImg() {
-    return (
-        <div className="d-flex justify-content-center p-5">
-            <CloudinaryPage/>
-            <UploadImageTest/>
-        </div>
-    );
+  return (
+    <div className="d-flex justify-content-center p-5">
+      <ImageUpload />
+    </div>
+  );
 }

@@ -18,7 +18,7 @@ const ProductGallery = (props: any) => {
     const sliderRef = useRef(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const handleThumbnailClick = (index) => {
+    const handleThumbnailClick = (index: number) => {
         setSelectedIndex(index);
         sliderRef.current.slickGoTo(index);
     };

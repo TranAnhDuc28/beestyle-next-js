@@ -1,9 +1,15 @@
 import Link from "next/link";
-import React from "react";
+import React, {useEffect} from "react";
 import {useProductSizes} from "@/services/user/SingleProductService";
 
 const SizePickers = (props: any) => {
-    const {data: sizes} = useProductSizes(props.productId);
+    const {data: sizes} = useProductSizes(props.productId, props.colorCode)
+
+    useEffect(() => {
+        if (props.colorCode && sizes && sizes.length > 0) {
+            props.onSizeSelect(sizes[0].id);
+        }
+    }, [props.colorCode, sizes]);
 
     const handleSizeClick = (size: number) => {
         props.onSizeSelect(size);

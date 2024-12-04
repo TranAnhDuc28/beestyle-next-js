@@ -1,5 +1,3 @@
-'use client';
-
 import React, {useState} from 'react';
 import Link from "next/link";
 import {Input, Progress, Rate} from 'antd';
@@ -24,8 +22,6 @@ const ProductDescription = (props: any) => {
         setQuantity(prevQuantity => Math.max(prevQuantity - 1, 1));
     };
 
-    console.log(selectedSize)
-
     const handleIncrement = () => {
         setQuantity(prevQuantity => Math.min(prevQuantity + 1, 1000));
     };
@@ -49,6 +45,7 @@ const ProductDescription = (props: any) => {
 
     const handleColorSelect = (color: string) => {
         setSelectedColor(color);
+        setSelectedSize(null);
     };
 
     const handleSizeSelect = (size: string) => {
@@ -61,7 +58,7 @@ const ProductDescription = (props: any) => {
                 <h6 className="text-capitalize fw-bold mb-0">{product?.productName || 'No product variant'}</h6>
                 <div className="rating-main" style={{fontSize: '13px'}}>
                     <span className="pe-2" style={{borderRight: '2px solid #EDF0F5'}}>
-                        SKU: SMN6166-XAH-S
+                        SKU: {product?.sku}
                     </span>
 
                     <ul className="rating ps-5">
@@ -85,16 +82,19 @@ const ProductDescription = (props: any) => {
                 </div>
                 <p className="price px-3 py-4 m-0" style={{backgroundColor: '#FAFAFA', borderRadius: '5px'}}>
                     <span className="discount text-center">
-                         {product?.salePrice ? product?.salePrice + ' đ' : '0 đ'}
+                         {product?.salePrice ? `${product.salePrice.toLocaleString('vi-VN')} đ` : '0 đ'}
                     </span>
-                    <s className={product?.originalPrice ? "" : "hidden"}>{product?.originalPrice + ' đ'}</s>
+                    <s className={product?.originalPrice ? "fw-medium" : "hidden"} style={{color: '#838383'}}>
+                        {product?.originalPrice.toLocaleString('vi-VN') + ' đ'}
+                    </s>
                 </p>
             </div>
 
             <div className="mt-4">
                 <div className="flex items-center mb-4">
                     <EyeOutlined style={{fontSize: 20}}/>
-                    <span className="ml-2"><b>{Math.floor(Math.random() * 50) + 1}</b> người đang xem sản phẩm này</span>
+                    <span
+                        className="ml-2"><b>{Math.floor(Math.random() * 50) + 1}</b> người đang xem sản phẩm này</span>
                 </div>
 
                 <div className="mb-4">
@@ -120,6 +120,7 @@ const ProductDescription = (props: any) => {
                 <div className="size">
                     <SizePickers
                         productId={productId}
+                        colorCode={selectedColor}
                         selectedSize={selectedSize}
                         onSizeSelect={handleSizeSelect}
                     />

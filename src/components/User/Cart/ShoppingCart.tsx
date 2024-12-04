@@ -5,6 +5,10 @@ import CartTable from "@/components/User/Cart/CartTable";
 import TotalAmount from "@/components/User/Cart/TotalAmount";
 import {CART_KEY} from "@/services/user/ShoppingCartService";
 import BreadcrumbSection from "@/components/Button/BreadCrumb";
+import {Button, Card, Progress, Checkbox, Image, Typography} from 'antd';
+import {FireOutlined} from '@ant-design/icons';
+
+const {Title, Text} = Typography;
 
 const ShoppingCart = () => {
 
@@ -27,28 +31,28 @@ const ShoppingCart = () => {
         window.dispatchEvent(new Event('cartUpdated'));
     };
 
-    const breadcrumbItems = [
-        { title: 'Trang chủ', href: '/' },
-        { title: 'Giỏ hàng' },
-    ];
+    // const breadcrumbItems = [
+    //     { title: 'Trang chủ', href: '/' },
+    //     { title: 'Giỏ hàng' },
+    // ];
 
     return (
         <>
-            <div className="mt-5">
-                <BreadcrumbSection items={breadcrumbItems} />
+            <div
+                className="container bg-white mt-5"
+                style={{
+                    padding: 5,
+                    borderRadius: 5
+                }}
+            >
+                <Title level={3} className="text-2xl font-bold ms-4 mt-3">Giỏ hàng</Title>
             </div>
-            <div className="shopping-cart section">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-12">
-                            <CartTable cartItems={cartItems} updateCartItems={updateCartItems}/>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-12">
-                            <TotalAmount cartItems={cartItems}/>
-                        </div>
-                    </div>
+            <div className="container max-w-5xl mx-auto py-2 ps-0 pe-4 d-flex">
+                <div className="col-lg-8 me-4">
+                    <CartTable cartItems={cartItems} updateCartItems={updateCartItems}/>
+                </div>
+                <div className="col-lg-4">
+                    <TotalAmount cartItems={cartItems}/>
                 </div>
             </div>
         </>

@@ -30,7 +30,7 @@ export default function CartDrawer({open, onClose}: CartDrawerProps) {
 
     }, []);
 
-    const condition = 5000;
+    const condition = 498000;
     const totalAmount = cartItems.reduce((total, item) => total + item.total_price, 0);
     const result = (totalAmount / condition) * 100;
     const progress = result > 100 ? 100 : result;
@@ -60,7 +60,7 @@ export default function CartDrawer({open, onClose}: CartDrawerProps) {
                                 <>
                                     Bạn cần mua thêm
                                     <span
-                                        className={styles.amountNeeded}> {remainingForFreeShipping.toLocaleString()}₫ </span>
+                                        className={styles.amountNeeded}> {remainingForFreeShipping.toLocaleString('vi-VN')}₫ </span>
                                     để được
                                     <span className="text-uppercase fw-bold"> miễn phí vận chuyển</span>
                                 </>
@@ -143,8 +143,8 @@ export default function CartDrawer({open, onClose}: CartDrawerProps) {
                                 className="ml-5"
                             />
                             <div className="d-flex flex-column align-items-center mt-4">
-                                <span className={styles.itemPrice + ' mb-1'}>{item.discounted_price}₫</span>
-                                <span className={styles.originalPrice}>{item.original_price}₫</span>
+                                <span className={styles.itemPrice + ' mb-1'}>{item.discounted_price.toLocaleString('vi-VN')}₫</span>
+                                <span className={styles.originalPrice}>{item.original_price.toLocaleString('vi-VN')}₫</span>
                             </div>
                         </div>
                     </div>
@@ -172,7 +172,7 @@ export default function CartDrawer({open, onClose}: CartDrawerProps) {
                 <div className={cartItems && cartItems.length ? '' : 'd-none'}>
                     <div className={styles.totalAmount}>
                         <span className={styles.totalLabel}>TỔNG TIỀN:</span>
-                        <span className={styles.totalValue}>{totalAmount}₫</span>
+                        <span className={styles.totalValue}>{totalAmount.toLocaleString('vi-VN')}₫</span>
                     </div>
                     <Button type="primary" className={styles.checkoutButton}>
                         THANH TOÁN
