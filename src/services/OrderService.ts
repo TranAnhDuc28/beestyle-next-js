@@ -1,5 +1,5 @@
 import httpInstance from "@/utils/HttpInstance";
-import {IOrder, IOrderCreate} from "@/types/IOrder";
+import {IOrder, IOrderCreateOrUpdate} from "@/types/IOrder";
 
 export const URL_API_ORDER = {
     get: '/admin/order',
@@ -12,7 +12,7 @@ export const getOrders = async (url: string) => {
     return response.data;
 }
 
-export const createOrder = async (data: IOrderCreate) => {
+export const createOrder = async (data: IOrderCreateOrUpdate) => {
     const response = await httpInstance.post(URL_API_ORDER.create, data);
     return response.data;
 }

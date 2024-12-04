@@ -6,7 +6,7 @@ import useFilterProductVariant, {ParamFilterProductVariant} from "@/components/A
 import useOptionColor from "@/components/Admin/Color/hooks/useOptionColor";
 import useOptionSize from "@/components/Admin/Size/hooks/useOptionSize";
 import ColorButton from "@/components/Button/ColorButton";
-import {HandleCart} from "@/components/Admin/Sale/SaleComponent";
+import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
 import type {DraggableData, DraggableEvent} from 'react-draggable';
 import Draggable from 'react-draggable';
 import {mutate} from "swr";
@@ -62,7 +62,7 @@ interface IProps {
 }
 
 const ModalListProductVariant: React.FC<IProps> = (props) => {
-    const handleCart = useContext(HandleCart);
+    const handleSale = useContext(HandleSale);
     const {product, isOpenModalListProductVariant, setOpenModalListProductVariant} = props;
     const [disabled, setDisabled] = useState(true);
     const [dataSource, setDataSource] = useState([]);
@@ -141,12 +141,12 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
     }, []);
 
     const handleOkAndClose = async () => {
-        handleCart?.handleAddOrderItemCart(selectedRows);
+        handleSale?.handleAddOrderItemCart(selectedRows);
         handleCloseModal();
     }
 
     const handleOkAndContinue = async () => {
-        handleCart?.handleAddOrderItemCart(selectedRows);
+        handleSale?.handleAddOrderItemCart(selectedRows);
     }
 
     const columns: TableColumnsType<IProductVariant> = [

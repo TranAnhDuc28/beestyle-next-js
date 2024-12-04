@@ -1,26 +1,47 @@
-import React, {memo, useState} from "react";
+import React, {memo, useCallback, useContext, useEffect, useState} from "react";
 import {
-    AutoComplete,
     AutoCompleteProps,
     Button,
     Checkbox,
     CheckboxProps, Col,
     Divider,
     Drawer,
-    Flex, InputNumber, Modal, Radio, Row, Select,
+    Flex, Input, InputNumber, Modal, Radio, RadioChangeEvent, Row, Select,
     Space, Switch, Tag,
     Typography
 } from "antd";
 import {CloseIcon} from "next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon";
-import {PlusOutlined, SearchOutlined} from "@ant-design/icons";
 import {LiaShippingFastSolid} from "react-icons/lia";
 import {BiSolidCoupon} from "react-icons/bi";
-import {GENDER_PRODUCT} from "@/constants/GenderProduct";
 import {PAYMENT_METHOD} from "@/constants/PaymentMethod";
 import {FORMAT_NUMBER_WITH_COMMAS, PARSER_NUMBER_WITH_COMMAS_TO_NUMBER} from "@/constants/AppConstants";
+import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
+import {debounce} from "lodash";
+import QuickSelectMoney from "@/components/Admin/Sale/QuickSelectMoney";
 
 const {Title, Text} = Typography;
 
+export interface PaymentInfo {
+    discount: number; // giảm giá của voucher
+    amountDue: number; // tiền khách cần trả
+    amountPaid: number; // tiền khách trả
+    change: number; // tiền dư
+}
+
+function calculatePayment(totalAmount: number, discount: number, amountPaid: number): PaymentInfo {
+    // Khách cần trả và đảm bảo không có số âm
+    const amountDue = Math.max(0, totalAmount - discount);
+
+    // tiền dư
+    const change = Math.max(0, amountPaid - amountDue); // Tiền thừa trả khách
+
+    return {
+        discount: discount,
+        amountDue: amountDue,
+        amountPaid: amountPaid,
+        change: change
+    };
+}
 
 interface IProps {
     title?: string;
@@ -28,206 +49,371 @@ interface IProps {
     onClose: () => void;
 }
 
-const tagsData = ['1,000,000', '2,000,000', '3,000,000', '4,000,000', '5,000,000', '6,000,000'];
+const tagsData = ['1,000,000', '2,000,000', '3,000,000', '4,000,000', '5,000,000'];
 
 const CheckoutComponent: React.FC<IProps> = (props) => {
     const {open, onClose} = props;
-    const [tagVoucher, setTagVoucher] = useState<string[]>();
+    const handleSale = useContext(HandleSale);
+
+    const [discount, setDiscount] = useState<string[]>();
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedTag, setSelectedTag] = React.useState<string>("");
+    const [selectedTag, setSelectedTag] = React.useState<number>(0);
+    const [deliverySale, setDeliverySale] = React.useState<boolean>(false);
+    const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>(
+        {discount: 0, amountDue: 0, amountPaid: 0, change: 0});
 
-    const handleChange = (tag: string, checked: boolean) => {
-        const nextSelectedTag = checked ? tag : tagsData.find((t) => t === tag);
-        console.log('You are interested in: ', nextSelectedTag);
-        setSelectedTag(nextSelectedTag ?? "");
+    console.log(JSON.stringify(paymentInfo, null, 2));
+
+    const showModal = () => setIsModalOpen(true);
+
+    const handleOk = () => setIsModalOpen(false);
+
+    const handleCancel = () => setIsModalOpen(false);
+
+    const handlePaymentMethod = (e: RadioChangeEvent) => {
+        handleSale?.setOrderCreateOrUpdate((prevValue) => {
+            return {
+                ...prevValue,
+                paymentMethod: e.target.value
+            };
+        })
     };
 
-    const showModal = () => {
-        setIsModalOpen(true);
-    };
+    const handleDeliverySale = (checked: boolean) => {
+        setDeliverySale(checked);
+        setSelectedTag(0);
+        // tính phí vận chuyển
+        let shippingFee = 0;
 
-    const handleOk = () => {
-        setIsModalOpen(false);
-    };
+        // Lấy tổng số tiền từ hóa đơn hiện tại
+        let totalAmount = handleSale?.orderCreateOrUpdate?.totalAmount;
 
-    const handleCancel = () => {
-        setIsModalOpen(false);
-    };
+        // Nếu chọn giao hàng và tổng tiền >= 500000 thì phí ship là 0
+        if (checked) shippingFee = totalAmount && totalAmount >= 500000 ? 0 : 30000;
 
-    const onChange: CheckboxProps['onChange'] = (e) => {
-        console.log(`checked = ${e.target.checked}`);
-    };
+        handleSale?.setOrderCreateOrUpdate((prevValue) => {
+            return {
+                ...prevValue,
+                shippingFee: shippingFee,
+                pickupMethod: checked ? "DELIVERY" : "AT_STORE"
+            };
+        });
 
-    const onChangeSwitch = (checked: boolean) => {
-        console.log(`switch to ${checked}`);
-    };
+        setPaymentInfo(prevValue => {
+            const updatedAmountPaid = checked
+                ? prevValue.amountPaid + shippingFee
+                : totalAmount ?? 0;
 
-    return (
-        <>
-            <Drawer
-                title={
-                    <Flex justify="space-between" align="center" style={{width: "100%"}} wrap>
-                        <div style={{display: "flex", width: "60%"}}>
-                            <Checkbox onChange={onChange}>
-                                <Flex justify="space-between" align="center" wrap>
-                                    <Text style={{fontSize: 14, marginInlineEnd: 4}}>Bán giao hàng</Text>
-                                    <LiaShippingFastSolid style={{fontSize: 16}}/>
-                                </Flex>
-                            </Checkbox>
-                        </div>
+            return {
+                ...prevValue,
+                amountPaid: updatedAmountPaid,
+            };
+        });
+    }
+
+        const handleInputAmountPaidChange = useCallback(
+            debounce((value: number | null) => {
+                setPaymentInfo(prev => ({
+                    ...prev,
+                    amountPaid: value || 0,
+                }));
+            }, 1000), []);
+
+        const onChange: CheckboxProps['onChange'] = (e) => {
+            console.log(`checked = ${e.target.checked}`);
+        };
+
+        const onChangeSwitch = (checked: boolean) => {
+            console.log(`switch to ${checked}`);
+        };
+
+        useEffect(() => {
+            if (handleSale?.orderCreateOrUpdate) {
+                const {totalAmount = 0, shippingFee = 0} = handleSale?.orderCreateOrUpdate;
+                const discount = 0;
+
+                // Khách cần trả và đảm bảo không có số âm
+                let amountDue = Math.max(0, totalAmount - discount + shippingFee);
+
+                // tiền dư
+                const change = paymentInfo.amountPaid - amountDue; // Tiền thừa trả khách
+
+                setPaymentInfo((prevValue: PaymentInfo) => ({
+                    ...prevValue,
+                    amountPaid: prevValue.amountPaid === 0 ? totalAmount : prevValue.amountPaid,
+                    amountDue: amountDue,
+                    change: change
+                }));
+            }
+        }, [paymentInfo.amountPaid, handleSale?.orderCreateOrUpdate?.totalAmount, deliverySale]);
+
+        // UI
+        const titleDrawer = (
+            <div>
+                <Title level={4} style={{margin: 0}}>Trần Anh Đức 0123456789</Title>
+            </div>
+        );
+
+        const extraDrawer = (
+            <div>
+                <Button onClick={onClose} type="text" icon={<CloseIcon/>}/>
+            </div>
+        );
+
+        const footerDrawer = (
+            <Flex justify="flex-end" align="center" style={{padding: "5px 0px"}}>
+                <Button style={{width: "100%"}} size="large" type="primary" onClick={handleOk}>
+                    Xác nhận thanh toán
+                </Button>
+            </Flex>
+        );
+
+        return (
+            <>
+                <Drawer
+                    title={titleDrawer}
+                    placement="right"
+                    width={700}
+                    onClose={onClose}
+                    open={open}
+                    closable={false}
+                    extra={extraDrawer}
+                    footer={footerDrawer}
+                    styles={{
+                        header: {padding: '10px 24px'},
+                        body: {padding: '15px'},
+                    }}
+                >
+                    <Flex justify="space-between" align="center" style={{width: "100%"}} wrap gap={10}>
+                        <Button onClick={showModal} type="primary" size="large">
+                            Chọn Mã giảm giá
+                        </Button>
+                        <Tag
+                            closeIcon
+                            style={{display: "flex", alignItems: "center", padding: 5, fontSize: 16}}
+                            color="processing"
+                            onClose={console.log}
+                        >
+                            <BiSolidCoupon style={{display: "inline", marginInlineEnd: 5}}/>
+                            <Text style={{fontSize: 16}}> VOUCHER001</Text>
+                        </Tag>
                     </Flex>
-                }
-                placement="right"
-                width={700}
-                onClose={onClose}
-                open={open}
-                closable={false}
-                extra={
-                    <div>
-                        <Button onClick={onClose} type="text" icon={<CloseIcon/>}/>
-                    </div>
-                }
-            >
-                <div style={{marginBottom: 20}}>
-                    <Title level={3}>Trần Anh Đức 0123456789</Title>
-                </div>
-                <Flex justify="space-between" align="center" style={{width: "100%"}} wrap gap={10}>
-                    <Button onClick={showModal} type="primary" size="large">
-                        Chọn Mã giảm giá
-                    </Button>
-                    <Tag
-                        closeIcon
-                        style={{display: "flex", alignItems: "center", padding: 5, fontSize: 16}}
-                        color="processing"
-                        onClose={console.log}
-                    >
-                        <BiSolidCoupon style={{display: "inline", marginInlineEnd: 5}}/>
-                        <Text style={{fontSize: 16}}> VOUCHER001</Text>
-                    </Tag>
-                </Flex>
-                <Divider style={{margin: "20px 0px"}}/>
-                <Flex align="center" style={{width: "100%"}} wrap gap={10}>
-                    <Flex justify="space-between" align="center" style={{width: "100%"}} wrap>
-                        <Text style={{fontSize: 16}}>Tổng tiền hàng</Text>
-                        <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>1,000,000</Text>
-                    </Flex>
-                    <Flex justify="space-between" align="center" style={{width: "100%"}} wrap>
-                        <Text style={{fontSize: 16}}>Giảm giá</Text>
-                        <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>1,000,000</Text>
-                    </Flex>
-                    <Flex justify="space-between" align="center" style={{width: "100%"}} wrap>
-                        <Text style={{fontSize: 16}}>Khách cần trả</Text>
-                        <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>1,000,000</Text>
-                    </Flex>
-                    <Flex justify="space-between" align="center" style={{width: "100%"}} wrap>
-                        <Text style={{fontSize: 16}}>Khách thanh toán</Text>
-                        <InputNumber<number>
-                            className="custom-input"
-                            formatter={(value) => `${value}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
-                            parser={(value) => value?.replace(PARSER_NUMBER_WITH_COMMAS_TO_NUMBER, '') as unknown as number}
-                            style={{textAlignLast: "end", fontWeight: "bold", fontSize: 16, width: 150}}
-                            controls={false}
-                        />
-                    </Flex>
-                </Flex>
-                <Divider style={{margin: "20px 0px"}}/>
-                <Space direction="vertical" style={{width: "100%"}} wrap>
-                    <div style={{marginBottom: 10}}>
-                        <Radio.Group>
-                            <Row gutter={[16, 16]}>
-                                {Object.keys(PAYMENT_METHOD).map((key) => (
-                                    <Col key={key}>
-                                        <Radio value={key}>
-                                            {PAYMENT_METHOD[key as keyof typeof PAYMENT_METHOD]}
-                                        </Radio>
-                                    </Col>
-                                ))}
-                            </Row>
-                        </Radio.Group>
-                    </div>
-                    <div className="container-tag-price">
-                        {tagsData.map<React.ReactNode>((tag, index) => (
-                            <Tag.CheckableTag
-                                key={index}
-                                checked={selectedTag === tag}
-                                onChange={(checked) => handleChange(tag, checked)}
-                                className="tag-price-item"
-                            >
-                                {tag}
-                            </Tag.CheckableTag>
-                        ))}
-                    </div>
-                    <Flex justify="space-between" align="center" style={{width: "100%", marginTop: 10}} wrap>
-                        <Text style={{fontSize: 16}}>Tiền thừa trả khách</Text>
-                        <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>1,000,000</Text>
-                    </Flex>
-                    <Flex justify="flex-start" align="center" style={{width: "100%"}} wrap gap={10}>
-                        <Flex justify="flex-start" align="center" style={{width: "100%"}} wrap>
-                            <Switch onChange={onChangeSwitch} style={{ marginInlineEnd: 10}}/>
-                            <Text style={{fontSize: 16}}>Thanh toán khi nhận hàng</Text>
+                    <Divider style={{margin: "15px 0px"}}/>
+                    <Flex align="center" style={{width: "100%"}} wrap gap={10}>
+                        <Flex justify="space-between" align="center" style={{width: "100%", paddingBottom: 4}} wrap>
+                            <Text style={{fontSize: 16}}>Tổng tiền hàng</Text>
+                            <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
+                                {`${handleSale?.orderCreateOrUpdate.totalAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                            </Text>
                         </Flex>
-                        <Row>
-                            <Col xs={8} sm={4} md={8} lg={8} xl={8}>
-                                <Select
-                                    size="large"
-                                    showSearch
-                                    placeholder="Tỉnh / Thành Phố"
-                                    filterOption={(input, option) =>
-                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                    }
-                                    options={[
-                                        { value: '1', label: 'Jack' },
-                                        { value: '2', label: 'Lucy' },
-                                        { value: '3', label: 'Tom' },
-                                    ]}
-                                />
-                            </Col>
-                            <Col xs={8} sm={16} md={8} lg={8} xl={8}>
-                                <Select
-                                    size="large"
-                                    showSearch
-                                    placeholder="Quận / Huyện"
-                                    filterOption={(input, option) =>
-                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                    }
-                                    options={[
-                                        { value: '1', label: 'Jack' },
-                                        { value: '2', label: 'Lucy' },
-                                        { value: '3', label: 'Tom' },
-                                    ]}
-                                />
-                            </Col>
-                            <Col xs={8} sm={4} md={8} lg={8} xl={8}>
-                                <Select
-                                    size="large"
-                                    showSearch
-                                    placeholder="Phường / Xã"
-                                    filterOption={(input, option) =>
-                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                    }
-                                    options={[
-                                        { value: '1', label: 'Jack' },
-                                        { value: '2', label: 'Lucy' },
-                                        { value: '3', label: 'Tom' },
-                                    ]}
-                                />
-                            </Col>
-                        </Row>
+
+                        {/* giảm giá hóa đơn */}
+                        <Flex justify="space-between" align="center" style={{width: "100%", padding: "4px 0px"}} wrap>
+                            <Text style={{fontSize: 16}}>Giảm giá</Text>
+                            <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
+                                {`0`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                            </Text>
+                        </Flex>
+
+                        {/* phí vận chuyển */}
+                        {
+                            deliverySale &&
+                            (
+                                <>
+                                    <Flex justify="space-between" align="center" style={{width: "100%", padding: "4px 0px"}} wrap>
+                                        <Text style={{fontSize: 16}}>Phí vận chuyển</Text>
+                                        <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
+                                            {`${handleSale?.orderCreateOrUpdate.shippingFee}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                        </Text>
+                                    </Flex>
+                                </>
+                            )
+                        }
+
+                        {/* khách cần trả */}
+                        <Flex justify="space-between" align="center" style={{width: "100%", padding: "4px 0px"}} wrap>
+                            <Text style={{fontSize: 16}} strong>Tổng thanh toán</Text>
+                            <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
+                                {`${paymentInfo.amountDue}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                            </Text>
+                        </Flex>
+
+                        {/* tiền khách trả */}
+                        <Flex justify="space-between" align="center" style={{width: "100%"}} wrap>
+                            <Text style={{fontSize: 16}} strong>Khách thanh toán</Text>
+                            <InputNumber<number>
+                                value={paymentInfo.amountPaid}
+                                className="custom-input"
+                                formatter={(value) => `${value}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                parser={(value) => value?.replace(PARSER_NUMBER_WITH_COMMAS_TO_NUMBER, '') as unknown as number}
+                                style={{textAlignLast: "end", fontWeight: "bold", fontSize: 16, width: 150}}
+                                controls={false}
+                                onChange={handleInputAmountPaidChange}
+                            />
+                        </Flex>
                     </Flex>
 
+                    <Divider style={{margin: "15px 0px"}}/>
 
-                </Space>
+                    {
+                        handleSale?.dataCart && handleSale?.dataCart.length > 0 &&
+                        (handleSale?.orderCreateOrUpdate?.totalAmount ?? 0) > 0 &&
+                        (
+                            <Flex style={{width: "100%"}} wrap>
+                                {/* phương thức thanh toán */}
+                                <Flex justify="flex-start" align="center" style={{width: "100%", marginBottom: 10}}
+                                      wrap>
+                                    <Radio.Group defaultValue="CASH_ON_DELIVERY" onChange={handlePaymentMethod}>
+                                        <Row gutter={[16, 16]}>
+                                            {Object.keys(PAYMENT_METHOD).map((key) => (
+                                                <Col key={key}>
+                                                    <Radio value={key}>
+                                                        {PAYMENT_METHOD[key as keyof typeof PAYMENT_METHOD]}
+                                                    </Radio>
+                                                </Col>
+                                            ))}
+                                        </Row>
+                                    </Radio.Group>
+                                </Flex>
+
+                                {/* chọn nhanh tiền khách trả */}
+                                <QuickSelectMoney
+                                    amountDue={paymentInfo.amountDue}
+                                    step={50000}
+                                    selectedTag={selectedTag}
+                                    setSelectedTag={setSelectedTag}
+                                    setPaymentInfo={setPaymentInfo}
+                                />
+
+                                <Flex justify="space-between" align="center" style={{width: "100%", marginTop: 10}}
+                                      wrap>
+                                    <Text style={{fontSize: 16}}>Tiền thừa trả khách</Text>
+                                    <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
+                                        {`${paymentInfo.change}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                    </Text>
+                                </Flex>
+
+                                {/* bán giao hàng */}
+                                <Flex justify="flex-start" align="center" style={{width: "100%", marginTop: 10}} wrap gap={10}>
+                                    <Flex justify="space-between" align="center" style={{width: "100%"}} wrap>
+                                        <Flex style={{display: "flex", width: "60%"}}>
+                                            <Flex justify="space-between" align="center" wrap>
+                                                <Checkbox onChange={() => handleDeliverySale(!deliverySale)}
+                                                          style={{marginInlineEnd: 6}}/>
+                                                <Flex justify="flex-start" align="center" wrap>
+                                                    <Text style={{fontSize: 15}}>
+                                                        <span style={{marginInlineEnd: 4}}>Bán giao hàng</span>
+                                                        <LiaShippingFastSolid style={{display: "inline"}}/>
+                                                    </Text>
+                                                </Flex>
+                                            </Flex>
+                                        </Flex>
+
+                                    </Flex>
+
+                                    {/* thông tin bán giao hàng */}
+                                    {
+                                        deliverySale &&
+                                        (
+                                            <>
+                                                <Flex justify="space-between" align="center" style={{width: "100%"}}
+                                                      wrap
+                                                      gap={10}>
+                                                    <Title level={5} style={{marginBottom: 0}}>Thông tin giao
+                                                        hàng</Title>
+                                                    <Flex justify="flex-start" align="center" wrap>
+                                                        <Switch onChange={onChangeSwitch}
+                                                                style={{marginInlineEnd: 10}}/>
+                                                        <Text style={{fontSize: 16, marginInlineEnd: 10}}>Thanh toán khi
+                                                            nhận
+                                                            hàng</Text>
+                                                    </Flex>
+                                                </Flex>
+
+                                                <div style={{width: "100%"}}>
+                                                    <Row wrap gutter={[8, 8]}>
+                                                        <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                                                            <Input style={{width: "100%"}} size="large"
+                                                                   placeholder="Tên người nhận"/>
+                                                        </Col>
+                                                        <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                                                            <Input style={{width: "100%"}} size="large"
+                                                                   placeholder="Số điện thoại"/>
+                                                        </Col>
+                                                        <Col xs={24} sm={8} md={8} lg={8} xl={8}>
+                                                            <Select
+                                                                style={{width: "100%"}}
+                                                                size="large"
+                                                                showSearch
+                                                                placeholder="Tỉnh / Thành Phố"
+                                                                filterOption={(input, option) =>
+                                                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                                                }
+                                                                options={[
+                                                                    {value: '1', label: 'Jack'},
+                                                                    {value: '2', label: 'Lucy'},
+                                                                    {value: '3', label: 'Tom'},
+                                                                ]}
+                                                            />
+                                                        </Col>
+                                                        <Col xs={24} sm={8} md={8} lg={8} xl={8}>
+                                                            <Select
+                                                                style={{width: "100%"}}
+                                                                size="large"
+                                                                showSearch
+                                                                placeholder="Quận / Huyện"
+                                                                filterOption={(input, option) =>
+                                                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                                                }
+                                                                options={[
+                                                                    {value: '1', label: 'Jack'},
+                                                                    {value: '2', label: 'Lucy'},
+                                                                    {value: '3', label: 'Tom'},
+                                                                ]}
+                                                            />
+                                                        </Col>
+                                                        <Col xs={24} sm={8} md={8} lg={8} xl={8}>
+                                                            <Select
+                                                                style={{width: "100%"}}
+                                                                size="large"
+                                                                showSearch
+                                                                placeholder="Phường / Xã"
+                                                                filterOption={(input, option) =>
+                                                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                                                }
+                                                                options={[
+                                                                    {value: '1', label: 'Jack'},
+                                                                    {value: '2', label: 'Lucy'},
+                                                                    {value: '3', label: 'Tom'},
+                                                                ]}
+                                                            />
+                                                        </Col>
+                                                        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                                                            <Input style={{width: "100%"}} size="large"
+                                                                   placeholder="Địa chỉ"/>
+                                                        </Col>
+                                                    </Row>
+                                                </div>
+                                            </>
+                                        )
+                                    }
+                                </Flex>
+                            </Flex>
+
+                        )
+
+                    }
 
 
-            </Drawer>
+                </Drawer>
 
-            <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-            </Modal>
-        </>
-    );
-}
-export default memo(CheckoutComponent);
+                <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                </Modal>
+            </>
+        );
+    }
+    export default memo(CheckoutComponent);

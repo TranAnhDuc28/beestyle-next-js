@@ -1,7 +1,7 @@
 import React, {memo, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {InputNumber, Table, TableProps, Tag, Typography} from "antd";
 import {DeleteOutlined} from "@ant-design/icons";
-import {HandleCart} from "@/components/Admin/Sale/SaleComponent";
+import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
 import {FORMAT_NUMBER_WITH_COMMAS, PARSER_NUMBER_WITH_COMMAS_TO_NUMBER} from "@/constants/AppConstants";
 import {IOrderItem} from "@/types/IOrderItem";
 import useSWR, {mutate} from "swr";
@@ -17,13 +17,13 @@ const {Text} = Typography;
 const AdminCart: React.FC = () => {
     const {showMessage} = useAppNotifications();
     const inputRefs = useRef<Map<number, HTMLInputElement>>(new Map());
-    const handleCart = useContext(HandleCart);
+    const handleSale = useContext(HandleSale);
     const [initialQuantities, setInitialQuantities] = useState<Map<number, number>>(new Map());
     const {handleUpdateQuantityOrderItem, handleDeleteOrderItem} = useOrderItem();
     const {handleUpdateQuantityInStockProductVariant} = useProductVariant();
 
     const {data, error, isLoading, mutate: mutateDataCart} =
-        useSWR(handleCart?.orderActiveTabKey ? URL_API_ORDER_ITEM.get(handleCart?.orderActiveTabKey) : null,
+        useSWR(handleSale?.orderActiveTabKey ? URL_API_ORDER_ITEM.get(handleSale?.orderActiveTabKey) : null,
             getOrderItemsByOrderId,
             {
                 revalidateIfStale: false,
@@ -34,7 +34,7 @@ const AdminCart: React.FC = () => {
 
     useEffect(() => {
         if (!isLoading && data?.data) {
-            handleCart?.setDataCart(data.data);
+            handleSale?.setDataCart(data.data);
 
             // lưu trữ số lượng ban đầu của các sản phẩm trong giỏ để xử lý update sản phẩm trong kho
             const initialQuantityMap: Map<number, number> = new Map();
@@ -42,17 +42,23 @@ const AdminCart: React.FC = () => {
                 initialQuantityMap.set(item.id, item.quantity);
             });
             setInitialQuantities(initialQuantityMap);
+            handleSale?.setOrderCreateOrUpdate((prevValue) => {
+                return {
+                    ...prevValue,
+                    totalAmount: handleSale?.calcuTotalAmountCart(data.data)
+                }
+            });
         }
     }, [data, isLoading]);
 
     useEffect(() => {
-        if (error) handleCart?.setDataCart([]);
+        if (error) handleSale?.setDataCart([]);
     }, [error]);
 
     const onChangeQuantity = (orderItemId: number, productVariantId: number, value: number | null) => {
         const newValue = Number(value);
         if (newValue && !isNaN(newValue) && newValue > 0) {
-            handleCart?.setDataCart(prevItems =>
+            handleSale?.setDataCart(prevItems =>
                 prevItems.map(item =>
                     item.id === orderItemId ? {...item, quantity: newValue} : item
                 )
@@ -123,7 +129,7 @@ const AdminCart: React.FC = () => {
                     showMessage("error", "Cập nhật số lượng thất bại.");
 
                     // Khôi phục lại giỏ hàng với số lượng cũ
-                    handleCart?.setDataCart(prevItems =>
+                    handleSale?.setDataCart(prevItems =>
                         prevItems.map(item =>
                             item.id === orderItemId ? {...item, quantity: oldValue} : item
                         )
@@ -140,7 +146,7 @@ const AdminCart: React.FC = () => {
                 showMessage("error", "Cập nhật số lượng thất bại.");
 
                 // Khôi phục lại giỏ hàng với số lượng cũ
-                handleCart?.setDataCart(prevItems =>
+                handleSale?.setDataCart(prevItems =>
                     prevItems.map(item =>
                         item.id === orderItemId ? {...item, quantity: oldValue} : item
                     )
@@ -156,7 +162,7 @@ const AdminCart: React.FC = () => {
     };
 
     const handleDeleteOrderItemCart = async (id: number, productId: number) => {
-        handleCart?.setDataCart((prevCart) => prevCart.filter((item) => item.id !== id));
+        handleSale?.setDataCart((prevCart) => prevCart.filter((item) => item.id !== id));
 
         await handleDeleteOrderItem(id);
 
@@ -244,7 +250,7 @@ const AdminCart: React.FC = () => {
                     />
                 ),
         },
-    ], [handleCart?.dataCart]);
+    ], [handleSale?.dataCart]);
 
     return (
         <Table<IOrderItem>
@@ -253,7 +259,7 @@ const AdminCart: React.FC = () => {
             size="small"
             pagination={false}
             columns={columns}
-            dataSource={handleCart?.dataCart}
+            dataSource={handleSale?.dataCart}
             scroll={{y: 'calc(100vh - 350px)', scrollToFirstRowOnChange: true}}
         />
 

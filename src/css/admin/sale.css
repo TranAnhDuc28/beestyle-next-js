@@ -1,13 +1,13 @@
 .container-tag-price {
     background-color: #F5F5F5;
     border-radius: 8px;
-    padding: 10px 15px;
+    padding: 10px 10px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    justify-content: center;
 }
 
 .tag-price-item {
+    width: 100%;
     padding: 8px 20px;
     font-size: 16px;
     color: #000000;
@@ -15,6 +15,8 @@
     background-color: #ffffff;
     border-radius: 20px;
     transition: all 0.3s ease;
+    text-align: center;
+    cursor: pointer;
 }
 
 .tag-price-item:hover {
