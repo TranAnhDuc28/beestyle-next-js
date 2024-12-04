@@ -10,7 +10,8 @@ export interface IOrder {
     totalAmount: number;
     paymentDate: Date;
     paymentMethod: string;
-    orderChannel: string
+    pickupMethod: string;
+    orderChannel: string;
     orderStatus: string;
     note?: string;
     createdAt?: Date;
@@ -19,7 +20,7 @@ export interface IOrder {
     updatedBy?: number;
 }
 
-export interface IOrderCreate {
+export interface IOrderCreateOrUpdate {
     id?: number;
     orderTrackingNumber?: string;
     customerId?: number;
@@ -29,7 +30,9 @@ export interface IOrderCreate {
     totalAmount?: number;
     paymentDate?: Date;
     paymentMethod?: string;
-    orderChannel?: string
+    pickupMethod?: string;
+    orderChannel?: string;
+    orderType?: string;
     orderStatus?: string;
     note?: string;
 }

@@ -1,5 +1,5 @@
 import useAppNotifications from "@/hooks/useAppNotifications";
-import {IOrder, IOrderCreate} from "@/types/IOrder";
+import {IOrder, IOrderCreateOrUpdate} from "@/types/IOrder";
 import {createOrder, updateOrder} from "@/services/OrderService";
 import {useState} from "react";
 
@@ -9,7 +9,7 @@ const useOrder = () => {
     const {showNotification, showMessage} = useAppNotifications();
     const [loading, setLoading] = useState<boolean>(false);
 
-    const handleCreateOrder =  async (value: IOrderCreate) => {
+    const handleCreateOrder =  async (value: IOrderCreateOrUpdate) => {
         setLoading(true);
         try {
             await delay();

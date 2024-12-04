@@ -2,7 +2,7 @@ import {Checkbox, Col, Collapse, GetProp, Radio, RadioChangeEvent, Row, Space, T
 import {STATUS} from "@/constants/Status";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import React, {memo, useEffect, useState} from "react";
-import useTreeSelectCategory from "@/components/Admin/Category/hooks/useTreeSelectCategory";
+import useCategory from "@/components/Admin/Category/hooks/useCategory";
 import StatusFilter from "@/components/Filter/StatusFilter";
 
 const {Title} = Typography;

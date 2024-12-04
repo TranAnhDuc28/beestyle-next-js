@@ -7,7 +7,7 @@ import TabBarExtraContentRight from "@/components/Admin/Sale/TabBarExtraContent/
 import {IProductVariant} from "@/types/IProductVariant";
 import useSWR, {KeyedMutator, mutate} from "swr";
 import {getOrders, URL_API_ORDER} from "@/services/OrderService";
-import {IOrder, IOrderCreate} from "@/types/IOrder";
+import {IOrder, IOrderCreateOrUpdate} from "@/types/IOrder";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {ICreateOrUpdateOrderItem, IOrderItem} from "@/types/IOrderItem";
 import useOrder from "@/components/Admin/Order/hooks/useOrder";
@@ -29,14 +29,23 @@ const OperationsSlot: Record<PositionType, React.ReactNode> = {
     right: <TabBarExtraContentRight/>,
 };
 
-const defaultOrderPending: IOrderCreate = {
+const defaultOrderCreateOrUpdate: IOrderCreateOrUpdate = {
     shippingFee: 0,
     totalAmount: 0,
+    paymentMethod: "CASH_ON_DELIVERY",
+    pickupMethod: "IN_STORE",
     orderChannel: "OFFLINE",
     orderStatus: "PENDING",
 };
 
+const calcuTotalAmountCart = (dataCart: IOrderItem[]): number => {
+    return dataCart.reduce((total, item) => total + (item.salePrice ?? 0) * item.quantity, 0);
+};
+
 interface HandleCartContextType {
+    calcuTotalAmountCart: (dataCart: IOrderItem[]) => number;
+    orderCreateOrUpdate: IOrderCreateOrUpdate;
+    setOrderCreateOrUpdate: React.Dispatch<React.SetStateAction<IOrderCreateOrUpdate>>;
     orderActiveTabKey: string;
     dataCart: IOrderItem[];
     setDataCart: React.Dispatch<React.SetStateAction<IOrderItem[]>>;
@@ -44,7 +53,7 @@ interface HandleCartContextType {
     mutateOrderPending: KeyedMutator<any>;
 }
 
-export const HandleCart = createContext<HandleCartContextType | null>(null);
+export const HandleSale = createContext<HandleCartContextType | null>(null);
 
 const SaleComponent: React.FC = () => {
     const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
@@ -61,6 +70,8 @@ const SaleComponent: React.FC = () => {
 
     const {loading, handleCreateOrder, handleUpdateOrder} = useOrder();
     const {handleCreateOrderItems} = useOrderItem();
+    const [orderCreateOrUpdate, setOrderCreateOrUpdate] = useState<IOrderCreateOrUpdate>(defaultOrderCreateOrUpdate);
+    console.log(JSON.stringify(orderCreateOrUpdate, null, 2));
     const [dataCart, setDataCart] = useState<IOrderItem[]>([])
     const [orderActiveTabKey, setOrderActiveTabKey] = useState<string>('');
     const [itemTabs, setItemTabs] = useState<TabsProps['items']>([]);
@@ -89,6 +100,13 @@ const SaleComponent: React.FC = () => {
                 setItemTabs(newTabsItems);
                 if (newTabsItems.length > 0 && orderActiveTabKey !== newTabsItems[0].key) {
                     setOrderActiveTabKey(newTabsItems[0].key);
+                    setOrderCreateOrUpdate((prevValue) => {
+                        return {
+                            ...prevValue,
+                            id: Number(newTabsItems[0].key),
+                            totalAmount: calcuTotalAmountCart(dataCart)
+                        }
+                    });
                 }
                 return;
             }
@@ -101,9 +119,16 @@ const SaleComponent: React.FC = () => {
 
             if (newTabsItems.length > 0 && newTabsItems[0].key !== orderActiveTabKey) {
                 setOrderActiveTabKey(newTabsItems[0].key);
+                setOrderCreateOrUpdate((prevValue) => {
+                    return {
+                        ...prevValue,
+                        id: Number(newTabsItems[0].key),
+                        totalAmount: calcuTotalAmountCart(dataCart)
+                    }
+                });
             }
         }
-    }, [data]);
+    }, [data?.data]);
 
     const handleAddOrderItemCart = async (productVariantSelected: IProductVariant[]) => {
         let newOrderItemsCreateOrUpdate: ICreateOrUpdateOrderItem[] = [];
@@ -218,18 +243,25 @@ const SaleComponent: React.FC = () => {
     }
 
     const onChange = (newActiveKey: string) => {
-        console.log(newActiveKey);
         setOrderActiveTabKey(newActiveKey);
+        setOrderCreateOrUpdate((prevValue) => {
+            return {
+                ...prevValue,
+                id: Number(newActiveKey),
+                totalAmount: calcuTotalAmountCart(dataCart)
+            }
+        });
     };
 
     const add = async () => {
-        await handleCreateOrder(defaultOrderPending)
+        await handleCreateOrder(defaultOrderCreateOrUpdate)
             .then((result) => {
                 const newActiveKey = `${result.id}`;
                 const newPanes = [...itemTabs ?? []];
                 newPanes.push({label: result.orderTrackingNumber, children: <ContentTabPanelSale/>, key: newActiveKey});
                 setItemTabs(newPanes);
                 setOrderActiveTabKey(newActiveKey);
+                setOrderCreateOrUpdate((prevValue) => ({...prevValue, id: result.id}));
             })
             .catch(() => {
                 showMessage("error", "Tạo hóa đơn thất bại.");
@@ -254,6 +286,7 @@ const SaleComponent: React.FC = () => {
         }
         setItemTabs(newPanes);
         setOrderActiveTabKey(newActiveKey);
+        setOrderCreateOrUpdate((prevValue) => ({...prevValue, id: Number(newActiveKey)}));
     };
 
     const onEdit = (targetKey: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') => {
@@ -266,8 +299,11 @@ const SaleComponent: React.FC = () => {
 
     return (
         <Layout style={{background: colorBgContainer}}>
-            <HandleCart.Provider
+            <HandleSale.Provider
                 value={{
+                    calcuTotalAmountCart,
+                    orderCreateOrUpdate,
+                    setOrderCreateOrUpdate,
                     orderActiveTabKey,
                     dataCart,
                     setDataCart,
@@ -287,7 +323,7 @@ const SaleComponent: React.FC = () => {
                         />
                     </Spin>
                 </Content>
-            </HandleCart.Provider>
+            </HandleSale.Provider>
         </Layout>
     );
 }

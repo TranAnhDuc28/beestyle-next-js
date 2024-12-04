@@ -31,20 +31,26 @@ const ProductListView: React.FC<IProps> = (props) => {
                             <List.Item.Meta
                                 avatar={
                                     <Avatar shape="square" src="/BuiQuangLan.png"
-                                            size={{xs: 24, sm: 32, md: 40, lg: 48, xl: 56, xxl: 64}}
+                                            size={{xs: 64, sm: 64, md: 64, lg: 64, xl: 72, xxl: 72}}
                                     />
                                 }
                                 title={
-                                    <Flex align="center" justify="space-between">
+                                    <Flex align="center" justify="space-between" wrap>
                                         <Text strong>
-                                            {`${item.productCode} / ${item.productName}`}
+                                            {`${item.productName}`}
                                         </Text>
                                         <Title level={5} style={{textAlign: "right", display: "block", margin: 0}}>
                                             {item.minSalePrice ? `${item.minSalePrice}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',') : 0}
                                         </Title>
                                     </Flex>
                                 }
-                                description={`Tổng số: ${item.totalProductInStock ?? 0}`}
+                                description={
+                                    <>
+                                        <span>Mã: {item.productCode}</span>
+                                        <br/>
+                                        <span>Tổng số: {item.totalProductInStock ?? 0}</span>
+                                    </>
+                                }
                             />
                         </Card>
                     </List.Item>
