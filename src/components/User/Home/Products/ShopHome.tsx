@@ -54,7 +54,7 @@ function ShopHome() {
                                                     <Link href="#"
                                                           className="link-no-decoration text-dark text-uppercase">{product.productName}</Link>
                                                 </p>
-                                                <p className="price with-discount">{product.salePrice} VND</p>
+                                                <p className="price with-discount">{product.salePrice.toLocaleString('vi-VN')} đ</p>
                                             </div>
                                         </div>
                                     </div>

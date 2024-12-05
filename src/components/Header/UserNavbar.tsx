@@ -68,27 +68,11 @@ const menuItems: MenuProps["items"] = [
     ),
   },
   {
-    key: "sale",
-    label: (
-      <Link href="#" className="link-no-decoration">
-        Sale
-      </Link>
-    ),
-  },
-  {
     key: "product",
     label: (
       <Link href={"/category"} className="link-no-decoration">
         Sản phẩm
       </Link>
-    ),
-  },
-  {
-    key: "collection",
-    label: (
-      <Dropdown menu={{ items: collections }}>
-        <span>Bộ sưu tập</span>
-      </Dropdown>
     ),
   },
   {
@@ -105,6 +89,14 @@ const menuItems: MenuProps["items"] = [
       <Link href={"/contact"} className="link-no-decoration">
         Liên hệ
       </Link>
+    ),
+  },
+  {
+    key: "find",
+    label: (
+      <Dropdown menu={{ items: collections }}>
+        <span>Tra cứu</span>
+      </Dropdown>
     ),
   },
 ];
@@ -125,6 +117,7 @@ export default function Navbar() {
     fetchCartItems();
 
     const handleScroll = () => {
+      fetchCartItems();
       setIsScrolled(window.scrollY > 110);
     };
 
@@ -173,6 +166,7 @@ export default function Navbar() {
             count={cartCount}
             size="default"
             style={{ backgroundColor: "#F7941D" }}
+            showZero
           >
             <Button
               type="text"

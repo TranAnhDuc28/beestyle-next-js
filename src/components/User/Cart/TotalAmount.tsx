@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Card, Col, Form, Input, Row, Typography} from "antd";
+import {Alert, Button, Card, Col, Form, Input, Row, Typography} from "antd";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -38,22 +38,21 @@ const TotalAmount = ({cartItems}: any) => {
                         Bạn đã tiết kiệm được 30.000 đ
                     </p>
                 </div>
-                <Button
-                    type="primary"
-                    className="text-black w-full py-4 text-lg font-medium"
+                <Link
+                    href={"/checkout"}
+                    className="btn text-black w-full py-2 text-lg font-medium"
                     style={{backgroundColor: "#FCAF17"}}
                 >
                     Mua hàng
-                </Button>
+                </Link>
                 <p className="text-center text-green-500 mt-4">Chọn Voucher giảm giá ở bước tiếp theo</p>
-                    <Image
-                        src={"/payment-variant.png"}
-                        width={400}
-                        height={200}
-                        alt="IMG"
-                        unoptimized
-                    />
             </Card>
+            <Alert 
+                message={(<strong className='fw-semibold'>Chính sách mua hàng:</strong>)}
+                description="Hiện chúng tôi chỉ áp dụng thanh toán với đơn hàng có giá trị tối thiểu 0₫ trở lên."
+                type="info" 
+                className="my-3"
+            />
         </>
     );
 };

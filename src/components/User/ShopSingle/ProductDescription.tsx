@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Link from "next/link";
-import {Input, Progress, Rate} from 'antd';
+import {Input, Rate} from 'antd';
 import {AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
 import {useProduct} from "@/services/user/SingleProductService";
 import {useParams} from "next/navigation";
@@ -74,8 +74,8 @@ const ProductDescription = (props: any) => {
                         </li>
                         <li>
                             <div className="ml-2" style={{borderLeft: '2px solid #EDF0F5'}}>
-                                <span className="ml-2">Đã bán</span>
-                                <span className="fw-bold"> 178</span>
+                                <span className="ml-2">Thương hiệu:</span>
+                                <span className="fw-bold"> {product?.brandName}</span>
                             </div>
                         </li>
                     </ul>
@@ -98,13 +98,7 @@ const ProductDescription = (props: any) => {
                 </div>
 
                 <div className="mb-4">
-                    <span className="text-gray-800">Chỉ còn <b>78</b> sản phẩm trong kho!</span>
-                    <Progress
-                        percent={78}
-                        strokeColor="#ff4d4f"
-                        showInfo={false}
-                        strokeWidth={4}
-                    />
+                    <span className="text-gray-800">Chỉ còn <b>{product?.quantity}</b> sản phẩm trong kho!</span>
                 </div>
             </div>
 
@@ -178,9 +172,8 @@ const ProductDescription = (props: any) => {
                 </div>
                 <div className="add-to-cart mt-3">
                     <Link
-                        href="#"
-                        onClick={(e) => {
-                            e.preventDefault();
+                        href={"/cart"}
+                        onClick={() => {
                             addToCart(product, quantity, props.images);
                         }}
                         className="btn"
@@ -191,12 +184,6 @@ const ProductDescription = (props: any) => {
                 </div>
 
                 <InfoSection/>
-
-                {/*<p className="cat">Danh mục :<Link href="#" className="link-no-decoration">Áo</Link></p>*/}
-                {/*<p className="availability">Tình trạng : {*/}
-                {/*    product?.quantity > 0 ? 'Còn ' + product?.quantity + ' sản phẩm' : 'Hết hàng'}*/}
-                {/*</p>*/}
-                {/*<p className="description">{product?.description || 'No description'}</p>*/}
             </div>
         </div>
     );

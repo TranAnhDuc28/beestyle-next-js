@@ -4,9 +4,7 @@ import React, {useEffect, useState} from 'react';
 import CartTable from "@/components/User/Cart/CartTable";
 import TotalAmount from "@/components/User/Cart/TotalAmount";
 import {CART_KEY} from "@/services/user/ShoppingCartService";
-import BreadcrumbSection from "@/components/Button/BreadCrumb";
-import {Button, Card, Progress, Checkbox, Image, Typography} from 'antd';
-import {FireOutlined} from '@ant-design/icons';
+import {Typography} from 'antd';
 
 const {Title, Text} = Typography;
 

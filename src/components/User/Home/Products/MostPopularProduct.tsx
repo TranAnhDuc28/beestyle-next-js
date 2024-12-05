@@ -132,10 +132,10 @@ function MostPopularProduct() {
                                                     </h3>
                                                     <div className="product-price">
                                                         {product?.originalPrice && (
-                                                            <span className="old-price">{product.originalPrice} đ</span>
+                                                            <span className="old-price">{product.originalPrice.toLocaleString('vi-VN')} đ</span>
                                                         )}
                                                         <span
-                                                            className="current-price ml-2">{product.salePrice} đ</span>
+                                                            className="current-price ml-2">{product.salePrice.toLocaleString('vi-VN')} đ</span>
                                                     </div>
                                                 </div>
                                             </Card>

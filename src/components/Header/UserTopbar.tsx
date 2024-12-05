@@ -2,14 +2,10 @@ import React from "react";
 import {MdEmail, MdLocalPhone, MdLogin} from 'react-icons/md';
 import {AiOutlineUser} from "react-icons/ai";
 import Link from "next/link";
-import Image from "next/image";
 
 export default function TopBar() {
     return (
         <>
-            <div>
-                <Image width={1920} height={60} src={"/topbar_img.jpg"} alt="IMG"/>
-            </div>
             <div className="topbar pe-4" style={{backgroundColor: '#333'}}>
                 <div className="container-fluid">
                     <div className="row">

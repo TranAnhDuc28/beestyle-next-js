@@ -99,9 +99,9 @@ function ProductArea() {
                                                                     </h3>
                                                                     <div className="product-price">
                                                                         <span
-                                                                            className="old-price">{product.originalPrice} đ</span>
+                                                                            className="old-price">{product.originalPrice.toLocaleString('vi-VN')} đ</span>
                                                                         <span
-                                                                            className="current-price ml-2">{product.salePrice} đ</span>
+                                                                            className="current-price ml-2">{product.salePrice.toLocaleString('vi-VN')} đ</span>
                                                                     </div>
                                                                 </div>
                                                             </div>

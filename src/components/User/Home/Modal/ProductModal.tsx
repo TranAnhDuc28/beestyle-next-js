@@ -1,27 +1,27 @@
-import React, {useState} from 'react';
-import {Modal, Select, Button, Input, Carousel, Rate} from 'antd';
+import React, {useState, useEffect} from 'react';
+import {Modal, Button, Input, Carousel, Rate} from 'antd';
 import Image from 'next/image';
-
-const {Option} = Select;
+import {useProductImages, useProduct} from '@/services/user/SingleProductService';
+import ColorPickers from '@/components/User/ShopSingle/Properties/ColorPickers';
+import SizePickers from '@/components/User/ShopSingle/Properties/SizePickers';
 
 const ProductModal = ({visible, onClose, product}) => {
-    if (!product) return null;
+    if (!visible) return null;
 
-    const images = Array.isArray(product.imageUrl) ? product.imageUrl : [product.imageUrl];
-
+    const productId = product.id;
     const [quantity, setQuantity] = useState(1);
+    const [selectedColor, setSelectedColor] = useState<string | null>(null);
+    const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
-    const handleDecrement = () => {
-        if (quantity <= 1) {
-            setQuantity(1);
-        } else {
-            setQuantity(quantity - 1);
-        }
-    }
+    const {data: productData, error: productError} = useProduct(productId, selectedColor, selectedSize);
+    const {data: images, error: imagesError} = useProductImages(productId);
 
-    const handleIncrement = () => {
-        setQuantity(quantity + 1);
-    }
+    useEffect(() => {
+        setQuantity(1);
+    }, [visible]);
+
+    const handleDecrement = () => setQuantity(prev => Math.max(prev - 1, 1));
+    const handleIncrement = () => setQuantity(prev => Math.min(prev + 1, productData?.quantity || 1000));
 
     return (
         <Modal
@@ -29,83 +29,57 @@ const ProductModal = ({visible, onClose, product}) => {
             onCancel={onClose}
             footer={null}
             width={900}
-            style={{padding: '20px'}}
             centered
         >
-            <div style={{display: 'flex', alignItems: 'center'}}>
-                <div style={{flex: 1, marginRight: '20px'}}>
-                    <Carousel
-                        arrows
-                        autoplay
-                        infinite={false}
-                        style={{textAlign: 'center'}}
-                    >
-                        {images ? images.map((imgSrc, index) => (
+            <div className="flex">
+                <div className="w-1/2 mr-4">
+                    <Carousel autoplay infinite={false}>
+                        {images ? images.map((image, index) => (
                             <div key={index}>
-                                <Image width={569} height={528} src={imgSrc} alt={product.productName}/>
+                                <Image
+                                    width={400}
+                                    height={528}
+                                    src={image.imageUrl}
+                                    alt={productData?.productName}
+                                />
                             </div>
-                        )) : (
-                            <Image width={569} height={528} src="" alt={product.productName}/>
-                        )
-                        }
+                        )) : <div>Loading...</div>}
                     </Carousel>
                 </div>
 
-                <div style={{flex: 1}}>
-                    <h2>{product.productName}</h2>
-                    <div style={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
-                        <span><Rate disabled defaultValue={5} style={{fontSize: 13}}/></span>
-                        <span style={{marginLeft: '8px'}}>(2 lượt đánh giá)</span>
-                        <span style={{marginLeft: '8px', color: '#28a745'}}>Còn 23 sản phẩm</span>
+                <div className="w-1/2">
+                    <h2>{productData?.productName || 'No product data'}</h2>
+                    <div className="flex items-center mb-4">
+                        <Rate disabled defaultValue={5} style={{fontSize: 16}}/>
+                        <span className="ml-2">({productData?.reviewsCount || 0} reviews)</span>
                     </div>
-                    <h3 style={{color: '#333'}}>{product.salePrice}</h3>
-                    <p className="mt-4">
-                        Khám phá sự kết hợp hoàn hảo giữa phong cách và thoải mái với Áo Thun Basic Comfort từ Beestyle.
-                        Được thiết kế tinh tế dành cho cả nam và nữ, chiếc áo thun này là lựa chọn lý tưởng để làm mới
-                        tủ đồ hàng ngày của bạn.
-                    </p>
+                    <h3 className="text-red-500">{productData?.salePrice?.toLocaleString('vi-VN')} đ</h3>
 
-                    <div style={{display: 'flex', marginBottom: '20px'}}>
-                        <div style={{marginRight: '20px'}} className="d-flex flex-column">
-                            <label className="mr-3 mb-2">Size</label>
-                            <Select defaultValue="S" style={{width: 170}}>
-                                <Option value="S">S</Option>
-                                <Option value="M">M</Option>
-                                <Option value="L">L</Option>
-                                <Option value="XL">XL</Option>
-                            </Select>
-                        </div>
-                        <div className="ml-4 d-flex flex-column">
-                            <label className="mr-3 mb-2">Color</label>
-                            <Select defaultValue="Orange" style={{width: 170}}>
-                                <Option value="Orange">Orange</Option>
-                                <Option value="Blue">Blue</Option>
-                                <Option value="Black">Black</Option>
-                                <Option value="White">White</Option>
-                            </Select>
-                        </div>
+                    <div className="my-4">
+                        <ColorPickers
+                            productId={productId}
+                            selectedColor={selectedColor}
+                            onColorSelect={setSelectedColor}
+                        />
+                        <SizePickers
+                            productId={productId}
+                            colorCode={selectedColor}
+                            selectedSize={selectedSize}
+                            onSizeSelect={setSelectedSize}
+                        />
                     </div>
 
-                    <div style={{marginBottom: '20px'}}>
-                        <div className="d-flex">
-                            <Input.Group compact>
-                                <Button onClick={handleDecrement}>-</Button>
-                                <Input
-                                    style={{width: 95, height: 32, textAlign: 'center'}}
-                                    defaultValue={1} value={quantity}
-                                />
-                                <Button onClick={handleIncrement}>+</Button>
-                            </Input.Group>
-                        </div>
-                        <div className="mt-4 d-flex justify-content-center">
-                            <Button
-                                className="btn btn-dark px-5 py-3 d-flex mr-5"
-                                style={{fontSize: 13, borderRadius: 0}}
-                            >
-                                Thêm vào giỏ hàng
-                            </Button>
-                        </div>
+                    {/* Quantity Selector */}
+                    <div className="flex items-center my-4">
+                        <Button onClick={handleDecrement}>-</Button>
+                        <Input value={quantity} className="mx-2 text-center" readOnly style={{width: 50}}/>
+                        <Button onClick={handleIncrement}>+</Button>
                     </div>
+
+                    {/* Add to Cart Button */}
+                    <Button type="primary" block>
+                        Thêm vào giỏ hàng
+                    </Button>
                 </div>
             </div>
         </Modal>
