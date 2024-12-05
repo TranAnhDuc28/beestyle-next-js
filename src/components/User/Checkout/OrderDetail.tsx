@@ -37,6 +37,32 @@ const OrderDetail = (props: IProps) => {
     // Gọi handleSubmit với payment đã chọn
     await handleSubmit({selectedPayment,totalAmount,shippingCost});
   };
+<<<<<<< HEAD
+=======
+  // <<<<<<< HEAD
+  //   return (
+  //     <div className="order-details">
+  //       <div className="single-widget">
+  //         <h2>THÔNG TIN</h2>
+  //         <div className="content">
+  //         <ul>
+  //             <li>
+  //               Tổng giá trị sản phẩm<span>330.000 VND</span>
+  //             </li>
+  //             <li>
+  //               Phí vận chuyển<span>{shippingCost} VND</span>  {/* Hiển thị chi phí vận chuyển đã cập nhật */}
+  //             </li>
+  //             <li className="last fs-6">
+  //               Tổng thanh toán<span>{330000 + shippingCost} VND</span>
+  //             </li>
+  //             <li>
+  //               <span className="text-danger" style={{ fontSize: 13 }}>
+  //                 Bạn đã tiết kiệm được 20.000 VND
+  //               </span>
+  //             </li>
+  //           </ul>
+  // =======
+>>>>>>> 6acf6e0ded08bfd21bc35bc17529a66be4b50062
 
   return (
     <div className="order-details">

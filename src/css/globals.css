@@ -23,7 +23,7 @@ html {
     box-sizing: border-box;
     scrollbar-width: thin;
     scrollbar-color: unset;
-    font-family: var(--font-poppins);
+    /*font-family: var(--font-poppins);*/
 }
 
 body {
