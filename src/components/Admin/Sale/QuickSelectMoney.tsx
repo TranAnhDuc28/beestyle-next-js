@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {memo, useState} from 'react';
 import {Col, Row, Tag} from 'antd';
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 import {IOrderItem} from "@/types/IOrderItem";
@@ -47,4 +47,4 @@ const QuickSelectMoney: React.FC<IProps> = (props) => {
         </Row>
     );
 };
-export default QuickSelectMoney;
+export default memo(QuickSelectMoney);
