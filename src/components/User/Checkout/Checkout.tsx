@@ -6,6 +6,7 @@ import CheckoutForm from "./CheckoutForm";
 import OrderDetail from "./OrderDetail";
 import { Form } from "antd";
 import { createVNPayPayment } from "@/services/VNPayService";
+import TestPDFComponent from "../Invoice/TestPDF";
 
 const Checkout = () => {
   const [addressForm] = Form.useForm();
@@ -29,10 +30,12 @@ const Checkout = () => {
       console.log("User Form Data:", userData);
       console.log(payment);
 
-      if (payment === "2") {
+      if (payment.selectedPayment === "3") {
         try {
           const ipAddress = "127.0.0.1"; // Địa chỉ IP tạm thời
           const data = await createVNPayPayment(orderId, amount, ipAddress);
+          console.log(data);
+          
           if (data && data.paymentUrl) {
             // Chuyển hướng người dùng tới VNPay
             window.location.href = data.paymentUrl;
@@ -47,6 +50,25 @@ const Checkout = () => {
       // console.log("Xác thực form thất bại:", error);
     }
   };
+  const formatDate = (date: Date) => {
+    return date.toLocaleString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+  const [invoiceData, setInvoiceData] = useState({
+    customerName: "Nguyễn Văn A",
+    products: [
+      { productId: "P001", productName: "Sản phẩm A", quantity: 2, price: 100000 },
+      { productId: "P002", productName: "Sản phẩm B", quantity: 1, price: 150000 },
+    ],
+    totalAmount: 350000,
+    orderDate: formatDate(new Date() )
+  });
 
   return (
     <section className="shop checkout section">
@@ -66,6 +88,7 @@ const Checkout = () => {
             />
           </div>
         </div>
+        <TestPDFComponent invoiceData={invoiceData} />
       </div>
     </section>
   );
