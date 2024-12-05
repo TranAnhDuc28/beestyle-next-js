@@ -1,29 +1,11 @@
 import httpInstance from "@/utils/HttpInstance";
 
 export const URL_API_INVOICE = {
-  create: '/invoice/generate',
-  getById: '/invoice',
-  getAll: '/invoice/all',
   generatePdf: '/invoice/generate',
+  previewPdf: "/invoice/preview", 
 };
 
-// Tạo mới hóa đơn
-export const createInvoice = async (data: any) => {
-  const response = await httpInstance.post(URL_API_INVOICE.create, data);
-  return response.data; // Trả về dữ liệu hóa đơn vừa tạo
-};
 
-// Lấy hóa đơn theo ID
-export const getInvoiceById = async (id: string) => {
-  const response = await httpInstance.get(`${URL_API_INVOICE.getById}/${id}`);
-  return response.data; // Trả về thông tin chi tiết hóa đơn
-};
-
-// Lấy danh sách tất cả hóa đơn
-export const getAllInvoices = async () => {
-  const response = await httpInstance.get(URL_API_INVOICE.getAll);
-  return response.data; // Trả về danh sách các hóa đơn
-};
 
 // Xuất file PDF của hóa đơn
 export const generateInvoicePdf = async (data: any) => {
@@ -40,4 +22,23 @@ export const generateInvoicePdf = async (data: any) => {
     link.click();
   
     return response.data;
+  };
+
+  export const previewInvoicePdf = async (data: any): Promise<string | null> => {
+    try {
+      const response = await httpInstance.post("/invoice/preview", data, {
+        responseType: "arraybuffer", // Nhận dữ liệu PDF từ backend
+      });
+  
+      // Chuyển đổi sang Base64
+      const base64Pdf = `data:application/pdf;base64,${btoa(
+        new Uint8Array(response.data)
+          .reduce((data, byte) => data + String.fromCharCode(byte), "")
+      )}`;
+  
+      return base64Pdf; // Trả về chuỗi Base64
+    } catch (error) {
+      console.error("Lỗi khi lấy preview PDF:", error);
+      return null;
+    }
   };
