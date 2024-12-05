@@ -13,9 +13,6 @@ const nextConfig = {
             },
             {
                 hostname: 'm.yodycdn.com'
-            },
-            {
-                hostname: 'images.unsplash.com'
             }
         ]
     }

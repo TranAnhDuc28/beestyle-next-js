@@ -151,7 +151,7 @@ const FilterProductSale: React.FC<IProps> = (props) => {
             >
                 {/* Lọc giới tính*/}
                 <Title level={5} style={{marginBottom: 10}}>Giới tính</Title>
-                <Radio.Group onChange={onChangeGenderProductFilter}>
+                <Radio.Group onChange={onChangeGenderProductFilter} value={tempFilterParam.gender}>
                     <Row gutter={[16, 16]}>
                         <Col key={"ALL"}>
                             <Radio value={undefined}>Tất cả</Radio>

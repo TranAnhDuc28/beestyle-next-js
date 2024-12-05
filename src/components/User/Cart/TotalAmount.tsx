@@ -1,6 +1,9 @@
 import React from 'react';
-import {Button, Col, Form, Input, Row, Typography} from "antd";
+import {Button, Card, Col, Form, Input, Row, Typography} from "antd";
 import Link from "next/link";
+import Image from "next/image";
+
+const {Title, Text} = Typography;
 
 const TotalAmount = ({cartItems}: any) => {
 
@@ -9,56 +12,49 @@ const TotalAmount = ({cartItems}: any) => {
     const totalAmount = cartItems.reduce((total, item) => total + item.total_price, 0);
 
     return (
-        <div className="total-amount">
-            <div className="row">
-                <div className="left mb-5" style={{marginTop: -25}}>
-                    <div className="coupon">
-                        <Form action="#" target="_blank">
-                            <Input name="Coupon" placeholder="Nhập mã giảm giá của bạn" style={{width: 300}}/>
-                            <Button className="btn">Áp dụng</Button>
-                        </Form>
-                    </div>
+        <>
+            <Card className="rounded-lg shadow-md">
+                <Title level={3} className="text-xl font-bold mb-4">Thông tin đơn hàng</Title>
+                <div className="flex justify-between mb-2">
+                    <Text>Tổng giá trị sản phẩm</Text>
+                    <Text>{totalAmount.toLocaleString('vi-VN')} đ</Text>
                 </div>
-            </div>
-            <div className="row">
-                <div>
-                    <div style={{
-                        padding: '20px',
-                        borderTop: '1px solid #e8e8e8',
-                        display: 'flex',
-                        justifyContent: 'space-around',
-                        alignItems: 'center'
-                    }}>
-                        <Row gutter={16}>
-                            <Col>
-                                <Link href="/" className="btn" style={{borderColor: '#333'}}>
-                                    TIẾP TỤC MUA HÀNG
-                                </Link>
-                            </Col>
-                        </Row>
-
-                        <Row align="middle">
-                            <Col>
-                                <div className="text-center">
-                                    <Text>Tổng đơn đặt hàng {totalAmount} VND</Text>
-                                    <br/>
-                                    <Text type="secondary">* Đã bao gồm thuế VAT</Text>
-                                </div>
-                            </Col>
-                        </Row>
-
-                        <Row>
-                            <Col>
-                                <Link href={"/checkout"} className="btn text-white"
-                                      style={{backgroundColor: '#000', borderColor: '#000'}}>
-                                    THANH TOÁN
-                                </Link>
-                            </Col>
-                        </Row>
-                    </div>
+                <div className="flex justify-between mb-2">
+                    <Text>Vận chuyển</Text>
+                    <Text>30.000 đ</Text>
                 </div>
-            </div>
-        </div>
+                <div className="flex justify-between mb-4">
+                    <Text>Giảm giá vận chuyển</Text>
+                    <Text className="text-red-600">-30.000 đ</Text>
+                </div>
+                <div className="mb-4">
+                    <div className="flex justify-between align-middle">
+                        <Title level={4}>Tổng thanh toán</Title>
+                        <Text className="text-xl font-semibold">
+                            {totalAmount.toLocaleString('vi-VN')} đ
+                        </Text>
+                    </div>
+                    <p className="text-red-500 float-end">
+                        Bạn đã tiết kiệm được 30.000 đ
+                    </p>
+                </div>
+                <Button
+                    type="primary"
+                    className="text-black w-full py-4 text-lg font-medium"
+                    style={{backgroundColor: "#FCAF17"}}
+                >
+                    Mua hàng
+                </Button>
+                <p className="text-center text-green-500 mt-4">Chọn Voucher giảm giá ở bước tiếp theo</p>
+                    <Image
+                        src={"/payment-variant.png"}
+                        width={400}
+                        height={200}
+                        alt="IMG"
+                        unoptimized
+                    />
+            </Card>
+        </>
     );
 };
 
