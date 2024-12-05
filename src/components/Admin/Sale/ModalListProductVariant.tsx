@@ -64,11 +64,12 @@ interface IProps {
 const ModalListProductVariant: React.FC<IProps> = (props) => {
     const handleSale = useContext(HandleSale);
     const {product, isOpenModalListProductVariant, setOpenModalListProductVariant} = props;
+
+    const draggleRef = useRef<HTMLDivElement>(null);
     const [disabled, setDisabled] = useState(true);
     const [dataSource, setDataSource] = useState([]);
     const [bounds, setBounds] = useState({left: 0, top: 0, bottom: 0, right: 0});
     const [position, setPosition] = useState({ x: 0, y: 0 });
-    const draggleRef = useRef<HTMLDivElement>(null);
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
     const [selectedRows, setSelectedRows] = useState<IProductVariant[]>([]);
 
