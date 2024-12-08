@@ -127,8 +127,7 @@ const Navbar: React.FC = () => {
                     >
                         <Button
                             type="text"
-                            icon={<LuShoppingBag style={{fontSize: 20}} onClick={() => setIsCartOpen(true)}/>
-                            }
+                            icon={<LuShoppingBag style={{fontSize: 20}} onClick={() => setIsCartOpen(true)}/>}
                         />
                     </Badge>
                     <CartDrawer open={isCartOpen} onClose={() => setIsCartOpen(false)}/>
