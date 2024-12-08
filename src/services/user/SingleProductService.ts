@@ -24,6 +24,10 @@ interface ProductImage {
 }
 
 interface ProductColor {
+    colorCode(colorCode: any): unknown;
+
+    colorName(colorName: any): unknown;
+
     id: string;
     name: string;
     code: string;
@@ -60,7 +64,7 @@ const CACHE_KEYS = {
         `product_${id}_${color || 'default'}_${size || 'default'}`,
     IMAGES: (id: string) => `product_images_${id}`,
     COLORS: (id: string) => `product_colors_${id}`,
-    SIZES: (id: string) => `product_sizes_${id}`,
+    SIZES: (id: string, code: string) => `product_sizes_${id}_${code || 'default'}`,
 };
 
 const setCache = <T>(key: string, data: T): void => {
@@ -94,8 +98,8 @@ export const URL_API_PRODUCT_COLOR = (productId: any): string => {
     return `/product/${productId}/variant/color`;
 };
 
-export const URL_API_PRODUCT_SIZE = (productId: any): string => {
-    return `/product/${productId}/variant/size`;
+export const URL_API_PRODUCT_SIZE = (productId: any, colorCode: string): string => {
+    return `/product/${productId}/variant/size?c=${encodeURIComponent(colorCode)}`;
 };
 
 export const handleFetchProduct = (productId: any, color?: string, size?: string): string => {
@@ -164,15 +168,15 @@ export const getColorSingleProduct = async (productId: any): Promise<ProductColo
     return data;
 };
 
-export const getSizeSingleProduct = async (productId: any): Promise<ProductSize[]> => {
-    const cacheKey = CACHE_KEYS.SIZES(productId);
+export const getSizeSingleProduct = async (productId: any, colorCode: string): Promise<ProductSize[]> => {
+    const cacheKey = CACHE_KEYS.SIZES(productId, colorCode);
     const cachedData = getCache<ProductSize[]>(cacheKey);
 
     if (cachedData) {
         return cachedData;
     }
 
-    const url = URL_API_PRODUCT_SIZE(productId);
+    const url = URL_API_PRODUCT_SIZE(productId, colorCode);
     const response = await httpInstance.get<ApiResponse<ProductSize[]>>(url);
     const data = response.data.data;
 
@@ -216,10 +220,10 @@ export const useProductColors = (productId: any) => {
     );
 };
 
-export const useProductSizes = (productId: any) => {
+export const useProductSizes = (productId: any, colorCode: string) => {
     return useSWR(
-        productId ? URL_API_PRODUCT_SIZE(productId) : null,
-        () => getSizeSingleProduct(productId),
+        productId && colorCode ? URL_API_PRODUCT_SIZE(productId, colorCode) : null,
+        () => getSizeSingleProduct(productId, colorCode),
         {
             revalidateOnFocus: false,
             revalidateOnReconnect: false,

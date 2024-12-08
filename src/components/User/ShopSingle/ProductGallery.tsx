@@ -18,7 +18,7 @@ const ProductGallery = (props: any) => {
     const sliderRef = useRef(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const handleThumbnailClick = (index) => {
+    const handleThumbnailClick = (index: number) => {
         setSelectedIndex(index);
         sliderRef.current.slickGoTo(index);
     };
@@ -57,7 +57,7 @@ const ProductGallery = (props: any) => {
                 {isSingleImage ? (
                     <Image
                         src={props.images[0].imageUrl}
-                        alt="Product Image"
+                        alt="ProductCard Image"
                         width={490}
                         height={650}
                         style={{border: 0}}
@@ -69,7 +69,7 @@ const ProductGallery = (props: any) => {
                             <div key={index}>
                                 <Image
                                     src={image.imageUrl}
-                                    alt={`Product Image ${index + 1}`}
+                                    alt={`ProductCard Image ${index + 1}`}
                                     width={490}
                                     height={650}
                                     style={{border: 0}}

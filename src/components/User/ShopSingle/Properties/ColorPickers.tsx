@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {CheckOutlined} from "@ant-design/icons";
 import Link from "next/link";
 import {useProductColors} from "@/services/user/SingleProductService";
@@ -14,6 +14,13 @@ const ColorPickers = (props: any) => {
         const luminance = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
         return luminance > 128 ? "black" : "white";
     };
+
+    useEffect(() => {
+        if (colors && colors.length > 0 && !props.selectedColor) {
+            const firstColor = colors[0];
+            props.onColorSelect(firstColor.colorCode);
+        }
+    }, [colors, props.selectedColor]);
 
     const handleColorClick = (color: string, colorName: string) => {
         setSelectedColorName(colorName)

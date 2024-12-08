@@ -82,7 +82,7 @@ const UpdateProduct: React.FC<IProps> = (props) => {
     }, []);
 
     const onFinish = async (value: IProduct) => {
-        console.log("Product update: ", JSON.stringify(value, null, 2));
+        console.log("UserProductComponent update: ", JSON.stringify(value, null, 2));
         setConfirmLoading(true);
         try {
             if (dataUpdate) {

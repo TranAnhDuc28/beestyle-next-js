@@ -11,14 +11,14 @@ import {
     Row,
     Typography
 } from "antd";
-import React, {memo, useState} from "react";
+import React, {memo, useCallback, useEffect, useState} from "react";
 import {GENDER_PRODUCT} from "@/constants/GenderProduct";
 import useCategory from "@/components/Admin/Category/hooks/useCategory";
 import useBrand from "@/components/Admin/Brand/hooks/useBrand";
 import useMaterial from "@/components/Admin/Material/hooks/useMaterial";
 import {CloseIcon} from "next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon";
 import {ParamFilterProduct} from "@/components/Admin/Product/hooks/useFilterProduct";
-
+import SliderPriceProduct from "@/components/Slider/SliderPriceProduct";
 
 const {Title} = Typography;
 
@@ -32,7 +32,7 @@ interface IProps {
 
 const FilterProductSale: React.FC<IProps> = (props) => {
     const {open, onClose, filterParam, setFilterParam} = props;
-    const [tempFilterParam, setTempFilterParam] = useState(filterParam);
+    const [tempFilterParam, setTempFilterParam] = useState<ParamFilterProduct>(filterParam);
 
     const {dataCategory, error: errorDataTreeSelectCategory, isLoading: isLoadingDataTreeSelectCategory}
         = useCategory(true);
@@ -45,6 +45,7 @@ const FilterProductSale: React.FC<IProps> = (props) => {
     const [checkedCategories, setCheckedCategories] = useState<string[]>([]);
     const [checkedBrands, setCheckedBrands] = useState<string[]>([]);
     const [checkedMaterials, setCheckedMaterials] = useState<string[]>([]);
+    const [resetSliderRangePrice, setResetSliderRangePrice] = useState<boolean>(false);
 
     const [showMoreCategories, setShowMoreCategories] = useState(false);
     const [showMoreBrands, setShowMoreBrands] = useState(false);
@@ -103,6 +104,7 @@ const FilterProductSale: React.FC<IProps> = (props) => {
 
     const handleRemoveAllCheckList = () => {
         // console.log('tempFilterParam', tempFilterParam)
+        setResetSliderRangePrice(true);
         setCheckedCategories([]);
         setCheckedBrands([]);
         setCheckedMaterials([]);
@@ -136,7 +138,7 @@ const FilterProductSale: React.FC<IProps> = (props) => {
                 title={
                     <Flex justify="space-between" align="center" style={{width: "100%"}} wrap>
                         <div>
-                            <Title level={3} style={{margin: 0}}>Lọc sản phẩm</Title>
+                            <Title level={4} style={{margin: 0}}>Lọc sản phẩm</Title>
                         </div>
                         <div>
                             <Button onClick={onClose} type="text" icon={<CloseIcon/>}/>
@@ -148,10 +150,25 @@ const FilterProductSale: React.FC<IProps> = (props) => {
                 open={open}
                 footer={footerDrawer}
                 closable={false}
+                styles={{
+                    header: {padding: '10px 24px'}
+                }}
             >
+                {/* Khoảng giá*/}
+                <Title level={5} style={{marginBottom: 10}}>Khoảng giá</Title>
+                <Flex style={{marginBottom: 10}}>
+                    <SliderPriceProduct
+                        setTempFilterParam={setTempFilterParam}
+                        reset={resetSliderRangePrice}
+                        setReset={setResetSliderRangePrice}
+                        style={{width: "95%"}}
+                    />
+                </Flex>
+                <Divider/>
+
                 {/* Lọc giới tính*/}
                 <Title level={5} style={{marginBottom: 10}}>Giới tính</Title>
-                <Radio.Group onChange={onChangeGenderProductFilter}>
+                <Radio.Group onChange={onChangeGenderProductFilter} value={tempFilterParam.gender}>
                     <Row gutter={[16, 16]}>
                         <Col key={"ALL"}>
                             <Radio value={undefined}>Tất cả</Radio>
@@ -170,9 +187,9 @@ const FilterProductSale: React.FC<IProps> = (props) => {
                 {/* Lọc danh mục */}
                 <Title level={5} style={{marginBottom: 10}}>Danh mục</Title>
                 <Checkbox.Group value={checkedCategories} onChange={onChangeCategoryFilter}>
-                    <Row gutter={[16, 16]}>
+                    <Row gutter={[8, 8]}>
                         {dataCategory.slice(0, showMoreCategories ? dataCategory.length : 6).map((item: any) => (
-                            <Col key={item.id}>
+                            <Col key={item.id} span={12}>
                                 <Checkbox value={item.id}>
                                     {item.categoryName}
                                 </Checkbox>
@@ -191,9 +208,9 @@ const FilterProductSale: React.FC<IProps> = (props) => {
                 {/* Lọc thương hiệu */}
                 <Title level={5} style={{marginBottom: 10}}>Thương hiệu</Title>
                 <Checkbox.Group value={checkedBrands} onChange={onChangeBrandFilter}>
-                    <Row gutter={[16, 16]}>
+                    <Row gutter={[8, 8]}>
                         {dataBrand?.slice(0, showMoreBrands ? dataBrand.length : 6).map((item: any) => (
-                            <Col key={item.id}>
+                            <Col key={item.id} span={12}>
                                 <Checkbox value={item.id}>
                                     {item.brandName}
                                 </Checkbox>
@@ -228,7 +245,6 @@ const FilterProductSale: React.FC<IProps> = (props) => {
                 >
                     {showMoreMaterials ? 'Thu gọn' : 'Xem thêm'}
                 </div>
-                <Divider/>
             </Drawer>
         </>
     );

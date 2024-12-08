@@ -18,9 +18,15 @@ const QuantityControl = ({value, onChange, onIncrement, onDecrement}: QuantityCo
             min={1}
             value={value}
             onChange={onChange}
-            style={{width: 60, textAlign: 'center'}}
+            style={{
+                width: 60, textAlign: 'center'
+            }}
+            readOnly
         />
-        <Button onClick={onIncrement} icon={<FaPlus/>} disabled={value >= 1000}/>
+        <Button
+            onClick={onIncrement} icon={<FaPlus/>}
+            disabled={value >= 1000}
+        />
     </div>
 );
 

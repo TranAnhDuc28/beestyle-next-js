@@ -42,6 +42,7 @@ const AdminCart: React.FC = () => {
                 initialQuantityMap.set(item.id, item.quantity);
             });
             setInitialQuantities(initialQuantityMap);
+            handleSale?.setTotalQuantityCart(handleSale?.calcuTotalQuantityCart(data.data));
             handleSale?.setOrderCreateOrUpdate((prevValue) => {
                 return {
                     ...prevValue,
@@ -212,7 +213,6 @@ const AdminCart: React.FC = () => {
                             }
                         }}
                         min={1}
-                        max={100}
                         value={record.quantity}
                         formatter={(value) => `${value}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                         parser={(value) => value?.replace(PARSER_NUMBER_WITH_COMMAS_TO_NUMBER, '') as unknown as number}

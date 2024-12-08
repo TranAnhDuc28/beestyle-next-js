@@ -6,7 +6,6 @@ import {LeftOutlined, RightOutlined} from '@ant-design/icons';
 import Image from "next/image";
 
 export default function Slider() {
-    const [currentIndex, setCurrentIndex] = useState(0);
     const [isHovered, setIsHovered] = useState(false);
 
     const images = [
@@ -23,7 +22,6 @@ export default function Slider() {
 
     return (
         <div
-            style={{marginTop: "75px"}}
             className="relative w-full max-w-8xl mx-auto overflow-hidden shadow-md"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -32,7 +30,6 @@ export default function Slider() {
                 autoplay
                 autoplaySpeed={12000}
                 ref={carouselRef}
-                beforeChange={(current, next) => setCurrentIndex(next)}
                 className="h-[400px] md:h-[575px]"
                 dots={false}
             >

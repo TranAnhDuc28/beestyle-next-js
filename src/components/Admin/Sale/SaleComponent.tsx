@@ -1,6 +1,6 @@
 "use client"
 import React, {createContext, CSSProperties, useCallback, useEffect, useMemo, useRef, useState} from "react";
-import {Layout, Spin, Tabs, TabsProps, theme} from "antd";
+import {Badge, Layout, Spin, Tabs, TabsProps, theme} from "antd";
 import ContentTabPanelSale from "@/components/Admin/Sale/ContentTabPanelSale";
 import TabBarExtraContentLeft from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentLeft";
 import TabBarExtraContentRight from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentRight";
@@ -42,8 +42,15 @@ const calcuTotalAmountCart = (dataCart: IOrderItem[]): number => {
     return dataCart.reduce((total, item) => total + (item.salePrice ?? 0) * item.quantity, 0);
 };
 
+const calcuTotalQuantityCart = (dataCart: IOrderItem[]): number => {
+    return dataCart.reduce((total, item) => total + item.quantity, 0);
+};
+
 interface HandleCartContextType {
     calcuTotalAmountCart: (dataCart: IOrderItem[]) => number;
+    calcuTotalQuantityCart: (dataCart: IOrderItem[]) => number;
+    totalQuantityCart: number;
+    setTotalQuantityCart: React.Dispatch<React.SetStateAction<number>>;
     orderCreateOrUpdate: IOrderCreateOrUpdate;
     setOrderCreateOrUpdate: React.Dispatch<React.SetStateAction<IOrderCreateOrUpdate>>;
     orderActiveTabKey: string;
@@ -71,7 +78,8 @@ const SaleComponent: React.FC = () => {
     const {loading, handleCreateOrder, handleUpdateOrder} = useOrder();
     const {handleCreateOrderItems} = useOrderItem();
     const [orderCreateOrUpdate, setOrderCreateOrUpdate] = useState<IOrderCreateOrUpdate>(defaultOrderCreateOrUpdate);
-    console.log(JSON.stringify(orderCreateOrUpdate, null, 2));
+    // console.log(JSON.stringify(orderCreateOrUpdate, null, 2));
+    const [totalQuantityCart, setTotalQuantityCart] = useState<number>(0);
     const [dataCart, setDataCart] = useState<IOrderItem[]>([])
     const [orderActiveTabKey, setOrderActiveTabKey] = useState<string>('');
     const [itemTabs, setItemTabs] = useState<TabsProps['items']>([]);
@@ -93,6 +101,7 @@ const SaleComponent: React.FC = () => {
                     label: item.orderTrackingNumber,
                     children: <ContentTabPanelSale/>,
                     key: item.id.toString(),
+                    closable: false,
                 }
             });
 
@@ -100,10 +109,12 @@ const SaleComponent: React.FC = () => {
                 setItemTabs(newTabsItems);
                 if (newTabsItems.length > 0 && orderActiveTabKey !== newTabsItems[0].key) {
                     setOrderActiveTabKey(newTabsItems[0].key);
+                    setTotalQuantityCart(calcuTotalQuantityCart(dataCart));
                     setOrderCreateOrUpdate((prevValue) => {
                         return {
                             ...prevValue,
                             id: Number(newTabsItems[0].key),
+                            orderTrackingNumber: newTabsItems[0].label,
                             totalAmount: calcuTotalAmountCart(dataCart)
                         }
                     });
@@ -119,10 +130,12 @@ const SaleComponent: React.FC = () => {
 
             if (newTabsItems.length > 0 && newTabsItems[0].key !== orderActiveTabKey) {
                 setOrderActiveTabKey(newTabsItems[0].key);
+                setTotalQuantityCart(calcuTotalQuantityCart(dataCart));
                 setOrderCreateOrUpdate((prevValue) => {
                     return {
                         ...prevValue,
                         id: Number(newTabsItems[0].key),
+                        orderTrackingNumber: newTabsItems[0].label,
                         totalAmount: calcuTotalAmountCart(dataCart)
                     }
                 });
@@ -244,10 +257,16 @@ const SaleComponent: React.FC = () => {
 
     const onChange = (newActiveKey: string) => {
         setOrderActiveTabKey(newActiveKey);
+        setTotalQuantityCart(calcuTotalQuantityCart(dataCart));
         setOrderCreateOrUpdate((prevValue) => {
+            const currentTab = itemTabs?.find((item) => item.key === newActiveKey);
+
+            const orderTrackingNumber = currentTab ? currentTab.label?.toString() : undefined;
+
             return {
                 ...prevValue,
                 id: Number(newActiveKey),
+                orderTrackingNumber: orderTrackingNumber,
                 totalAmount: calcuTotalAmountCart(dataCart)
             }
         });
@@ -261,11 +280,18 @@ const SaleComponent: React.FC = () => {
                 newPanes.push({label: result.orderTrackingNumber, children: <ContentTabPanelSale/>, key: newActiveKey});
                 setItemTabs(newPanes);
                 setOrderActiveTabKey(newActiveKey);
-                setOrderCreateOrUpdate((prevValue) => ({...prevValue, id: result.id}));
+                setOrderCreateOrUpdate((prevValue) => {
+                   return {
+                       ...prevValue,
+                       id: result.id,
+                       orderTrackingNumber: result.orderTrackingNumber
+                   }
+                });
             })
             .catch(() => {
                 showMessage("error", "Tạo hóa đơn thất bại.");
             });
+        await mutateOrderPending();
     };
 
     const remove = (targetKey: TargetKey) => {
@@ -301,7 +327,10 @@ const SaleComponent: React.FC = () => {
         <Layout style={{background: colorBgContainer}}>
             <HandleSale.Provider
                 value={{
+                    calcuTotalQuantityCart,
                     calcuTotalAmountCart,
+                    totalQuantityCart,
+                    setTotalQuantityCart,
                     orderCreateOrUpdate,
                     setOrderCreateOrUpdate,
                     orderActiveTabKey,

@@ -26,15 +26,6 @@ import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 const {Content} = Layout;
 const {Text, Paragraph, Title} = Typography;
 
-type DrawerOpen = "checkout" | "filter";
-
-interface DataType {
-    key: string;
-    productName: string;
-    quantity: number;
-    price: number;
-}
-
 export const defaultFilterParam: ParamFilterProduct = {
     page: 1,
     size: 20,
@@ -46,32 +37,32 @@ export const defaultFilterParam: ParamFilterProduct = {
     maxPrice: undefined,
 };
 
-
 interface IProps {
 
 }
 
 const NormalSale: React.FC<IProps> = (props) => {
     const {} = props;
-    const handleSale = useContext(HandleSale);
     const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
+
+    const handleSale = useContext(HandleSale);
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const [openDrawer, setOpenDrawer] = useState({
         checkout: false, filter: false,
     });
 
     const [filterParam, setFilterParam] = useState<ParamFilterProduct>({...defaultFilterParam});
-    const {dataOptionFilterProduct, isLoading} = useFilterProduct(filterParam);
+    const {dataFilterProduct, isLoading} = useFilterProduct(filterParam);
 
     const onChange: PaginationProps['onChange'] = (page, pageSize) => {
         setFilterParam((prevValue) => ({...prevValue, page: page, size: pageSize}));
     }
 
-    const showDrawer = useCallback((drawerType: DrawerOpen, isOpen: boolean) => {
+    const showDrawer = useCallback((drawerType: "checkout" | "filter", isOpen: boolean) => {
         setOpenDrawer((prevDrawer) => ({...prevDrawer, [drawerType]: isOpen}));
     }, []);
 
-    const onClose = useCallback((drawerType: DrawerOpen, isOpen: boolean) => {
+    const onClose = useCallback((drawerType: "checkout" | "filter", isOpen: boolean) => {
         setOpenDrawer((prevDrawer) => ({...prevDrawer, [drawerType]: isOpen}));
     }, []);
 
@@ -101,14 +92,19 @@ const NormalSale: React.FC<IProps> = (props) => {
                             overflowY: "auto"
                         }}
                     >
-                        <Flex justify="space-between" align="center" style={{width: "100%"}} wrap>
-                            <Paragraph>Ghi chú đơn hàng</Paragraph>
+                        <Flex justify="space-between" align="end" style={{width: "100%"}} wrap>
+                            <Text>Ghi chú đơn hàng</Text>
                             <Flex justify="space-between" align="center" wrap>
-                                <Text style={{fontSize: 16, marginInlineEnd: 10}}>Tổng tiền hàng</Text>
-                                <Text style={{fontSize: 20}} strong>
-                                    {`${handleSale?.orderCreateOrUpdate.totalAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                <Text>
+                                    <span style={{marginInlineEnd: 15}}>Tổng tiền hàng</span>
+                                    <Text strong>
+                                        {`${handleSale?.totalQuantityCart}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                    </Text>
                                 </Text>
                             </Flex>
+                            <Text style={{fontSize: 20}} strong>
+                                {`${handleSale?.orderCreateOrUpdate.totalAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                            </Text>
                         </Flex>
                     </Content>
                 </div>
@@ -163,9 +159,9 @@ const NormalSale: React.FC<IProps> = (props) => {
                                     <SubLoader size="small" spinning={isLoading}/>
                                 ) : (
                                     <>
-                                        <ProductListView dataSource={dataOptionFilterProduct?.items}/>
+                                        <ProductListView dataSource={dataFilterProduct?.items}/>
 
-                                        {/*<ProductCardView dataSource={dataOptionFilterProduct?.items}/>*/}
+                                        {/*<UserProductComponent dataSource={dataOptionFilterProduct?.items}/>*/}
                                     </>
                                 )
                             }
@@ -179,7 +175,7 @@ const NormalSale: React.FC<IProps> = (props) => {
                                     onChange={onChange}
                                     showSizeChanger={false}
                                     defaultPageSize={filterParam.size ?? 20}
-                                    total={dataOptionFilterProduct?.totalElements}
+                                    total={dataFilterProduct?.totalElements}
                                 />
                             </Col>
                             <Col flex="1 1 200px" style={{display: "flex", justifyContent: "flex-end"}}>
@@ -195,7 +191,7 @@ const NormalSale: React.FC<IProps> = (props) => {
 
             <CheckoutComponent
                 open={openDrawer.checkout}
-                onClose={() => onClose("checkout", false)}
+                onClose={onClose}
             />
 
             <FilterProduct

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {memo, useState} from 'react';
 import {Col, Row, Tag} from 'antd';
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 import {IOrderItem} from "@/types/IOrderItem";
@@ -13,10 +13,7 @@ interface IProps {
 }
 
 const QuickSelectMoney: React.FC<IProps> = (props) => {
-    const {amountDue, step, selectedTag, setSelectedTag, setPaymentInfo} = props
-
-    // Tạo ra các tag chọn nhanh dựa trên tổng tiền và bước tăng
-    // const lenght = amountDue >= 1000000 ? 5 : 6
+    const {amountDue, step, selectedTag, setSelectedTag, setPaymentInfo} = props;
 
     const tagMoneyOptions = Array.from({ length: 5 }, (_, index) => amountDue + index * step);
 
@@ -47,4 +44,4 @@ const QuickSelectMoney: React.FC<IProps> = (props) => {
         </Row>
     );
 };
-export default QuickSelectMoney;
+export default memo(QuickSelectMoney);
