@@ -57,7 +57,7 @@ const ProductGallery = (props: any) => {
                 {isSingleImage ? (
                     <Image
                         src={props.images[0].imageUrl}
-                        alt="ProductCard Image"
+                        alt="ProductCardItem Image"
                         width={490}
                         height={650}
                         style={{border: 0}}
@@ -69,7 +69,7 @@ const ProductGallery = (props: any) => {
                             <div key={index}>
                                 <Image
                                     src={image.imageUrl}
-                                    alt={`ProductCard Image ${index + 1}`}
+                                    alt={`ProductCardItem Image ${index + 1}`}
                                     width={490}
                                     height={650}
                                     style={{border: 0}}

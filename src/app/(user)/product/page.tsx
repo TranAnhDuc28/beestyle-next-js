@@ -1,4 +1,4 @@
-import UserProductComponent from "@/components/User/ShopGrid/UserProductComponent";
+import ShopProductGridComponent from "@/components/User/ShopProductGrid/ShopProductGridComponent";
 import {Metadata} from "next";
 import UserLoader from "@/components/Loader/UserLoader";
 import {Suspense} from "react";
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function Category() {
     return (
         <Suspense fallback={<UserLoader/>}>
-            <UserProductComponent/>
+            <ShopProductGridComponent/>
         </Suspense>
     );
 };

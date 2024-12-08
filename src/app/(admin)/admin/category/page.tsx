@@ -5,7 +5,7 @@ import CategoryComponent from "@/components/Admin/Category/CategoryComponent";
 
 export const metadata: Metadata = {
     title: "Danh mục sản phẩm",
-    description: "UserProductComponent - Category service",
+    description: "ShopProductGridComponent - Category service",
 };
 
 function Category() {

@@ -918,7 +918,7 @@
 ========================================*/
 
 /*======================================
-   Start Single UserProductComponent CSS
+   Start Single ShopProductGridComponent CSS
 ========================================*/
 .product-area .nav-tabs {
     text-align: center;
@@ -961,7 +961,7 @@
     border-color: transparent;
 }
 
-/* Sinlge UserProductComponent */
+/* Sinlge ShopProductGridComponent */
 .single-product {
     margin-top: 50px;
 }
@@ -1238,7 +1238,7 @@
 }
 
 /*======================================
-   End Single UserProductComponent CSS
+   End Single ShopProductGridComponent CSS
 ========================================*/
 
 /*======================================
@@ -1898,7 +1898,7 @@
     margin-top: 6px;
 }
 
-/* UserProductComponent Tab */
+/* ShopProductGridComponent Tab */
 .shop.single .product-info {
     margin-top: 50px;
 }

@@ -5,7 +5,7 @@ import {Metadata} from "next";
 
 export const metadata: Metadata = {
     title: "Chất liệu",
-    description: "UserProductComponent - Material service",
+    description: "ShopProductGridComponent - Material service",
 };
 
 const MaterialPage = () => {
