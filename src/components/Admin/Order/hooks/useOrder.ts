@@ -3,7 +3,7 @@ import {IOrder, IOrderCreateOrUpdate} from "@/types/IOrder";
 import {createOrder, updateOrder} from "@/services/OrderService";
 import {useState} from "react";
 
-const delay = () => new Promise<void>(res => setTimeout(() => res(), 300));
+const delay = () => new Promise<void>(res => setTimeout(() => res(), 200));
 
 const useOrder = () => {
     const {showNotification, showMessage} = useAppNotifications();

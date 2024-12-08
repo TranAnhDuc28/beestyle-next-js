@@ -35,6 +35,19 @@ const BrandComponent = () => {
             }
         );
 
+    useEffect(() => {
+        if (error) {
+            showNotification("error",{
+                message: error?.message, description: error?.response?.data?.message || "Error fetching brands",
+            });
+        }
+    }, [error]);
+
+    let result: any;
+    if (!isLoading && data) {
+        result = data?.data;
+    }
+
     const columns: TableColumnsType<IBrand> = [
         {title: 'Tên thương hiệu', dataIndex: 'brandName', key: 'brandName'},
         {title: 'Ngày tạo', dataIndex: 'createdAt', key: 'createdAt'},
@@ -67,19 +80,6 @@ const BrandComponent = () => {
             }
         },
     ];
-
-    useEffect(() => {
-        if (error) {
-            showNotification("error",{
-                message: error?.message, description: error?.response?.data?.message || "Error fetching brands",
-            });
-        }
-    }, [error]);
-
-    let result: any;
-    if (!isLoading && data) {
-        result = data?.data;
-    }
 
     return (
         <>

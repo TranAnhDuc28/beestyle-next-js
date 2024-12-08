@@ -6,8 +6,7 @@ import {
     CheckboxProps, Col,
     Divider,
     Drawer,
-    Flex, Input, InputNumber, Modal, QRCode, Radio, RadioChangeEvent, Row, Select,
-    Space, Switch, Tag,
+    Flex, Input, InputNumber, Modal, QRCode, Radio, RadioChangeEvent, Row, Select, Tag,
     Typography
 } from "antd";
 import {CloseIcon} from "next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon";
@@ -20,9 +19,10 @@ import {debounce} from "lodash";
 import QuickSelectMoney from "@/components/Admin/Sale/QuickSelectMoney";
 import {ExclamationCircleFilled} from "@ant-design/icons";
 import {IOrderCreateOrUpdate} from "@/types/IOrder";
+import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
+import useAddress from "@/components/Admin/Address/hook/useAddress";
 
 const {Title, Text} = Typography;
-const {confirm} = Modal;
 const {TextArea} = Input;
 
 export interface PaymentInfo {
@@ -41,6 +41,15 @@ interface IProps {
 const CheckoutComponent: React.FC<IProps> = (props) => {
     const {open, onClose} = props;
     const handleSale = useContext(HandleSale);
+
+    const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | null>(null);
+    const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | null>(null);
+    const [selectedWardCode, setSelectedWardsCode] = useState<string | null>(null);
+
+    const {handleGetProvinces, handleGetDistricts, handleGetWards} = useAddress();
+    const provincesData = handleGetProvinces();
+    const districtsData = handleGetDistricts(selectedProvinceCode);
+    const wardsData = handleGetWards(selectedDistrictCode);
 
     const [discount, setDiscount] = useState<string[]>();
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
@@ -66,7 +75,6 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
         }
         console.log(JSON.stringify(orderCreateOrUpdate, null, 2));
 
-
         setIsModalOpen(false);
         onClose("checkout", false);
     }
@@ -82,6 +90,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
         })
     };
 
+    // xử lí khi chọn bán giao hàng
     const handleDeliverySale = (checked: boolean) => {
         setDeliverySale(checked);
         setSelectedTag(0);
@@ -131,13 +140,27 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
         });
     }, 1500), []);
 
-    const onChange: CheckboxProps['onChange'] = (e) => {
-        console.log(`checked = ${e.target.checked}`);
-    };
+    // const onChange: CheckboxProps['onChange'] = (e) => {
+    //     console.log(`checked = ${e.target.checked}`);
+    // };
 
-    const onChangeSwitch = (checked: boolean) => {
-        console.log(`switch to ${checked}`);
-    };
+    // const onChangeSwitch = (checked: boolean) => {
+    //     console.log(`switch to ${checked}`);
+    // };
+    const onChangeSelectedProvince = useCallback((provinceCode: string) => {
+        setSelectedProvinceCode(provinceCode);
+        setSelectedDistrictCode(null);
+        setSelectedWardsCode(null);
+    }, []);
+
+    const onChangeSelectedDistrict = useCallback((districtCode: string) => {
+        setSelectedDistrictCode(districtCode);
+        setSelectedWardsCode(null);
+    }, []);
+
+    const onChangeSelectedWard = useCallback((wardCode: string) => {
+        setSelectedWardsCode(wardCode);
+    }, []);
 
     useEffect(() => {
         if (handleSale?.orderCreateOrUpdate) {
@@ -179,7 +202,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
     // UI
     const titleDrawer = (
         <div>
-            <Title level={4} style={{margin: 0}}>Trần Anh Đức 0123456789</Title>
+            <Title level={4} style={{margin: 0}}>Khách lẻ</Title>
         </div>
     );
 
@@ -378,12 +401,12 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                                                 <Title level={5} style={{marginBottom: 0}}>
                                                     Thông tin giao hàng
                                                 </Title>
-                                                <Flex justify="flex-start" align="center" wrap>
-                                                    <Switch onChange={onChangeSwitch} style={{marginInlineEnd: 10}}/>
-                                                    <Text style={{fontSize: 16, marginInlineEnd: 10}}>
-                                                        Thanh toán khi nhận hàng
-                                                    </Text>
-                                                </Flex>
+                                                {/*<Flex justify="flex-start" align="center" wrap>*/}
+                                                {/*    <Switch onChange={onChangeSwitch} style={{marginInlineEnd: 10}}/>*/}
+                                                {/*    <Text style={{fontSize: 16, marginInlineEnd: 10}}>*/}
+                                                {/*        Thanh toán khi nhận hàng*/}
+                                                {/*    </Text>*/}
+                                                {/*</Flex>*/}
                                             </Flex>
 
                                             <div style={{width: "100%"}}>
@@ -395,48 +418,33 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                                                         <Input style={{width: "100%"}} placeholder="Số điện thoại"/>
                                                     </Col>
                                                     <Col xs={24} sm={8} md={8} lg={8} xl={8}>
-                                                        <Select
-                                                            style={{width: "100%"}}
-                                                            showSearch
+                                                        <SelectSearchOptionLabel
+                                                            value={selectedProvinceCode}
                                                             placeholder="Tỉnh / Thành Phố"
-                                                            filterOption={(input, option) =>
-                                                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                                            }
-                                                            options={[
-                                                                {value: '1', label: 'Jack'},
-                                                                {value: '2', label: 'Lucy'},
-                                                                {value: '3', label: 'Tom'},
-                                                            ]}
+                                                            style={{width: "100%"}}
+                                                            data={provincesData?.dataOptionProvinces}
+                                                            isLoading={provincesData?.isLoading}
+                                                            onChange={onChangeSelectedProvince}
                                                         />
                                                     </Col>
                                                     <Col xs={24} sm={8} md={8} lg={8} xl={8}>
-                                                        <Select
-                                                            style={{width: "100%"}}
-                                                            showSearch
+                                                        <SelectSearchOptionLabel
+                                                            value={selectedDistrictCode}
                                                             placeholder="Quận / Huyện"
-                                                            filterOption={(input, option) =>
-                                                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                                            }
-                                                            options={[
-                                                                {value: '1', label: 'Jack'},
-                                                                {value: '2', label: 'Lucy'},
-                                                                {value: '3', label: 'Tom'},
-                                                            ]}
+                                                            style={{width: "100%"}}
+                                                            data={districtsData?.dataOptionDistricts}
+                                                            isLoading={districtsData?.isLoading}
+                                                            onChange={onChangeSelectedDistrict}
                                                         />
                                                     </Col>
                                                     <Col xs={24} sm={8} md={8} lg={8} xl={8}>
-                                                        <Select
-                                                            style={{width: "100%"}}
-                                                            showSearch
+                                                        <SelectSearchOptionLabel
+                                                            value={selectedWardCode}
                                                             placeholder="Phường / Xã"
-                                                            filterOption={(input, option) =>
-                                                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                                            }
-                                                            options={[
-                                                                {value: '1', label: 'Jack'},
-                                                                {value: '2', label: 'Lucy'},
-                                                                {value: '3', label: 'Tom'},
-                                                            ]}
+                                                            style={{width: "100%"}}
+                                                            data={wardsData?.dataOptionWards}
+                                                            isLoading={wardsData?.isLoading}
+                                                            onChange={onChangeSelectedWard}
                                                         />
                                                     </Col>
                                                     <Col xs={24} sm={24} md={24} lg={24} xl={24}>
@@ -488,6 +496,6 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                 </Flex>
             </Modal>
         </>
-);
+    );
 }
 export default memo(CheckoutComponent);
