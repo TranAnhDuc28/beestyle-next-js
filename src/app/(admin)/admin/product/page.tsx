@@ -5,7 +5,7 @@ import {Metadata} from "next";
 
 export const metadata: Metadata = {
     title: "Sản phẩm",
-    description: "UserProductComponent service",
+    description: "ShopProductGridComponent service",
 };
 
 const Product = () => {

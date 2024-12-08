@@ -7,7 +7,7 @@ import Slider from "react-slick";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import React, {useState} from "react";
-import ProductModal from "@/components/User/Home/Modal/ProductModal";
+import ProductQuickLookupModal from "@/components/User/ProductQuickLookupModal";
 import useSWR from "swr";
 import {getSellingProduct, URL_API_PRODUCT_SELLER} from "@/services/user/ProductAreaService";
 import {TiEye, TiArrowLeft, TiArrowRight} from 'react-icons/ti';
@@ -149,7 +149,7 @@ function MostPopularProduct() {
                     </div>
                 </div>
             </div>
-            <ProductModal
+            <ProductQuickLookupModal
                 visible={isModalVisible}
                 onClose={handleCloseModal}
                 product={selectedProduct}

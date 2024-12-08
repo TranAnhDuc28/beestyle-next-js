@@ -161,7 +161,7 @@ const NormalSale: React.FC<IProps> = (props) => {
                                     <>
                                         <ProductListView dataSource={dataFilterProduct?.items}/>
 
-                                        {/*<UserProductComponent dataSource={dataOptionFilterProduct?.items}/>*/}
+                                        {/*<ShopProductGridComponent dataSource={dataOptionFilterProduct?.items}/>*/}
                                     </>
                                 )
                             }

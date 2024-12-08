@@ -10,7 +10,7 @@ interface IProps {
     product: any;
 }
 
-const ProductModal: React.FC<IProps> = ({visible, onClose, product}) => {
+const ProductQuickLookupModal: React.FC<IProps> = ({visible, onClose, product}) => {
     if (!product) return null;
 
     const images = Array.isArray(product.imageUrl) ? product.imageUrl : [product.imageUrl];
@@ -118,4 +118,4 @@ const ProductModal: React.FC<IProps> = ({visible, onClose, product}) => {
     );
 };
 
-export default ProductModal;
+export default ProductQuickLookupModal;

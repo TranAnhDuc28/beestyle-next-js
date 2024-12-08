@@ -5,7 +5,7 @@ import VariantComponent from "@/components/Admin/Product/Variant/VariantComponen
 
 export const metadata: Metadata = {
     title: "Sản phẩm",
-    description: "UserProductComponent variant service",
+    description: "ShopProductGridComponent variant service",
 };
 
 function Variant({ params }: { params: { id: string }}) {

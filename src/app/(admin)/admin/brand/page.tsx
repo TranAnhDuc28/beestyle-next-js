@@ -5,7 +5,7 @@ import {Metadata} from "next";
 
 export const metadata: Metadata = {
     title: "Thương hiệu",
-    description: "UserProductComponent - Brand service",
+    description: "ShopProductGridComponent - Brand service",
 };
 
 function BrandPage() {

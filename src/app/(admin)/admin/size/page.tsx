@@ -5,7 +5,7 @@ import SizeComponent from "@/components/Admin/Size/SizeComponent";
 
 export const metadata: Metadata = {
     title: "Kích thước",
-    description: "UserProductComponent - Size service",
+    description: "ShopProductGridComponent - Size service",
 };
 
 function Size() {
