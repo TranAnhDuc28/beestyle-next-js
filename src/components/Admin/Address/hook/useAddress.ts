@@ -1,99 +1,75 @@
-import {useState, useEffect, useCallback} from "react";
+"use client";
+import useSWR from "swr";
+import axios from "axios";
+import useAppNotifications from "@/hooks/useAppNotifications";
+
+const transformData = (data: any[]) => {
+    return data.map((item) => ({
+        key: item.code.toString() as React.Key,
+        value: item.code,
+        label: item.name_with_type,
+        title: item.name_with_type,
+    }));
+};
+
+const AddressAPIUrls  = {
+    provinces: "https://vn-public-apis.fpo.vn/provinces/getAll?limit=-1",
+    districts: (provinceCode: string) => `https://vn-public-apis.fpo.vn/districts/getByProvince?provinceCode=${provinceCode}&limit=-1`,
+    wards: (districtCode: string) => `https://vn-public-apis.fpo.vn/wards/getByDistrict?districtCode=${districtCode}&limit=-1`,
+}
+
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 const useAddress = () => {
-    const [provinces, setProvinces] = useState<any[]>([]);
-    const [districts, setDistricts] = useState<any[]>([]);
-    const [wards, setWards] = useState<any[]>([]);
-    const [loading, setLoading] = useState({
-        provinces: false,
-        districts: false,
-        wards: false,
-    });
-    const [error, setError] = useState<string | null>(null);
+    const {showNotification} = useAppNotifications();
 
-    // Hàm delay
-    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    const fetchApiAdress = (key: string | null, description: string) => {
+        const {data, error, isLoading, mutate} = useSWR(key, fetcher, {
+            revalidateIfStale: false,
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+        });
 
-    // Hàm fetch với retry khi gặp lỗi 429 và delay mặc định
-    const fetchWithRetry = async (url: string, retries = 3, delayMs = 1000) => {
-        await delay(500); // Đặt độ trễ mặc định 500ms trước mỗi lần gọi API
-        try {
-            const response = await fetch(url);
-            if (response.status === 429 && retries > 0) {
-                // Thử lại nếu gặp lỗi 429
-                await delay(delayMs);
-                return fetchWithRetry(url, retries - 1, delayMs * 2); // Tăng thời gian chờ mỗi lần thử lại
-            }
-            if (!response.ok) {
-                throw new Error(`Lỗi khi tải dữ liệu từ ${url}`);
-            }
-            return response.json();
-        } catch (error) {
-            throw error;
+        if (error) {
+            showNotification("error", {
+                message: error?.message, description: error?.response?.data?.message || `Error fetching ${description}`,
+            });
         }
-    };
 
-    // Fetch danh sách tỉnh
-    const fetchProvinces = useCallback(async () => {
-        if (provinces.length > 0) return;
-        setLoading((prev) => ({...prev, provinces: true}));
-        setError(null);
+        return {data, error, isLoading, mutate};
+    }
 
-        try {
-            const data = await fetchWithRetry("https://vn-public-apis.fpo.vn/provinces/getAll?limit=-1");
-            setProvinces(data?.data?.data);
-        } catch (err) {
-            setError("Không thể tải danh sách tỉnh. Vui lòng thử lại.");
-        } finally {
-            setLoading((prev) => ({...prev, provinces: false}));
-        }
-    }, [provinces.length]);
+    const handleGetProvinces = () => {
+        const {data, error, isLoading, mutate} =
+            fetchApiAdress(AddressAPIUrls.provinces, 'provinces');
 
-    // Fetch danh sách huyện theo tỉnh
-    const fetchDistricts = useCallback(
-        async (provinceCode: string) => {
-            if (!provinceCode) return;
-            setDistricts([]);
-            setWards([]);
-            setLoading((prev) => ({...prev, districts: true}));
-            setError(null);
+        const dataProvinces = !isLoading && data?.data?.data ? data.data.data : [];
+        const dataOptionProvinces = !isLoading && data?.data?.data ? transformData(data.data.data) : [];
 
-            try {
-                const data = await fetchWithRetry(
-                    `https://vn-public-apis.fpo.vn/districts/getByProvince?provinceCode=${provinceCode}&limit=-1`
-                );
-                setDistricts(data.data.data);
-            } catch (err) {
-                setError("Không thể tải danh sách huyện. Vui lòng thử lại.");
-                setDistricts([]);
-            } finally {
-                setLoading((prev) => ({...prev, districts: false}));
-            }
-        },
-        []
-    );
+        return {dataProvinces, dataOptionProvinces, error, isLoading, mutate};
+    }
 
-    // Fetch danh sách xã theo huyện
-    const fetchWards = async (districtCode: string) => {
-        const response = await fetch(
-            `https://vn-public-apis.fpo.vn/wards/getByDistrict?districtCode=${districtCode}&limit=-1`
-        );
-        const data = await response.json();
-        setWards(data.data.data);
-    };
+    const handleGetDistricts = (provinceCode: string | null) => {
+        const {data, error, isLoading, mutate} =
+            fetchApiAdress(provinceCode ? AddressAPIUrls.districts(provinceCode) : null, 'districts');
 
+        const dataDistricts = !isLoading && data?.data?.data ? data.data.data : [];
+        const dataOptionDistricts = !isLoading && data?.data?.data ? transformData(data.data.data) : [];
 
-    // Khởi tạo dữ liệu tỉnh khi hook khởi tạo
-    useEffect(() => {
-        fetchProvinces();
-    }, [fetchProvinces]);
+        return {dataDistricts, dataOptionDistricts, error, isLoading, mutate};
+    }
 
-    const resetAddressData = () => {
-        setDistricts([]);
-        setWards([]);
-    };
+    const handleGetWards = (districtCode: string | null) => {
+        const {data, error, isLoading, mutate} =
+            fetchApiAdress(districtCode ? AddressAPIUrls.wards(districtCode) : null, 'wards');
 
-    return {provinces, districts, wards, loading, error, fetchDistricts, fetchWards, resetAddressData};
+        const dataWards = !isLoading && data?.data?.data ? data.data.data : [];
+        const dataOptionWards = !isLoading && data?.data?.data ? transformData(data.data.data) : [];
+
+        return {dataWards, dataOptionWards, error, isLoading, mutate};
+    }
+
+    return {handleGetProvinces, handleGetDistricts, handleGetWards};
 };
 
 export default useAddress;

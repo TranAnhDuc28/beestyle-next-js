@@ -16,7 +16,7 @@ function ProductArea() {
 
     const {data: products} = useSWR(URL_API_PRODUCT_AREA, getProductForUser);
 
-    const handleOpenModal = (product) => {
+    const handleOpenModal = (product: any) => {
         setSelectedProduct(product);
         setIsModalVisible(true);
     };

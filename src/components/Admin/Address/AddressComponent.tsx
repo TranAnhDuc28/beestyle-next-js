@@ -22,7 +22,6 @@ const {Title} = Typography;
 const AddressComponent = () => {
     const [expandedKey, setExpandedKey] = useState<number | null>(null);
 
-
     const handleUpdate = () => {
         setExpandedKey(null); // Đóng form sau khi cập nhật
     };
@@ -62,7 +61,7 @@ const AddressComponent = () => {
 
                 const result = await setIsDefault(data);
 
-                mutate();
+                await mutate();
                 console.log(result);
 
                 if (result.data) {

@@ -1,6 +1,6 @@
 import {Card, Descriptions, Table, Statistic, Row, Col, Button} from 'antd';
 import React, {memo, useEffect, useState} from "react";
-import {getOrdersById, URL_API_ORDER} from "@/services/OrderService";
+import {URL_API_ORDER} from "@/services/OrderService";
 import useSWR from "swr";
 
 const OrderDetail: React.FC<{ record: any }> = ({record}) => {
@@ -9,7 +9,7 @@ const OrderDetail: React.FC<{ record: any }> = ({record}) => {
     console.log(record)
 
     const url = `${URL_API_ORDER.create}admin/order-item?id=${record.id}`;
-    const {data: detail} = useSWR(url, getOrdersById, {
+    const {data: detail} = useSWR(url, null, {
         revalidateOnFocus: false,
         shouldRetryOnError: false,
     });

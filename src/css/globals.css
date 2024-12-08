@@ -54,3 +54,8 @@ body {
     border: none !important;
 }
 
+.link-no-decoration-nav {
+    text-decoration: none;
+    font-weight: bold;
+}
+
