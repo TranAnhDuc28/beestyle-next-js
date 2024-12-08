@@ -4,6 +4,24 @@
 @import 'user/styles/color.css';
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
+/* start custom mark image item card */
+.custom-mask-img {
+    background-color: transparent !important;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end !important;
+    margin-bottom: 10px;
+    opacity: 0 !important;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-in-out, transform 0.3s ease-in-out !important;
+}
+
+.custom-mask-img:hover {
+    opacity: 1 !important;
+    transform: translateY(0);
+}
+/* end custom mark image item card */
+
 /* Preloader */
 .preloader {
     position: fixed;
