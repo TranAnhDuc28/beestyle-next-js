@@ -30,7 +30,7 @@ export const updateQuantityInStockProductVariants = async (data: {id: number, qu
 export const getProductDetails = async (productId: number) => {
     try {
         const response = await httpInstance.get(`${URL_API_PRODUCT_VARIANT.productVariant}?productIds=${productId}`);
-        console.log("Product details:", response.data);
+        console.log("ShopProductGridComponent details:", response.data);
         return response.data;
     } catch (error) {
         console.error("Error fetching product details:", error);

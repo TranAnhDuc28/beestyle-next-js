@@ -52,7 +52,7 @@ const NormalSale: React.FC<IProps> = (props) => {
     });
 
     const [filterParam, setFilterParam] = useState<ParamFilterProduct>({...defaultFilterParam});
-    const {dataOptionFilterProduct, isLoading} = useFilterProduct(filterParam);
+    const {dataFilterProduct, isLoading} = useFilterProduct(filterParam);
 
     const onChange: PaginationProps['onChange'] = (page, pageSize) => {
         setFilterParam((prevValue) => ({...prevValue, page: page, size: pageSize}));
@@ -159,9 +159,9 @@ const NormalSale: React.FC<IProps> = (props) => {
                                     <SubLoader size="small" spinning={isLoading}/>
                                 ) : (
                                     <>
-                                        <ProductListView dataSource={dataOptionFilterProduct?.items}/>
+                                        <ProductListView dataSource={dataFilterProduct?.items}/>
 
-                                        {/*<ProductCardView dataSource={dataOptionFilterProduct?.items}/>*/}
+                                        {/*<ShopProductGridComponent dataSource={dataOptionFilterProduct?.items}/>*/}
                                     </>
                                 )
                             }
@@ -175,7 +175,7 @@ const NormalSale: React.FC<IProps> = (props) => {
                                     onChange={onChange}
                                     showSizeChanger={false}
                                     defaultPageSize={filterParam.size ?? 20}
-                                    total={dataOptionFilterProduct?.totalElements}
+                                    total={dataFilterProduct?.totalElements}
                                 />
                             </Col>
                             <Col flex="1 1 200px" style={{display: "flex", justifyContent: "flex-end"}}>

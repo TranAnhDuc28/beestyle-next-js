@@ -1,6 +1,6 @@
 "use client"
 import React, {createContext, CSSProperties, useCallback, useEffect, useMemo, useRef, useState} from "react";
-import {Layout, Spin, Tabs, TabsProps, theme} from "antd";
+import {Badge, Layout, Spin, Tabs, TabsProps, theme} from "antd";
 import ContentTabPanelSale from "@/components/Admin/Sale/ContentTabPanelSale";
 import TabBarExtraContentLeft from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentLeft";
 import TabBarExtraContentRight from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentRight";
@@ -291,6 +291,7 @@ const SaleComponent: React.FC = () => {
             .catch(() => {
                 showMessage("error", "Tạo hóa đơn thất bại.");
             });
+        await mutateOrderPending();
     };
 
     const remove = (targetKey: TargetKey) => {

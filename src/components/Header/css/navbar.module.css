@@ -3,8 +3,8 @@
     top: 80px;
     height: 80px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     padding: 0 32px;
     border-bottom: 1px solid #f0f0f0;
     width: 100%;
@@ -27,14 +27,13 @@
     transition: none;
 }
 
-.logo {
-    height: 32px;
-}
-
 .menuContainer {
-    flex: 1;
-    display: flex;
-    justify-content: center;
+    /* display: flex;
+    flex-grow: 1;
+    justify-content: center; */
+    overflow: hidden;
+    border-style: none;
+    font-size: 18px;
 }
 
 .menu :global(.ant-menu-horizontal) {

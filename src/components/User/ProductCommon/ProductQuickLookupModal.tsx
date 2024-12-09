@@ -4,9 +4,16 @@ import Image from 'next/image';
 import {useProductImages, useProduct} from '@/services/user/SingleProductService';
 import ColorPickers from '@/components/User/ShopSingle/Properties/ColorPickers';
 import SizePickers from '@/components/User/ShopSingle/Properties/SizePickers';
+interface IProps {
+    visible: boolean;
+    onClose: () => void;
+    product: any;
+}
 
-const ProductModal = ({visible, onClose, product}) => {
-    if (!visible) return null;
+const ProductQuickLookupModal: React.FC<IProps> = ({visible, onClose, product}) => {
+    if (!product) return null;
+
+    const images = Array.isArray(product.imageUrl) ? product.imageUrl : [product.imageUrl];
 
     const productId = product.id;
     const [quantity, setQuantity] = useState(1);
@@ -14,7 +21,7 @@ const ProductModal = ({visible, onClose, product}) => {
     const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
     const {data: productData, error: productError} = useProduct(productId, selectedColor, selectedSize);
-    const {data: images, error: imagesError} = useProductImages(productId);
+    // const {data: images, error: imagesError} = useProductImages(productId);
 
     useEffect(() => {
         setQuantity(1);
@@ -32,21 +39,24 @@ const ProductModal = ({visible, onClose, product}) => {
             style={{ maxWidth: "60vw" }}
             centered
         >
-            <div className="grid grid-cols-2 gap-4">
-            <div className="w-full">
-                <Carousel autoplay infinite={false}>
-                    {images ? images.map((image, index) => (
-                        <div key={index} className="flex justify-center">
-                            <Image
-                                width={350}
-                                height={500}
-                                src={image.imageUrl}
-                                alt={productData?.productName}
-                                style={{ objectFit: "contain" }}
-                            />
-                        </div>
-                    )) : <div>Loading...</div>}
-                </Carousel>
+            <div style={{display: 'flex', alignItems: 'center'}}>
+                <div style={{flex: 1, marginRight: '20px'}}>
+                    <Carousel
+                        arrows
+                        autoplay
+                        infinite={false}
+                        style={{textAlign: 'center'}}
+                    >
+                        {images ? images.map((imgSrc: any, index: number) => (
+                            <div key={index}>
+                                <Image width={569} height={528} src={imgSrc} alt={product.productName}/>
+                            </div>
+                        )) : (
+                            <Image width={569} height={528} src={"/no-img.png"} alt={product.productName}/>
+                        )
+                        }
+                    </Carousel>
+                </div>
             </div>
 
             {/* Cột Product Details */}
@@ -87,10 +97,8 @@ const ProductModal = ({visible, onClose, product}) => {
                     Thêm vào giỏ hàng
                 </Button>
             </div>
-        </div>
-
         </Modal>
     );
 };
 
-export default ProductModal;
+export default ProductQuickLookupModal;

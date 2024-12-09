@@ -37,8 +37,8 @@ const useFilterProduct = (param?: ParamFilterProduct) => {
             }
         );
 
-    const dataOptionFilterProduct = !isLoading && data?.data ? data.data : [];
+    const dataFilterProduct = !isLoading && data?.data ? data.data : [];
 
-    return {dataOptionFilterProduct, error, isLoading, mutateProduct};
+    return {dataFilterProduct, error, isLoading, mutateProduct};
 }
 export default useFilterProduct;
