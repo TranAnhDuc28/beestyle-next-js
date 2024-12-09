@@ -72,6 +72,8 @@ const TabBarExtraContentLeft: React.FC = () => {
 
     return (
         <>
+
+            <Title level={4} style={{display: "inline", margin: "0px 20px"}}>Bán hàng</Title>
             <AutoComplete
                 allowClear
                 onClear={() => setOptions([])}
@@ -81,7 +83,7 @@ const TabBarExtraContentLeft: React.FC = () => {
                 onSearch={handleSearch}
                 onSelect={handleSelect}
                 value={searchTerm}
-                style={{width: 500, margin: "0px 20px 0px 20px"}}
+                style={{width: 500, marginRight: 20}}
                 notFoundContent={
                     isLoading ? <Skeleton/> : (searchTerm && options?.length === 0) ?
                         <Empty description="Không có kết quả tìm kiếm"/> : null

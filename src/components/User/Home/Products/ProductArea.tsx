@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {TiEye} from 'react-icons/ti';
 import MenuProductArea from "@/components/User/Home/Products/MenuProductArea";
-import ProductModal from "@/components/User/Home/Modal/ProductModal";
+import ProductQuickLookupModal from "@/components/User/ProductCommon/ProductQuickLookupModal";
 import useSWR from 'swr';
 import {getProductForUser, URL_API_PRODUCT_AREA} from "@/services/user/ProductAreaService";
 
@@ -119,7 +119,7 @@ function ProductArea() {
                     </div>
                 </div>
             </div>
-            <ProductModal
+            <ProductQuickLookupModal
                 visible={isModalVisible}
                 onClose={handleCloseModal}
                 product={selectedProduct}
