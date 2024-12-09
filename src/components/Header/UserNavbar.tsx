@@ -62,6 +62,7 @@ const menuItems: MenuProps["items"] = [
   {
     key: "category",
     label: (
+        /*Load data form DB*/
       <Dropdown menu={{ items: categories }}>
         <span>Danh mục</span>
       </Dropdown>
@@ -94,9 +95,9 @@ const menuItems: MenuProps["items"] = [
   {
     key: "find",
     label: (
-      <Dropdown menu={{ items: collections }}>
+      <Link href={""} className="link-no-decoration">
         <span>Tra cứu</span>
-      </Dropdown>
+      </Link>
     ),
   },
 ]
@@ -144,6 +145,7 @@ export default function Navbar() {
                     className="border-none w-max"
                     items={menuItems}
                     selectedKeys={[activeKey]}
+                    disabledOverflow={true}
                 />
             </div>
 

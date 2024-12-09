@@ -28,60 +28,67 @@ const ProductModal = ({visible, onClose, product}) => {
             open={visible}
             onCancel={onClose}
             footer={null}
-            width={900}
+            width={"auto"}
+            style={{ maxWidth: "60vw" }}
             centered
         >
-            <div className="flex">
-                <div className="w-1/2 mr-4">
-                    <Carousel autoplay infinite={false}>
-                        {images ? images.map((image, index) => (
-                            <div key={index}>
-                                <Image
-                                    width={400}
-                                    height={528}
-                                    src={image.imageUrl}
-                                    alt={productData?.productName}
-                                />
-                            </div>
-                        )) : <div>Loading...</div>}
-                    </Carousel>
-                </div>
-
-                <div className="w-1/2">
-                    <h2>{productData?.productName || 'No product data'}</h2>
-                    <div className="flex items-center mb-4">
-                        <Rate disabled defaultValue={5} style={{fontSize: 16}}/>
-                        <span className="ml-2">({productData?.reviewsCount || 0} reviews)</span>
-                    </div>
-                    <h3 className="text-red-500">{productData?.salePrice?.toLocaleString('vi-VN')} đ</h3>
-
-                    <div className="my-4">
-                        <ColorPickers
-                            productId={productId}
-                            selectedColor={selectedColor}
-                            onColorSelect={setSelectedColor}
-                        />
-                        <SizePickers
-                            productId={productId}
-                            colorCode={selectedColor}
-                            selectedSize={selectedSize}
-                            onSizeSelect={setSelectedSize}
-                        />
-                    </div>
-
-                    {/* Quantity Selector */}
-                    <div className="flex items-center my-4">
-                        <Button onClick={handleDecrement}>-</Button>
-                        <Input value={quantity} className="mx-2 text-center" readOnly style={{width: 50}}/>
-                        <Button onClick={handleIncrement}>+</Button>
-                    </div>
-
-                    {/* Add to Cart Button */}
-                    <Button type="primary" block>
-                        Thêm vào giỏ hàng
-                    </Button>
-                </div>
+            <div className="grid grid-cols-2 gap-4">
+            <div className="w-full">
+                <Carousel autoplay infinite={false}>
+                    {images ? images.map((image, index) => (
+                        <div key={index} className="flex justify-center">
+                            <Image
+                                width={350}
+                                height={500}
+                                src={image.imageUrl}
+                                alt={productData?.productName}
+                                style={{ objectFit: "contain" }}
+                            />
+                        </div>
+                    )) : <div>Loading...</div>}
+                </Carousel>
             </div>
+
+            {/* Cột Product Details */}
+            <div className="w-full">
+                <h2 className="text-xl font-bold mb-2">{productData?.productName || "No product data"}</h2>
+                <div className="flex items-center mb-4">
+                    <Rate disabled defaultValue={5} style={{ fontSize: 16 }} />
+                    <span className="ml-2 text-sm">({productData?.reviewsCount || 0} đánh giá)</span>
+                </div>
+                <h3 className="text-red-500 text-2xl mb-4">
+                    {productData?.salePrice?.toLocaleString("vi-VN")} đ
+                </h3>
+
+                {/* Color Picker */}
+                <ColorPickers
+                    productId={productId}
+                    selectedColor={selectedColor}
+                    onColorSelect={setSelectedColor}
+                />
+
+                {/* Size Picker */}
+                <SizePickers
+                    productId={productId}
+                    colorCode={selectedColor}
+                    selectedSize={selectedSize}
+                    onSizeSelect={setSelectedSize}
+                />
+
+                {/* Quantity Selector */}
+                <div className="flex items-center my-4">
+                    <Button onClick={handleDecrement}>-</Button>
+                    <Input value={quantity} className="mx-2 text-center" readOnly style={{ width: 50 }} />
+                    <Button onClick={handleIncrement}>+</Button>
+                </div>
+
+                {/* Add to Cart Button */}
+                <Button type="primary" block size="large">
+                    Thêm vào giỏ hàng
+                </Button>
+            </div>
+        </div>
+
         </Modal>
     );
 };

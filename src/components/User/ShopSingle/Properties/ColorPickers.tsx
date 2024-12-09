@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {CheckOutlined} from "@ant-design/icons";
 import Link from "next/link";
 import {useProductColors} from "@/services/user/SingleProductService";
+import "./css/property.css";
 
 const ColorPickers = (props: any) => {
     const {data: colors} = useProductColors(props.productId);

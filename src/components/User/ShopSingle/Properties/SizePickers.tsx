@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React, {useEffect} from "react";
 import {useProductSizes} from "@/services/user/SingleProductService";
+import "./css/property.css";
 
 const SizePickers = (props: any) => {
     const {data: sizes} = useProductSizes(props.productId, props.colorCode)

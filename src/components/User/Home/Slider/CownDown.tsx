@@ -18,7 +18,11 @@ export default function CownDownArea() {
                     <div className="row">
                         <div className="col-lg-6 col-12 padding-right">
                             <div className="image">
-                                <Image src="/img750x590.png" alt="#" width={750} height={590}/>
+                                <Image
+                                    src="https://m.yodycdn.com/fit-in/filters:format(webp)/products/media/categories/2023-06-12-08-48-19_a5b00606-d7c0-4ba0-9611-33867680f45b.jpg"
+                                    alt="#" width={750} height={590}
+                                    unoptimized 
+                                />
                             </div>
                         </div>
                         <div className="col-lg-6 col-12 padding-left">

@@ -50,7 +50,7 @@ export default function Slider() {
             {isHovered && (
                 <>
                     <Button
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white border-0 hover:bg-black hover:opacity-80 z-10"
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white border-0 hover:!bg-black/80"
                         shape="circle"
                         icon={<LeftOutlined/>}
                         size="large"
@@ -58,7 +58,7 @@ export default function Slider() {
                         aria-label="Previous slide"
                     />
                     <Button
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white border-0 hover:bg-black hover:opacity-80 z-10"
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white border-0 hover:!bg-black/80"
                         shape="circle"
                         icon={<RightOutlined/>}
                         size="large"
