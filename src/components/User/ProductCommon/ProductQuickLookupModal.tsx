@@ -4,7 +4,13 @@ import Image from 'next/image';
 
 const {Option} = Select;
 
-const ProductModal = ({visible, onClose, product}) => {
+interface IProps {
+    visible: boolean;
+    onClose: () => void;
+    product: any;
+}
+
+const ProductQuickLookupModal: React.FC<IProps> = ({visible, onClose, product}) => {
     if (!product) return null;
 
     const images = Array.isArray(product.imageUrl) ? product.imageUrl : [product.imageUrl];
@@ -40,12 +46,12 @@ const ProductModal = ({visible, onClose, product}) => {
                         infinite={false}
                         style={{textAlign: 'center'}}
                     >
-                        {images ? images.map((imgSrc, index) => (
+                        {images ? images.map((imgSrc: any, index: number) => (
                             <div key={index}>
                                 <Image width={569} height={528} src={imgSrc} alt={product.productName}/>
                             </div>
                         )) : (
-                            <Image width={569} height={528} src="" alt={product.productName}/>
+                            <Image width={569} height={528} src={"/no-img.png"} alt={product.productName}/>
                         )
                         }
                     </Carousel>
@@ -112,4 +118,4 @@ const ProductModal = ({visible, onClose, product}) => {
     );
 };
 
-export default ProductModal;
+export default ProductQuickLookupModal;

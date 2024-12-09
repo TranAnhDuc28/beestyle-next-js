@@ -5,7 +5,7 @@ import {IOrder} from "@/types/IOrder";
 import TablePagination from "@/components/Table/TablePagination";
 import React, {useEffect, useState} from "react";
 import {useSearchParams} from "next/navigation";
-import {getOrdersById, URL_API_ORDER} from "@/services/OrderService";
+import {URL_API_ORDER} from "@/services/OrderService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import HeaderOrder from "@/components/Admin/Order/HeaderOrder";
 import TabsOrder from "@/components/Admin/Order/TabsOrder";
@@ -34,7 +34,7 @@ const OrderComponent: React.FC = () => {
 
     const {data: orders, error, isLoading} = useSWR(
         `${URL_API_ORDER.get}${params.size !== 0 ? `?${params.toString()}` : ''}`,
-        getOrdersById,
+        null,
         {
             revalidateOnFocus: false,
             revalidateOnReconnect: false
