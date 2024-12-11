@@ -23,7 +23,7 @@ export const defaultFilterParam: ParamFilterProduct = {
 
 const ShopProductGridComponent: React.FC = () => {
     const [filterParam, setFilterParam] = useState<ParamFilterProduct>({...defaultFilterParam});
-    const [debounceFilterParam] = useDebounce(filterParam, 500);
+    const [debounceFilterParam] = useDebounce(filterParam, 1000);
     const {dataFilterProduct, isLoading} = useFilterProduct(debounceFilterParam);
 
     const onChange: PaginationProps['onChange'] = (page, pageSize) => {
@@ -37,24 +37,32 @@ const ShopProductGridComponent: React.FC = () => {
     return (
         <Flex justify="center" className="section">
             <div style={{width: "85%"}}>
-                <Row gutter={[24, 24]}>
-                    <Col span={5}>
-                        <FilterProductUser filterParam={filterParam}/>
+                <Row gutter={[24, 24]} style={{minWidth: 800}}>
+                    <Col span={5} style={{minWidth: 120}}>
+                        <FilterProductUser filterParam={filterParam} setFilterParam={setFilterParam}/>
                     </Col>
                     <Col span={19}>
                         <Row gutter={[8, 8]}>
                             <Col span={24}>
                                 <HeaderShopGrid/>
                             </Col>
-                            <Col span={24}>
-                                <Row gutter={[16, 16]}>
+                            <Col span={24} className="h-full w-full">
+                                <Row gutter={[16, 16]} className="h-full w-full">
                                     {
                                         isLoading ? (
                                             <SubLoader size="small" spinning={isLoading}/>
                                         ) : (
                                             dataFilterProduct?.items?.length > 0 ? (
                                                 dataFilterProduct?.items.map((product: any) => (
-                                                        <Col span={6} key={product.id}>
+                                                        <Col
+                                                            xs={12}
+                                                            sm={12}
+                                                            md={12}
+                                                            lg={8}
+                                                            xl={8}
+                                                            xxl={6}
+                                                            key={product.id}
+                                                        >
                                                             <ProductCard product={product}/>
                                                         </Col>
                                                     )

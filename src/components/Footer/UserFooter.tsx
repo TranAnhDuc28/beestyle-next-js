@@ -4,10 +4,13 @@ import Image from "next/image";
 import {IoHomeOutline, IoMailUnreadOutline} from "react-icons/io5";
 import {FiMapPin} from "react-icons/fi";
 import {FaPhone} from "react-icons/fa";
+import {Layout} from "antd";
+
+const {Footer} = Layout;
 
 export default function UserFooter() {
     return (
-        <footer className="footer">
+        <div className="footer">
             <div className="footer-top section">
                 <div className="container">
                     <div className="row">
@@ -116,6 +119,6 @@ export default function UserFooter() {
                     </div>
                 </div>
             </div>
-        </footer>
+        </div>
     )
 }
