@@ -17,17 +17,6 @@ export default function ShopServices() {
                                 </div>
                             </div>
                         </div>
-                        {/*<div className="col-3">*/}
-                        {/*    <div className="single-service">*/}
-                        {/*        <div className="single-service">*/}
-                        {/*            <i><IoReloadSharp/></i>*/}
-                        {/*            <div className="ml-14">*/}
-                        {/*                <h4>Miễn phí đổi trả</h4>*/}
-                        {/*                <p>Trả hàng trong vòng 30 ngày</p>*/}
-                        {/*            </div>*/}
-                        {/*        </div>*/}
-                        {/*    </div>*/}
-                        {/*</div>*/}
                         <div className="col-4">
                             <div className="single-service">
                                 <div className="single-service">

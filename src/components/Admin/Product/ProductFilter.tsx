@@ -196,6 +196,7 @@ const ProductFilter = (props: IProps) => {
                                         disabled={isErrorNetWork || errorDataTreeSelectCategory} enterButton={false}
                                 />
                                 <Tree
+                                    blockNode
                                     switcherIcon={<DownOutlined />}
                                     disabled={isErrorNetWork || errorDataTreeSelectCategory}
                                     onExpand={onExpand}

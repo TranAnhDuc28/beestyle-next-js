@@ -16,18 +16,20 @@ interface IProps {
 
 const ProductCardItem: React.FC<IProps> = (props) => {
     const {product} = props;
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [isOpenModal, setIsOpenModal] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
 
-    const handleOpenModal = (product: any) => {
+    const handleOpenModal = (product: IProduct) => {
         setSelectedProduct(product);
-        setIsModalVisible(true);
+        setIsOpenModal(true);
+        console.log(product)
     };
 
     const handleCloseModal = () => {
-        setIsModalVisible(false);
+        setIsOpenModal(false);
         setSelectedProduct(null);
     };
+
     return (
         <>
             <Badge.Ribbon text="Test" color="red">
@@ -38,52 +40,44 @@ const ProductCardItem: React.FC<IProps> = (props) => {
                     style={{borderRadius: 0}}
                 >
                     <Flex justify="center">
-                        <ConfigProvider
-                            theme={{
-                                token: {
-                                    colorBgMask: "transparent"
-                                },
-                            }}
-                        >
-                            <Image
-                                loading="lazy"
-                                alt="avatar"
-                                src={product?.imageUrl}
-                                style={{width: "100%", height: "410px", objectFit: "cover"}}
-                                preview={{
-                                    mask: (
-                                        <>
-                                            <Flex gap={10}>
-                                                <ColorButton
-                                                    style={{borderRadius: 4, padding: "0px 30px"}}
+                        <Image
+                            loading="lazy"
+                            alt={product?.imageUrl}
+                            src={product?.imageUrl}
+                            style={{width: "100%", height: "auto", objectFit: "cover", aspectRatio: "3/4"}}
+                            preview={{
+                                mask: (
+                                    <>
+                                        <Flex gap={10}>
+                                            <ColorButton
+                                                style={{borderRadius: 4, padding: "0px 30px"}}
+                                                size="large"
+                                                type="primary"
+                                                bgColor="#F7941D"
+                                                icon={<LuShoppingBag style={{}}/>}
+                                                onClick={() => console.log("add cart")}
+                                            >
+                                                Thêm vào giỏ
+                                            </ColorButton>
+                                            <Tooltip
+                                                title={<span style={{fontSize: 12, padding: 0}}>Xem nhanh</span>}>
+                                                <Button
+                                                    style={{borderRadius: 4}}
                                                     size="large"
-                                                    type="primary"
-                                                    bgColor="#F7941D"
-                                                    icon={<LuShoppingBag style={{}}/>}
-                                                    onClick={() => console.log("add cart")}
-                                                >
-                                                    Thêm vào giỏ
-                                                </ColorButton>
-                                                <Tooltip
-                                                    title={<span style={{fontSize: 12, padding: 0}}>Xem nhanh</span>}>
-                                                    <Button
-                                                        style={{borderRadius: 4}}
-                                                        size="large"
-                                                        color="default"
-                                                        variant="solid"
-                                                        icon={<EyeOutlined/>}
-                                                        onClick={handleOpenModal}
-                                                    />
-                                                </Tooltip>
-                                            </Flex>
-                                        </>
-                                    ),
-                                    maskClassName: "custom-mask-img",
-                                    visible: false,
-                                    destroyOnClose: true,
-                                }}
-                            />
-                        </ConfigProvider>
+                                                    color="default"
+                                                    variant="solid"
+                                                    icon={<EyeOutlined/>}
+                                                    onClick={() => handleOpenModal(product)}
+                                                />
+                                            </Tooltip>
+                                        </Flex>
+                                    </>
+                                ),
+                                maskClassName: "custom-mask-img",
+                                visible: false,
+                                destroyOnClose: true,
+                            }}
+                        />
                     </Flex>
 
                     <div className="flex flex-col flex-grow justify-between gap-2 px-2.5 py-1.5">
@@ -102,7 +96,7 @@ const ProductCardItem: React.FC<IProps> = (props) => {
             </Badge.Ribbon>
 
             <ProductQuickLookupModal
-                visible={isModalVisible}
+                visible={isOpenModal}
                 onClose={handleCloseModal}
                 product={selectedProduct}
             />
