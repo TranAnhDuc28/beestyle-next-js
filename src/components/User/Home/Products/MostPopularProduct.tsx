@@ -2,53 +2,54 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {Card} from 'antd';
+import { Card } from 'antd';
 import Slider from "react-slick";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import React, {useState} from "react";
+import React, { useState } from "react";
 import ProductQuickLookupModal from "@/components/User/ProductCommon/ProductQuickLookupModal";
 import useSWR from "swr";
-import {getSellingProduct, URL_API_PRODUCT_SELLER} from "@/services/user/ProductAreaService";
-import {TiEye, TiArrowLeft, TiArrowRight} from 'react-icons/ti';
+import { getSellingProduct, URL_API_PRODUCT_SELLER } from "@/services/user/ProductAreaService";
+import { TiEye, TiArrowLeft, TiArrowRight } from 'react-icons/ti';
+import { time } from "console";
 
-const CustomPrevArrow = ({onClick}) => (
+const CustomPrevArrow = ({ onClick }) => (
     <div
-        className="custom-arrow prev-arrow"
+        className="custom-arrow prev-arrow hover:!bg-orange-300"
         onClick={onClick}
         style={{
             position: "absolute",
-            left: "-25px",
-            top: "50%",
+            left: "-20px",
+            top: "40%",
             transform: "translateY(-50%)",
             backgroundColor: "#FFA500",
-            padding: "10px",
+            padding: "5px",
             borderRadius: "50%",
             cursor: "pointer",
             zIndex: 2,
         }}
     >
-        <TiArrowLeft size={25} color="white"/>
+        <TiArrowLeft size={25} color="white" />
     </div>
 );
 
-const CustomNextArrow = ({onClick}) => (
+const CustomNextArrow = ({ onClick }) => (
     <div
-        className="custom-arrow next-arrow"
+        className="custom-arrow next-arrow hover:!bg-orange-300"
         onClick={onClick}
         style={{
             position: "absolute",
-            right: "-25px",
-            top: "50%",
+            right: "-20px",
+            top: "40%",
             transform: "translateY(-50%)",
             backgroundColor: "#FFA500",
-            padding: "10px",
+            padding: "5px",
             borderRadius: "50%",
             cursor: "pointer",
             zIndex: 2,
         }}
     >
-        <TiArrowRight size={25} color="white"/>
+        <TiArrowRight size={25} color="white" />
     </div>
 );
 
@@ -57,7 +58,7 @@ function MostPopularProduct() {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
-    const {data: products} = useSWR(URL_API_PRODUCT_SELLER, getSellingProduct);
+    const { data: products } = useSWR(URL_API_PRODUCT_SELLER, getSellingProduct);
 
     const settings = {
         dots: false,
@@ -65,9 +66,10 @@ function MostPopularProduct() {
         speed: 500,
         slidesToShow: 4,
         slidesToScroll: 1,
-        arrows: true,
-        prevArrow: <CustomPrevArrow/>,
-        nextArrow: <CustomNextArrow/>
+        autoplay: true,
+        autoplaySpeed: 3000,
+        prevArrow: <CustomPrevArrow onClick={undefined} />,
+        nextArrow: <CustomNextArrow onClick={undefined} />
     };
 
     const handleOpenModal = (product) => {
@@ -82,7 +84,7 @@ function MostPopularProduct() {
 
     return (
         <>
-            <div className="product-area most-popular section">
+            <div className="product-area most-popular section pb-0">
                 <div className="container">
                     <div className="row">
                         <div className="col-12">
@@ -99,34 +101,35 @@ function MostPopularProduct() {
                                         <div key={product.id}>
                                             <Card className="product-card">
                                                 <div className="product-image-wrapper">
-                                                    <Link href="#">
-                                                        <Image
-                                                            width={550}
-                                                            height={750}
-                                                            src={product.imageUrl}
-                                                            alt={product.productName}
-                                                            className="product-image"
-                                                            unoptimized
-                                                        />
-                                                        {product?.label && (
-                                                            <span className="product-label">{product.productName}</span>
-                                                        )}
-                                                    </Link>
+                                                    <Image
+                                                        width={550}
+                                                        height={750}
+                                                        src={product.imageUrl}
+                                                        alt={product.productName}
+                                                        className="product-image"
+                                                        unoptimized
+                                                    />
+                                                    {product?.label && (
+                                                        <span className="product-label">{product.productName}</span>
+                                                    )}
                                                     <div className="product-overlay">
                                                         <div className="overlay-actions">
                                                             <a
                                                                 onClick={() => handleOpenModal(product)}
                                                                 className="overlay-action"
                                                             >
-                                                                <TiEye size={20} className="icon-action"/>
-                                                                <span className="action-tooltip">Quick Shop</span>
+                                                                <TiEye size={20} className="icon-action" />
+                                                                <span className="action-tooltip">Xem ngay</span>
                                                             </a>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="product-content">
                                                     <h3>
-                                                        <Link href="#" className="product-title fs-6 text-uppercase">
+                                                        <Link
+                                                            href={`/product/${product.id}/variant`}
+                                                            className="product-title fs-6 text-uppercase fw-semibold"
+                                                        >
                                                             {product.productName}
                                                         </Link>
                                                     </h3>

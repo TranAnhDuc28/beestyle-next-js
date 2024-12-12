@@ -1,10 +1,10 @@
 'use client';
 
-import {Typography, Card, Row, Col} from 'antd';
+import { Typography, Card, Row, Col } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const {Title, Text} = Typography;
+const { Title, Text } = Typography;
 
 const blogs = [
     {
@@ -43,8 +43,8 @@ export default function ShopBlogSection() {
                         <Col key={blog.id} lg={8} md={12} sm={24}>
                             <Card
                                 hoverable
-                                cover={<Image width={370} height={300} src={blog.image} alt={blog.title}/>}
-                                className="shop-single-blog"
+                                cover={<Image width={370} height={300} src={blog.image} alt={blog.title} />}
+                                className="shop-single-blog text-center"
                             >
                                 <div className="content">
                                     <Text className="date" type="secondary">
@@ -57,7 +57,7 @@ export default function ShopBlogSection() {
                                     </Title>
                                     <Link
                                         href={blog.link}
-                                        className="more-btn link-no-decoration btn btn-dark text-white"
+                                        className="more-btn link-no-decoration btn btn-dark text-white w-full"
                                     >
                                         Chi tiết
                                     </Link>

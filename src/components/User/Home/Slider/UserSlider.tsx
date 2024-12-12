@@ -1,18 +1,18 @@
 'use client';
 
-import React, {useState} from 'react';
-import {Carousel, Button} from 'antd';
-import {LeftOutlined, RightOutlined} from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Carousel, Button } from 'antd';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import Image from "next/image";
 
 export default function Slider() {
     const [isHovered, setIsHovered] = useState(false);
 
     const images = [
-        {url: "/banner-01.jpg", alt: "Shop Banner 1"},
-        {url: "/banner-02.jpg", alt: "Shop Banner 2"},
-        {url: "/banner-03.jpg", alt: "Shop Banner 3"},
-        {url: "/banner-04.jpg", alt: "Shop Banner 4"}
+        { url: "/banner-01.jpg", alt: "Shop Banner 1" },
+        { url: "/banner-02.jpg", alt: "Shop Banner 2" },
+        { url: "/banner-03.jpg", alt: "Shop Banner 3" },
+        { url: "/banner-04.jpg", alt: "Shop Banner 4" }
     ];
 
     const carouselRef = React.useRef<any>(null);
@@ -30,7 +30,7 @@ export default function Slider() {
                 autoplay
                 autoplaySpeed={12000}
                 ref={carouselRef}
-                className="h-[400px] md:h-[575px]"
+                className="h-[400px] md:h-[520px]"
                 dots={false}
             >
                 {images.map((image, index) => (
@@ -52,7 +52,7 @@ export default function Slider() {
                     <Button
                         className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white border-0 hover:!bg-black/80"
                         shape="circle"
-                        icon={<LeftOutlined/>}
+                        icon={<LeftOutlined />}
                         size="large"
                         onClick={prevSlide}
                         aria-label="Previous slide"
@@ -60,7 +60,7 @@ export default function Slider() {
                     <Button
                         className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white border-0 hover:!bg-black/80"
                         shape="circle"
-                        icon={<RightOutlined/>}
+                        icon={<RightOutlined />}
                         size="large"
                         onClick={nextSlide}
                         aria-label="Next slide"

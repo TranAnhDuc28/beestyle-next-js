@@ -988,7 +988,7 @@
     z-index: 1;
     opacity: 0;
     transition: opacity 0.5s ease, transform 2s cubic-bezier(0, 0, 0.44, 1.18),
-    -webkit-transform 2s cubic-bezier(0, 0, 0.44, 1.18);
+        -webkit-transform 2s cubic-bezier(0, 0, 0.44, 1.18);
 }
 
 .single-product .product-img a span.price-dec {
@@ -1358,8 +1358,7 @@
     margin-top: 10px;
 }
 
-.shop-sidebar .categor-list li {
-}
+.shop-sidebar .categor-list li {}
 
 .shop-sidebar .categor-list li {
     margin-bottom: 10px;
@@ -1486,8 +1485,7 @@
     font-weight: 500;
 }
 
-.shop .single-shorter option {
-}
+.shop .single-shorter option {}
 
 .shop .nice-select {
     clear: initial;
@@ -1625,8 +1623,7 @@
     border-bottom: 1px solid #eee;
 }
 
-.shop.single .product-des {
-}
+.shop.single .product-des {}
 
 .shop.single .product-des .total-review {
     font-size: 14px;
@@ -1677,8 +1674,7 @@
     margin-top: 40px;
 }
 
-.shop.single .product-des .product-buy {
-}
+.shop.single .product-des .product-buy {}
 
 .shop.single .product-des .color {
     display: inline-block;
@@ -1937,8 +1933,7 @@
     border-color: transparent;
 }
 
-.shop.single .tab-single {
-}
+.shop.single .tab-single {}
 
 .shop.single .single-des {
     margin-top: 35px;
@@ -1969,29 +1964,24 @@
     border-radius: 50%;
 }
 
-.shop.single .single-des p {
-}
+.shop.single .single-des p {}
 
 .shop.single .item-info {
     width: 100%;
 }
 
-.shop.single .item-info tbody {
-}
+.shop.single .item-info tbody {}
 
-.shop.single .item-info tbody tr {
-}
+.shop.single .item-info tbody tr {}
 
 .shop.single .item-info tbody td {
     border: 1px solid #e6e6e6;
     padding: 10px;
 }
 
-.shop.single .item-info tbody strong {
-}
+.shop.single .item-info tbody strong {}
 
-.shop.single .ratting-main {
-}
+.shop.single .ratting-main {}
 
 .shop.single .avg-ratting {
     margin-bottom: 20px;
@@ -2128,8 +2118,7 @@
     color: #333;
 }
 
-.shop.single .avg-ratting {
-}
+.shop.single .avg-ratting {}
 
 .shop.single .form .form-group input {
     width: 100%;
@@ -2553,4 +2542,3 @@
 /*======================================
    End Shop Newsletter CSS
 ========================================*/
-

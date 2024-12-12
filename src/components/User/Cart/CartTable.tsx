@@ -1,13 +1,13 @@
 import React from "react";
 import Image from "next/image";
-import {Card, Typography} from "antd";
-import QuantityControl from "@/components/User/Cart/QuantityControl";
-import {FireOutlined} from "@ant-design/icons";
-import ProgressShipping from "./ProgressShipping";
+import { Card, Typography } from "antd";
+import QuantityControl from "@/components/User/Cart/Properties/QuantityControl";
+import { FireOutlined } from "@ant-design/icons";
+import ProgressShipping from "./Properties/ProgressShipping";
 
-const {Title, Text} = Typography;
+const { Title, Text } = Typography;
 
-const CartTable = ({cartItems, updateCartItems}: any) => {
+const CartTable = ({ cartItems, updateCartItems }: any) => {
     const condition = 498000;
     const totalAmount = cartItems.reduce((total, item) => total + item.total_price, 0);
 
@@ -43,42 +43,45 @@ const CartTable = ({cartItems, updateCartItems}: any) => {
                 </p>
             </div> */}
 
-            {cartItems.map((item, index) => (
-                <div key={index.toString()}>
-                    <div className="flex mb-4">
-                        <Image
-                            width={130}
-                            height={100}
-                            src={item.images[0].imageUrl}
-                            alt={item.product_name}
-                            className="rounded-lg mr-4"
-                            unoptimized
-                        />
-                        <div>
-                            <Title level={4} style={{fontWeight: 500}}>{item.product_name}</Title>
-                            <Text className="text-red-500 text-xl font-bold">
-                                {item.discounted_price.toLocaleString('vi-VN')} đ
-                            </Text>
-                            <p className="line-through text-gray-500">{item.original_price.toLocaleString('vi-VN')} đ</p>
-                            <p className="text-red-500">
-                                <span
-                                    style={{color: "#333"}}>Đã tiết kiệm</span> -{(item.original_price - item.discounted_price).toLocaleString('vi-VN')} đ
-                            </p>
-                            <div className="flex">
-                                <p className="m-0"> {item.color} / {item.size} </p>
-                                <div style={{marginLeft: 450, marginTop: -8}}>
-                                    <QuantityControl
-                                        value={item.quantity}
-                                        onChange={(value) => handleQuantityChange(index, 'decrement')}
-                                        onIncrement={() => handleQuantityChange(index, 'increment')}
-                                        onDecrement={() => handleQuantityChange(index, 'decrement')}
-                                    />
+            <div style={{ maxHeight: '515px', overflowY: 'auto' }}>
+                {cartItems.map((item, index) => (
+                    <div key={index.toString()}>
+                        <div className="flex mb-4">
+                            <Image
+                                width={130}
+                                height={100}
+                                src={item.images[0].imageUrl}
+                                alt={item.product_name}
+                                className="rounded-lg mr-4"
+                                layout="intrinsic"
+                                unoptimized
+                            />
+                            <div>
+                                <Title level={4} style={{ fontWeight: 500 }}>{item.product_name}</Title>
+                                <Text className="text-red-500 text-xl font-bold">
+                                    {item.discounted_price.toLocaleString('vi-VN')} đ
+                                </Text>
+                                <p className="line-through text-gray-500">{item.original_price.toLocaleString('vi-VN')} đ</p>
+                                <p className="text-red-500">
+                                    <span
+                                        style={{ color: "#333" }}>Đã tiết kiệm</span> -{(item.original_price - item.discounted_price).toLocaleString('vi-VN')} đ
+                                </p>
+                                <div className="grid grid-cols-2 items-center">
+                                    <p className="m-0">{item.color} / {item.size}</p>
+                                    <div className="justify-self-end mt-[-8px]">
+                                        <QuantityControl
+                                            value={item.quantity}
+                                            onChange={(value) => handleQuantityChange(index, 'decrement')}
+                                            onIncrement={() => handleQuantityChange(index, 'increment')}
+                                            onDecrement={() => handleQuantityChange(index, 'decrement')}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            ))}
+                ))}
+            </div>
         </Card>
     );
 }

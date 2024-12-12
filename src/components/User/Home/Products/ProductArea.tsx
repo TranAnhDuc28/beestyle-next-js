@@ -1,20 +1,22 @@
 'use client';
 
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import {TiEye} from 'react-icons/ti';
+import { Button, Flex, Image, Tooltip } from "antd";
 import MenuProductArea from "@/components/User/Home/Products/MenuProductArea";
 import ProductQuickLookupModal from "@/components/User/ProductCommon/ProductQuickLookupModal";
 import useSWR from 'swr';
-import {getProductForUser, URL_API_PRODUCT_AREA} from "@/services/user/ProductAreaService";
+import { getProductForUser, URL_API_PRODUCT_AREA } from "@/services/user/ProductAreaService";
+import ColorButton from "@/components/Button/ColorButton";
+import { LuShoppingBag } from "react-icons/lu";
+import { EyeOutlined } from "@ant-design/icons";
 
 function ProductArea() {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
-    const {data: products} = useSWR(URL_API_PRODUCT_AREA, getProductForUser);
+    const { data: products } = useSWR(URL_API_PRODUCT_AREA, getProductForUser);
 
     const handleOpenModal = (product: any) => {
         setSelectedProduct(product);
@@ -40,7 +42,7 @@ function ProductArea() {
                     <div className="row">
                         <div className="col-12">
                             <div className="product-info">
-                                <MenuProductArea/>
+                                <MenuProductArea />
                                 <div className="tab-content" id="myTabContent">
                                     <div className="tab-pane fade show active" id="man" role="tabpanel">
                                         <div className="tab-single">
@@ -48,52 +50,70 @@ function ProductArea() {
                                                 {products && Array.isArray(products) ? (
                                                     products.map((product) => (
                                                         <div key={product.id}
-                                                             className="col-xl-3 col-lg-4 col-md-4 col-12">
+                                                            className="col-xl-3 col-lg-4 col-md-4 col-12">
                                                             <div className="single-product">
                                                                 <div className="product-img">
                                                                     <Link
                                                                         href={`/product/${product.id}/variant`}
                                                                     >
                                                                         <Image
-                                                                            width={550}
-                                                                            height={750}
+                                                                            loading="lazy"
+                                                                            alt="avatar"
+                                                                            src={product?.imageUrl}
+                                                                            style={{ width: "100%", height: "410px", objectFit: "cover" }}
                                                                             className="default-img"
-                                                                            src={product.imageUrl}
-                                                                            alt={product.productName}
-                                                                            unoptimized
+                                                                            preview={{
+                                                                                mask: (
+                                                                                    <>
+                                                                                        <Flex gap={10}>
+                                                                                            <ColorButton
+                                                                                                style={{ borderRadius: 4, padding: "0px 30px" }}
+                                                                                                size="large"
+                                                                                                type="primary"
+                                                                                                bgColor="#F7941D"
+                                                                                                icon={<LuShoppingBag style={{}} />}
+                                                                                                onClick={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    handleOpenModal(product);
+                                                                                                }}
+                                                                                            >
+                                                                                                Thêm vào giỏ
+                                                                                            </ColorButton>
+                                                                                            <Tooltip
+                                                                                                title={<span style={{ fontSize: 12, padding: 0 }}>Xem nhanh</span>}>
+                                                                                                <Button
+                                                                                                    style={{ borderRadius: 4 }}
+                                                                                                    size="large"
+                                                                                                    color="default"
+                                                                                                    variant="solid"
+                                                                                                    icon={<EyeOutlined />}
+                                                                                                    onClick={(e) => {
+                                                                                                        e.preventDefault();
+                                                                                                        handleOpenModal(product);
+                                                                                                    }}
+                                                                                                />
+                                                                                            </Tooltip>
+                                                                                        </Flex>
+                                                                                    </>
+                                                                                ),
+                                                                                maskClassName: "custom-mask-img",
+                                                                                visible: false,
+                                                                                destroyOnClose: true,
+                                                                            }}
                                                                         />
                                                                         <Image
-                                                                            width={550}
-                                                                            height={750}
+                                                                            loading="lazy"
+                                                                            alt="avatar"
+                                                                            src={product?.imageUrl}
+                                                                            style={{ width: "100%", height: "410px", objectFit: "cover" }}
                                                                             className="hover-img"
-                                                                            src={product.imageUrl}
-                                                                            alt={product.productName}
-                                                                            unoptimized
                                                                         />
                                                                     </Link>
-                                                                    <div className="button-head">
-                                                                        <div className="product-action-2 ml-2">
-                                                                            <Link
-                                                                                title="Add to cart"
-                                                                                className="link-no-decoration link-action"
-                                                                                href={"/cart"}
-                                                                            >
-                                                                                Thêm vào giỏ hàng
-                                                                            </Link>
-                                                                        </div>
-                                                                        <div className="product-action mt-3 mr-3">
-                                                                            <a onClick={() => handleOpenModal(product)}
-                                                                               className="link-action">
-                                                                                <TiEye size={18}/>
-                                                                                <span style={{marginLeft: "0.5rem"}}>Xem ngay</span>
-                                                                            </a>
-                                                                        </div>
-                                                                    </div>
                                                                 </div>
-                                                                <div className="product-content">
+                                                                <div className="product-content mt-1 mb-3">
                                                                     <h3>
                                                                         <Link href="#"
-                                                                              className="link-action link-no-decoration text-dark fs-6 text-uppercase">
+                                                                            className="link-action link-no-decoration text-dark fs-6 text-uppercase">
                                                                             {product.productName}
                                                                         </Link>
                                                                     </h3>

@@ -17,8 +17,8 @@ export default function MediumBanner() {
                             />
                             <div className="content">
                                 <p>Thời trang nam</p>
-                                <h3>Giảm giá<br/>Lên đến<span> 50%</span></h3>
-                                <Link href="#" className="link-no-decoration">Mua ngay</Link>
+                                <h3>Giảm giá<br />Lên đến<span> 50%</span></h3>
+                                <Link href={"/product"} className="link-no-decoration">Mua ngay</Link>
                             </div>
                         </div>
                     </div>
@@ -31,8 +31,8 @@ export default function MediumBanner() {
                             />
                             <div className="content">
                                 <p>Thời trang nữ</p>
-                                <h3>Giảm giá <br/> lên đến <span>70%</span></h3>
-                                <Link href="#" className="btn">Mua ngay</Link>
+                                <h3>Giảm giá <br /> lên đến <span>70%</span></h3>
+                                <Link href={"/product"} className="btn">Mua ngay</Link>
                             </div>
                         </div>
                     </div>

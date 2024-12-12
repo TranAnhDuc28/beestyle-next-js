@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import {Form, Input, Select, Radio, Divider, Row, Col} from "antd";
+import React, { useState } from "react";
+import { Form, Input, Select, Radio, Row, Col } from "antd";
 import {
     MailOutlined,
     PhoneOutlined,
@@ -12,7 +12,7 @@ import useAddress from "@/components/Admin/Address/hook/useAddress";
 import TextArea from "antd/es/input/TextArea";
 import { calculateShippingFee } from "@/services/GHTKService";
 
-const {Option} = Select;
+const { Option } = Select;
 
 interface IProps {
     addressForm: any;
@@ -21,7 +21,7 @@ interface IProps {
 }
 
 const CheckoutForm = (props: IProps) => {
-    const {addressForm, userForm,onShippingCostChange} = props;
+    const { addressForm, userForm, onShippingCostChange } = props;
     const [selectedMethod, setSelectedMethod] = useState("home");
     const [selectedShipping, setSelectedShipping] = useState("standard");
     const [selected, setSelected] = useState({
@@ -52,7 +52,7 @@ const CheckoutForm = (props: IProps) => {
 
         if (value === "home") {
             // Reset giá trị cho các trường khi chọn "Giao hàng tận nhà"
-            addressForm.setFieldsValue({district: undefined, ward: undefined});
+            addressForm.setFieldsValue({ district: undefined, ward: undefined });
             setSelected({
                 province: selected.province, // Giữ lại giá trị tỉnh đã chọn
                 district: "", // Reset huyện
@@ -66,9 +66,9 @@ const CheckoutForm = (props: IProps) => {
 
     // Xử lý khi tỉnh được chọn
     const handleProvinceChange = (value: any, name: string) => {
-        setSelected((prev) => ({...prev, province: value}));
-        setSelectedName((prev) => ({...prev, province: name}));
-        addressForm.setFieldsValue({district: undefined, ward: undefined}); // Reset district và ward khi province thay đổi
+        setSelected((prev) => ({ ...prev, province: value }));
+        setSelectedName((prev) => ({ ...prev, province: name }));
+        addressForm.setFieldsValue({ district: undefined, ward: undefined }); // Reset district và ward khi province thay đổi
 
         // Cập nhật giá trị phí vận chuyển
         if (value === "01") {
@@ -80,41 +80,41 @@ const CheckoutForm = (props: IProps) => {
 
     // Xử lý khi huyện được chọn
     const handleDistrictChange = async (value: any, name: string) => {
-        setSelected((prev) => ({...prev, district: value}));
-        setSelectedName((prev) => ({...prev, district: name}));
-        addressForm.setFieldsValue({ward: undefined}); // Reset ward khi district thay đổi
+        setSelected((prev) => ({ ...prev, district: value }));
+        setSelectedName((prev) => ({ ...prev, district: name }));
+        addressForm.setFieldsValue({ ward: undefined }); // Reset ward khi district thay đổi
         try {
             const params = {
-              pick_province: "Hà Nội",
-              pick_district: "Huyện Hoài Đức",
-              province: selectedName.province,
-              district: name,
-              address: "123 Đường ABC",
-              weight: 100,
-              value: 500000,
-              transport: "road",
+                pick_province: "Hà Nội",
+                pick_district: "Huyện Hoài Đức",
+                province: selectedName.province,
+                district: name,
+                address: "123 Đường ABC",
+                weight: 100,
+                value: 500000,
+                transport: "road",
             };
             const fee = await calculateShippingFee(params);
             console.log(fee);
-            
-            onShippingCostChange(fee.fee) 
-          } catch (error) {}
+
+            onShippingCostChange(fee.fee)
+        } catch (error) { }
     };
 
     // Xử lý khi xã được chọn
     const handleWardChange = (value: any, name: string) => {
-        setSelected((prev) => ({...prev, ward: value}));
-        setSelectedName((prev) => ({...prev, ward: name}));
+        setSelected((prev) => ({ ...prev, ward: value }));
+        setSelectedName((prev) => ({ ...prev, ward: name }));
     };
 
     // Xử lý khi số nhà được chọn
     const handleDetailAddressChange = (value: string) => {
-        setSelectedName((prev) => ({...prev, addressName: value}));
+        setSelectedName((prev) => ({ ...prev, addressName: value }));
     };
 
     return (
         <div className={styles["checkout-form"]}>
-            <h3 className={styles["heading"]} style={{fontSize: 20}}>
+            <h3 className={styles["heading"]} style={{ fontSize: 20 }}>
                 Người nhận
             </h3>
             <Form
@@ -125,22 +125,22 @@ const CheckoutForm = (props: IProps) => {
             >
                 <Form.Item
                     name="customerName"
-                    rules={[{required: true, message: "Vui lòng nhập tên khách hàng!"}]}
+                    rules={[{ required: true, message: "Vui lòng nhập tên khách hàng!" }]}
                 >
                     <Input
                         placeholder="Tên khách hàng"
-                        prefix={<UserOutlined className="pr-2"/>}
+                        prefix={<UserOutlined className="pr-2" />}
                         className={styles["input-checkout"]}
                     />
                 </Form.Item>
 
                 <Form.Item
                     name="phone"
-                    rules={[{required: true, message: "Vui lòng nhập số điện thoại!"}]}
+                    rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
                 >
                     <Input
                         placeholder="Số điện thoại"
-                        prefix={<PhoneOutlined className="pr-2"/>}
+                        prefix={<PhoneOutlined className="pr-2" />}
                         className={styles["input-checkout"]}
                     />
                 </Form.Item>
@@ -148,7 +148,7 @@ const CheckoutForm = (props: IProps) => {
                 <Form.Item name="email">
                     <Input
                         placeholder="Địa chỉ email (Không bắt buộc)"
-                        prefix={<MailOutlined className="pr-2"/>}
+                        prefix={<MailOutlined className="pr-2" />}
                         className={styles["input-checkout"]}
                     />
                 </Form.Item>
@@ -163,14 +163,13 @@ const CheckoutForm = (props: IProps) => {
                     <div className=" ">
                         <Radio.Button
                             value="home"
-                            className={`${styles["delivery-option"]} ${
-                                selectedMethod === "home" ? styles["selected"] : ""
-                            }`}
-                            style={{padding: 30}}
+                            className={`${styles["delivery-option"]} ${selectedMethod === "home" ? styles["selected"] : ""
+                                }`}
+                            style={{ padding: 30 }}
                         >
-                            <div style={{marginTop: "-15px"}}>
+                            <div style={{ marginTop: "-15px" }}>
                                 <HomeOutlined
-                                    style={{fontSize: "24px", margin: "0 10px 0 5px"}}
+                                    style={{ fontSize: "24px", margin: "0 10px 0 5px" }}
                                 />
                                 Giao hàng tận nhà
                             </div>
@@ -179,14 +178,13 @@ const CheckoutForm = (props: IProps) => {
                     <div>
                         <Radio.Button
                             value="store"
-                            className={`${styles["delivery-option"]} ${
-                                selectedMethod === "store" ? styles["selected"] : ""
-                            }`}
-                            style={{padding: 30}}
+                            className={`${styles["delivery-option"]} ${selectedMethod === "store" ? styles["selected"] : ""
+                                }`}
+                            style={{ padding: 30 }}
                         >
-                            <div style={{marginTop: "-15px"}}>
+                            <div style={{ marginTop: "-15px" }}>
                                 <ShopOutlined
-                                    style={{fontSize: "24px", margin: "0 10px 0 5px"}}
+                                    style={{ fontSize: "24px", margin: "0 10px 0 5px" }}
                                 />
                                 Lấy tại cửa hàng
                             </div>
@@ -212,7 +210,7 @@ const CheckoutForm = (props: IProps) => {
                                     // label="Tỉnh"
                                     name="province"
                                     rules={[
-                                        {required: true, message: "Vui lòng chọn tỉnh!"},
+                                        { required: true, message: "Vui lòng chọn tỉnh!" },
                                     ]}
                                 >
                                     <Select
@@ -232,7 +230,7 @@ const CheckoutForm = (props: IProps) => {
                                             }
                                         }}
                                         placeholder="Chọn tỉnh"
-                                        style={{width: "100%"}}
+                                        style={{ width: "100%" }}
                                         loading={loading.provinces}
                                     >
                                         {provinces.map((province) => (
@@ -251,7 +249,7 @@ const CheckoutForm = (props: IProps) => {
                                     // label="Huyện"
                                     name="district"
                                     rules={[
-                                        {required: true, message: "Vui lòng chọn huyện!"},
+                                        { required: true, message: "Vui lòng chọn huyện!" },
                                     ]}
                                 >
                                     <Select
@@ -271,7 +269,7 @@ const CheckoutForm = (props: IProps) => {
                                             }
                                         }}
                                         placeholder="Chọn huyện"
-                                        style={{width: "100%"}}
+                                        style={{ width: "100%" }}
                                         loading={loading.districts}
                                         value={selected.district || undefined} // Đảm bảo hiển thị đúng giá trị hiện tại
                                     >
@@ -294,7 +292,7 @@ const CheckoutForm = (props: IProps) => {
                                 <Form.Item
                                     // label="Xã"
                                     name="ward"
-                                    rules={[{required: true, message: "Vui lòng chọn xã!"}]}
+                                    rules={[{ required: true, message: "Vui lòng chọn xã!" }]}
                                 >
                                     <Select
                                         size="large"
@@ -302,11 +300,11 @@ const CheckoutForm = (props: IProps) => {
                                             const ward = wards.find((war) => war.code === value);
                                             if (ward) {
                                                 handleWardChange(value, ward.name);
-                                                setSelected((prev) => ({...prev, ward: value}));
+                                                setSelected((prev) => ({ ...prev, ward: value }));
                                             }
                                         }}
                                         placeholder="Chọn xã"
-                                        style={{width: "100%"}}
+                                        style={{ width: "100%" }}
                                         value={selected.ward || undefined} // Đảm bảo hiển thị đúng giá trị hiện tại
                                         loading={loading.wards}
                                     >

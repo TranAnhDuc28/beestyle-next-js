@@ -295,6 +295,7 @@
     position: relative;
     overflow: hidden;
     border-radius: 0;
+    text-align: center;
 }
 
 .product-image-wrapper {
@@ -775,6 +776,3 @@
 /*=============================
 	End About US CSS
 ===============================*/
-
-
-
