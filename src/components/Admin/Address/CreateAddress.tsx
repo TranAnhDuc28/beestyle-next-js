@@ -2,18 +2,21 @@ import { Form, Select, Spin } from "antd";
 import React, { useEffect } from "react";
 import useAddress from "./hook/useAddress";
 import TextArea from "antd/es/input/TextArea";
+import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 
 interface IProps {
   selected: {
-    province: string,
-    district: string,
-    ward: string,
-  };
-  setSelected: React.Dispatch<React.SetStateAction<{
     province: string;
     district: string;
     ward: string;
-  }>>;
+  };
+  setSelected: React.Dispatch<
+    React.SetStateAction<{
+      province: string;
+      district: string;
+      ward: string;
+    }>
+  >;
   handleProvinceChange: (value: string, name: string) => void;
   handleDistrictChange: (value: string, name: string) => void;
   handleWardChange: (value: string, name: string) => void;
@@ -32,14 +35,20 @@ const CreateAddress = (props: IProps) => {
     form,
   } = props;
 
-  const { provinces, districts, wards, fetchDistricts, fetchWards, resetAddressData, loading } = useAddress();
+  const { handleGetProvinces, handleGetDistricts, handleGetWards } =
+    useAddress();
+  const provincesData = handleGetProvinces();
+  const districtsData = handleGetDistricts(selected.province);
+  const wardsData = handleGetWards(selected.district);
 
-  useEffect(() => {
-    if (!selected.province) {
-      resetAddressData();
-      setSelected((prev) => ({ ...prev, district: "", ward: "" })); // Xóa các giá trị cũ khi không có tỉnh được chọn
-    }
-  }, [selected.province]);
+  console.log(provincesData.dataOptionProvinces);
+
+  // useEffect(() => {
+  //   if (!selected.province) {
+  //     resetAddressData();
+  //     setSelected((prev) => ({ ...prev, district: "", ward: "" })); // Xóa các giá trị cũ khi không có tỉnh được chọn
+  //   }
+  // }, [selected.province]);
 
   return (
     <Form
@@ -55,26 +64,19 @@ const CreateAddress = (props: IProps) => {
         name="province"
         rules={[{ required: true, message: "Vui lòng chọn tỉnh!" }]}
       >
-        
-          <Select
-            onChange={(value) => {
-              const province = provinces.find((prov) => prov.code === value);
-              if (province) {
-                handleProvinceChange(value, province.name);
-                setSelected({ province: value, district: "", ward: "" }); // Đặt lại giá trị district và ward
-                fetchDistricts(value);
-              }
-            }}
-            placeholder="Chọn tỉnh"
-            style={{ width: "100%" }}
-            loading={loading.provinces}
-          >
-            {provinces.map((province) => (
-              <Select.Option key={province.code} value={province.code}>
-                {province.name}
-              </Select.Option>
-            ))}
-          </Select>
+        <Select
+          placeholder="Tỉnh / Thành Phố"
+          options={provincesData.dataOptionProvinces}
+          loading={provincesData.isLoading}
+          onChange={() => {
+            const province = provincesData.dataOptionProvinces.find(
+              (prov) => prov.value === selected.province
+            );
+            console.log(province);
+            console.log(selected.province);
+            handleProvinceChange(selected.province, province?.label);
+          }}
+        />
       </Form.Item>
 
       <Form.Item
@@ -82,31 +84,21 @@ const CreateAddress = (props: IProps) => {
         name="district"
         rules={[{ required: true, message: "Vui lòng chọn huyện!" }]}
       >
-        
-          <Select
-            onChange={(value) => {
-              const district = districts.find((dist) => dist.code === value);
-              if (district) {
-                handleDistrictChange(value, district.name);
-                setSelected((prev) => ({ ...prev, district: value, ward: "" })); // Đặt lại ward
-                fetchWards(value);
-              }
-            }}
-            placeholder="Chọn huyện"
-            style={{ width: "100%" }}
-            value={selected.district || undefined} // Đảm bảo hiển thị đúng giá trị hiện tại
-            loading={loading.districts}
-          >
-            {districts && districts.length > 0 ? (
-              districts.map((district) => (
-                <Select.Option key={district.code} value={district.code}>
-                  {district.name}
-                </Select.Option>
-              ))
-            ) : (
-              <Select.Option disabled>Chọn huyện</Select.Option>
-            )}
-          </Select>
+        <SelectSearchOptionLabel
+          value={selected.province}
+          placeholder="Huyện / Quận"
+          style={{ width: "100%" }}
+          data={districtsData?.dataOptionDistricts}
+          isLoading={districtsData?.isLoading}
+          // onChange={() => {
+          //   const province = provincesData.dataOptionProvinces.find(
+          //     (prov) => prov.value === selected.province
+          //   );
+          //   console.log(province);
+          //   console.log(selected.province);
+          //   handleProvinceChange(selected.province, province?.label);
+          // }}
+        />
       </Form.Item>
 
       <Form.Item
@@ -114,21 +106,20 @@ const CreateAddress = (props: IProps) => {
         name="ward"
         rules={[{ required: true, message: "Vui lòng chọn xã!" }]}
       >
-       
-          <Select
-            onChange={(value) => {
-              const ward = wards.find((war) => war.code === value);
-              if (ward) {
-                handleWardChange(value, ward.name);
-                setSelected((prev) => ({ ...prev, ward: value }));
-              }
-            }}
-            placeholder="Chọn xã"
-            style={{ width: "100%" }}
-            value={selected.ward || undefined} // Đảm bảo hiển thị đúng giá trị hiện tại
-            loading={loading.wards}
-          >
-            {wards && wards.length > 0 ? (
+        <Select
+        // onChange={(value) => {
+        //   const ward = wards.find((war) => war.code === value);
+        //   if (ward) {
+        //     handleWardChange(value, ward.name);
+        //     setSelected((prev) => ({ ...prev, ward: value }));
+        //   }
+        // }}
+        // placeholder="Chọn xã"
+        // style={{ width: "100%" }}
+        // value={selected.ward || undefined} // Đảm bảo hiển thị đúng giá trị hiện tại
+        // loading={loading.wards}
+        >
+          {/* {wards && wards.length > 0 ? (
               wards.map((ward) => (
                 <Select.Option key={ward.code} value={ward.code}>
                   {ward.name}
@@ -136,8 +127,8 @@ const CreateAddress = (props: IProps) => {
               ))
             ) : (
               <Select.Option disabled>Chọn xã</Select.Option>
-            )}
-          </Select>
+            )} */}
+        </Select>
       </Form.Item>
 
       <Form.Item label="Chi tiết" name="detail">

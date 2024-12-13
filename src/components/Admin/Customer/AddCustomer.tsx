@@ -1,11 +1,11 @@
 "use client";
-import { DatePicker, Form, Input, Modal, Select } from "antd";
-import React, { memo, useEffect, useState } from "react";
+import { Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { createCustomer } from "@/services/CustomerService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { createAddress } from "@/services/AddressService";
-import CreateAddress from "../Address/CreateAddress";
-import dayjs from "dayjs";
+import useAddress from "../Address/hook/useAddress";
+import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 
 const { Option } = Select;
 
@@ -19,54 +19,99 @@ const AddCustomer = (props: IProps) => {
   const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
   const { showNotification } = useAppNotifications();
 
-  const [selected, setSelected] = useState({
-    province: "",
-    district: "",
-    ward: "",
-  });
-  const [selectedName, setSelectedName] = useState({
-    province: "",
-    district: "",
-    ward: "",
-    addressName:""
-  });
-  // const [selectedProvince, setSelectedProvince] = useState("");
-  // const [selectedDistrict, setSelectedDistrict] = useState("");
-  // const [selectedWard, setSelectedWard] = useState("");
+  const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | null>(null);
+  const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | null>(null);
+  const [selectedWardCode, setSelectedWardsCode] = useState<string | null>( null );
 
-  // const [selectedProvinceName, setSelectedProvinceName] = useState("");
-  // const [selectedDistrictName, setSelectedDistrictName] = useState("");
-  // const [selectedWardName, setSelectedWardName] = useState("");
-  // const [detailAddress, setDetailAddress] = useState("");
+  const [selectedProvinceName, setSelectedProvinceName] = useState<string | null>(null);
+  const [selectedDistrictName, setSelectedDistrictName] = useState< string | null  >(null);
+  const [selectedWardName, setSelectedWardName] = useState<string | null>(null);
+  const [selectedAddressDetail, setSelectedAddressDetail] = useState<string | null>(null);
 
-  const [form] = Form.useForm(); // Form chính của khách hàng
-  const [addressForm] = Form.useForm(); // Form cho phần địa chỉ
+  const { handleGetProvinces, handleGetDistricts, handleGetWards } =useAddress();
+  const provincesData = handleGetProvinces();
+  const districtsData = handleGetDistricts(selectedProvinceCode);
+  const wardsData = handleGetWards(selectedDistrictCode);
+
+  const [form] = Form.useForm(); 
 
   console.log(isCreateModalOpen);
 
-  const handleSubmit = async (values: ICustomer) => {
-    try {
-      // Hiển thị lại dateOfBirth dưới dạng chuỗi cho đúng định dạng khi gửi lên server hoặc lưu trữ
-      // values.dateOfBirth = dayjs(values.dateOfBirth).format("YYYY-MM-DD");
+  const onChangeSelectedProvince = useCallback(
+    (provinceCode: string) => {
+      setSelectedProvinceCode(provinceCode);
+      const province = provincesData.dataOptionProvinces.find(
+        (prev) => prev.key === provinceCode
+      );
+      setSelectedProvinceCode(provinceCode);
+      form.setFieldsValue({
+        province: provinceCode, // Cập nhật tỉnh
+        district: undefined, // Reset huyện
+        ward: undefined, // Reset xã
+      });
 
-      // console.log(values.dateOfBirth);
+      setSelectedProvinceName(province?.label);
+      setSelectedDistrictCode(null);
+      setSelectedWardsCode(null);
+      setSelectedDistrictName(null);
+      setSelectedWardName(null);
+      console.log(provinceCode);
+    },
+    [provincesData]
+  );
+
+  const onChangeSelectedDistrict = useCallback(
+    (districtCode: string) => {
+      setSelectedDistrictCode(districtCode);
+      const district = districtsData.dataOptionDistricts.find(
+        (prev) => prev.key === districtCode
+      );
+      form.setFieldsValue({
+        district: districtCode, // Cập nhật huyện trong Form
+        ward: undefined, // Reset xã
+      });
+      setSelectedDistrictName(district?.label);
+      console.log(selectedDistrictName);
+
+      setSelectedWardsCode(null);
+      setSelectedWardName(null);
+      console.log(districtCode);
+    },
+    [districtsData]
+  );
+
+  const onChangeSelectedWard = useCallback(
+    (wardCode: string) => {
+      setSelectedWardsCode(wardCode);
+      const ward = wardsData.dataOptionWards.find(
+        (prev) => prev.key === wardCode
+      );
+      setSelectedWardName(ward?.label);
+      console.log(selectedWardName);
+      console.log(wardCode);
+    },
+    [wardsData]
+  );
+
+  const handleSubmit = async (values: any) => {
+    try {
       const result = await createCustomer(values);
+      console.log(values.addressDetail);
+
+      setSelectedAddressDetail(values.addressDetail);
+      console.log(selectedAddressDetail);
 
       if (result.data) {
         const customer = result.data; // Lấy ID của khách hàng từ phản hồi
 
         const address = {
-          addressName: selectedName.addressName,
-          // addressName:
-          //   detailAddress == ""
-          //     ? `${selectedName.ward} - ${selectedName.district} - ${selectedName.province}`
-          //     : `${detailAddress} - ${selected.ward} - ${selectedName.district} - ${selectedName.province}`,
-          cityCode: Number(selected.province), // Nếu cần chuyển đổi
-          city: selectedName.province ?? "", // Lưu tên tỉnh vào đây
-          districtCode: Number(selected.district), // Nếu cần chuyển đổi
-          district: selectedName.district ?? "", // Lưu tên huyện vào đây
-          communeCode: Number(selected.ward), // Cần lấy từ API nếu có
-          commune: selectedName.ward ?? "", // Tên xã
+          addressName: values.addressDetail,
+          cityCode: Number(selectedProvinceCode), // Nếu cần chuyển đổi
+          city: selectedProvinceName, // Lưu tên tỉnh vào đây
+          districtCode: Number(selectedDistrictCode), // Nếu cần chuyển đổi
+          district: selectedDistrictName, // Lưu tên huyện vào đây
+          communeCode: Number(selectedWardCode), // Cần lấy từ API nếu có
+          commune: selectedWardName, // Tên xã
           isDefault: false,
           customer: {
             id: customer.id, // Thay đổi bằng ID thực tế
@@ -115,48 +160,12 @@ const AddCustomer = (props: IProps) => {
   };
   const handleCancelModal = () => {
     form.resetFields();
-    addressForm.resetFields()
-    setSelected({province:"",district:"",ward:""})
+    setSelectedProvinceCode(null);
+    setSelectedDistrictCode(null);
+    setSelectedWardsCode(null);
     setIsCreateModalOpen(false);
   };
 
-
-
-  // Xử lý khi tỉnh được chọn
-  const handleProvinceChange = (value: any, name: string) => {
-    // setSelectedProvince(value);
-    // setSelectedProvinceName(name);
-    setSelected((prev) =>({...prev,province:value}))
-    console.log("province",value);
-    
-    setSelectedName((prev) =>({...prev,province:name}))
-    addressForm.setFieldsValue({ district: undefined, ward: undefined })
-  };
-
-  // Xử lý khi huyện được chọn
-  const handleDistrictChange = (value: any, name: string) => {
-    // setSelectedDistrict(value);
-    // setSelectedDistrictName(name);
-    setSelected((prev) =>({...prev,district:value}))
-    setSelectedName((prev) =>({...prev,district:name}))
-    console.log("district",value);
-    addressForm.setFieldsValue( {ward: undefined });
-  };
-  // Xử lý khi xã được chọn
-  const handleWardChange = (value: any, name: string) => {
-    // setSelectedWard(value);
-    // setSelectedWardName(name);
-    setSelected((prev) =>({...prev,ward:value}))
-    console.log("ward",value);
-    setSelectedName((prev) =>({...prev,ward:name}))
-  };
-
-  // Xử lý khi số nhà được chọn
-  const handleDetailAddressChange = (value: string) => {
-    setSelectedName((prev) =>({...prev,addressName:value}))
-  };
-
-  // console.log(wards);
   return (
     <>
       <Modal
@@ -181,7 +190,7 @@ const AddCustomer = (props: IProps) => {
           <Form.Item
             label="Họ tên"
             name="fullName"
-            // rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
+            rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
           >
             <Input />
           </Form.Item>
@@ -219,17 +228,45 @@ const AddCustomer = (props: IProps) => {
               <Select.Option value="1">Nữ</Select.Option>
             </Select>
           </Form.Item>
+          <Form.Item label="Tỉnh/Thành phố" name="province"  rules={[{ required: true, message: "Vui lòng chọn tỉnh/thành phố!" }]}>
+            <SelectSearchOptionLabel
+            
+              value={selectedProvinceCode}
+              style={{ width: "100%" }}
+              placeholder="Tỉnh / Thành phố"
+              data={provincesData?.dataOptionProvinces}
+              isLoading={provincesData?.isLoading}
+              onChange={onChangeSelectedProvince}
+            />
+          </Form.Item>
 
-          <CreateAddress
-          form={addressForm}
-            handleDistrictChange={handleDistrictChange}
-            handleProvinceChange={handleProvinceChange}
-            handleWardChange={handleWardChange}
-            handleDetailAddress={handleDetailAddressChange}
-            selected={selected}
-            setSelected={setSelected}
-          />
+          <Form.Item label="Huyện/Quận" name="district"  rules={[{ required: true, message: "Vui lòng chọn huyện/quận!" }]}>
+            <SelectSearchOptionLabel
+              value={selectedDistrictCode}
+              placeholder="Quận / Huyện"
+              style={{ width: "100%" }}
+              data={districtsData?.dataOptionDistricts}
+              isLoading={districtsData?.isLoading}
+              onChange={onChangeSelectedDistrict}
+            />
+          </Form.Item>
+
+          <Form.Item label="Xã/Phường" name="ward"  rules={[{ required: true, message: "Vui lòng chọn xã/phường!" }]}>
+            <SelectSearchOptionLabel
+              value={selectedWardCode}
+              placeholder="Phường / Xã"
+              style={{ width: "100%" }}
+              data={wardsData?.dataOptionWards}
+              isLoading={wardsData?.isLoading}
+              onChange={onChangeSelectedWard}
+            />
+          </Form.Item>
+
+          <Form.Item label="Chi tiết" name="addressDetail"  rules={[{ required: true, message: "Vui lòng nhập địa chỉ chi tiết!" }]}>
+            <Input style={{ width: "100%" }} placeholder="Địa chỉ" />
+          </Form.Item>
         </Form>
+
       </Modal>
     </>
   );
