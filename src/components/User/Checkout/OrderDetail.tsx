@@ -6,19 +6,18 @@ import useAppNotifications from "@/hooks/useAppNotifications";
 
 interface IProps {
   handleSubmit: (payement: any) => Promise<void>;
-
   shippingCost: number; // Nhận chi phí vận chuyển từ prop
 }
 
 const OrderDetail = (props: IProps) => {
-  const { handleSubmit, shippingCost } = props;
+  const { handleSubmit, shippingCost} = props;
   const { showNotification } = useAppNotifications();
   const [selectedPayment, setSelectedPayment] = useState(null);
 
   const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
   const totalAmount = cartItems.reduce(
-    (total, item) => total + item.total_price,
+    (total, item) => total + item.total_price + shippingCost,
     0
   );
 
@@ -33,33 +32,14 @@ const OrderDetail = (props: IProps) => {
       });
       return;
     }
-
+    
+    const totalPayment = totalAmount + shippingCost 
+    console.log(totalPayment);
+    
     // Gọi handleSubmit với payment đã chọn
-    await handleSubmit({selectedPayment,totalAmount,shippingCost});
+    await handleSubmit({selectedPayment,totalPayment,shippingCost});
   };
-  // <<<<<<< HEAD
-  //   return (
-  //     <div className="order-details">
-  //       <div className="single-widget">
-  //         <h2>THÔNG TIN</h2>
-  //         <div className="content">
-  //         <ul>
-  //             <li>
-  //               Tổng giá trị sản phẩm<span>330.000 VND</span>
-  //             </li>
-  //             <li>
-  //               Phí vận chuyển<span>{shippingCost} VND</span>  {/* Hiển thị chi phí vận chuyển đã cập nhật */}
-  //             </li>
-  //             <li className="last fs-6">
-  //               Tổng thanh toán<span>{330000 + shippingCost} VND</span>
-  //             </li>
-  //             <li>
-  //               <span className="text-danger" style={{ fontSize: 13 }}>
-  //                 Bạn đã tiết kiệm được 20.000 VND
-  //               </span>
-  //             </li>
-  //           </ul>
-  // =======
+ 
 
   return (
     <div className="order-details">
@@ -75,14 +55,14 @@ const OrderDetail = (props: IProps) => {
               {/* Hiển thị chi phí vận chuyển đã cập nhật */}
             </li>
             <li>
-              Voucher giảm giá<span className="text-danger"> - 5.000 VND</span>
+              Voucher giảm giá<span className="text-danger"> 0 VND</span>
             </li>
             <li className="last fs-6">
-              Tổng thanh toán<span>{totalAmount + shippingCost - 5000} VND</span>
+              Tổng thanh toán<span>{totalAmount + shippingCost} VND</span>
             </li>
             <li>
               <span className="text-danger" style={{ fontSize: 13 }}>
-                Bạn đã tiết kiệm được 5.000 đ
+                Bạn đã tiết kiệm được 0 đ
               </span>
             </li>
           </ul>

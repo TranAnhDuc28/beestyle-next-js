@@ -171,6 +171,7 @@ const AddCustomer = (props: IProps) => {
       <Modal
         title={"Thêm mới khách hàng"}
         cancelText="Hủy"
+        width={600}
         okText="Lưu"
         onOk={() => form.submit()}
         style={{ top: 20 }}
