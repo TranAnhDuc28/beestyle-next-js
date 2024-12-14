@@ -367,7 +367,7 @@ const CreatePromotion = (props: IProps) => {
 
     const handleAddProductDetails = (newDetails) => {
         setProductDetails((prevDetails) => {
-            // Lọc những chi tiết chưa có trong danh sách hiện tại
+
             const updatedDetails = [
                 ...prevDetails,
                 ...newDetails.filter((detail) => !prevDetails.some((item) => item.id === detail.id))

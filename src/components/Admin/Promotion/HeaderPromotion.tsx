@@ -5,16 +5,17 @@ import { HomeOutlined, PlusOutlined } from "@ant-design/icons";
 import React, { memo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import {findPromotionsByDate} from "../../../services/PromotionService";
 
 type SearchProps = GetProps<typeof Input.Search>;
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
 interface IProps {
-    // setIsCreateModalOpen: (value: boolean) => void; // Không còn cần nữa
+    setPromotion: (Promotion: any[]) => void;
 }
 
-const HeaderPromotion = (props: IProps) => {
+const HeaderPromotion = (setPromotion: IProps) => {
     const [isFilterVisible, setIsFilterVisible] = useState(true);
 
     // const { setIsCreateModalOpen } = props; // Không còn cần nữa
@@ -42,6 +43,45 @@ const HeaderPromotion = (props: IProps) => {
     } else {
         breadcrumbTitle = 'Khuyến mại';
     }
+
+    const handleDateChange = async (dates: any, dateStrings: [string, string]) => {
+        params.set("startDate", dateStrings[0]);
+        params.set("endDate", dateStrings[1]);
+
+        // Cập nhật URL với tham số mới
+        replace(`${pathname}?${params.toString()}`);
+
+        // Gọi hàm để fetch dữ liệu voucher
+        await fetchVouchersByDate();
+    };
+
+
+    const fetchVouchersByDate = async () => {
+        const startDate = params.get("startDate");
+        const endDate = params.get("endDate");
+        const page = params.get("page") || "0";
+
+        console.log(`Calling API: http://localhost:8080/api/v1/admin/voucher/findbydate?startDate=${startDate}&endDate=${endDate}&page=${page}`);
+
+        try {
+            const data = await findPromotionsByDate(startDate, endDate, page);
+            console.log('API response:', data); // Log phản hồi từ API
+
+            // Kiểm tra cấu trúc của dữ liệu trả về
+            if (data && data.data) {
+                const PromotionData = data.data.content || data.data.items || [];
+                console.log(`Fetched vouchers count: ${PromotionData.length}`);
+                setPromotion(PromotionData); // Cập nhật đúng
+            } else {
+                console.warn("No vouchers found or incorrect data structure");
+                setPromotion([]);
+            }
+
+        } catch (error) {
+            console.error("Error fetching vouchers:", error);
+            setPromotion([]);
+        }
+    };
     return (
         <>
             <Breadcrumb

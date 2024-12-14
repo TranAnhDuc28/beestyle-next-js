@@ -1,5 +1,6 @@
 import httpInstance from "@/utils/HttpInstance";
 import {IPromotion} from "@/types/IPromotion";
+import {URL_API_VOUCHER} from "./VoucherService";
 
 export const URL_API_PROMOTION = {
     get: '/admin/promotion',
@@ -38,12 +39,6 @@ export const findPromotions = async (searchTerm, page = 0, size = 10) => {
     return response.data;
 };
 
-export const findPromotionsByDate = async (startDate, endDate, page = 0, size = 10) => {
-    const response = await httpInstance.get(`${URL_API_PROMOTION.searchByDate}`, {
-        params: {startDate, endDate, page, size},
-    });
-    return response.data;
-}
 export const getProductsByPromotionId = async (promotionId: string) => {
     const response = await httpInstance.get(`${URL_API_PROMOTION.getProductIds}/${promotionId}`);
     return response.data;
@@ -59,4 +54,10 @@ export const getPromotionById = async (id: string) => {
     }
 };
 
+export const findPromotionsByDate = async (startDate: any, endDate: any, page = 0, size = 10) => {
+    const response = await httpInstance.get(`${URL_API_PROMOTION.searchByDate}`, {
+        params: {startDate, endDate, page, size},
+    });
+    return response.data;
 
+};
