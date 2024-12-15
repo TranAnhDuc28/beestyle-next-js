@@ -97,7 +97,7 @@ const Navbar: React.FC = () => {
     return (
         <Header className={`${styles.navbar} ${isScrolled ? styles.scrolled : ""}`}>
             <Link href="/">
-                <Image
+                <img
                     src="/logo.png"
                     alt="BeeStyle"
                     width={100}
