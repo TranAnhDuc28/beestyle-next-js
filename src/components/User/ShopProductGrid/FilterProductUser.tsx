@@ -1,6 +1,5 @@
 "use client";
-
-import React, {memo, useMemo, useState} from "react";
+import React, {memo, useState} from "react";
 import {
     Checkbox,
     Col,
@@ -10,7 +9,7 @@ import {
     Radio,
     RadioChangeEvent,
     Row,
-    Select, Tree, TreeDataNode, TreeProps,
+    Tree, TreeProps,
     Typography
 } from "antd";
 import {ParamFilterProduct} from "@/components/Admin/Product/hooks/useFilterProduct";
@@ -20,10 +19,7 @@ import useCategory from "@/components/Admin/Category/hooks/useCategory";
 import useBrand from "@/components/Admin/Brand/hooks/useBrand";
 import useMaterial from "@/components/Admin/Material/hooks/useMaterial";
 import {CloseOutlined, DownOutlined} from "@ant-design/icons";
-import styles from "@/components/Admin/Product/css/product.module.css";
-import {useDebounce} from "use-debounce";
 
-const {Option} = Select;
 const {Text, Title} = Typography;
 
 interface IProps {
@@ -43,7 +39,7 @@ const FilterProductUser: React.FC<IProps> = (props) => {
         = useMaterial(true);
 
     // State cho mỗi nhóm checkbox
-    // const [checkedCategories, setCheckedCategories] = useState<string[]>([]);
+    const [selectedCategoryKeys, setSelectedCategoryKeys] = useState<React.Key[]>([]);
     const [checkedBrands, setCheckedBrands] = useState<string[]>([]);
     const [checkedMaterials, setCheckedMaterials] = useState<string[]>([]);
     const [resetSliderRangePrice, setResetSliderRangePrice] = useState<boolean>(false);
@@ -58,21 +54,10 @@ const FilterProductUser: React.FC<IProps> = (props) => {
         setFilterParam((prevValue) => ({...prevValue, gender: value ? value : undefined}));
     };
 
-    // const onChangeCategoryFilter: GetProp<typeof Checkbox.Group, 'onChange'> = (checkedValues: any[]) => {
-    //     // console.log('CategoryFilter', checkedValues)
-    //     setCheckedCategories(checkedValues);
-    //     if (checkedValues.length > 0 && checkedValues.length < dataCategory.length) {
-    //         setTempFilterParam((prevValue) => {
-    //             return {
-    //                 ...prevValue,
-    //                 category: checkedValues.toString()
-    //             }
-    //         });
-    //     } else {
-    //         setTempFilterParam((prevValue) => ({...prevValue, category: undefined}));
-    //     }
-    // };
+
     const onSelectCategory: TreeProps['onSelect'] = (selectedKeysValue, info) => {
+        // console.log(selectedKeysValue)
+        setSelectedCategoryKeys(selectedKeysValue);
         if (selectedKeysValue.length > 0) {
             setFilterParam((prevValue) => {
                 return {
@@ -116,7 +101,7 @@ const FilterProductUser: React.FC<IProps> = (props) => {
     const handleRemoveAllCheckList = () => {
         // console.log('tempFilterParam', tempFilterParam)
         setResetSliderRangePrice(true);
-        // setCheckedCategories([]);
+        setSelectedCategoryKeys([]);
         setCheckedBrands([]);
         setCheckedMaterials([]);
         setFilterParam({
@@ -137,7 +122,7 @@ const FilterProductUser: React.FC<IProps> = (props) => {
                 <Title style={{margin: 0, marginInlineEnd: 10}} level={3}>Bộ lọc</Title>
                 {
                     (filterParam.category || filterParam.gender || filterParam.brand ||
-                    filterParam.material || filterParam.minPrice || filterParam.maxPrice) &&
+                        filterParam.material || filterParam.minPrice || filterParam.maxPrice) &&
                     <Text className="clear-filter-product-user">
                         <CloseOutlined style={{marginInlineEnd: 10}} onClick={handleRemoveAllCheckList}/>
                         Xóa hết
@@ -148,32 +133,15 @@ const FilterProductUser: React.FC<IProps> = (props) => {
 
             {/* Lọc danh mục */}
             <Title level={5} style={{marginBottom: 10}}>Danh mục sản phẩm</Title>
-            {/*<Checkbox.Group value={checkedCategories} onChange={onChangeCategoryFilter}>*/}
-            {/*    <Row gutter={[16, 16]}>*/}
-            {/*        {dataCategory.slice(0, showMoreCategories ? dataCategory.length : 6).map((item: any) => (*/}
-            {/*            <Col key={item.id}>*/}
-            {/*                <Checkbox value={item.id}>*/}
-            {/*                    {item.categoryName}*/}
-            {/*                </Checkbox>*/}
-            {/*            </Col>*/}
-            {/*        ))}*/}
-            {/*    </Row>*/}
-            {/*</Checkbox.Group>*/}
-            {/*<div*/}
-            {/*    style={{cursor: 'pointer', color: '#1890ff', marginTop: 10}}*/}
-            {/*    onClick={() => setShowMoreCategories(!showMoreCategories)}*/}
-            {/*>*/}
-            {/*    {showMoreCategories ? 'Thu gọn' : 'Xem thêm'}*/}
-            {/*</div>*/}
             <Tree
                 blockNode
                 switcherIcon={<DownOutlined/>}
+                selectedKeys={selectedCategoryKeys}
                 onSelect={onSelectCategory}
                 treeData={dataTreeSelectCategory}
                 height={400}
                 style={{maxWidth: '100%'}}
             />
-
             <Divider/>
 
             {/* Khoảng giá*/}

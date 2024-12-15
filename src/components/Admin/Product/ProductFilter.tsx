@@ -37,7 +37,7 @@ interface IProps {
     error?: Error;
 }
 
-const ProductFilter = (props: IProps) => {
+const ProductFilter: React.FC<IProps> = (props) => {
     const {error} = props;
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -179,7 +179,6 @@ const ProductFilter = (props: IProps) => {
 
         return loop(dataTreeSelectCategory);
     }, [dataTreeSelectCategory, searchValue]);
-
 
     return (
         <Space direction="vertical" style={{minWidth: 256}}>

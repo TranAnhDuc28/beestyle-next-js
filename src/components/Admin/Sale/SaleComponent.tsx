@@ -66,7 +66,7 @@ const SaleComponent: React.FC = () => {
     const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
     const {showNotification, showMessage} = useAppNotifications();
     const {data, error, isLoading, mutate: mutateOrderPending} =
-        useSWR(`${URL_API_ORDER.get}/sale/order-pending`,
+        useSWR(`${URL_API_ORDER.getOrderPending}`,
             getOrders,
             {
                 revalidateIfStale: false,

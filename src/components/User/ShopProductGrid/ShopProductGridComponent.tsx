@@ -1,5 +1,5 @@
 "use client";
-import ProductCard from "../ProductCommon/ProductCardItem";
+import ProductCard from "@/components/User/ProductCommonUser/ProductCardItem";
 import FilterProductUser from "@/components/User/ShopProductGrid/FilterProductUser";
 import {Col, Flex, Pagination, PaginationProps, Row, Spin, Typography} from "antd";
 import HeaderShopGrid from "@/components/User/ShopProductGrid/HeaderShopGrid";

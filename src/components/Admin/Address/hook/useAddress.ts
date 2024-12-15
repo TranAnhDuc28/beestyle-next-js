@@ -13,7 +13,7 @@ const transformData = (data: any[]) => {
 };
 
 const AddressAPIUrls  = {
-    provinces: "https://vn-public-apis.fpo.vn/provinces/getAll?limit=-1",
+    provinces: "https://vn-public-apis.fpo.vn/provinces/getAll?limit=100",
     districts: (provinceCode: string) => `https://vn-public-apis.fpo.vn/districts/getByProvince?provinceCode=${provinceCode}&limit=-1`,
     wards: (districtCode: string) => `https://vn-public-apis.fpo.vn/wards/getByDistrict?districtCode=${districtCode}&limit=-1`,
 }
@@ -22,7 +22,6 @@ const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 const useAddress = () => {
     const {showNotification} = useAppNotifications();
-
     const fetchApiAdress = (key: string | null, description: string) => {
         const {data, error, isLoading, mutate} = useSWR(key, fetcher, {
             revalidateIfStale: false,
@@ -38,6 +37,7 @@ const useAddress = () => {
 
         return {data, error, isLoading, mutate};
     }
+
 
     const handleGetProvinces = () => {
         const {data, error, isLoading, mutate} =
