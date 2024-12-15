@@ -6,7 +6,6 @@ import useAppNotifications from "@/hooks/useAppNotifications";
 
 interface IProps {
     handleSubmit: (payement: any) => Promise<void>;
-
     shippingCost: number; // Nhận chi phí vận chuyển từ prop
 }
 
@@ -18,8 +17,7 @@ const OrderDetail = (props: IProps) => {
     const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
     const totalAmount = cartItems.reduce(
-        (total, item) => total + item.total_price,
-        0
+        (total, item) => total + item.total_price + shippingCost,0
     );
 
     const handlePaymentChange = (e) => {
@@ -34,9 +32,13 @@ const OrderDetail = (props: IProps) => {
             return;
         }
 
+        const totalPayment = totalAmount + shippingCost
+        console.log(totalPayment);
+
         // Gọi handleSubmit với payment đã chọn
-        await handleSubmit({ selectedPayment, totalAmount, shippingCost });
+        await handleSubmit({ selectedPayment, totalPayment, shippingCost });
     };
+
 
     return (
         <div className="order-details">
@@ -52,14 +54,14 @@ const OrderDetail = (props: IProps) => {
                             {/* Hiển thị chi phí vận chuyển đã cập nhật */}
                         </li>
                         <li>
-                            Voucher giảm giá<span className="text-danger"> - 5.000 VND</span>
+                            Voucher giảm giá<span className="text-danger"> 0 VND</span>
                         </li>
                         <li className="last fs-6">
-                            Tổng thanh toán<span>{totalAmount + shippingCost - 5000} VND</span>
+                            Tổng thanh toán<span>{totalAmount + shippingCost} VND</span>
                         </li>
                         <li>
                             <span className="text-danger" style={{ fontSize: 13 }}>
-                                Bạn đã tiết kiệm được 5.000 đ
+                                Bạn đã tiết kiệm được 0 đ
                             </span>
                         </li>
                     </ul>
