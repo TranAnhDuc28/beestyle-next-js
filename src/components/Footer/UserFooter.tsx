@@ -17,9 +17,11 @@ export default function UserFooter() {
                         <div className="col-lg-5 col-md-6 col-12">
                             <div className="single-footer about">
                                 <div className="logo">
-                                    <Link className="link-no-decoration" href="#"><Image src="/logo2.png" alt="#"
-                                                                                         width={110}
-                                                                                         height={32}/></Link>
+                                    <Link className="link-no-decoration" href="#">
+                                        <img src="/logo2.png" alt="#"
+                                             style={{width: 110, height: "auto"}}
+                                        />
+                                    </Link>
                                 </div>
                                 <p className="text">
                                     Chúng tôi luôn cập nhật những xu hướng mới nhất, chú trọng đến chất liệu cao cấp và
@@ -104,14 +106,15 @@ export default function UserFooter() {
                             </div>
                             <div className="col-lg-6 col-12">
                                 <div className="right d-flex">
-                                    <Image
+                                    <img
                                         src="https://yody.vn/images/identity-badge/bct_v1.png"
-                                        alt="#" width={105} height={20}
+                                        alt="#"
+                                        style={{width: 105, height: "auto"}}
                                         className="mr-5"
                                     />
-                                    <Image
+                                    <img
                                         src="https://yody.vn/images/identity-badge/dmca_v1.png"
-                                        alt="#" width={80} height={40}
+                                        style={{width: 80, height: "auto"}}
                                     />
                                 </div>
                             </div>

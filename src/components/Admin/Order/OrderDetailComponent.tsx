@@ -3,7 +3,7 @@ import React, {memo, useEffect, useState} from "react";
 import {URL_API_ORDER} from "@/services/OrderService";
 import useSWR from "swr";
 
-const OrderDetail: React.FC<{ record: any }> = ({record}) => {
+const OrderDetailComponent: React.FC<{ record: any }> = ({record}) => {
     const [invoiceData, setInvoiceData] = useState([]);
     const [extraData, setExtraData] = useState(null);
     console.log(record)
@@ -104,4 +104,4 @@ const OrderDetail: React.FC<{ record: any }> = ({record}) => {
     );
 };
 
-export default memo(OrderDetail);
+export default memo(OrderDetailComponent);
