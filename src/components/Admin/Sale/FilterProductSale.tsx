@@ -102,7 +102,7 @@ const FilterProductSale: React.FC<IProps> = (props) => {
         }
     };
 
-    const handleRemoveAllCheckList = () => {
+    const handleClearAllFilter = () => {
         // console.log('tempFilterParam', tempFilterParam)
         setResetSliderRangePrice(true);
         setCheckedCategories([]);
@@ -127,7 +127,7 @@ const FilterProductSale: React.FC<IProps> = (props) => {
 
     const footerDrawer = (
         <Flex justify="space-between" align="center" style={{padding: "10px 0px"}}>
-            <Button size="large" onClick={handleRemoveAllCheckList}>Xóa tất cả</Button>
+            <Button size="large" onClick={handleClearAllFilter}>Xóa tất cả</Button>
             <Button size="large" type="primary" onClick={handleOk}>Xem kết quả</Button>
         </Flex>
     );

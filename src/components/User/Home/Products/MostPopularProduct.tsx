@@ -7,7 +7,7 @@ import Slider from "react-slick";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import React, {useState} from "react";
-import ProductQuickLookupModal from "@/components/User/ProductCommon/ProductQuickLookupModal";
+import ProductQuickLookupModal from "@/components/User/ProductCommonUser/ProductQuickLookupModal";
 import useSWR from "swr";
 import {getSellingProduct, URL_API_PRODUCT_SELLER} from "@/services/user/ProductAreaService";
 import {TiEye, TiArrowLeft, TiArrowRight} from 'react-icons/ti';
