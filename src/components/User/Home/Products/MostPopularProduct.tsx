@@ -1,17 +1,15 @@
 'use client';
 
-import Image from "next/image";
 import Link from "next/link";
-import { Card } from 'antd';
+import { Card, Tooltip, Image } from 'antd';
 import Slider from "react-slick";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import React, { useState } from "react";
-import ProductQuickLookupModal from "@/components/User/ProductCommon/ProductQuickLookupModal";
+import ProductQuickLookupModal from "@/components/User/ProductCommonUser/ProductQuickLookupModal";
 import useSWR from "swr";
 import { getSellingProduct, URL_API_PRODUCT_SELLER } from "@/services/user/ProductAreaService";
 import { TiEye, TiArrowLeft, TiArrowRight } from 'react-icons/ti';
-import { time } from "console";
 
 const CustomPrevArrow = ({ onClick }) => (
     <div
@@ -72,7 +70,7 @@ function MostPopularProduct() {
         nextArrow: <CustomNextArrow onClick={undefined} />
     };
 
-    const handleOpenModal = (product) => {
+    const handleOpenModal = (product: any) => {
         setSelectedProduct(product);
         setIsModalVisible(true);
     };
@@ -102,33 +100,41 @@ function MostPopularProduct() {
                                             <Card className="product-card">
                                                 <div className="product-image-wrapper">
                                                     <Image
-                                                        width={550}
-                                                        height={750}
+                                                        preview={{
+                                                            mask: (
+                                                                <div className="flex items-center justify-center h-full">
+                                                                    <Tooltip
+                                                                        title={
+                                                                            <span style={{ fontSize: 12, padding: 0 }}>
+                                                                                Xem nhanh
+                                                                            </span>
+                                                                        }
+                                                                        color="#F7941D"
+                                                                    >
+                                                                        <TiEye size={25} color="#fff"
+                                                                            className="hover:!text-orange-400"
+                                                                            onClick={() => handleOpenModal(product)}
+                                                                        />
+                                                                    </Tooltip>
+                                                                </div>
+                                                            ),
+                                                            maskClassName:
+                                                                'flex items-center justify-center bg-black bg-opacity-50',
+                                                            visible: false,
+                                                        }}
                                                         src={product.imageUrl}
                                                         alt={product.productName}
-                                                        className="product-image"
-                                                        unoptimized
+                                                        className="w-full"
                                                     />
                                                     {product?.label && (
                                                         <span className="product-label">{product.productName}</span>
                                                     )}
-                                                    <div className="product-overlay">
-                                                        <div className="overlay-actions">
-                                                            <a
-                                                                onClick={() => handleOpenModal(product)}
-                                                                className="overlay-action"
-                                                            >
-                                                                <TiEye size={20} className="icon-action" />
-                                                                <span className="action-tooltip">Xem ngay</span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                                 <div className="product-content">
                                                     <h3>
                                                         <Link
                                                             href={`/product/${product.id}/variant`}
-                                                            className="product-title fs-6 text-uppercase fw-semibold"
+                                                            className="product-title fs-6 fw-semibold"
                                                         >
                                                             {product.productName}
                                                         </Link>

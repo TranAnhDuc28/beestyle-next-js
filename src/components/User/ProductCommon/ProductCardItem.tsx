@@ -1,6 +1,7 @@
 "use client";
+
 import React, { memo, useState } from "react";
-import ProductQuickLookupModal from "./ProductQuickLookupModal";
+import ProductQuickLookupModal from "../ProductCommonUser/ProductQuickLookupModal";
 import { Badge, Button, Card, ConfigProvider, Flex, Image, Tooltip, Typography } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
 import { FORMAT_NUMBER_WITH_COMMAS } from "@/constants/AppConstants";

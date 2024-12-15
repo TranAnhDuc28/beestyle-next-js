@@ -31,7 +31,7 @@ const ColorPickers = (props: any) => {
 
     return (
         <div className="mb-4">
-            <div className="flex items-center mb-1">
+            <div className="flex items-center">
                 <span className="font-semibold">Màu sắc :</span>
                 {props.selectedColor ? (
                     <span className="ml-2 font-normal" style={{ color: '#da880d' }}>

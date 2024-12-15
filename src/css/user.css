@@ -22,6 +22,14 @@
 }
 /* end custom mark image item card */
 
+.clear-filter-product-user {
+    cursor: pointer !important;
+}
+
+.clear-filter-product-user:hover {
+    text-decoration: underline !important;
+}
+
 /* Preloader */
 .preloader {
     position: fixed;

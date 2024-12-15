@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Layout, Menu, Badge, Button, Flex, Typography } from "antd";
+import { Layout, Menu, Badge, Button, Flex, Typography, Tooltip } from "antd";
 import { SearchOutlined, UserOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { usePathname } from "next/navigation";
@@ -16,7 +16,6 @@ const { Text } = Typography;
 const Navbar: React.FC = () => {
     const [cartCount, setCartCount] = useState<number>(0);
     const [isScrolled, setIsScrolled] = useState(false);
-    const [lastScrollY, setLastScrollY] = useState(0);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const pathname = usePathname();
 
@@ -26,27 +25,18 @@ const Navbar: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchCartItems();
         const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            if (currentScrollY === 0) {
-                setIsScrolled(false);
-            } else if (currentScrollY > lastScrollY) {
-                setIsScrolled(false);
-            } else if (currentScrollY < lastScrollY) {
-                setIsScrolled(true);
-            }
-
-            setLastScrollY(currentScrollY);
+            fetchCartItems();
+            setIsScrolled(window.scrollY > 110);
         };
 
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, [lastScrollY]);
+    }, []);
 
     const activeKey = pathname === "/" || pathname === "/home" ? "" : pathname;
 
-    const menuItems: MenuProps["items"] = [
+    const menuItems: MenuProps["items"] = useMemo(() => [
         {
             key: "category",
             label: (
@@ -95,7 +85,7 @@ const Navbar: React.FC = () => {
                 </Link>
             )
         },
-    ];
+    ], []);
 
     return (
         <Header className={`${styles.navbar} ${isScrolled ? styles.scrolled : ""}`}>
@@ -113,38 +103,57 @@ const Navbar: React.FC = () => {
                 className={styles.menuContainer}
                 items={menuItems}
                 selectedKeys={[activeKey]}
-                disabledOverflow
             />
 
             <Flex align="center" gap={15}>
                 <div className={styles.iconButton}>
-                    <Button type="text" icon={<SearchOutlined style={{ fontSize: 20 }} />} />
+                    <Tooltip
+                        title={
+                            <span style={{ fontSize: 12, padding: 0 }}>
+                                Tìm kiếm
+                            </span>
+                        }
+                        color="#F7941D"
+                    >
+                        <Button type="text" icon={<SearchOutlined style={{ fontSize: 20 }} />} />
+                    </Tooltip>
                 </div>
                 <div className={styles.iconButton}>
-                    <Link
-                        href={"/user-profile"}
-                        style={{ padding: '6px' }}
-                        className="hover:bg-gray-200 rounded-md"
-                        passHref
+                    <Tooltip
+                        title={
+                            <span style={{ fontSize: 12, padding: 0 }}>
+                                Tài khoản
+                            </span>
+                        }
+                        color="#F7941D"
                     >
-                        <UserOutlined style={{ fontSize: 20, color: '#333' }} />
-                    </Link>
+                        <Button type="text" icon={<UserOutlined style={{ fontSize: 20 }} />} />
+                    </Tooltip>
                 </div>
                 <div className={styles.iconButton} style={{ marginTop: 5 }}>
-                    <Badge
-                        count={cartCount}
-                        size="default"
-                        style={{ backgroundColor: "#F7941D" }}
+                    <Tooltip
+                        title={
+                            <span style={{ fontSize: 12, padding: 0 }}>
+                                Giỏ hàng
+                            </span>
+                        }
+                        color="#F7941D"
                     >
-                        <Button
-                            type="text"
-                            icon={<LuShoppingBag style={{ fontSize: 20 }} onClick={() => setIsCartOpen(true)} />}
-                        />
-                    </Badge>
+                        <Badge
+                            count={cartCount}
+                            size="default"
+                            style={{ backgroundColor: "#F7941D" }}
+                        >
+                            <Button
+                                type="text"
+                                icon={<LuShoppingBag style={{ fontSize: 20 }} onClick={() => setIsCartOpen(true)} />}
+                            />
+                        </Badge>
+                    </Tooltip>
                     <CartDrawer open={isCartOpen} onClose={() => setIsCartOpen(false)} />
                 </div>
             </Flex>
         </Header>
     );
 }
-export default Navbar;
+export default memo(Navbar)

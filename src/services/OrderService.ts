@@ -2,7 +2,8 @@ import httpInstance from "@/utils/HttpInstance";
 import {IOrder, IOrderCreateOrUpdate} from "@/types/IOrder";
 
 export const URL_API_ORDER = {
-    get: '/admin/order',
+    getOrderPending: '/admin/order/order-pending',
+    filter: '/admin/order',
     create: '/admin/order/create',
     update: (id: number) => `/admin/order/update/${id}`,
 };

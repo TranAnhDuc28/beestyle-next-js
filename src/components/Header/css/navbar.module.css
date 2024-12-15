@@ -28,6 +28,9 @@
 }
 
 .menuContainer {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
     overflow: hidden;
     border-style: none;
     font-size: 18px;
@@ -70,8 +73,8 @@
     background: rgba(0, 0, 0, 0.05);
 }
 
-.ant-menu-horizontal > .ant-menu-item-selected,
-.ant-menu-horizontal > .ant-menu-item-active {
-  color: #F7941D !important;
-  border-bottom: 2px solid #F7941D !important;
+.ant-menu-horizontal>.ant-menu-item-selected,
+.ant-menu-horizontal>.ant-menu-item-active {
+    color: #F7941D !important;
+    border-bottom: 2px solid #F7941D !important;
 }

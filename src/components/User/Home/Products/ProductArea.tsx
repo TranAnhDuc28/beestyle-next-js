@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Button, Flex, Image, Tooltip } from "antd";
 import MenuProductArea from "@/components/User/Home/Products/MenuProductArea";
-import ProductQuickLookupModal from "@/components/User/ProductCommon/ProductQuickLookupModal";
+import ProductQuickLookupModal from "@/components/User/ProductCommonUser/ProductQuickLookupModal";
 import useSWR from 'swr';
 import { getProductForUser, URL_API_PRODUCT_AREA } from "@/services/user/ProductAreaService";
 import ColorButton from "@/components/Button/ColorButton";
@@ -113,7 +113,7 @@ function ProductArea() {
                                                                 <div className="product-content mt-1 mb-3">
                                                                     <h3>
                                                                         <Link href="#"
-                                                                            className="link-action link-no-decoration text-dark fs-6 text-uppercase">
+                                                                            className="link-action link-no-decoration text-dark fs-6">
                                                                             {product.productName}
                                                                         </Link>
                                                                     </h3>

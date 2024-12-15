@@ -34,6 +34,19 @@ const ProductComponent: React.FC = () => {
             {revalidateOnFocus: false, revalidateOnReconnect: false}
         );
 
+    useEffect(() => {
+        if (error) {
+            showNotification("error", {
+                message: error?.message, description: error?.response?.data?.message || "Error fetching products",
+            });
+        }
+    }, [error]);
+
+    let result: any;
+    if (!isLoading && data) {
+        result = data?.data;
+    }
+
     const columns: TableColumnsType<IProductVariant> = [
         {
             title: '', dataIndex: 'imageUrl', key: 'imageUrl', align: 'center', width: 70,
@@ -120,19 +133,6 @@ const ProductComponent: React.FC = () => {
         },
     ];
 
-    useEffect(() => {
-        if (error) {
-            showNotification("error", {
-                message: error?.message, description: error?.response?.data?.message || "Error fetching products",
-            });
-        }
-    }, [error]);
-
-    let result: any;
-    if (!isLoading && data) {
-        result = data?.data;
-    }
-
     return (
         <>
             <HeaderProduct setIsCreateModalOpen={setIsCreateModalOpen}/>
@@ -153,8 +153,7 @@ const ProductComponent: React.FC = () => {
                         current={result?.pageNo}
                         pageSize={result?.pageSize}
                         total={result?.totalElements}
-                    >
-                    </TablePagination>
+                    />
                 </Content>
             </Flex>
 

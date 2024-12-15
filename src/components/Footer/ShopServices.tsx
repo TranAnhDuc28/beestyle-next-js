@@ -1,56 +1,54 @@
-import React from "react";
-import {IoPricetagsOutline, IoReloadSharp, IoRocketOutline} from "react-icons/io5";
-import {CiLock} from "react-icons/ci";
+import React from 'react';
+import { Row, Col } from 'antd';
+import { IoPricetagsOutline, IoRocketOutline } from 'react-icons/io5';
+import { CiLock } from 'react-icons/ci';
 
-export default function ShopServices() {
+const ShopServices = () => {
     return (
-        <section className="shop-services section home">
-            <div className="container">
-                <div className="col-12">
-                    <div className="row">
-                        <div className="col-4">
-                            <div className="single-service">
-                                <i><IoRocketOutline/></i>
-                                <div className="ml-14">
-                                    <h4>Miễn phí vận chuyển</h4>
-                                    <p>Dành cho đơn hàng từ 500.000 đ</p>
-                                </div>
+        <section className="bg-gray-100 py-8">
+            <div className="container mx-auto px-4 sm:px-8">
+                <Row gutter={[16, 16]} justify="center">
+                    <Col xs={24} sm={12} md={8} lg={8}>
+                        <div className="flex items-center justify-center">
+                            <IoRocketOutline className="text-4xl text-gray-700" />
+                            <div className="ml-4">
+                                <h4 className="text-lg font-bold text-gray-800">
+                                    MIỄN PHÍ VẬN CHUYỂN
+                                </h4>
+                                <p className="text-gray-600">
+                                    Dành cho đơn hàng từ 500.000 đ
+                                </p>
                             </div>
                         </div>
-                        {/*<div className="col-3">*/}
-                        {/*    <div className="single-service">*/}
-                        {/*        <div className="single-service">*/}
-                        {/*            <i><IoReloadSharp/></i>*/}
-                        {/*            <div className="ml-14">*/}
-                        {/*                <h4>Miễn phí đổi trả</h4>*/}
-                        {/*                <p>Trả hàng trong vòng 30 ngày</p>*/}
-                        {/*            </div>*/}
-                        {/*        </div>*/}
-                        {/*    </div>*/}
-                        {/*</div>*/}
-                        <div className="col-4">
-                            <div className="single-service">
-                                <div className="single-service">
-                                    <i><CiLock/></i>
-                                    <div className="ml-14">
-                                        <h4>Thanh toán an toàn</h4>
-                                        <p>Thanh toán an toàn 100%</p>
-                                    </div>
-                                </div>
+                    </Col>
+                    <Col xs={24} sm={12} md={8} lg={8}>
+                        <div className="flex items-center justify-center">
+                            <CiLock className="text-4xl text-gray-700" />
+                            <div className="ml-4">
+                                <h4 className="text-lg font-bold text-gray-800">
+                                    THANH TOÁN AN TOÀN
+                                </h4>
+                                <p className="text-gray-600">Thanh toán an toàn 100%</p>
                             </div>
                         </div>
-                        <div className="col-4">
-                            <div className="single-service">
-                                <i><IoPricetagsOutline/></i>
-                                <div className="ml-14">
-                                    <h4>Giá tốt nhất</h4>
-                                    <p>Mua hàng ngay với mức giá ưu đãi</p>
-                                </div>
+                    </Col>
+                    <Col xs={24} sm={12} md={8} lg={8}>
+                        <div className="flex items-center justify-center">
+                            <IoPricetagsOutline className="text-4xl text-gray-700" />
+                            <div className="ml-4">
+                                <h4 className="text-lg font-bold text-gray-800">
+                                    GIÁ TỐT NHẤT
+                                </h4>
+                                <p className="text-gray-600">
+                                    Mua hàng ngay với mức giá ưu đãi
+                                </p>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </Col>
+                </Row>
             </div>
         </section>
-    )
-}
+    );
+};
+
+export default ShopServices;

@@ -1,5 +1,4 @@
 "use client";
-
 import React, {memo, useState} from "react";
 import {
     Checkbox,
@@ -10,7 +9,7 @@ import {
     Radio,
     RadioChangeEvent,
     Row,
-    Select,
+    Tree, TreeProps,
     Typography
 } from "antd";
 import {ParamFilterProduct} from "@/components/Admin/Product/hooks/useFilterProduct";
@@ -19,32 +18,20 @@ import {GENDER_PRODUCT} from "@/constants/GenderProduct";
 import useCategory from "@/components/Admin/Category/hooks/useCategory";
 import useBrand from "@/components/Admin/Brand/hooks/useBrand";
 import useMaterial from "@/components/Admin/Material/hooks/useMaterial";
+import {CloseOutlined, DownOutlined} from "@ant-design/icons";
 
-const {Option} = Select;
-const {Title} = Typography;
-
-export const defaultFilterParam: ParamFilterProduct = {
-    page: 1,
-    size: 20,
-    category: undefined,
-    gender: undefined,
-    brand: undefined,
-    material: undefined,
-    minPrice: undefined,
-    maxPrice: undefined,
-};
+const {Text, Title} = Typography;
 
 interface IProps {
     title?: string;
     filterParam: ParamFilterProduct;
-    setFilterParam?: (value: ParamFilterProduct) => void;
+    setFilterParam: React.Dispatch<React.SetStateAction<ParamFilterProduct>>;
 }
 
 const FilterProductUser: React.FC<IProps> = (props) => {
     const {filterParam, setFilterParam} = props;
-    const [tempFilterParam, setTempFilterParam] = useState<ParamFilterProduct>(filterParam);
 
-    const {dataCategory, error: errorDataTreeSelectCategory, isLoading: isLoadingDataTreeSelectCategory}
+    const {dataTreeSelectCategory, error: errorDataCategory, isLoading: isLoadingDataCategory}
         = useCategory(true);
     const {dataBrand, error: errorDataOptionBrand, isLoading: isLoadingDataOptionBrand}
         = useBrand(true);
@@ -52,33 +39,32 @@ const FilterProductUser: React.FC<IProps> = (props) => {
         = useMaterial(true);
 
     // State cho mỗi nhóm checkbox
-    const [checkedCategories, setCheckedCategories] = useState<string[]>([]);
+    const [selectedCategoryKeys, setSelectedCategoryKeys] = useState<React.Key[]>([]);
     const [checkedBrands, setCheckedBrands] = useState<string[]>([]);
     const [checkedMaterials, setCheckedMaterials] = useState<string[]>([]);
     const [resetSliderRangePrice, setResetSliderRangePrice] = useState<boolean>(false);
 
-    const [showMoreCategories, setShowMoreCategories] = useState(false);
+    // const [showMoreCategories, setShowMoreCategories] = useState(false);
     const [showMoreBrands, setShowMoreBrands] = useState(false);
     const [showMoreMaterials, setShowMoreMaterials] = useState(false);
 
     const onChangeGenderProductFilter = (e: RadioChangeEvent) => {
         const {value} = e.target;
         // console.log('GenderProductFilter', value)
-        setTempFilterParam((prevValue) => ({...prevValue, gender: value ? value : undefined}));
+        setFilterParam((prevValue) => ({...prevValue, gender: value ? value : undefined}));
     };
 
-    const onChangeCategoryFilter: GetProp<typeof Checkbox.Group, 'onChange'> = (checkedValues: any[]) => {
-        // console.log('CategoryFilter', checkedValues)
-        setCheckedCategories(checkedValues);
-        if (checkedValues.length > 0 && checkedValues.length < dataCategory.length) {
-            setTempFilterParam((prevValue) => {
+
+    const onSelectCategory: TreeProps['onSelect'] = (selectedKeysValue, info) => {
+        // console.log(selectedKeysValue)
+        setSelectedCategoryKeys(selectedKeysValue);
+        if (selectedKeysValue.length > 0) {
+            setFilterParam((prevValue) => {
                 return {
                     ...prevValue,
-                    category: checkedValues.toString()
+                    category: selectedKeysValue.toString()
                 }
             });
-        } else {
-            setTempFilterParam((prevValue) => ({...prevValue, category: undefined}));
         }
     };
 
@@ -86,14 +72,14 @@ const FilterProductUser: React.FC<IProps> = (props) => {
         // console.log('BrandFilter', checkedValues)
         setCheckedBrands(checkedValues);
         if (checkedValues.length > 0 && checkedValues.length < dataBrand.length) {
-            setTempFilterParam((prevValue) => {
+            setFilterParam((prevValue) => {
                 return {
                     ...prevValue,
                     brand: checkedValues.toString()
                 }
             });
         } else {
-            setTempFilterParam((prevValue) => ({...prevValue, brand: undefined}));
+            setFilterParam((prevValue) => ({...prevValue, brand: undefined}));
         }
     };
 
@@ -101,24 +87,24 @@ const FilterProductUser: React.FC<IProps> = (props) => {
         // console.log('MaterialFilter', checkedValues)
         setCheckedMaterials(checkedValues);
         if (checkedValues.length > 0 && checkedValues.length < dataMaterial.length) {
-            setTempFilterParam((prevValue) => {
+            setFilterParam((prevValue) => {
                 return {
                     ...prevValue,
                     material: checkedValues.toString()
                 }
             });
         } else {
-            setTempFilterParam((prevValue) => ({...prevValue, material: undefined}));
+            setFilterParam((prevValue) => ({...prevValue, material: undefined}));
         }
     };
 
     const handleRemoveAllCheckList = () => {
         // console.log('tempFilterParam', tempFilterParam)
         setResetSliderRangePrice(true);
-        setCheckedCategories([]);
+        setSelectedCategoryKeys([]);
         setCheckedBrands([]);
         setCheckedMaterials([]);
-        setTempFilterParam({
+        setFilterParam({
             page: 1,
             size: 20,
             category: undefined,
@@ -132,12 +118,47 @@ const FilterProductUser: React.FC<IProps> = (props) => {
 
     return (
         <>
-            <Title level={3}>Bộ lọc</Title>
+            <Flex justify="space-between" align="end" style={{margin: 5}}>
+                <Title style={{margin: 0, marginInlineEnd: 10}} level={3}>Bộ lọc</Title>
+                {
+                    (filterParam.category || filterParam.gender || filterParam.brand ||
+                        filterParam.material || filterParam.minPrice || filterParam.maxPrice) &&
+                    <Text className="clear-filter-product-user">
+                        <CloseOutlined style={{marginInlineEnd: 10}} onClick={handleRemoveAllCheckList}/>
+                        Xóa hết
+                    </Text>
+                }
+            </Flex>
+            <Divider/>
+
+            {/* Lọc danh mục */}
+            <Title level={5} style={{marginBottom: 10}}>Danh mục sản phẩm</Title>
+            <Tree
+                blockNode
+                switcherIcon={<DownOutlined/>}
+                selectedKeys={selectedCategoryKeys}
+                onSelect={onSelectCategory}
+                treeData={dataTreeSelectCategory}
+                height={400}
+                style={{maxWidth: '100%'}}
+            />
+            <Divider/>
+
+            {/* Khoảng giá*/}
+            <Title level={5} style={{marginBottom: 10}}>Khoảng giá</Title>
+            <Flex style={{marginBottom: 10}}>
+                <SliderPriceProduct
+                    setTempFilterParam={setFilterParam}
+                    reset={resetSliderRangePrice}
+                    setReset={setResetSliderRangePrice}
+                    style={{width: "95%"}}
+                />
+            </Flex>
             <Divider/>
 
             {/* Lọc giới tính*/}
             <Title level={5} style={{marginBottom: 10}}>Giới tính</Title>
-            <Radio.Group onChange={onChangeGenderProductFilter} value={tempFilterParam?.gender}>
+            <Radio.Group onChange={onChangeGenderProductFilter} value={filterParam?.gender}>
                 <Row gutter={[8, 8]}>
                     <Col key={"ALL"}>
                         <Radio value={undefined}>Tất cả</Radio>
@@ -151,39 +172,6 @@ const FilterProductUser: React.FC<IProps> = (props) => {
                     ))}
                 </Row>
             </Radio.Group>
-            <Divider/>
-
-            {/* Lọc danh mục */}
-            <Title level={5} style={{marginBottom: 10}}>Danh mục</Title>
-            <Checkbox.Group value={checkedCategories} onChange={onChangeCategoryFilter}>
-                <Row gutter={[16, 16]}>
-                    {dataCategory.slice(0, showMoreCategories ? dataCategory.length : 6).map((item: any) => (
-                        <Col key={item.id}>
-                            <Checkbox value={item.id}>
-                                {item.categoryName}
-                            </Checkbox>
-                        </Col>
-                    ))}
-                </Row>
-            </Checkbox.Group>
-            <div
-                style={{cursor: 'pointer', color: '#1890ff', marginTop: 10}}
-                onClick={() => setShowMoreCategories(!showMoreCategories)}
-            >
-                {showMoreCategories ? 'Thu gọn' : 'Xem thêm'}
-            </div>
-            <Divider/>
-
-            {/* Khoảng giá*/}
-            <Title level={5} style={{marginBottom: 10}}>Khoảng giá</Title>
-            <Flex style={{marginBottom: 10}}>
-                <SliderPriceProduct
-                    setTempFilterParam={setTempFilterParam}
-                    reset={resetSliderRangePrice}
-                    setReset={setResetSliderRangePrice}
-                    style={{width: "85%"}}
-                />
-            </Flex>
             <Divider/>
 
             {/* Lọc thương hiệu */}

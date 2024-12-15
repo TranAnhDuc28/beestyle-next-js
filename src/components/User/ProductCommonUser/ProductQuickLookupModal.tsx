@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Input, Carousel, Tag } from 'antd';
+import { Modal, Button, Carousel, Tag, InputNumber } from 'antd';
 import Image from 'next/image';
 import { useProductImages, useProduct } from '@/services/user/SingleProductService';
 import ColorPickers from '@/components/User/ShopSingle/Properties/ColorPickers';
 import SizePickers from '@/components/User/ShopSingle/Properties/SizePickers';
 import Link from 'next/link';
 import { addToCart } from '@/services/user/ShoppingCartService';
+import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 
 interface IProps {
     visible: boolean;
@@ -137,30 +138,29 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                             onSizeSelect={setSelectedSize}
                         />
                     </div>
-
                     <div className="flex items-center my-4">
-                        <p className="text-black font-semibold mr-2">Số lượng:</p>
-                        <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
+                        <p className="text-black font-semibold mr-4">Số lượng</p>
+                        <div className="flex items-center">
                             <Button
                                 onClick={handleDecrement}
-                                className="bg-gray-200 hover:!bg-gray-300 text-black font-bold border-none"
-                                style={{ borderRadius: 0, width: 40, height: 40 }}
-                            >
-                                -
-                            </Button>
-                            <Input
+                                className="!bg-gray-200 hover:!bg-gray-300 !text-black !font-bold relative z-10
+                                           !border-none !rounded-none !w-10 !h-10 flex items-center justify-center"
+                                icon={<MinusOutlined />}
+                            />
+                            <InputNumber
+                                min={1}
                                 value={quantity}
-                                className="text-center text-black font-semibold border-0"
+                                style={{ lineHeight: '40px' }}
+                                className="!text-black !font-semibold !border-0 !w-14 !h-10 !text-center"
                                 readOnly
-                                style={{ width: 50, height: 40 }}
+                                controls={false}
                             />
                             <Button
                                 onClick={handleIncrement}
-                                className="bg-gray-200 hover:!bg-gray-300 text-black font-bold border-none"
-                                style={{ borderRadius: 0, width: 40, height: 40 }}
-                            >
-                                +
-                            </Button>
+                                className="!bg-gray-200 hover:!bg-gray-300 !text-black !font-bold relative z-10
+                                           !border-none !rounded-none !w-10 !h-10 flex items-center justify-center"
+                                icon={<PlusOutlined />}
+                            />
                         </div>
                     </div>
                     <Button
