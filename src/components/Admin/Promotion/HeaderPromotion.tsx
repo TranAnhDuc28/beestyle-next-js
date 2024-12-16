@@ -18,7 +18,6 @@ interface IProps {
 const HeaderPromotion = (setPromotion: IProps) => {
     const [isFilterVisible, setIsFilterVisible] = useState(true);
 
-    // const { setIsCreateModalOpen } = props; // Không còn cần nữa
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
