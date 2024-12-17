@@ -43,43 +43,20 @@ const HeaderPromotion = (setPromotion: IProps) => {
         breadcrumbTitle = 'Khuyến mại';
     }
 
-    const handleDateChange = async (dates: any, dateStrings: [string, string]) => {
-        params.set("startDate", dateStrings[0]);
-        params.set("endDate", dateStrings[1]);
+    const handleDateChange = (dates: any, dateStrings: [string, string]) => {
+        if (dates && dateStrings[0] && dateStrings[1]) {
+            params.set("startDate", dateStrings[0]);
+            params.set("endDate", dateStrings[1]);
 
-        // Cập nhật URL với tham số mới
-        replace(`${pathname}?${params.toString()}`);
-
-        // Gọi hàm để fetch dữ liệu voucher
-        await fetchVouchersByDate();
-    };
-
-
-    const fetchVouchersByDate = async () => {
-        const startDate = params.get("startDate");
-        const endDate = params.get("endDate");
-        const page = params.get("page") || "0";
-
-        console.log(`Calling API: http://localhost:8080/api/v1/admin/voucher/findbydate?startDate=${startDate}&endDate=${endDate}&page=${page}`);
-
-        try {
-            const data = await findPromotionsByDate(startDate, endDate, page);
-            console.log('API response:', data); // Log phản hồi từ API
-
-            // Kiểm tra cấu trúc của dữ liệu trả về
-            if (data && data.data) {
-                const PromotionData = data.data.content || data.data.items || [];
-                console.log(`Fetched vouchers count: ${PromotionData.length}`);
-                setPromotion(PromotionData); // Cập nhật đúng
-            } else {
-                console.warn("No vouchers found or incorrect data structure");
-                setPromotion([]);
+            if (!params.has("page")) {
+                params.set("page", "1");
             }
-
-        } catch (error) {
-            console.error("Error fetching vouchers:", error);
-            setPromotion([]);
+        } else {
+            params.delete("startDate");
+            params.delete("endDate");
         }
+
+        replace(`${pathname}?${params.toString()}`);
     };
     return (
         <>
@@ -105,7 +82,7 @@ const HeaderPromotion = (setPromotion: IProps) => {
                         </div>
                         <div className="flex-grow max-w-xs">
                             <RangePicker
-                                // onChange={handleDateChange}
+                                onChange={handleDateChange}
                                 placeholder={['Từ ngày', 'Đến ngày']}
                                 style={{ width: '100%' }}
                             />
