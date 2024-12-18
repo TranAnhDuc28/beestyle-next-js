@@ -4,7 +4,7 @@ import ContactForm from "@/components/User/Contact/ContactForm";
 import ContactInfo from "@/components/User/Contact/ContactInfo";
 
 const breadcrumbItems = [
-    { title: 'Trang chủ', href: '/' },
+    { title: 'Trang chủ', path: '/' },
     { title: 'Liên hệ' },
 ];
 

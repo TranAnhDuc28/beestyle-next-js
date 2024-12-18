@@ -1,13 +1,21 @@
 import React from 'react';
-import { Form, Input, Button, Typography } from 'antd';
+import { Form, Input, Button, Typography, message } from 'antd';
+import useEmailSender from '@/hooks/useEmailSender';
 
 const { Title, Text } = Typography;
 
-const ContactFormAntd = () => {
+const ContactForm = () => {
     const [form] = Form.useForm();
+    const { sendEmail, loading, error, success } = useEmailSender();
 
-    const onFinish = (values: object) => {
-        console.log('Received values of form: ', values);
+    const onFinish = async (values) => {
+        await sendEmail(values);
+        if (success) {
+            message.success('Email sent successfully!');
+            form.resetFields();
+        } else {
+            message.error(error || 'Failed to send email.');
+        }
     };
 
     return (
@@ -27,7 +35,7 @@ const ContactFormAntd = () => {
                 className="space-y-4"
             >
                 <Form.Item
-                    name="fullName"
+                    name="name"
                     rules={[{ required: true, message: 'Vui lòng nhập tên của bạn!' }]}
                 >
                     <Input
@@ -55,7 +63,7 @@ const ContactFormAntd = () => {
                                     />
                                 </Form.Item>
                                 <Form.Item
-                                    name="phoneNumber"
+                                    name="phone"
                                     rules={[
                                         {
                                             required: true,
@@ -95,6 +103,7 @@ const ContactFormAntd = () => {
                         htmlType="submit"
                         className="bg-black hover:!bg-orange-400 text-white px-6 py-3 rounded mt-2"
                         size="large"
+                        loading={loading}
                     >
                         GỬI CHO CHÚNG TÔI
                     </Button>
@@ -104,4 +113,4 @@ const ContactFormAntd = () => {
     );
 };
 
-export default ContactFormAntd;
+export default ContactForm;
