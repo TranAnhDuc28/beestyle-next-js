@@ -1,14 +1,13 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import CartTable from "@/components/User/Cart/CartTable";
 import TotalAmount from "@/components/User/Cart/TotalAmount";
-import {CART_KEY} from "@/services/user/ShoppingCartService";
-import BreadcrumbSection from "@/components/Button/BreadCrumb";
-import {Button, Card, Progress, Checkbox, Image, Typography} from 'antd';
-import {FireOutlined} from '@ant-design/icons';
+import { CART_KEY } from "@/services/user/ShoppingCartService";
+import { Typography } from 'antd';
+import BreadcrumbSection from '@/components/Breadcrumb/BreadCrumb';
 
-const {Title, Text} = Typography;
+const { Title } = Typography;
 
 const ShoppingCart = () => {
 
@@ -31,13 +30,14 @@ const ShoppingCart = () => {
         window.dispatchEvent(new Event('cartUpdated'));
     };
 
-    // const breadcrumbItems = [
-    //     { title: 'Trang chủ', href: '/' },
-    //     { title: 'Giỏ hàng' },
-    // ];
+    const breadcrumbItems = [
+        { title: 'Trang chủ', path: '/' },
+        { title: 'Giỏ hàng' },
+    ];
 
     return (
         <>
+            <BreadcrumbSection items={breadcrumbItems} />
             <div
                 className="container bg-white mt-5"
                 style={{
@@ -49,10 +49,10 @@ const ShoppingCart = () => {
             </div>
             <div className="container max-w-5xl mx-auto py-2 ps-0 pe-4 d-flex">
                 <div className="col-lg-8 me-4">
-                    <CartTable cartItems={cartItems} updateCartItems={updateCartItems}/>
+                    <CartTable cartItems={cartItems} updateCartItems={updateCartItems} />
                 </div>
                 <div className="col-lg-4">
-                    <TotalAmount cartItems={cartItems}/>
+                    <TotalAmount cartItems={cartItems} />
                 </div>
             </div>
         </>

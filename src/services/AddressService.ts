@@ -15,6 +15,11 @@ export const createAddress = async (data: any) => {
     return response.data
 }
 
+export const getAddress = async (key:any) => {
+    const response = await httpInstance.get(key)
+    return response.data
+}
+
 export const setIsDefault = async (data: IAddress) => {
     const response = await httpInstance.put(`${URL_API_ADDRESS.isDefault}/${data.id}`, data);
     return response.data

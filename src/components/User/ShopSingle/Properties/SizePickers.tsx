@@ -1,9 +1,10 @@
 import Link from "next/link";
-import React, {useEffect} from "react";
-import {useProductSizes} from "@/services/user/SingleProductService";
+import React, { useEffect } from "react";
+import { useProductSizes } from "@/services/user/SingleProductService";
+import "./css/property.css";
 
 const SizePickers = (props: any) => {
-    const {data: sizes} = useProductSizes(props.productId, props.colorCode)
+    const { data: sizes } = useProductSizes(props.productId, props.colorCode);
 
     useEffect(() => {
         if (props.colorCode && sizes && sizes.length > 0) {
@@ -17,7 +18,7 @@ const SizePickers = (props: any) => {
 
     return (
         <>
-            <p className="text-black">Kích thước:</p>
+            <p className="text-black fw-semibold">Kích thước:</p>
             <ul
                 style={{
                     display: "flex",
@@ -27,7 +28,7 @@ const SizePickers = (props: any) => {
                 }}
             >
                 {sizes?.map((size) => (
-                    <li key={size.id} style={{marginRight: "10px"}}>
+                    <li key={size.id} style={{ marginRight: "10px" }}>
                         <Link
                             href="#"
                             className={

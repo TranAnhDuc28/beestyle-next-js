@@ -8,19 +8,20 @@ import { Form } from "antd";
 import { createVNPayPayment } from "@/services/VNPayService";
 import TestPDFComponent from "../Invoice/TestPDF";
 
+
+
 const Checkout = () => {
   const [addressForm] = Form.useForm();
   const [userForm] = Form.useForm();
 
   const [orderId, setOrderId] = useState("");
-  const [amount, setAmount] = useState(200000);
   const [shippingCost, setShippingCost] = useState(0);
 
   const handleShippingCostChange = (newCost: number) => {
     setShippingCost(newCost);
   };
 
-  const handleSubmit = async (payment: string) => {
+  const handleSubmit = async (payment: any) => {
     try {
       // Xác thực và lấy dữ liệu từ cả hai form
       const addressData = await addressForm.validateFields();
@@ -29,11 +30,12 @@ const Checkout = () => {
       console.log("Address Form Data:", addressData);
       console.log("User Form Data:", userData);
       console.log(payment);
+      // setAmount(payment.totalPayment)
 
       if (payment.selectedPayment === "3") {
         try {
           const ipAddress = "127.0.0.1"; // Địa chỉ IP tạm thời
-          const data = await createVNPayPayment(orderId, amount, ipAddress);
+          const data = await createVNPayPayment(orderId, payment.totalPayment, ipAddress);
           console.log(data);
           
           if (data && data.paymentUrl) {
@@ -85,6 +87,7 @@ const Checkout = () => {
             <OrderDetail 
               handleSubmit={handleSubmit} 
               shippingCost={shippingCost} 
+              
             />
           </div>
         </div>
