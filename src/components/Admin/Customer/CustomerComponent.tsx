@@ -66,12 +66,12 @@ const CustomerComponent = () => {
       render: (addresses) => {
         if (addresses && addresses.length > 0) {
           // List danh sách địa chỉ của customer
-          const listAddresses = addresses[0].customer.addresses || [];
+          const listAddresses = addresses|| [];
           console.log("danh sách địa chỉ của customer", listAddresses);
 
           // Lọc để lấy địa chỉ có isDefault: true
           const defaultAddress = listAddresses.find(
-            (address: any) => address.default === true
+            (address: any) => address.isDefault === true
           );
 
           // Kiểm tra nếu tồn tại defaultAddress, nếu không thì trả về rỗng

@@ -1,4 +1,4 @@
 export const ORDER_CHANEL = {
+    OFFLINE: "Tại quầy",
     ONLINE: "Trực tuyến",
-    OFFLINE: "Tại quầy"
 } as const;
