@@ -1,10 +1,11 @@
 'use client';
 
-import { LockOutlined, MobileOutlined } from '@ant-design/icons';
-import { ProFormText, ProFormCaptcha } from '@ant-design/pro-components';
+import { LockOutlined } from '@ant-design/icons';
+import { ProFormText, ProFormCaptcha, ProFormRadio, ProFormDatePicker } from '@ant-design/pro-components';
 import { message } from 'antd';
-import {Md123} from "react-icons/md";
-import {GiConfirmed} from "react-icons/gi";
+import { AiOutlineUser } from 'react-icons/ai';
+import { GiConfirmed } from "react-icons/gi";
+import { MdOutlineMailOutline } from 'react-icons/md';
 
 const RegisterFormComponent = () => {
     return (
@@ -12,18 +13,65 @@ const RegisterFormComponent = () => {
             <ProFormText
                 fieldProps={{
                     size: 'large',
-                    prefix: <MobileOutlined className="prefixIcon mr-2" />,
+                    prefix: <AiOutlineUser className="prefixIcon mr-2" />,
                 }}
-                name="mobile"
-                placeholder="Số điện thoại"
+                name="fullName"
+                placeholder="Họ và tên"
                 rules={[
                     {
                         required: true,
-                        message: 'Vui lòng nhập số điện thoại!',
+                        message: 'Vui lòng nhập họ & tên',
+                    },
+                ]}
+            />
+            <div className='flex justify-between'>
+                <ProFormDatePicker
+                    name="birthDate"
+                    fieldProps={{
+                        size: 'large',
+                    }}
+                    placeholder="Chọn ngày sinh"
+                    rules={[
+                        {
+                            required: false,
+                            message: 'Vui lòng chọn ngày sinh!',
+                        },
+                    ]}
+                />
+                <ProFormRadio.Group
+                    name="gender"
+                    options={[
+                        { label: 'Nam', value: 'male' },
+                        { label: 'Nữ', value: 'female' },
+                    ]}
+                    fieldProps={{
+                        size: 'large',
+                        buttonStyle: 'solid',
+                        optionType: 'button',
+                    }}
+                    rules={[
+                        {
+                            required: true,
+                            message: '(*)',
+                        },
+                    ]}  
+                />
+            </div>
+            <ProFormText
+                fieldProps={{
+                    size: 'large',
+                    prefix: <MdOutlineMailOutline className="prefixIcon mr-2" />,
+                }}
+                name="email"
+                placeholder="Email"
+                rules={[
+                    {
+                        required: true,
+                        message: 'Vui lòng nhập Email!',
                     },
                     {
-                        pattern: /^0\d{9}$/,
-                        message: 'Số điện thoại không đúng định dạng!',
+                        pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+                        message: 'Email không đúng định dạng!',
                     },
                 ]}
             />

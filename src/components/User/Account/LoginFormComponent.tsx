@@ -1,23 +1,29 @@
 'use client';
 
-import {LockOutlined, UserOutlined} from '@ant-design/icons';
-import {ProFormText, ProFormCheckbox} from '@ant-design/pro-components';
+import { ProFormText, ProFormCheckbox } from '@ant-design/pro-components';
 import Link from 'next/link';
+import { IoLockClosedOutline } from 'react-icons/io5';
+import { MdOutlineMailOutline } from 'react-icons/md';
 
 const LoginFormComponent = () => {
     return (
         <>
             <ProFormText
-                name="username"
+                name="email"
                 fieldProps={{
                     size: 'large',
-                    prefix: <UserOutlined className="prefixIcon mr-2"/>,
+                    prefix: <MdOutlineMailOutline size={20} className="prefixIcon mr-2" />,
+                    className: 'py-2'
                 }}
-                placeholder="Tên đăng nhập"
+                placeholder="Vui lòng nhập Email của bạn"
                 rules={[
                     {
                         required: true,
-                        message: 'Vui lòng nhập tên đăng nhập!',
+                        message: 'Vui lòng nhập Email!',
+                    },
+                    {
+                        pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+                        message: 'Email không đúng định dạng!',
                     },
                 ]}
             />
@@ -25,9 +31,10 @@ const LoginFormComponent = () => {
                 name="password"
                 fieldProps={{
                     size: 'large',
-                    prefix: <LockOutlined className="prefixIcon mr-2"/>,
+                    prefix: <IoLockClosedOutline size={20} className="prefixIcon mr-2" />,
+                    className: 'py-2'
                 }}
-                placeholder="Mật khẩu"
+                placeholder="Vui lòng nhập mật khẩu"
                 rules={[
                     {
                         required: true,
@@ -35,11 +42,11 @@ const LoginFormComponent = () => {
                     },
                 ]}
             />
-            <div style={{marginBlockEnd: 24}}>
+            <div style={{ marginBlockEnd: 24 }}>
                 <ProFormCheckbox noStyle name="autoLogin">
-                    <span className="d-block mb-3">Ghi nhớ đăng nhập</span>
+                    <span className="d-block">Ghi nhớ đăng nhập</span>
                 </ProFormCheckbox>
-                <Link href="#" style={{float: 'right', textDecoration: 'none', color: '#F7941D'}}>
+                <Link href="/" style={{ float: 'right', textDecoration: 'none', color: '#F7941D' }}>
                     Quên mật khẩu?
                 </Link>
             </div>

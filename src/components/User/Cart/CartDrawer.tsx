@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Drawer, Button, Empty } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
+import { Drawer, Button, Empty, Popconfirm } from 'antd';
+import { CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import styles from './css/cartdrawer.module.css';
 import Image from "next/image";
@@ -41,6 +41,10 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
         localStorage.setItem(CART_KEY, JSON.stringify(newCartItems));
         window.dispatchEvent(new Event('cartUpdated'));
     };
+
+    const handleRemoveCartItem = (cartId: number) => {
+        removeItemFromCart(cartId);
+    }
 
     return (
         <Drawer
@@ -99,15 +103,21 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     </div>
 
                     <div>
-                        <Button
-                            type="text"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                removeItemFromCart(item.shopping_cart_id);
-                            }}
-                            icon={<CloseOutlined />}
-                            className="ml-5"
-                        />
+                        <Popconfirm
+                            title="Xoá sản phẩm"
+                            description="Bạn chắc chắn muốn xoá sản phẩm này?"
+                            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                            placement="leftTop"
+                            okText="Xoá"
+                            cancelText="Không"
+                            onConfirm={() => handleRemoveCartItem(item.shopping_cart_id)}
+                        >
+                            <Button
+                                type="text"
+                                icon={<CloseOutlined />}
+                                className="ml-5"
+                            />
+                        </Popconfirm>
                         <div className="d-flex flex-column align-items-center mt-4">
                             <span
                                 className={styles.itemPrice + ' mb-1'}>{item.discounted_price.toLocaleString()}₫</span>
@@ -154,7 +164,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         (<Link
                             href={"/cart"}
                             className={styles.footerLink} onClick={onClose}>Xem giỏ hàng</Link>) :
-                        (<Link href="/" className={styles.footerLink} onClick={onClose}>Trở về trang sản phẩm</Link>)
+                        (<Link href="/" className={styles.footerLink} onClick={onClose}>Trở về trang chủ</Link>)
                     }
                     <Link href={"/product"} className={styles.footerLink} onClick={onClose}>
                         Khuyến mãi dành cho bạn

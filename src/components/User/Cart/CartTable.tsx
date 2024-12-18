@@ -1,8 +1,8 @@
 import React from "react";
 import Image from "next/image";
-import { Button, Card, Empty, message, Typography } from "antd";
+import { Button, Card, Typography } from "antd";
 import QuantityControl from "@/components/User/Cart/Properties/QuantityControl";
-import { CloseOutlined, FireOutlined } from "@ant-design/icons";
+import { CloseOutlined, FireOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import ProgressShipping from "./Properties/ProgressShipping";
 import { removeItemFromCart } from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
@@ -12,7 +12,7 @@ const { Title, Text } = Typography;
 const CartTable = ({ cartItems, updateCartItems }: any) => {
     const condition = 500000;
     const totalAmount = cartItems.reduce((total, item) => total + item.total_price, 0);
-    const { showNotification } = useAppNotifications();
+    const { showNotification, showModal } = useAppNotifications();
 
     const handleQuantityChange = (index: number, operation: 'increment' | 'decrement') => {
         const newCartItems = [...cartItems];
@@ -31,13 +31,23 @@ const CartTable = ({ cartItems, updateCartItems }: any) => {
     };
 
     const handleRemoveCartItem = (cartId: number) => {
-        showNotification('success', {
-            message: (<span className="fw-semibold fs-6">Đã gỡ sản phẩm khỏi giỏ hảng</span>),
-            placement: 'topRight',
-            duration: 3,
-            rtl: true,
+        showModal('confirm', {
+            title: 'Xoá sản phẩm',
+            content: 'Bạn chắc chắn muốn xoá sản phẩm này?',
+            icon: (<QuestionCircleOutlined style={{ color: 'red' }} />),
+            centered: true,
+            okText: 'Xoá',
+            cancelText: 'Không',
+            onOk() {
+                removeItemFromCart(cartId);
+                showNotification('success', {
+                    message: (<span className="fw-semibold fs-6">Đã gỡ sản phẩm khỏi giỏ hảng</span>),
+                    placement: 'topRight',
+                    duration: 3,
+                    rtl: true,
+                })
+            }
         })
-        // removeItemFromCart(cartId);
     }
 
     return (
@@ -58,7 +68,7 @@ const CartTable = ({ cartItems, updateCartItems }: any) => {
             </div>
 
             <div style={{ maxHeight: '515px', overflowY: 'auto' }}>
-                {cartItems && cartItems.length > 0 ? (cartItems.map((item, index) => (
+                {cartItems.map((item, index) => (
                     <div key={index.toString()}>
                         <div className="float-end">
                             <Button
@@ -102,24 +112,7 @@ const CartTable = ({ cartItems, updateCartItems }: any) => {
                             </div>
                         </div>
                     </div>
-                ))) : (
-                    <>
-                        <Empty
-                            image="/cart_banner_image.png"
-                            style={{ marginTop: 15 }}
-                            description={
-                                <span
-                                    className="empty-description fs-5 text-black">Chưa có sản phẩm trong giỏ hàng...</span>
-                            }
-                            imageStyle={{
-                                width: '400px',
-                                height: 'auto',
-                                display: 'block',
-                                margin: '0 auto'
-                            }}
-                        />
-                    </>
-                )}
+                ))}
             </div>
         </Card>
     );

@@ -12,16 +12,10 @@ const Contact = () => {
     return (
         <>
             <BreadcrumbSection items={breadcrumbItems} />
-            <section id="contact-us" className="contact-us section">
-                <div className="container">
-                    <div className="contact-head">
-                        <div className="row">
-                            <ContactForm />
-                            <ContactInfo />
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-4">
+                <ContactForm />
+                <ContactInfo />
+            </div>
         </>
     )
 }

@@ -164,4 +164,4 @@ const Navbar: React.FC = () => {
         </Header>
     );
 }
-export default memo(Navbar)
+export default memo(Navbar);
