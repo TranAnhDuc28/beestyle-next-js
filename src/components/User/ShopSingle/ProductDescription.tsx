@@ -26,23 +26,6 @@ const ProductDescription = (props: any) => {
         setQuantity(prevQuantity => Math.min(prevQuantity + 1, 1000));
     };
 
-    const handleInputChange = (e) => {
-        const value = e.target.value;
-        if (/^\d*$/.test(value)) {
-            setQuantity(value);
-        }
-    };
-
-    const handleInputBlur = (total: number) => {
-        let value = parseInt(String(quantity), 10);
-        if (isNaN(value) || value < 1) {
-            value = 1;
-        } else if (value > total) {
-            value = total;
-        }
-        setQuantity(value);
-    };
-
     const handleColorSelect = (color: string) => {
         setSelectedColor(color);
         setSelectedSize(null);
@@ -82,10 +65,10 @@ const ProductDescription = (props: any) => {
                 </div>
                 <p className="price px-3 py-4 m-0" style={{ backgroundColor: '#FAFAFA', borderRadius: '5px' }}>
                     <span className="discount text-center">
-                        {product?.salePrice ? `${product.salePrice.toLocaleString('vi-VN')} đ` : '0 đ'}
+                        {product?.salePrice ? `${product.salePrice.toLocaleString()} đ` : '0 đ'}
                     </span>
                     <s className={product?.originalPrice ? "fw-medium" : "hidden"} style={{ color: '#838383' }}>
-                        {product?.originalPrice.toLocaleString('vi-VN') + ' đ'}
+                        {product?.originalPrice.toLocaleString() + ' đ'}
                     </s>
                 </p>
             </div>
@@ -140,10 +123,9 @@ const ProductDescription = (props: any) => {
                             name="quant[1]"
                             className="input-number"
                             value={quantity}
-                            onInput={handleInputChange}
-                            onBlur={() => handleInputBlur(product?.quantity)}
                             style={{ border: '1px solid #333', textAlign: 'center' }}
                             variant={"borderless"}
+                            readOnly
                         />
                         <div className="button plus">
                             <button

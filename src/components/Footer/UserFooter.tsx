@@ -1,40 +1,37 @@
 import React from "react";
 import Link from "next/link";
+import { IoHomeOutline, IoMailUnreadOutline } from "react-icons/io5";
+import { FiMapPin } from "react-icons/fi";
 import Image from "next/image";
-import {IoHomeOutline, IoMailUnreadOutline} from "react-icons/io5";
-import {FiMapPin} from "react-icons/fi";
-import {FaPhone} from "react-icons/fa";
-import {Layout} from "antd";
-
-const {Footer} = Layout;
+import { FaPhone } from "react-icons/fa6";
 
 export default function UserFooter() {
     return (
         <div className="footer">
-            <div className="footer-top section">
+            <div className="footer-top pt-5">
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-5 col-md-6 col-12">
                             <div className="single-footer about">
                                 <div className="logo">
-                                    <Link className="link-no-decoration" href="#">
-                                        <img src="/logo2.png" alt="#"
-                                             style={{width: 110, height: "auto"}}
+                                    <Link className="link-no-decoration" href="/">
+                                        <Image
+                                            src="/logo2.png"
+                                            alt="BeeStyle"
+                                            width={180}
+                                            height={50}
+                                            unoptimized
                                         />
                                     </Link>
                                 </div>
                                 <p className="text">
-                                    Chúng tôi luôn cập nhật những xu hướng mới nhất, chú trọng đến chất liệu cao cấp và
-                                    từng chi tiết thiết kế, đảm bảo rằng mỗi sản phẩm đều thể hiện phong cách và chất
-                                    lượng đẳng cấp. Đến với Beestyle, khách hàng không chỉ tìm thấy những bộ trang phục
-                                    hoàn hảo mà còn khám phá được phong cách độc đáo của riêng mình.
+                                    Chúng tôi luôn cập nhật xu hướng, chú trọng chất liệu cao cấp và thiết kế tỉ mỉ,
+                                    mang tới cho quý khách hàng những chiếc áo thời thượng, giúp quý khách hàng khẳng định phong cách riêng.
                                 </p>
-
-                                <h6 className="text-white">Góp ý khiếu nại</h6>
                                 <p className="call">
                                     <span className="mt-3">
-                                        <Link className="d-flex" href="tel:123456789">
-                                            <FaPhone className="mr-2"/> 0123 456 789
+                                        <Link className="flex items-center no-underline hover:underline" href="tel:123456789">
+                                            <FaPhone className="me-2" /> 0123 456 789
                                         </Link>
                                     </span>
                                 </p>
@@ -44,10 +41,9 @@ export default function UserFooter() {
                             <div className="single-footer links">
                                 <h4>Liên hệ</h4>
                                 <ul className="p-0">
-                                    <li><Link className="link-no-decoration" href="#">Giới thiệu</Link></li>
-                                    <li><Link className="link-no-decoration" href="#">Tin tức</Link></li>
-                                    <li><Link className="link-no-decoration" href="#">Hệ thống khuyến mãi</Link></li>
-                                    <li><Link className="link-no-decoration" href="#">Trợ giúp</Link></li>
+                                    <li><Link className="link-no-decoration" href="/">Giới thiệu</Link></li>
+                                    <li><Link className="link-no-decoration" href="/news">Tin thời trang</Link></li>
+                                    <li><Link className="link-no-decoration" href="/contact">Trợ giúp</Link></li>
                                 </ul>
                             </div>
                         </div>
@@ -55,12 +51,9 @@ export default function UserFooter() {
                             <div className="single-footer links">
                                 <h4>Dịch vụ khách hàng</h4>
                                 <ul className="p-0">
-                                    <li><Link className="link-no-decoration" href="#">Hướng dẫn mua hàng</Link></li>
-                                    <li><Link className="link-no-decoration" href="#">Đăng ký tài khoản</Link></li>
-                                    <li><Link className="link-no-decoration" href="#">Chính sách giao hàng</Link></li>
-                                    <li><Link className="link-no-decoration" href="#">Đổi trả hoàn tiền</Link></li>
-                                    <li><Link className="link-no-decoration" href="#">Ưu đãi sinh nhật khách hàng</Link>
-                                    </li>
+                                    <li><Link className="link-no-decoration" href="/">Hướng dẫn mua hàng</Link></li>
+                                    <li><Link className="link-no-decoration" href="/login">Đăng ký tài khoản</Link></li>
+                                    <li><Link className="link-no-decoration" href="/">Chính sách giao hàng</Link></li>
                                 </ul>
                             </div>
                         </div>
@@ -69,26 +62,29 @@ export default function UserFooter() {
                                 <h4>Thông tin</h4>
                                 <div className="contact">
                                     <ul className="p-0">
-                                        <li className="d-flex mb-3"><IoHomeOutline size={30} className="mr-2"/> CÔNG TY
-                                            CỔ PHẦN THỜI TRANG BEESTYLE
+                                        <li className="!flex !items-center mb-3">
+                                            <IoHomeOutline size={21} className="mr-2" />
+                                            Công ty CP Thời Trang BeeStyle
                                         </li>
-                                        <li className="d-flex mb-3"><FiMapPin size={25} className="mr-2"/> Phương Canh,
-                                            Nam Từ Liêm, Hà Nội
+                                        <li className="!flex !items-center mb-3">
+                                            <FiMapPin size={21} className="mr-2" />
+                                            Phương Canh, Nam Từ Liêm, Hà Nội
                                         </li>
-                                        <li className="d-flex"><IoMailUnreadOutline size={25}
-                                                                                    className="mr-2"/> info@beestyle.com
+                                        <li className="!flex !items-center">
+                                            <IoMailUnreadOutline size={21} className="mr-2" />
+                                            Info@beestyle.com
                                         </li>
                                     </ul>
                                 </div>
                                 <ul className="p-0">
                                     <li><Link className="link-no-decoration" href="#"><i
-                                        className="ti-facebook"/></Link></li>
-                                    <li><Link className="link-no-decoration" href="#"><i className="ti-twitter"/></Link>
+                                        className="ti-facebook" /></Link></li>
+                                    <li><Link className="link-no-decoration" href="#"><i className="ti-twitter" /></Link>
                                     </li>
-                                    <li><Link className="link-no-decoration" href="#"><i className="ti-flickr"/></Link>
+                                    <li><Link className="link-no-decoration" href="#"><i className="ti-flickr" /></Link>
                                     </li>
                                     <li><Link className="link-no-decoration" href="#"><i
-                                        className="ti-instagram"/></Link></li>
+                                        className="ti-instagram" /></Link></li>
                                 </ul>
                             </div>
                         </div>
@@ -106,15 +102,20 @@ export default function UserFooter() {
                             </div>
                             <div className="col-lg-6 col-12">
                                 <div className="right d-flex">
-                                    <img
+                                    <Image
                                         src="https://yody.vn/images/identity-badge/bct_v1.png"
                                         alt="#"
-                                        style={{width: 105, height: "auto"}}
+                                        width={105}
+                                        height={50}
                                         className="mr-5"
+                                        unoptimized
                                     />
-                                    <img
+                                    <Image
                                         src="https://yody.vn/images/identity-badge/dmca_v1.png"
-                                        style={{width: 80, height: "auto"}}
+                                        alt="#"
+                                        width={80}
+                                        height={50}
+                                        unoptimized
                                     />
                                 </div>
                             </div>

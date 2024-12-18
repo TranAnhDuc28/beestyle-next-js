@@ -27,7 +27,7 @@ const BreadcrumbSection: React.FC<BreadcrumbSectionProps> = ({ items }) => {
 
     return (
         <div className="breadcrumb-section py-2" style={{ background: '#F5F5F5', padding: '10px 0' }}>
-            <div className="container">
+            <div className="max-w-[1470px] mx-auto">
                 <Breadcrumb
                     separator="/"
                     style={{ fontSize: '14px', fontWeight: '500' }}

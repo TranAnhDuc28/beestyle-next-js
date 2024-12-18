@@ -64,13 +64,8 @@ const ShopProductGridComponent: React.FC = () => {
                                             ) : (
                                                 dataFilterProduct?.items?.length > 0 ? (
                                                     dataFilterProduct?.items.map((product: any) => (
-                                                        <Col
-                                                            xs={12}
-                                                            sm={12}
-                                                            md={12}
-                                                            lg={8}
-                                                            xl={8}
-                                                            xxl={6}
+                                                        <Col xs={12} sm={12} md={12}
+                                                            lg={8} xl={8} xxl={6}
                                                             key={product.id}
                                                         >
                                                             <ProductCard product={product} />

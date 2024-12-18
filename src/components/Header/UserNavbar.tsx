@@ -25,16 +25,24 @@ const Navbar: React.FC = () => {
     };
 
     useEffect(() => {
+        fetchCartItems();
         const handleScroll = () => {
-            fetchCartItems();
             setIsScrolled(window.scrollY > 110);
         };
 
         window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        window.addEventListener('cartUpdated', fetchCartItems);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('cartUpdated', fetchCartItems);
+        };
     }, []);
 
-    const activeKey = pathname === "/" || pathname === "/home" ? "" : pathname;
+    const handleCartOpen = () => {
+        if (pathname.includes('/cart') || pathname.includes('/checkout')) setIsCartOpen(false);
+        else setIsCartOpen(true);
+    }
 
     const menuItems: MenuProps["items"] = useMemo(() => [
         {
@@ -93,8 +101,9 @@ const Navbar: React.FC = () => {
                 <Image
                     src="/logo.png"
                     alt="BeeStyle"
-                    width={100}
-                    height={90}
+                    width={180}
+                    height={50}
+                    unoptimized
                 />
             </Link>
 
@@ -102,7 +111,6 @@ const Navbar: React.FC = () => {
                 mode="horizontal"
                 className={styles.menuContainer}
                 items={menuItems}
-                selectedKeys={[activeKey]}
             />
 
             <Flex align="center" gap={15}>
@@ -146,7 +154,7 @@ const Navbar: React.FC = () => {
                         >
                             <Button
                                 type="text"
-                                icon={<LuShoppingBag style={{ fontSize: 20 }} onClick={() => setIsCartOpen(true)} />}
+                                icon={<LuShoppingBag style={{ fontSize: 20 }} onClick={handleCartOpen} />}
                             />
                         </Badge>
                     </Tooltip>

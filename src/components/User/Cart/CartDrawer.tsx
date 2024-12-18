@@ -30,7 +30,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
     }, []);
 
-    const condition = 498000;
+    const condition = 500000;
     const totalAmount = cartItems.reduce((total, item) => total + item.total_price, 0);
 
     const handleQuantityChange = (index: number, newQuantity: number) => {
@@ -110,8 +110,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         />
                         <div className="d-flex flex-column align-items-center mt-4">
                             <span
-                                className={styles.itemPrice + ' mb-1'}>{item.discounted_price.toLocaleString('vi-VN')}₫</span>
-                            <span className={styles.originalPrice}>{item.original_price.toLocaleString('vi-VN')}₫</span>
+                                className={styles.itemPrice + ' mb-1'}>{item.discounted_price.toLocaleString()}₫</span>
+                            <span className={styles.originalPrice}>{item.original_price.toLocaleString()}₫</span>
                         </div>
                     </div>
                 </div>
@@ -139,10 +139,11 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 <div className={cartItems && cartItems.length ? '' : 'd-none'}>
                     <div className={styles.totalAmount}>
                         <span className={styles.totalLabel}>TỔNG TIỀN:</span>
-                        <span className={styles.totalValue}>{totalAmount.toLocaleString('vi-VN')}₫</span>
+                        <span className={styles.totalValue}>{totalAmount.toLocaleString()}₫</span>
                     </div>
                     <Link href={"/checkout"}
                         className={styles.checkoutButton + ' btn text-white'}
+                        onClick={onClose}
                     >
                         THANH TOÁN
                     </Link>

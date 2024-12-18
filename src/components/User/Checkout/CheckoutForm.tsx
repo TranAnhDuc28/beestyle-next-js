@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Form, Input, Select, Radio, Divider, Row, Col } from "antd";
+import React, { useState, useCallback } from "react";
+import { Form, Input, Radio, Row, Col } from "antd";
 import {
     MailOutlined,
     PhoneOutlined,
@@ -13,8 +13,6 @@ import TextArea from "antd/es/input/TextArea";
 import { calculateShippingFee } from "@/services/GHTKService";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 
-const { Option } = Select;
-
 interface IProps {
     addressForm: any;
     userForm: any;
@@ -25,27 +23,16 @@ const CheckoutForm = (props: IProps) => {
     const { addressForm, userForm, onShippingCostChange } = props;
     const [selectedMethod, setSelectedMethod] = useState("home");
     const [selectedShipping, setSelectedShipping] = useState("standard");
-    const [selectedProvinceCode, setSelectedProvinceCode] = useState<
-        string | null
-    >(null);
-    const [selectedDistrictCode, setSelectedDistrictCode] = useState<
-        string | null
-    >(null);
-    const [selectedWardCode, setSelectedWardsCode] = useState<string | null>(
-        null
-    );
+    const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | null>(null);
+    const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | null>(null);
+    const [selectedWardCode, setSelectedWardsCode] = useState<string | null>(null);
 
-    const [selectedProvinceName, setSelectedProvinceName] = useState<
-        string | null
-    >(null);
-    const [selectedDistrictName, setSelectedDistrictName] = useState<
-        string | null
-    >(null);
+    const [selectedProvinceName, setSelectedProvinceName] = useState<string | null>(null);
+    const [selectedDistrictName, setSelectedDistrictName] = useState<string | null>(null);
     const [selectedWardName, setSelectedWardName] = useState<string | null>(null);
     const [detailAddress, setDetailAddress] = useState<string | null>(null);
 
-    const { handleGetProvinces, handleGetDistricts, handleGetWards } =
-        useAddress();
+    const { handleGetProvinces, handleGetDistricts, handleGetWards } = useAddress();
     const provincesData = handleGetProvinces();
     const districtsData = handleGetDistricts(selectedProvinceCode);
     const wardsData = handleGetWards(selectedDistrictCode);
@@ -58,9 +45,6 @@ const CheckoutForm = (props: IProps) => {
         if (value === "home") {
             addressForm.setFieldsValue({ district: undefined, ward: undefined });
         }
-    };
-    const onChangeShipping = (e: any) => {
-        setSelectedShipping(e.target.value);
     };
 
     const onChangeSelectedProvince = useCallback(
@@ -83,7 +67,7 @@ const CheckoutForm = (props: IProps) => {
             setSelectedWardName(null);
             console.log(provinceCode);
         },
-        [provincesData]
+        [addressForm, provincesData.dataOptionProvinces]
     );
 
     const onChangeSelectedDistrict = useCallback(
@@ -121,7 +105,6 @@ const CheckoutForm = (props: IProps) => {
         [districtsData, selectedProvinceName, addressForm, onShippingCostChange]
     );
 
-
     const onChangeSelectedWard = useCallback(
         (wardCode: string) => {
             setSelectedWardsCode(wardCode);
@@ -132,7 +115,7 @@ const CheckoutForm = (props: IProps) => {
             console.log(selectedWardName);
             console.log(wardCode);
         },
-        [wardsData]
+        [selectedWardName, wardsData.dataOptionWards]
     );
     // Xử lý khi số nhà được chọn
     const handleDetailAddressChange = (value: string) => {
