@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "antd";
 import { previewInvoicePdf } from "@/services/InvoiceService";
 
@@ -18,12 +18,11 @@ export default function TestPDFComponent(props: IProps) {
       const base64Pdf = await previewInvoicePdf(invoiceData);
 
       if (base64Pdf) {
-        // Kiểm tra Base64 và thêm prefix nếu thiếu
         const validBase64 = base64Pdf.startsWith("data:application/pdf;base64,")
           ? base64Pdf
           : `data:application/pdf;base64,${base64Pdf}`;
 
-        // Chuyển Base64 thành Blob
+        // Chuyển base64 thành Blob
         const byteCharacters = atob(validBase64.split(",")[1]);
         const byteNumbers = Array.from(byteCharacters, (char) =>
           char.charCodeAt(0)
@@ -33,15 +32,32 @@ export default function TestPDFComponent(props: IProps) {
 
         // Tạo URL từ Blob
         const pdfBlobUrl = URL.createObjectURL(blob);
-        setPdfUrl(pdfBlobUrl); // Lưu URL vào state
+        setPdfUrl(pdfBlobUrl);
 
-        // Tự động in từ iframe
-        const iframe = document.getElementById("pdf-iframe") as HTMLIFrameElement;
-        if (iframe) {
-          iframe.onload = () => {
-            iframe.contentWindow?.print(); // Gọi phương thức print từ iframe
-          };
-        }
+        // Tạo tên tệp mặc định (chỉ để gợi ý, không tải ngay)
+        const fileName = `invoice_${new Date().toISOString().split('T')[0]}.pdf`;
+
+        // Tạo thẻ <a> để gợi ý tên tệp khi in
+        const downloadLink = document.createElement("a");
+        downloadLink.href = pdfBlobUrl;
+        downloadLink.download = fileName;
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+
+        // Không tải xuống ngay mà chỉ tạo gợi ý tên tệp
+        // downloadLink.click(); // Không cần click ở đây vì không tải tệp ngay
+
+        // Tự động in PDF từ iframe
+        const iframe = document.createElement("iframe");
+        iframe.src = pdfBlobUrl;
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
+
+        // Gọi lệnh in từ iframe khi PDF đã được tải
+        iframe.onload = () => {
+          iframe.contentWindow?.print(); // Gọi phương thức print từ iframe
+          document.body.removeChild(iframe); // Xóa iframe sau khi in xong
+        };
       } else {
         console.error("Không thể tạo xem trước PDF.");
       }
@@ -49,6 +65,19 @@ export default function TestPDFComponent(props: IProps) {
       console.error("Lỗi khi tạo xem trước PDF:", error);
     }
   };
+
+  useEffect(() => {
+    if (pdfUrl) {
+      const iframe = document.getElementById("pdf-iframe") as HTMLIFrameElement;
+      if (iframe) {
+        iframe.onload = () => {
+          // Gọi trực tiếp lệnh in từ iframe khi PDF đã được tải
+          iframe.contentWindow?.print();
+        };
+      }
+    }
+  }, [pdfUrl]);
+  
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
