@@ -104,6 +104,9 @@
     height: 48px;
     font-size: 16px;
     background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .checkoutButton:hover {

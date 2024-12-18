@@ -18,7 +18,7 @@ export const addToCart = (product: any, quantity: any, images: any) => {
     const existingIndex = cart.findIndex((item: any) =>
         item.product_variant_id === product.id &&
         item.color === product.colorName &&
-        item.size === product.size
+        item.size === product.sizeName
     );
 
     if (existingIndex !== -1) {
@@ -30,7 +30,7 @@ export const addToCart = (product: any, quantity: any, images: any) => {
             product_variant_id: product.id,
             product_name: product.productName,
             color: product.colorName,
-            size: product.size,
+            size: product.sizeName,
             quantity: quantity,
             original_price: product.originalPrice,
             discounted_price: product.salePrice,

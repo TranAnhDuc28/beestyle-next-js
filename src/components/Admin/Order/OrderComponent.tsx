@@ -7,11 +7,12 @@ import useAppNotifications from "@/hooks/useAppNotifications";
 import HeaderOrder from "@/components/Admin/Order/HeaderOrder";
 import dayjs from "dayjs";
 import {ORDER_CHANEL} from "@/constants/OrderChanel";
-import {CheckCircleTwoTone, EyeTwoTone} from "@ant-design/icons";
+import {EyeTwoTone} from "@ant-design/icons";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 import {ORDER_STATUS, ORDER_STATUS_COLOR} from "@/constants/OrderStatus";
 import OrderFilter from "@/components/Admin/Order/OrderFilter";
 import useFilterOrder, {ParamFilterOrder} from "@/components/Admin/Order/hooks/useFilterOrder";
+import Link from "next/link";
 
 const {Content} = Layout;
 
@@ -91,14 +92,16 @@ const OrderComponent: React.FC = () => {
                 return (
                     <Col>
                         <Tooltip placement="top" title="Chi tiết">
-                            <EyeTwoTone
-                                style={{
-                                    cursor: "pointer",
-                                    padding: "5px",
-                                    border: "1px solid #1677FF",
-                                    borderRadius: "5px",
-                                }}
-                            />
+                            <Link href={`/admin/order/${record.orderTrackingNumber}/order-detail`}>
+                                <EyeTwoTone
+                                    style={{
+                                        cursor: "pointer",
+                                        padding: "5px",
+                                        border: "1px solid #1677FF",
+                                        borderRadius: "5px",
+                                    }}
+                                />
+                            </Link>
                         </Tooltip>
                     </Col>
                 )

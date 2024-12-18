@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import {Form, Input, Select, Radio, Divider, Row, Col} from "antd";
+import React, { useState, useEffect, useCallback } from "react";
+import { Form, Input, Select, Radio, Divider, Row, Col } from "antd";
 import {
     MailOutlined,
     PhoneOutlined,
@@ -11,8 +11,9 @@ import styles from "@/css/user/styles/checkout.module.css";
 import useAddress from "@/components/Admin/Address/hook/useAddress";
 import TextArea from "antd/es/input/TextArea";
 import { calculateShippingFee } from "@/services/GHTKService";
+import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 
-const {Option} = Select;
+const { Option } = Select;
 
 interface IProps {
     addressForm: any;
@@ -21,29 +22,33 @@ interface IProps {
 }
 
 const CheckoutForm = (props: IProps) => {
-    const {addressForm, userForm,onShippingCostChange} = props;
+    const { addressForm, userForm, onShippingCostChange } = props;
     const [selectedMethod, setSelectedMethod] = useState("home");
     const [selectedShipping, setSelectedShipping] = useState("standard");
-    const [selected, setSelected] = useState({
-        province: "",
-        district: "",
-        ward: "",
-    });
-    const [selectedName, setSelectedName] = useState({
-        province: "",
-        district: "",
-        ward: "",
-        addressName: "",
-    });
-    const {
-        provinces,
-        districts,
-        wards,
-        fetchDistricts,
-        fetchWards,
-        resetAddressData,
-        loading,
-    } = useAddress();
+    const [selectedProvinceCode, setSelectedProvinceCode] = useState<
+        string | null
+    >(null);
+    const [selectedDistrictCode, setSelectedDistrictCode] = useState<
+        string | null
+    >(null);
+    const [selectedWardCode, setSelectedWardsCode] = useState<string | null>(
+        null
+    );
+
+    const [selectedProvinceName, setSelectedProvinceName] = useState<
+        string | null
+    >(null);
+    const [selectedDistrictName, setSelectedDistrictName] = useState<
+        string | null
+    >(null);
+    const [selectedWardName, setSelectedWardName] = useState<string | null>(null);
+    const [detailAddress, setDetailAddress] = useState<string | null>(null);
+
+    const { handleGetProvinces, handleGetDistricts, handleGetWards } =
+        useAddress();
+    const provincesData = handleGetProvinces();
+    const districtsData = handleGetDistricts(selectedProvinceCode);
+    const wardsData = handleGetWards(selectedDistrictCode);
     const [shippingPrice, setShippingPrice] = useState(20000); // Mặc định là 20.000đ
 
     const onChangeMethod = (e: any) => {
@@ -51,70 +56,92 @@ const CheckoutForm = (props: IProps) => {
         setSelectedMethod(value);
 
         if (value === "home") {
-            // Reset giá trị cho các trường khi chọn "Giao hàng tận nhà"
-            addressForm.setFieldsValue({district: undefined, ward: undefined});
-            setSelected({
-                province: selected.province, // Giữ lại giá trị tỉnh đã chọn
-                district: "", // Reset huyện
-                ward: "", // Reset xã
-            });
+            addressForm.setFieldsValue({ district: undefined, ward: undefined });
         }
     };
     const onChangeShipping = (e: any) => {
         setSelectedShipping(e.target.value);
     };
 
-    // Xử lý khi tỉnh được chọn
-    const handleProvinceChange = (value: any, name: string) => {
-        setSelected((prev) => ({...prev, province: value}));
-        setSelectedName((prev) => ({...prev, province: name}));
-        addressForm.setFieldsValue({district: undefined, ward: undefined}); // Reset district và ward khi province thay đổi
+    const onChangeSelectedProvince = useCallback(
+        (provinceCode: string) => {
+            setSelectedProvinceCode(provinceCode);
+            const province = provincesData.dataOptionProvinces.find(
+                (prev) => prev.key === provinceCode
+            );
+            setSelectedProvinceCode(provinceCode);
+            addressForm.setFieldsValue({
+                province: provinceCode, // Cập nhật tỉnh
+                district: undefined, // Reset huyện
+                ward: undefined, // Reset xã
+            });
 
-        // Cập nhật giá trị phí vận chuyển
-        if (value === "01") {
-            setShippingPrice(20000); // Hà Nội có phí là 20.000đ
-        } else {
-            setShippingPrice(30000); // Các tỉnh khác có phí là 30.000đ
-        }
-    };
+            setSelectedProvinceName(province?.label);
+            setSelectedDistrictCode(null);
+            setSelectedWardsCode(null);
+            setSelectedDistrictName(null);
+            setSelectedWardName(null);
+            console.log(provinceCode);
+        },
+        [provincesData]
+    );
 
-    // Xử lý khi huyện được chọn
-    const handleDistrictChange = async (value: any, name: string) => {
-        setSelected((prev) => ({...prev, district: value}));
-        setSelectedName((prev) => ({...prev, district: name}));
-        addressForm.setFieldsValue({ward: undefined}); // Reset ward khi district thay đổi
-        try {
-            const params = {
-              pick_province: "Hà Nội",
-              pick_district: "Huyện Hoài Đức",
-              province: selectedName.province,
-              district: name,
-              address: "123 Đường ABC",
-              weight: 100,
-              value: 500000,
-              transport: "road",
-            };
-            const fee = await calculateShippingFee(params);
-            console.log(fee);
-            
-            onShippingCostChange(fee.fee) 
-          } catch (error) {}
-    };
+    const onChangeSelectedDistrict = useCallback(
+        async (districtCode: string) => {
+            setSelectedDistrictCode(districtCode);
+            const district = districtsData.dataOptionDistricts.find(
+                (prev) => prev.key === districtCode
+            );
+            addressForm.setFieldsValue({
+                district: districtCode, // Cập nhật huyện trong Form
+                ward: undefined, // Reset xã
+            });
+            setSelectedDistrictName(district?.label);
 
-    // Xử lý khi xã được chọn
-    const handleWardChange = (value: any, name: string) => {
-        setSelected((prev) => ({...prev, ward: value}));
-        setSelectedName((prev) => ({...prev, ward: name}));
-    };
+            try {
+                const params = {
+                    pick_province: "Hà Nội",
+                    pick_district: "Huyện Hoài Đức",
+                    province: selectedProvinceName,
+                    district: district?.label,
+                    address: "123 Đường ABC",
+                    weight: 100,
+                    value: 500000,
+                    transport: "road",
+                };
 
+                // Tính phí vận chuyển
+                const fee = await calculateShippingFee(params);
+                setShippingPrice(fee.fee);
+                onShippingCostChange(fee.fee);
+            } catch (error) {
+                console.error("Lỗi tính phí vận chuyển:", error);
+            }
+        },
+        [districtsData, selectedProvinceName, addressForm, onShippingCostChange]
+    );
+
+
+    const onChangeSelectedWard = useCallback(
+        (wardCode: string) => {
+            setSelectedWardsCode(wardCode);
+            const ward = wardsData.dataOptionWards.find(
+                (prev) => prev.key === wardCode
+            );
+            setSelectedWardName(ward?.label);
+            console.log(selectedWardName);
+            console.log(wardCode);
+        },
+        [wardsData]
+    );
     // Xử lý khi số nhà được chọn
     const handleDetailAddressChange = (value: string) => {
-        setSelectedName((prev) => ({...prev, addressName: value}));
+        setDetailAddress(value);
     };
 
     return (
         <div className={styles["checkout-form"]}>
-            <h3 className={styles["heading"]} style={{fontSize: 20}}>
+            <h3 className={styles["heading"]} style={{ fontSize: 20 }}>
                 Người nhận
             </h3>
             <Form
@@ -125,22 +152,22 @@ const CheckoutForm = (props: IProps) => {
             >
                 <Form.Item
                     name="customerName"
-                    rules={[{required: true, message: "Vui lòng nhập tên khách hàng!"}]}
+                    rules={[{ required: true, message: "Vui lòng nhập tên khách hàng!" }]}
                 >
                     <Input
                         placeholder="Tên khách hàng"
-                        prefix={<UserOutlined className="pr-2"/>}
+                        prefix={<UserOutlined className="pr-2" />}
                         className={styles["input-checkout"]}
                     />
                 </Form.Item>
 
                 <Form.Item
                     name="phone"
-                    rules={[{required: true, message: "Vui lòng nhập số điện thoại!"}]}
+                    rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
                 >
                     <Input
                         placeholder="Số điện thoại"
-                        prefix={<PhoneOutlined className="pr-2"/>}
+                        prefix={<PhoneOutlined className="pr-2" />}
                         className={styles["input-checkout"]}
                     />
                 </Form.Item>
@@ -148,7 +175,7 @@ const CheckoutForm = (props: IProps) => {
                 <Form.Item name="email">
                     <Input
                         placeholder="Địa chỉ email (Không bắt buộc)"
-                        prefix={<MailOutlined className="pr-2"/>}
+                        prefix={<MailOutlined className="pr-2" />}
                         className={styles["input-checkout"]}
                     />
                 </Form.Item>
@@ -163,14 +190,13 @@ const CheckoutForm = (props: IProps) => {
                     <div className=" ">
                         <Radio.Button
                             value="home"
-                            className={`${styles["delivery-option"]} ${
-                                selectedMethod === "home" ? styles["selected"] : ""
-                            }`}
-                            style={{padding: 30}}
+                            className={`${styles["delivery-option"]} ${selectedMethod === "home" ? styles["selected"] : ""
+                                }`}
+                            style={{ padding: 30 }}
                         >
-                            <div style={{marginTop: "-15px"}}>
+                            <div style={{ marginTop: "-15px" }}>
                                 <HomeOutlined
-                                    style={{fontSize: "24px", margin: "0 10px 0 5px"}}
+                                    style={{ fontSize: "24px", margin: "0 10px 0 5px" }}
                                 />
                                 Giao hàng tận nhà
                             </div>
@@ -179,14 +205,13 @@ const CheckoutForm = (props: IProps) => {
                     <div>
                         <Radio.Button
                             value="store"
-                            className={`${styles["delivery-option"]} ${
-                                selectedMethod === "store" ? styles["selected"] : ""
-                            }`}
-                            style={{padding: 30}}
+                            className={`${styles["delivery-option"]} ${selectedMethod === "store" ? styles["selected"] : ""
+                                }`}
+                            style={{ padding: 30 }}
                         >
-                            <div style={{marginTop: "-15px"}}>
+                            <div style={{ marginTop: "-15px" }}>
                                 <ShopOutlined
-                                    style={{fontSize: "24px", margin: "0 10px 0 5px"}}
+                                    style={{ fontSize: "24px", margin: "0 10px 0 5px" }}
                                 />
                                 Lấy tại cửa hàng
                             </div>
@@ -197,7 +222,6 @@ const CheckoutForm = (props: IProps) => {
 
             {selectedMethod === "home" ? (
                 <>
-
                     <h3 className={styles["heading"]}>Địa chỉ nhận hàng</h3>
                     <Form
                         layout="horizontal"
@@ -209,121 +233,61 @@ const CheckoutForm = (props: IProps) => {
                             <Col span={8}>
                                 {" "}
                                 <Form.Item
-                                    // label="Tỉnh"
                                     name="province"
                                     rules={[
-                                        {required: true, message: "Vui lòng chọn tỉnh!"},
+                                        {
+                                            required: true,
+                                            message: "Vui lòng chọn tỉnh/thành phố!",
+                                        },
                                     ]}
                                 >
-                                    <Select
-                                        size="large"
-                                        onChange={(value) => {
-                                            const province = provinces.find(
-                                                (prov) => prov.code === value
-                                            );
-                                            if (province) {
-                                                handleProvinceChange(value, province.name);
-                                                setSelected({
-                                                    province: value,
-                                                    district: "",
-                                                    ward: "",
-                                                }); // Đặt lại giá trị district và ward
-                                                fetchDistricts(value);
-                                            }
-                                        }}
-                                        placeholder="Chọn tỉnh"
-                                        style={{width: "100%"}}
-                                        loading={loading.provinces}
-                                    >
-                                        {provinces.map((province) => (
-                                            <Select.Option
-                                                key={province.code}
-                                                value={province.code}
-                                            >
-                                                {province.name}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
+                                    <SelectSearchOptionLabel
+                                        value={selectedProvinceCode}
+                                        style={{ width: "100%" }}
+                                        placeholder="Tỉnh / Thành phố"
+                                        data={provincesData?.dataOptionProvinces}
+                                        isLoading={provincesData?.isLoading}
+                                        onChange={onChangeSelectedProvince}
+                                    />
                                 </Form.Item>
                             </Col>
                             <Col span={8}>
                                 <Form.Item
-                                    // label="Huyện"
+
                                     name="district"
                                     rules={[
-                                        {required: true, message: "Vui lòng chọn huyện!"},
+                                        { required: true, message: "Vui lòng chọn huyện/quận!" },
                                     ]}
                                 >
-                                    <Select
-                                        size="large"
-                                        onChange={(value) => {
-                                            const district = districts.find(
-                                                (dist) => dist.code === value
-                                            );
-                                            if (district) {
-                                                handleDistrictChange(value, district.name);
-                                                setSelected((prev) => ({
-                                                    ...prev,
-                                                    district: value,
-                                                    ward: "",
-                                                })); // Đặt lại ward
-                                                fetchWards(value);
-                                            }
-                                        }}
-                                        placeholder="Chọn huyện"
-                                        style={{width: "100%"}}
-                                        loading={loading.districts}
-                                        value={selected.district || undefined} // Đảm bảo hiển thị đúng giá trị hiện tại
-                                    >
-                                        {districts && districts.length > 0 ? (
-                                            districts.map((district) => (
-                                                <Select.Option
-                                                    key={district.code}
-                                                    value={district.code}
-                                                >
-                                                    {district.name}
-                                                </Select.Option>
-                                            ))
-                                        ) : (
-                                            <Select.Option disabled>Chọn huyện</Select.Option>
-                                        )}
-                                    </Select>
+                                    <SelectSearchOptionLabel
+                                        value={selectedDistrictCode}
+                                        placeholder="Quận / Huyện"
+                                        style={{ width: "100%" }}
+                                        data={districtsData?.dataOptionDistricts}
+                                        isLoading={districtsData?.isLoading}
+                                        onChange={onChangeSelectedDistrict}
+                                    />
                                 </Form.Item>
                             </Col>
                             <Col span={8}>
                                 <Form.Item
-                                    // label="Xã"
+
                                     name="ward"
-                                    rules={[{required: true, message: "Vui lòng chọn xã!"}]}
+                                    rules={[
+                                        { required: true, message: "Vui lòng chọn xã/phường!" },
+                                    ]}
                                 >
-                                    <Select
-                                        size="large"
-                                        onChange={(value) => {
-                                            const ward = wards.find((war) => war.code === value);
-                                            if (ward) {
-                                                handleWardChange(value, ward.name);
-                                                setSelected((prev) => ({...prev, ward: value}));
-                                            }
-                                        }}
-                                        placeholder="Chọn xã"
-                                        style={{width: "100%"}}
-                                        value={selected.ward || undefined} // Đảm bảo hiển thị đúng giá trị hiện tại
-                                        loading={loading.wards}
-                                    >
-                                        {wards && wards.length > 0 ? (
-                                            wards.map((ward) => (
-                                                <Select.Option key={ward.code} value={ward.code}>
-                                                    {ward.name}
-                                                </Select.Option>
-                                            ))
-                                        ) : (
-                                            <Select.Option disabled>Chọn xã</Select.Option>
-                                        )}
-                                    </Select>
+                                    <SelectSearchOptionLabel
+                                        value={selectedWardCode}
+                                        placeholder="Phường / Xã"
+                                        style={{ width: "100%" }}
+                                        data={wardsData?.dataOptionWards}
+                                        isLoading={wardsData?.isLoading}
+                                        onChange={onChangeSelectedWard}
+                                    />
                                 </Form.Item>
                             </Col>
                         </Row>
-
 
                         <Form.Item name="detail">
                             <TextArea
@@ -333,71 +297,8 @@ const CheckoutForm = (props: IProps) => {
                             />
                         </Form.Item>
                     </Form>
-                    {/* {selected.province ? (
-              <div className={styles["shipping-method"]}>
-                <h3 className={styles["heading"]}>Phương thức vận chuyển</h3>
-
-                <Radio.Group
-                  onChange={onChangeShipping}
-                  value={selectedShipping}
-                  className={styles["shipping-radio-group"]}
-                >
-                  <div
-                    className={styles["shipping-option"]}
-                    style={{ width: "550px" }}
-                  >
-                    <Radio
-                      value="standard"
-                      className={styles["shipping-radio"]}
-                    >
-                      <div
-                        className={styles["shipping-content"]}
-                        style={{ width: "500px" }}
-                      >
-                        <div className={styles["shipping-info"]}>
-                          <span className={styles["shipping-title"]}>
-                            Tiêu chuẩn
-                          </span>
-                          <span className={styles["shipping-price"]}>
-                            {shippingPrice.toLocaleString()} ₫
-                          </span>
-                        </div>
-                        <div className={styles["shipping-description"]}>
-                          Đảm bảo nhận hàng từ 3 - 5 ngày
-                        </div>
-                      </div>
-                    </Radio>
-                    <Divider />
-                    <Radio
-                      value="flash"
-                      className={`${styles["shipping-radio"]}`}
-                    >
-                      <div
-                        className={styles["shipping-content"]}
-                        style={{ width: "500px" }}
-                      >
-                        <div className={styles["shipping-info"]}>
-                          <span className={styles["shipping-title"]}>
-                            Hoả tốc
-                          </span>
-                          <span className={styles["shipping-price"]}>
-                            65.000 ₫
-                          </span>
-                        </div>
-                        <div className={styles["shipping-description"]}>
-                          Đảm bảo nhận hàng ngay trong ngày
-                        </div>
-                      </div>
-                    </Radio>
-                  </div>
-                </Radio.Group>
-              </div>
-            ) : (
-              ""
-            )} */}
                 </>
             ) : null}
-
         </div>
     );
 };
