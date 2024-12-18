@@ -2,17 +2,19 @@ import httpInstance from "@/utils/HttpInstance";
 import useSWR from 'swr';
 
 interface ProductVariantDetail {
-    salePrice: string;
     productId: string;
     productName: string;
     productCode: string;
     price: number;
     originalPrice: number;
+    salePrice: string;
     sku: string;
     colorName: string | null;
     colorCode: string | null;
     sizeName: string | null;
-    quantityInStock: number;
+    categoryName: string | null;
+    brandName: string | null;
+    quantity: number;
     description: string;
 }
 
