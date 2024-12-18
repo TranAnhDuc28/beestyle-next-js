@@ -1,9 +1,9 @@
 import React from "react";
 import Image from "next/image";
-import { Card, Typography } from "antd";
-import QuantityControl from "@/components/User/Cart/Properties/QuantityControl";
-import { FireOutlined } from "@ant-design/icons";
-import ProgressShipping from "./Properties/ProgressShipping";
+import {Progress, Card, Typography} from "antd";
+import useAppNotifications from "@/hooks/useAppNotifications";
+import QuantityControl from "@/components/User/Cart/QuantityControl";
+import {FireOutlined} from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
