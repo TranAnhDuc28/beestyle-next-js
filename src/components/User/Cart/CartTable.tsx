@@ -1,9 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
-import {FaTrash} from 'react-icons/fa';
-import {Table, Button, Progress, Card, Typography} from "antd";
-import {removeItemFromCart} from "@/services/user/ShoppingCartService";
+import {Progress, Card, Typography} from "antd";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import QuantityControl from "@/components/User/Cart/QuantityControl";
 import {FireOutlined} from "@ant-design/icons";
