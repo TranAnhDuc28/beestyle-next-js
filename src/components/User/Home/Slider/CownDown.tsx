@@ -2,14 +2,14 @@
 
 import React from "react";
 import Image from "next/image";
-import {Typography, Statistic, Divider} from 'antd';
+import { Typography, Statistic, Divider } from 'antd';
 
-const {Title, Paragraph, Text} = Typography;
-const {Countdown} = Statistic;
+const { Title, Paragraph, Text } = Typography;
+const { Countdown } = Statistic;
 
 export default function CownDownArea() {
 
-    const countdownDate = new Date('2025-02-30T00:00:00').getTime();
+    const countdownDate = new Date('2025-01-10T00:00:00').getTime();
 
     return (
         <section className="cown-down">
@@ -18,7 +18,11 @@ export default function CownDownArea() {
                     <div className="row">
                         <div className="col-lg-6 col-12 padding-right">
                             <div className="image">
-                                <Image src="/img750x590.png" alt="#" width={750} height={590}/>
+                                <Image
+                                    src="https://m.yodycdn.com/fit-in/filters:format(webp)/products/media/categories/2023-06-12-08-48-19_a5b00606-d7c0-4ba0-9611-33867680f45b.jpg"
+                                    alt="#" width={750} height={590}
+                                    unoptimized
+                                />
                             </div>
                         </div>
                         <div className="col-lg-6 col-12 padding-left">
@@ -34,9 +38,9 @@ export default function CownDownArea() {
                                     <Title level={1} className="price">
                                         990.000 đ <Text delete>1.099.000 đ</Text>
                                     </Title>
-                                    <Divider/>
+                                    <Divider />
                                     <div className="coming-time">
-                                        <Countdown title="Kết thúc sau" value={countdownDate} format="D ngày H:mm:ss"/>
+                                        <Countdown title="Kết thúc sau" value={countdownDate} format="D ngày H:mm:ss" />
                                     </div>
                                 </div>
                             </div>

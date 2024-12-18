@@ -1,13 +1,13 @@
 import React from 'react';
-import {Button, Card, Col, Form, Input, Row, Typography} from "antd";
+import { Alert, Card, Input, Typography } from "antd";
 import Link from "next/link";
-import Image from "next/image";
 
-const {Title, Text} = Typography;
+const { Title } = Typography;
+const { TextArea } = Input;
 
-const TotalAmount = ({cartItems}: any) => {
+const TotalAmount = ({ cartItems }: any) => {
 
-    const {Text} = Typography;
+    const { Text } = Typography;
 
     const totalAmount = cartItems.reduce((total, item) => total + item.total_price, 0);
 
@@ -38,22 +38,29 @@ const TotalAmount = ({cartItems}: any) => {
                         Bạn đã tiết kiệm được 30.000 đ
                     </p>
                 </div>
-                <Button
-                    type="primary"
-                    className="text-black w-full py-4 text-lg font-medium"
-                    style={{backgroundColor: "#FCAF17"}}
+                <Link
+                    href={"/checkout"}
+                    className="btn text-black w-full py-2 text-lg font-medium"
+                    style={{ backgroundColor: "#FCAF17" }}
                 >
                     Mua hàng
-                </Button>
+                </Link>
                 <p className="text-center text-green-500 mt-4">Chọn Voucher giảm giá ở bước tiếp theo</p>
-                    <Image
-                        src={"/payment-variant.png"}
-                        width={400}
-                        height={200}
-                        alt="IMG"
-                        unoptimized
-                    />
             </Card>
+            <Title level={5} className="mt-3">Ghi chú đơn hàng</Title>
+            <TextArea
+                rows={5}
+                placeholder="Nhập nội dung của bạn..."
+                maxLength={255}
+                style={{ resize: 'none' }}
+                allowClear
+            />
+            <Alert
+                message={(<strong className='fw-semibold'>Chính sách mua hàng:</strong>)}
+                description="Hiện chúng tôi chỉ áp dụng thanh toán với đơn hàng có giá trị tối thiểu 0₫ trở lên."
+                type="info"
+                className="my-3"
+            />
         </>
     );
 };

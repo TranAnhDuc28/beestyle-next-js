@@ -988,7 +988,7 @@
     z-index: 1;
     opacity: 0;
     transition: opacity 0.5s ease, transform 2s cubic-bezier(0, 0, 0.44, 1.18),
-    -webkit-transform 2s cubic-bezier(0, 0, 0.44, 1.18);
+        -webkit-transform 2s cubic-bezier(0, 0, 0.44, 1.18);
 }
 
 .single-product .product-img a span.price-dec {
@@ -1025,23 +1025,6 @@
     line-height: 24px;
 }
 
-/*.single-product .product-img a span.out-of-stock {*/
-/*    background-color: #ed1b24;*/
-/*    display: inline-block;*/
-/*    font-size: 11px;*/
-/*    color: #fff;*/
-/*    right: 20px;*/
-/*    top: 20px;*/
-/*    padding: 1px 16px;*/
-/*    font-weight: 700;*/
-/*    text-align: center;*/
-/*    position: absolute;*/
-/*    text-transform: uppercase;*/
-/*    border-radius: 30px;*/
-/*    height: 26px;*/
-/*    line-height: 24px;*/
-/*}*/
-
 .product-action {
     display: flex;
     justify-content: flex-end;
@@ -1051,29 +1034,12 @@
 .product-action .link-action {
     color: #333;
     font-size: 16px;
-    display: flex;
-    align-items: center;
     background-color: transparent;
     border: none;
     text-decoration: none;
     position: relative;
     cursor: pointer;
 }
-
-/*.product-action .link-action span {*/
-/*    visibility: hidden;*/
-/*    opacity: 0;*/
-/*    position: absolute;*/
-/*    top: -12px;*/
-/*    right: 0;*/
-/*    background-color: #f7941d;*/
-/*    color: #fff;*/
-/*    padding: 5px 12px;*/
-/*    font-size: 11px;*/
-/*    line-height: 14px;*/
-/*    border-radius: 15px 0 0 15px;*/
-/*    transition: opacity 0.6s ease, margin 0.3s ease;*/
-/*}*/
 
 .product-action .link-action span::after {
     content: "";
@@ -1359,9 +1325,6 @@
 }
 
 .shop-sidebar .categor-list li {
-}
-
-.shop-sidebar .categor-list li {
     margin-bottom: 10px;
 }
 
@@ -1481,12 +1444,8 @@
 
 .shop .single-shorter label {
     display: inline-block;
-    float: left;
     margin: 4px 5px 0 0;
     font-weight: 500;
-}
-
-.shop .single-shorter option {
 }
 
 .shop .nice-select {
@@ -1625,9 +1584,6 @@
     border-bottom: 1px solid #eee;
 }
 
-.shop.single .product-des {
-}
-
 .shop.single .product-des .total-review {
     font-size: 14px;
     font-weight: 500;
@@ -1675,9 +1631,6 @@
 
 .shop.single .product-des .product-buy {
     margin-top: 40px;
-}
-
-.shop.single .product-des .product-buy {
 }
 
 .shop.single .product-des .color {
@@ -1937,9 +1890,6 @@
     border-color: transparent;
 }
 
-.shop.single .tab-single {
-}
-
 .shop.single .single-des {
     margin-top: 35px;
 }
@@ -1969,28 +1919,13 @@
     border-radius: 50%;
 }
 
-.shop.single .single-des p {
-}
-
 .shop.single .item-info {
     width: 100%;
-}
-
-.shop.single .item-info tbody {
-}
-
-.shop.single .item-info tbody tr {
 }
 
 .shop.single .item-info tbody td {
     border: 1px solid #e6e6e6;
     padding: 10px;
-}
-
-.shop.single .item-info tbody strong {
-}
-
-.shop.single .ratting-main {
 }
 
 .shop.single .avg-ratting {
@@ -2126,9 +2061,6 @@
 .shop.single .avg-ratting h4 {
     font-size: 20px;
     color: #333;
-}
-
-.shop.single .avg-ratting {
 }
 
 .shop.single .form .form-group input {
@@ -2553,4 +2485,3 @@
 /*======================================
    End Shop Newsletter CSS
 ========================================*/
-
