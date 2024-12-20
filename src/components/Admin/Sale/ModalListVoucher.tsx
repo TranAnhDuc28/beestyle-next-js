@@ -89,11 +89,11 @@ const ModalListVoucher = ({
 
     return (
         <Modal
-            title="Chọn Voucher"
+            title="Voucher"
             open={isModalOpen}
             onOk={handleOk}
             onCancel={handleCancel}
-            width={600}
+            width={500}
             footer={
                 <div
                     style={{
@@ -122,12 +122,12 @@ const ModalListVoucher = ({
                 </div>
             }
             style={{
-                top: "50px",
+                top: "40px",
             }}
             styles={{
                 body: {
-                    maxHeight: "400px",
-                    minHeight: "400px",
+                    maxHeight: "510px",
+                    minHeight: "510px",
                     overflowY: "auto",
                 }
             }}
@@ -151,7 +151,11 @@ const ModalListVoucher = ({
                                         <Avatar
                                             shape="square"
                                             src={item.image || "/red-gift-square-box.png"}
-                                            size={{xs: 64, sm: 64, md: 64, lg: 64, xl: 72, xxl: 72}}
+                                            style={{
+                                                width: "100px",
+                                                height: "100px",
+                                                objectFit: "cover",
+                                            }}
                                         />
                                     }
                                     title={
@@ -162,16 +166,36 @@ const ModalListVoucher = ({
                                                 justifyContent: "space-between",
                                             }}
                                         >
-                                            <Text strong>{item.voucherName}</Text>
-                                            <div style={{textAlign: "right", marginLeft: "auto"}}>
-                                                <Title level={5} style={{margin: 0}}>
-                                                    {item.discountValue
-                                                        ? `${item.discountValue}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                                                        : 0}{" "}
-                                                    {item.discountType === "PERCENTAGE" ? "%" : "VND"}
-                                                </Title>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "space-between",
+                                                }}
+                                            >
+                                                <div style={{ textAlign: "left", marginLeft: "auto" }}>
+                                                    <Text strong>{item.voucherName}</Text>
+                                                    <Title level={5} style={{ margin: 0 }}>
+                                                        {item.discountType === "PERCENTAGE"
+                                                            ? `Giảm ${item.discountValue || 0}% tối đa ${
+                                                                item.maxDiscount
+                                                                    ? `${item.maxDiscount}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                                                    : 0
+                                                            }đ`
+                                                            : `Giảm ${item.discountValue
+                                                                ? `${item.discountValue}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                                                : 0}đ`}
+                                                    </Title>
+                                                    <span style={{ color: "black", fontWeight: "normal" }}>
+                                                        Cho đơn từ {item.minOrderValue
+                                                        ? `${item.minOrderValue}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                                        : 0}đ
+                                                    </span>
+                                                </div>
                                             </div>
+
                                         </div>
+
                                     }
                                     description={
                                         <div
@@ -182,10 +206,8 @@ const ModalListVoucher = ({
                                             }}
                                         >
                                             <div>
-                                                <span>Mã: {item.voucherCode}</span>&nbsp;|&nbsp;
+                                                {/*<span>Mã: {item.voucherCode}</span>&nbsp;|&nbsp;*/}
                                                 <span>Hạn sử dụng: {new Date(item.endDate).toLocaleDateString()}</span>
-                                                <br/>
-                                                <span>Mô tả: {item.note}</span>
                                             </div>
                                             <Checkbox
                                                 checked={selectedVoucher && selectedVoucher.id === item.id}

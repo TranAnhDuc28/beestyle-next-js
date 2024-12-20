@@ -164,8 +164,8 @@ const CreatePromotion = (props: IProps) => {
                 console.log("Fetched product details:", detailsResponse);
                 return Array.isArray(detailsResponse) ? detailsResponse.map(item => ({
                     productId: product.id,
-                    id: item[0],  //4
-                    productVariantName: item[3], //1
+                    id: item[4],  //4
+                    productVariantName: item[1], //1
                     brandName: item[2],
                     materialName: item[3],
                     quantityInStock: item[9],

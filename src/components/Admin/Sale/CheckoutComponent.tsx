@@ -289,14 +289,14 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                 <div>
                     <Flex justify="space-between" align="center" style={{width: "100%"}} wrap gap={10}>
                         <Button onClick={showModal} type="primary" size="large">
-                            Chọn Mã giảm giá
+                            Chọn Vuocher
                         </Button>
                         {selectedVoucher ? (
                             <>
                                 <Popover
                                     content={
                                         <div>
-                                            <Text strong>Tên: {selectedVoucher.voucherName}</Text>
+                                            <Text strong>{selectedVoucher.voucherName}</Text>
                                             <br />
                                             <Text>Hạn sử dụng: {new Date(selectedVoucher.endDate).toLocaleDateString()}</Text>
                                             <br />
@@ -315,10 +315,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                                     >
                                         <BiSolidCoupon style={{display: "inline", marginInlineEnd: 5}}/>
                                         <Text style={{fontSize: 16}}>
-                                            {selectedVoucher?.voucherCode} -{" "}
-                                            {selectedVoucher?.discountType === "PERCENTAGE"
-                                                ? `Giảm ${selectedVoucher?.discountValue}%`
-                                                : `Giảm ${selectedVoucher?.discountValue} VND`}
+                                            {selectedVoucher?.voucherCode}
                                         </Text>
                                     </Tag>
                                 </Popover>
