@@ -163,9 +163,9 @@ const CreatePromotion = (props: IProps) => {
                 const detailsResponse = await getProductDetails(product.id);
                 console.log("Fetched product details:", detailsResponse);
                 return Array.isArray(detailsResponse) ? detailsResponse.map(item => ({
-                    productId: product.id, // Gắn thêm productId để theo dõi
-                    id: item[4],
-                    productVariantName: item[1],
+                    productId: product.id,
+                    id: item[0],  //4
+                    productVariantName: item[3], //1
                     brandName: item[2],
                     materialName: item[3],
                     quantityInStock: item[9],
@@ -557,7 +557,7 @@ const CreatePromotion = (props: IProps) => {
                                     key: variant.id, // Tạo key duy nhất cho mỗi dòng
                                 }))}
                                 rowKey="key"
-                                bordered
+                                borderedsku
                                 pagination={{pageSize: 10}}
                                 showSizeChanger
                                 pageSizeOptions={['10', '20', '50', '100']}

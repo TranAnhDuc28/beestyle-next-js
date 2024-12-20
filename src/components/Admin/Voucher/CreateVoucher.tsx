@@ -60,8 +60,9 @@ const CreateVoucher = (props: IProps) => {
                 okButtonProps={{
                     style: {background: "#00b96b"},
                 }}
-                width={800} // Kích thước modal
-                style={{body: {padding: '20px'}}}
+                width={800}
+
+                style={{body: {padding: '20px'}, top: "50px"}}
             >
                 <Form
                     form={form}
@@ -225,19 +226,26 @@ const CreateVoucher = (props: IProps) => {
                             <Form.Item
                                 name="usageLimit"
                                 label="Số lượng "
-                                // rules={[{required: true, message: "Vui lòng nhập giới hạn sử dụng!"}]}
+                                rules={[{required: true, message: "Vui lòng nhập số lượng sử dụng!"}]}
                             >
                                 <InputNumber style={{width: '100%'}}/>
                             </Form.Item>
                         </Col>
                     </Row>
-
+                    <Row gutter={16}>
+                        <Col span={24}>
+                            <Form.Item
+                                name="note"
+                                label="Mô tả"
+                            >
+                                <Input.TextArea style={{ width: '100%' }} />
+                            </Form.Item>
+                        </Col>
+                    </Row>
                 </Form>
             </Modal>
         </>
     );
-
-
 };
 
 export default memo(CreateVoucher);
