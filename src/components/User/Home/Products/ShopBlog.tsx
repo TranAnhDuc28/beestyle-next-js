@@ -50,8 +50,8 @@ export default function ShopBlogSection() {
                                     <Text className="date" type="secondary">
                                         {blog.date}
                                     </Text>
-                                    <Title level={4} className="title mb-4">
-                                        <Link href={blog.link} className="link-no-decoration text-dark">
+                                    <Title level={5} className="title mb-4">
+                                        <Link href={blog.link} className="no-underline text-dark fw-medium">
                                             {blog.title}
                                         </Link>
                                     </Title>

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Button, Flex, Image, Tooltip } from "antd";
+import { Badge, Button, Flex, Image, Tooltip } from "antd";
 import MenuProductArea from "@/components/User/Home/Products/MenuProductArea";
 import ProductQuickLookupModal from "@/components/User/ProductCommonUser/ProductQuickLookupModal";
 import useSWR from 'swr';
@@ -51,80 +51,89 @@ function ProductArea() {
                                                     products.map((product) => (
                                                         <div key={product.id}
                                                             className="col-xl-3 col-lg-4 col-md-4 col-12">
-                                                            <div className="single-product">
-                                                                <div className="product-img">
-                                                                    <Link
-                                                                        href={`/product/${product.id}/variant`}
-                                                                    >
-                                                                        <Image
-                                                                            loading="lazy"
-                                                                            alt="avatar"
-                                                                            src={product?.imageUrl}
-                                                                            style={{ width: "100%", height: "410px", objectFit: "cover" }}
-                                                                            className="default-img"
-                                                                            preview={{
-                                                                                mask: (
-                                                                                    <>
-                                                                                        <Flex gap={10}>
-                                                                                            <ColorButton
-                                                                                                style={{ borderRadius: 4, padding: "0px 30px" }}
-                                                                                                size="large"
-                                                                                                type="primary"
-                                                                                                bgColor="#F7941D"
-                                                                                                icon={<LuShoppingBag style={{}} />}
-                                                                                                onClick={(e) => {
-                                                                                                    e.preventDefault();
-                                                                                                    handleOpenModal(product);
-                                                                                                }}
-                                                                                            >
-                                                                                                Thêm vào giỏ
-                                                                                            </ColorButton>
-                                                                                            <Tooltip
-                                                                                                title={<span style={{ fontSize: 12, padding: 0 }}>Xem nhanh</span>}>
-                                                                                                <Button
-                                                                                                    style={{ borderRadius: 4 }}
+                                                            <Badge.Ribbon text="Test" color="red">
+                                                                <div className="single-product">
+                                                                    <div className="product-img">
+                                                                        <Link
+                                                                            href={`/product/${product.id}/variant`}
+                                                                        >
+
+                                                                            <Image
+                                                                                loading="lazy"
+                                                                                alt="avatar"
+                                                                                src={product?.imageUrl}
+                                                                                style={{ width: "100%", height: "410px", objectFit: "cover" }}
+                                                                                className="default-img"
+                                                                                preview={{
+                                                                                    mask: (
+                                                                                        <>
+                                                                                            <Flex gap={10}>
+                                                                                                <ColorButton
+                                                                                                    style={{ borderRadius: 4, padding: "0px 30px" }}
                                                                                                     size="large"
-                                                                                                    color="default"
-                                                                                                    variant="solid"
-                                                                                                    icon={<EyeOutlined />}
+                                                                                                    type="primary"
+                                                                                                    bgColor="#F7941D"
+                                                                                                    icon={<LuShoppingBag style={{}} />}
                                                                                                     onClick={(e) => {
                                                                                                         e.preventDefault();
                                                                                                         handleOpenModal(product);
                                                                                                     }}
-                                                                                                />
-                                                                                            </Tooltip>
-                                                                                        </Flex>
-                                                                                    </>
-                                                                                ),
-                                                                                maskClassName: "custom-mask-img",
-                                                                                visible: false,
-                                                                                destroyOnClose: true,
-                                                                            }}
-                                                                        />
-                                                                        <Image
-                                                                            loading="lazy"
-                                                                            alt="avatar"
-                                                                            src={product?.imageUrl}
-                                                                            style={{ width: "100%", height: "410px", objectFit: "cover" }}
-                                                                            className="hover-img"
-                                                                        />
-                                                                    </Link>
-                                                                </div>
-                                                                <div className="product-content mt-1 mb-3">
-                                                                    <h3>
-                                                                        <Link href="#"
-                                                                            className="link-action link-no-decoration text-dark fs-6">
-                                                                            {product.productName}
+                                                                                                >
+                                                                                                    Thêm vào giỏ
+                                                                                                </ColorButton>
+                                                                                                <Tooltip
+                                                                                                    title={<span style={{ fontSize: 12, padding: 0 }}>Xem nhanh</span>}>
+                                                                                                    <Button
+                                                                                                        style={{ borderRadius: 4 }}
+                                                                                                        size="large"
+                                                                                                        color="default"
+                                                                                                        variant="solid"
+                                                                                                        icon={<EyeOutlined />}
+                                                                                                        onClick={(e) => {
+                                                                                                            e.preventDefault();
+                                                                                                            handleOpenModal(product);
+                                                                                                        }}
+                                                                                                    />
+                                                                                                </Tooltip>
+                                                                                            </Flex>
+                                                                                        </>
+                                                                                    ),
+                                                                                    maskClassName: "custom-mask-img",
+                                                                                    visible: false,
+                                                                                    destroyOnClose: true,
+                                                                                }}
+                                                                            />
+                                                                            <Image
+                                                                                loading="lazy"
+                                                                                alt="avatar"
+                                                                                src={product?.imageUrl}
+                                                                                style={{ width: "100%", height: "410px", objectFit: "cover" }}
+                                                                                className="hover-img"
+                                                                            />
                                                                         </Link>
-                                                                    </h3>
-                                                                    <div className="product-price">
-                                                                        <span
-                                                                            className="old-price">{product.originalPrice.toLocaleString('vi-VN')} đ</span>
-                                                                        <span
-                                                                            className="current-price ml-2">{product.salePrice.toLocaleString('vi-VN')} đ</span>
+                                                                    </div>
+                                                                    <div className="product-content mt-1 mb-3">
+                                                                        <h3>
+                                                                            <Link href="#"
+                                                                                className="link-action link-no-decoration text-dark fs-6">
+                                                                                {product.productName}
+                                                                            </Link>
+                                                                        </h3>
+                                                                        <div className="product-price">
+                                                                            <span
+                                                                                className="old-price"
+                                                                            >
+                                                                                {product.minSalePrice.toLocaleString()} đ
+                                                                            </span>
+                                                                            <span
+                                                                                className="current-price ml-2"
+                                                                            >
+                                                                                {product.minDiscountedPrice.toLocaleString()} đ
+                                                                            </span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                            </Badge.Ribbon>
                                                         </div>
                                                     ))
                                                 ) : (

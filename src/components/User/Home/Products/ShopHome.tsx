@@ -65,13 +65,13 @@ function ShopHome() {
                                                             </Tooltip>
                                                         </div>
                                                     ),
-                                                    maskClassName:
-                                                        'flex items-center justify-center bg-black bg-opacity-50',
+                                                    maskClassName: 'flex items-center justify-center bg-black bg-opacity-50',
                                                     visible: false,
                                                 }}
                                                 src={product.imageUrl}
                                                 alt={product.productName}
-                                                className="w-full"
+                                                loading="lazy"
+                                                style={{ width: "100%", height: "auto", objectFit: "cover", aspectRatio: "3/4" }}
                                             />
                                         </div>
                                         <div className="col-lg-6 col-md-6 col-12 no-padding">
@@ -81,7 +81,7 @@ function ShopHome() {
                                                         className="link-no-decoration text-dark fs-6">{product.productName}</Link>
                                                 </p>
                                                 <p className="price with-discount">
-                                                    {product.salePrice.toLocaleString('vi-VN')} đ
+                                                    {product.minDiscountedPrice.toLocaleString()} đ
                                                 </p>
                                             </div>
                                         </div>

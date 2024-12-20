@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Carousel, Tag, InputNumber } from 'antd';
-import Image from 'next/image';
+import { Modal, Button, Carousel, Tag, InputNumber, Image } from 'antd';
 import { useProductImages, useProduct } from '@/services/user/SingleProductService';
 import ColorPickers from '@/components/User/ShopSingle/Properties/ColorPickers';
 import SizePickers from '@/components/User/ShopSingle/Properties/SizePickers';
@@ -10,6 +9,7 @@ import Link from 'next/link';
 import { useRef } from 'react';
 import { addToCart } from '@/services/user/ShoppingCartService';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import styles from "./css/modal.module.css";
 
 interface IProps {
     visible: boolean;
@@ -34,6 +34,9 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
         setSelectedColor(null);
         setSelectedSize(null);
         setCurrentSlide(0);
+
+        if (productError) console.log(productError);
+        if (imagesError) console.log(imagesError);
     }, [productId, visible]);
 
     const handleColorSelect = (color: string) => {
@@ -67,19 +70,22 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
         ? images.map((image: any, index: number) => (
             <div key={index.toString()} className="flex justify-center">
                 <Image
-                    width={400}
-                    height={533}
+                    loading="lazy"
+                    style={{ width: "100%", height: "auto", objectFit: "cover", aspectRatio: "3/4" }}
                     src={image.imageUrl}
                     alt={product?.productName}
-                    layout="responsive"
-                    objectFit="contain"
-                    unoptimized
+                    preview={false}
                 />
             </div>
         ))
         : [
             <div key="0" className="flex justify-center">
-                <Image width={569} height={528} src="/no-img.png" alt={product?.productName} className="object-contain" />
+                <Image
+                    loading="lazy"
+                    style={{ width: "100%", height: "auto", objectFit: "cover", aspectRatio: "3/4" }}
+                    src="/no-img.png"
+                    alt={product?.productName}
+                />
             </div>,
         ];
 
@@ -88,13 +94,31 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
             open={visible}
             onCancel={onClose}
             footer={null}
-            width={'auto'}
             centered
-            className="!w-[50vw]"
+            className={`!w-[50vw] ${styles.customModal}`}
             closable
         >
             <div className="flex">
-                <div className="w-1/2 pr-0">
+                <div className="flex flex-col gap-2 me-1">
+                    {images &&
+                        images.map((image: any, index: number) => (
+                            <div
+                                key={index}
+                                className={`w-15 h-[84px] flex-shrink-0 cursor-pointer border-2 me-2
+                                        ${currentSlide === index ? 'border-orange-400' : 'border-transparent'}`}
+                                onClick={() => goToSlide(index)}
+                            >
+                                <Image
+                                    width={60}
+                                    height={"auto"}
+                                    src={image.imageUrl}
+                                    alt={product.productName}
+                                    preview={false}
+                                />
+                            </div>
+                        ))}
+                </div>
+                <div className='w-1/2 pe-2'>
                     <Carousel
                         ref={carouselRef}
                         autoplay={false}
@@ -106,26 +130,6 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                     >
                         {slides}
                     </Carousel>
-                    <div className="mt-4 flex gap-2 overflow-x-auto">
-                        {images &&
-                            images.map((image: any, index: number) => (
-                                <div
-                                    key={index}
-                                    className={`w-20 h-30 flex-shrink-0 cursor-pointer border-2 me-2
-                                        ${currentSlide === index ? 'border-orange-400' : 'border-transparent'}`}
-                                    onClick={() => goToSlide(index)}
-                                >
-                                    <Image
-                                        width={80}
-                                        height={80}
-                                        src={image.imageUrl}
-                                        alt={product.productName}
-                                        className="object-cover w-full h-full"
-                                        unoptimized
-                                    />
-                                </div>
-                            ))}
-                    </div>
                 </div>
                 <div className="w-1/2 pl-8 flex flex-col justify-between">
                     <div>
@@ -133,7 +137,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                         <p className="mb-2">
                             <span className="font-semibold">SKU:</span> {productData?.sku} |{' '}
                             <span className="font-semibold">Tình trạng:</span>{' '}
-                            {productData?.quantity > 0 ? (
+                            {productData?.quantityInStock > 0 ? (
                                 <Tag color="green">Còn hàng</Tag>
                             ) : (
                                 <Tag color="red">Hết hàng</Tag>
@@ -147,12 +151,12 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                             <span className="text-orange-400 text-2xl font-bold">
                                 {productData?.salePrice?.toLocaleString()} đ
                             </span>
-                            <span className="text-gray-500 text-lg line-through ml-2">
+                            {/* <span className="text-gray-500 text-lg line-through ml-2">
                                 {productData?.originalPrice?.toLocaleString()} đ
                             </span>
                             <span className="text-red-500 font-bold ml-2">
                                 -{Math.round(((productData?.originalPrice - productData?.salePrice) / productData?.originalPrice) * 100)}%
-                            </span>
+                            </span> */}
                         </div>
 
                         <ColorPickers
@@ -169,12 +173,12 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                             onSizeSelect={handleSizeSelect}
                         />
                         <div className="flex items-center my-4">
-                            <p className="text-black font-semibold mr-4">Số lượng</p>
+                            <p className="text-black font-semibold mr-5 mb-0">Số lượng</p>
                             <div className="flex items-center">
                                 <Button
                                     onClick={handleDecrement}
                                     className="!bg-gray-200 hover:!bg-gray-300 !text-black !font-bold relative z-10
-                                !border-none !rounded-none !w-10 !h-10 flex items-center justify-center"
+                                               !border-none !rounded-none !w-10 !h-10 flex items-center justify-center"
                                     icon={<MinusOutlined />}
                                     disabled={quantity <= 1}
                                 />
@@ -182,8 +186,8 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                                 <InputNumber
                                     min={1}
                                     value={quantity}
-                                    style={{ lineHeight: '40px' }}
-                                    className="!text-black !font-semibold !border-0 !w-14 !h-10 !text-center"
+                                    style={{ lineHeight: '40px', textAlignLast: 'center' }}
+                                    className="!text-black !font-semibold !border-0 !w-16 !h-10 custom-input"
                                     readOnly
                                     controls={false}
                                 />
@@ -191,7 +195,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                                 <Button
                                     onClick={handleIncrement}
                                     className="!bg-gray-200 hover:!bg-gray-300 !text-black !font-bold relative z-10
-                                !border-none !rounded-none !w-10 !h-10 flex items-center justify-center"
+                                               !border-none !rounded-none !w-10 !h-10 flex items-center justify-center"
                                     icon={<PlusOutlined />}
                                     disabled={quantity >= productData?.quantity}
                                 />
@@ -199,7 +203,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                         </div>
                     </div>
 
-                    <div className="flex flex-col mb-24">
+                    <div className={styles.buttonCustom}>
                         <Button
                             type="primary"
                             block
@@ -209,13 +213,13 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                         >
                             Thêm vào giỏ
                         </Button>
-                        <div className="text-center mt-3">
-                            <Link href={`/product/${productId}/variant`} className="!text-blue-500">
-                                Xem chi tiết sản phẩm
-                            </Link>
-                        </div>
                     </div>
                 </div>
+            </div>
+            <div className="text-center mt-2">
+                <Link href={`/product/${productId}/variant`} className="!text-blue-500">
+                    Xem chi tiết sản phẩm
+                </Link>
             </div>
         </Modal>
     );

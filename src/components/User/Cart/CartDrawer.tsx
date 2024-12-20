@@ -94,8 +94,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         <p className={styles.itemVariant}>{item.color} / {item.size}</p>
                         <div className={styles.quantityControl}>
                             <QuantityControl
-                                value={item.quantity}
-                                onChange={(value) => handleQuantityChange(index, value)}
+                                quantity={item.quantity}
+                                quantityInStock={item.product_quantity}
                                 onIncrement={() => handleQuantityChange(index, item.quantity + 1)}
                                 onDecrement={() => handleQuantityChange(index, Math.max(1, item.quantity - 1))}
                             />
@@ -119,9 +119,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                             />
                         </Popconfirm>
                         <div className="d-flex flex-column align-items-center mt-4">
-                            <span
-                                className={styles.itemPrice + ' mb-1'}>{item.discounted_price.toLocaleString()}₫</span>
-                            <span className={styles.originalPrice}>{item.original_price.toLocaleString()}₫</span>
+                            <span className={styles.itemPrice + ' mb-1'}>{item.discounted_price.toLocaleString()}₫</span>
+                            {/* <span className={styles.originalPrice}>{item.original_price.toLocaleString()}₫</span> */}
                         </div>
                     </div>
                 </div>

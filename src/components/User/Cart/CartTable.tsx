@@ -93,17 +93,20 @@ const CartTable = ({ cartItems, updateCartItems }: any) => {
                                 <Text className="text-red-500 text-xl font-bold">
                                     {item.discounted_price.toLocaleString()} đ
                                 </Text>
-                                <p className="line-through text-gray-500">{item.original_price.toLocaleString()} đ</p>
+                                {/* <p className="line-through text-gray-500">{item.original_price.toLocaleString()} đ</p> */}
                                 <p className="text-red-500">
                                     <span
-                                        style={{ color: "#333" }}>Đã tiết kiệm</span> -{(item.original_price - item.discounted_price).toLocaleString()} đ
+                                        style={{ color: "#333" }}
+                                    >
+                                        Đã tiết kiệm
+                                    </span> -{(item.original_price - item.discounted_price).toLocaleString()} đ
                                 </p>
-                                <div className="grid grid-cols-2 items-center">
-                                    <p className="m-0">{item.color} / {item.size}</p>
-                                    <div className="justify-self-end mt-[-8px]">
+                                <div className="flex flex-col justify-center">
+                                    <p>{item.color} / {item.size}</p>
+                                    <div className="justify-self-end">
                                         <QuantityControl
-                                            value={item.quantity}
-                                            onChange={() => handleQuantityChange(index, 'decrement')}
+                                            quantity={item.quantity}
+                                            quantityInStock={item.quantityInStock}
                                             onIncrement={() => handleQuantityChange(index, 'increment')}
                                             onDecrement={() => handleQuantityChange(index, 'decrement')}
                                         />

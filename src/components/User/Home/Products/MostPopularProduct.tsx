@@ -124,7 +124,8 @@ function MostPopularProduct() {
                                                         }}
                                                         src={product.imageUrl}
                                                         alt={product.productName}
-                                                        className="w-full"
+                                                        loading="lazy"
+                                                        style={{ width: "100%", height: "auto", objectFit: "cover", aspectRatio: "3/4" }}
                                                     />
                                                     {product?.label && (
                                                         <span className="product-label">{product.productName}</span>
@@ -140,11 +141,9 @@ function MostPopularProduct() {
                                                         </Link>
                                                     </h3>
                                                     <div className="product-price">
-                                                        {product?.originalPrice && (
-                                                            <span className="old-price">{product.originalPrice.toLocaleString('vi-VN')} đ</span>
-                                                        )}
+                                                        <span className="old-price">{product.minSalePrice.toLocaleString()} đ</span>
                                                         <span
-                                                            className="current-price ml-2">{product.salePrice.toLocaleString('vi-VN')} đ</span>
+                                                            className="current-price ml-2">{product.minDiscountedPrice.toLocaleString()} đ</span>
                                                     </div>
                                                 </div>
                                             </Card>
