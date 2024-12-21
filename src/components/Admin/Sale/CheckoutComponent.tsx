@@ -22,6 +22,7 @@ import {IOrderCreateOrUpdate} from "@/types/IOrder";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import useAddress from "@/components/Admin/Address/hook/useAddress";
 import ModalListVoucher from "./ModalListVoucher";
+import {IVoucher} from "@/types/IVoucher";
 
 const {Title, Text} = Typography;
 const {TextArea} = Input;
@@ -60,9 +61,8 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
     const [deliverySale, setDeliverySale] = React.useState<boolean>(false);
     const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>(
         {discount: 0, amountDue: 0, amountPaid: 0, change: 0});
-    const [discountAmount, setDiscountAmount] = useState(0);
-
-    const [selectedVoucher, setSelectedVoucher] = useState(null);
+    const [discountAmount, setDiscountAmount] = useState<number>(0);
+    const [selectedVoucher, setSelectedVoucher] = useState<IVoucher | null>(null);
 
     // console.log(JSON.stringify(paymentInfo, null, 2));
 
@@ -246,8 +246,9 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
             </Button>
         </Flex>
     );
-    const calculateDiscountAmount = (voucher) => {
-        let totalAmount = handleSale?.orderCreateOrUpdate.totalAmount;
+
+    const calculateDiscountAmount = (voucher: IVoucher) => {
+        let totalAmount = handleSale?.orderCreateOrUpdate.totalAmount ?? 0;
         let discountAmount;
 
         if (voucher.discountType === "PERCENTAGE") {
@@ -263,8 +264,8 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
 
     };
 
-    const handleVoucherSelect = (voucherSelected) => {
-        const discountAmount = calculateDiscountAmount(voucherSelected);
+    const handleVoucherSelect = (voucherSelected: IVoucher) => {
+        const discountAmount = calculateDiscountAmount(voucherSelected) ?? 0;
         setDiscountAmount(discountAmount);
         setSelectedVoucher(voucherSelected);
         console.log("Giá trị giảm là: ", discountAmount);
@@ -286,53 +287,50 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                     body: {padding: '15px'},
                 }}
             >
-                <div>
-                    <Flex justify="space-between" align="center" style={{width: "100%"}} wrap gap={10}>
-                        <Button onClick={showModal} type="primary" size="large">
-                            Chọn Vuocher
-                        </Button>
-                        {selectedVoucher ? (
-                            <>
-                                <Popover
-                                    content={
-                                        <div>
-                                            <Text strong>{selectedVoucher.voucherName}</Text>
-                                            <br />
-                                            <Text>Hạn sử dụng: {new Date(selectedVoucher.endDate).toLocaleDateString()}</Text>
-                                            <br />
-                                            <Text>Áp dụng cho đơn hàng từ {selectedVoucher.minOrderValue}đ, giảm tối đa {selectedVoucher.discountType === "PERCENTAGE" ? `${selectedVoucher.maxDiscount}đ` : `${selectedVoucher.discountValue}đ`} </Text>
 
-                                        </div>
-                                    }
-                                    trigger="hover"
-                                    placement="left"
-                                >
-                                    <Tag
-                                        closeIcon
-                                        style={{display: "flex", alignItems: "center", padding: 5, fontSize: 16}}
-                                        color="processing"
-                                        onClose={() => setSelectedVoucher(null)}
-                                    >
-                                        <BiSolidCoupon style={{display: "inline", marginInlineEnd: 5}}/>
-                                        <Text style={{fontSize: 16}}>
-                                            {selectedVoucher?.voucherCode}
+                <Flex justify="space-between" align="center" style={{width: "100%"}} wrap gap={10}>
+                    <Button onClick={showModal} type="primary" size="large">
+                        Chọn Voucher
+                    </Button>
+
+                    {/* voucher được chọn */}
+                    {selectedVoucher ? (
+                        <>
+                            <Popover
+                                content={
+                                    <div>
+                                        <Text strong>{selectedVoucher.voucherName}</Text>
+                                        <br/>
+                                        <Text>
+                                            Hạn sử dụng: {new Date(selectedVoucher.endDate).toLocaleDateString()}
                                         </Text>
-                                    </Tag>
-                                </Popover>
-                            </>
-                        ) : (
-                            <></>
-                        )}
-
-                    </Flex>
-                    <ModalListVoucher
-                        isModalOpen={isModalOpen}
-                        setIsModalOpen={setIsModalOpen}
-                        onVoucherSelect={handleVoucherSelect}
-                        totalAmount={handleSale?.orderCreateOrUpdate.totalAmount}
-
-                    />
-                </div>
+                                        <br/>
+                                        <Text>
+                                            Áp dụng cho đơn hàng từ {selectedVoucher.minOrderValue}đ, giảm tối đa
+                                            {selectedVoucher.discountType === "PERCENTAGE" ? `${selectedVoucher.maxDiscount}đ` : `${selectedVoucher.discountValue}đ`}
+                                        </Text>
+                                    </div>
+                                }
+                                trigger="hover"
+                                placement="left"
+                            >
+                                <Tag
+                                    closeIcon
+                                    style={{display: "flex", alignItems: "center", padding: 5, fontSize: 16}}
+                                    color="processing"
+                                    onClose={() => setSelectedVoucher(null)}
+                                >
+                                    <BiSolidCoupon style={{display: "inline", marginInlineEnd: 5}}/>
+                                    <Text style={{fontSize: 16}}>
+                                        {selectedVoucher?.voucherCode}
+                                    </Text>
+                                </Tag>
+                            </Popover>
+                        </>
+                    ) : (
+                        <></>
+                    )}
+                </Flex>
 
                 <Divider style={{margin: "15px 0px"}}/>
                 <Flex align="center" style={{width: "100%"}} wrap gap={10}>
@@ -549,20 +547,21 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                 }
             </Drawer>
 
-            {/*<Modal title="Chọn voucher" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>*/}
-            {/*    <p>Some contents...</p>*/}
-            {/*    <p>Some contents...</p>*/}
-            {/*    <p>Some contents...</p>*/}
-            {/*</Modal>*/}
-            {/*<ModalListVoucher*/}
-            {/*    open={isModalOpen}*/}
-            {/*    setIsModalOpen={setIsModalOpen}*/}
-            {/*/>*/}
+            {/* modal chọn voucher */}
+            <ModalListVoucher
+                isModalOpen={isModalOpen}
+                setIsModalOpen={setIsModalOpen}
+                onVoucherSelect={handleVoucherSelect}
+            />
+
+            {/* modal quét QR thanh toán */}
             <Modal title="QR Thanh toán" open={isModalQROpen} onCancel={handleModalQRCancel} footer={null}>
                 <Flex justify="center" align="center" style={{margin: "20px 0px"}}>
                     <QRCode type="svg" value="https://ant.design/" size={400}/>
                 </Flex>
             </Modal>
+
+
         </>
     );
 }
