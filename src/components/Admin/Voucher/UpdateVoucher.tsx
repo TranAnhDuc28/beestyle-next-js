@@ -44,6 +44,7 @@ const UpdateVoucher = (props: IProps) => {
                 minOrderValue: dataUpdate.minOrderValue,
                 usageLimit: dataUpdate.usageLimit,
                 usagePerUser: dataUpdate.usagePerUser,
+                note: dataUpdate.note,
                 status: dataUpdate.status,
             });
         }
@@ -280,33 +281,16 @@ const UpdateVoucher = (props: IProps) => {
                             </Form.Item>
                         </Col>
                     </Row>
-                    {/*<Row gutter={16}>*/}
-
-                    {/*    <Col span={12}>*/}
-                    {/*        <Form.Item*/}
-                    {/*            name="usagePerUser"*/}
-                    {/*            label="Số lần sử dụng mỗi người"*/}
-                    {/*            rules={[{required: true, message: "Vui lòng nhập số lần sử dụng mỗi người!"}]}*/}
-                    {/*        >*/}
-                    {/*            <InputNumber style={{width: '100%'}}/>*/}
-                    {/*        </Form.Item>*/}
-                    {/*    </Col>*/}
-
-
-                    {/*    <Col span={12}>*/}
-                    {/*        <Form.Item name="status" label="Trạng thái"*/}
-                    {/*                   rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>*/}
-                    {/*            <Select*/}
-                    {/*                options={(Object.keys(DISCOUNT_STATUS) as Array<keyof typeof DISCOUNT_STATUS>).map(*/}
-                    {/*                    (key) => (*/}
-                    {/*                        {value: key, label: DISCOUNT_STATUS[key]}*/}
-                    {/*                    )*/}
-                    {/*                )}*/}
-                    {/*            />*/}
-                    {/*        </Form.Item>*/}
-                    {/*    </Col>*/}
-                    {/*</Row>*/}
-
+                    <Row gutter={16}>
+                        <Col span={24}>
+                            <Form.Item
+                                name="note"
+                                label="Mô tả"
+                            >
+                                <Input.TextArea style={{ width: '100%' }} />
+                            </Form.Item>
+                        </Col>
+                    </Row>
                 </Form>
             </Modal>
         </>

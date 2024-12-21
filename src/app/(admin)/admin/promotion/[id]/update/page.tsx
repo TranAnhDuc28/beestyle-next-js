@@ -161,7 +161,7 @@ const UpdatePromotion = (props: IProps) => {
         });
 
         const allDetails = await Promise.all(detailsPromises);
-        return allDetails.flat(); // Mở rộng tất cả các mảng con thành một mảng
+        return allDetails.flat();
     };
 
     useEffect(() => {

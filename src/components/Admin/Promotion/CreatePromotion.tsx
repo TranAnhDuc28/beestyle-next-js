@@ -92,6 +92,34 @@ const CreatePromotion = (props: IProps) => {
         setCurrentPage(page);  // Cập nhật currentPage
         if (size) setPageSize(size);  // Cập nhật pageSize nếu có
     }
+    // const handleRowSelectionChange = async (selectedRowKeys: React.Key[], selectedRows: IProduct[]) => {
+    //     setSelectedProducts(selectedRows);
+    //
+    //     const detailsPromises = selectedRows.map(async (product) => {
+    //         try {
+    //             const detailsResponse = await getProductDetails(product.id);
+    //             console.log("Fetched product details:", detailsResponse);
+    //             return Array.isArray(detailsResponse) ? detailsResponse.map(item => ({
+    //                 id: item[4],
+    //                 productVariantName: item[1],
+    //                 brandName: item[2],
+    //                 materialName: item[3],
+    //                 quantityInStock: item[9],
+    //                 sku: item[5],
+    //                 colorName: item[6],
+    //                 sizeName: item[7],
+    //                 originalPrice: item[8],
+    //                 promotionName: item[11],
+    //             })) : [];
+    //         } catch (error) {
+    //             console.error("Error fetching product details:", error);
+    //             return [];
+    //         }
+    //     });
+    //
+    //     const allProductDetails = await Promise.all(detailsPromises);
+    //     setProductDetails(allProductDetails.flat());
+    // };
     const handleRowSelectionChange = async (selectedRowKeys: React.Key[], selectedRows: IProduct[]) => {
         setSelectedProducts(selectedRows);
 
@@ -99,24 +127,19 @@ const CreatePromotion = (props: IProps) => {
             try {
                 const detailsResponse = await getProductDetails(product.id);
                 console.log("Fetched product details:", detailsResponse);
-                return Array.isArray(detailsResponse) ? detailsResponse.map(item => ({
-                    id: item[4],
-                    productVariantName: item[1],
-                    brandName: item[2],
-                    materialName: item[3],
-                    quantityInStock: item[9],
-                    sku: item[5],
-                    colorName: item[6],
-                    sizeName: item[7],
-                    originalPrice: item[8],
-                    promotionName: item[11],
-                })) : [];
+
+                if (Array.isArray(detailsResponse)) {
+                    return detailsResponse;
+                } else {
+                    return []; // Trả về mảng rỗng nếu dữ liệu không hợp lệ
+                }
             } catch (error) {
                 console.error("Error fetching product details:", error);
                 return [];
             }
         });
 
+        // Sử dụng Promise.all để chờ tất cả các lời gọi API hoàn thành và sau đó làm phẳng mảng kết quả
         const allProductDetails = await Promise.all(detailsPromises);
         setProductDetails(allProductDetails.flat());
     };
@@ -347,7 +370,7 @@ const CreatePromotion = (props: IProps) => {
                     </Col>
                 </Row>
 
-                {/* Danh Sách Chi Tiết Sản Phẩm */}
+                 Danh Sách Chi Tiết Sản Phẩm
                 <Row >
                     <Col span={24}>
                         {selectedProducts.length > 0 && productDetails.length > 0 && (

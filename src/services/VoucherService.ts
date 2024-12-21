@@ -9,6 +9,7 @@ export const URL_API_VOUCHER = {
     delete: '/admin/voucher/delete',
     search: '/admin/voucher/search',
     searchByDate: '/admin/voucher/findbydate',
+    findByTotalAmount: '/admin/voucher/findByTotalAmount',
 };
 
 export const getVouchers = async (url: string) => {
@@ -42,4 +43,10 @@ export const findVouchersByDate = async (startDate: any, endDate: any, page = 0,
     });
     return response.data;
 
+};
+export const findVouchersByTotalAmount = async (totalAmount: number) => {
+    const response = await httpInstance.get(URL_API_VOUCHER.findByTotalAmount, {
+        params: { totalAmount},
+    });
+    return response.data;
 };
