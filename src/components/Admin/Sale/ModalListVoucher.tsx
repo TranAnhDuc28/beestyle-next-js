@@ -1,35 +1,41 @@
-import React, {useState, useEffect, memo} from "react";
+import React, {useState, useEffect, memo, useContext} from "react";
 import {Modal, List, Card, Avatar, Space, Typography, Button, Checkbox, Pagination} from "antd";
 import {findVouchersByTotalAmount} from "@/services/VoucherService";
-import {DISCOUNT_TYPE} from "../../../constants/DiscountType";
+import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
+import {IVoucher} from "@/types/IVoucher";
 
 const {Text, Title} = Typography;
 
-const ModalListVoucher = ({
-                              isModalOpen,
-                              setIsModalOpen,
-                              totalAmount,
-                              onVoucherSelect,
-                          }) => {
+interface IProps {
+    isModalOpen: boolean;
+    setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    onVoucherSelect: (voucherSelected: IVoucher) => void;
+}
+
+const ModalListVoucher: React.FC<IProps> = (props) => {
+    const {isModalOpen, setIsModalOpen, onVoucherSelect} = props;
+    const handleSale = useContext(HandleSale);
+
     const [vouchers, setVouchers] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [selectedVoucher, setSelectedVoucher] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [selectedVoucher, setSelectedVoucher] = useState<IVoucher | undefined>(undefined);
+    const [currentPage, setCurrentPage] = useState<number>(1);
     const pageSize = 10;
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedVouchers = vouchers.slice(startIndex, endIndex);
 
-    const handlePageChange = (page) => {
+    const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
 
     const fetchVouchers = async () => {
         try {
             setLoading(true);
+            const totalAmount = handleSale?.orderCreateOrUpdate.totalAmount ?? 0;
             const data = await findVouchersByTotalAmount(totalAmount);
 
-            const sortedData = data.sort((a, b) => {
+            const sortedData = data.sort((a: any, b: any) => {
                 const discountValueA =
                     a.discountType === "PERCENTAGE"
                         ? Math.min((a.discountValue * totalAmount) / 100, a.maxDiscount)
@@ -56,8 +62,8 @@ const ModalListVoucher = ({
         }
     }, [isModalOpen]);
 
-    const handleVoucherSelection = (checked, voucher) => {
-        setSelectedVoucher(checked ? voucher : null);
+    const handleVoucherSelection = (checked: boolean, voucher: IVoucher) => {
+        setSelectedVoucher(checked ? voucher : undefined);
     };
 
     const handleOk = () => {
@@ -83,16 +89,12 @@ const ModalListVoucher = ({
     };
 
 
-    const handleCancel = () => {
-        setIsModalOpen(false);
-    };
-
     return (
         <Modal
             title="Voucher"
             open={isModalOpen}
             onOk={handleOk}
-            onCancel={handleCancel}
+            onCancel={() => setIsModalOpen(false)}
             width={500}
             footer={
                 <div
@@ -112,7 +114,7 @@ const ModalListVoucher = ({
                         }}
                     />
                     <div>
-                        <Button key="cancel" onClick={handleCancel}>
+                        <Button key="cancel" onClick={() => setIsModalOpen(false)}>
                             Hủy
                         </Button>
                         <Button key="ok" type="primary" onClick={handleOk} style={{marginLeft: "10px"}}>
@@ -133,32 +135,37 @@ const ModalListVoucher = ({
             }}
 
         >
-            {loading ? (
-                <div style={{textAlign: "center", padding: "20px"}}>Đang tải...</div>
-            ) : (
-                <List
-                    style={{width: "100%"}}
-                    dataSource={paginatedVouchers}
-                    renderItem={(item) => (
-                        <List.Item style={{borderBottom: "none", padding: "5px 0px"}}>
-                            <Card
-                                style={{flex: "1", cursor: "pointer"}}
-                                styles={{body: {padding: 8}}}
-                                onClick={() => handleVoucherSelection(false, item)}
-                            >
-                                <List.Item.Meta
-                                    avatar={
-                                        <Avatar
-                                            shape="square"
-                                            src={item.image || "/red-gift-square-box.png"}
-                                            style={{
-                                                width: "100px",
-                                                height: "100px",
-                                                objectFit: "cover",
-                                            }}
-                                        />
-                                    }
-                                    title={
+            <List
+                loading={loading}
+                style={{width: "100%"}}
+                dataSource={paginatedVouchers}
+                renderItem={(item: IVoucher) => (
+                    <List.Item style={{borderBottom: "none", padding: "5px 0px"}}>
+                        <Card
+                            style={{flex: "1", cursor: "pointer"}}
+                            styles={{body: {padding: 8}}}
+                            onClick={() => handleVoucherSelection(false, item)}
+                        >
+                            <List.Item.Meta
+                                avatar={
+                                    <Avatar
+                                        shape="square"
+                                        src="/red-gift-square-box.png"
+                                        style={{
+                                            width: "100px",
+                                            height: "100px",
+                                            objectFit: "cover",
+                                        }}
+                                    />
+                                }
+                                title={
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                        }}
+                                    >
                                         <div
                                             style={{
                                                 display: "flex",
@@ -166,61 +173,53 @@ const ModalListVoucher = ({
                                                 justifyContent: "space-between",
                                             }}
                                         >
-                                            <div
-                                                style={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "space-between",
-                                                }}
-                                            >
-                                                <div style={{ textAlign: "left", marginLeft: "auto" }}>
-                                                    <Text strong>{item.voucherName}</Text>
-                                                    <Title level={5} style={{ margin: 0 }}>
-                                                        {item.discountType === "PERCENTAGE"
-                                                            ? `Giảm ${item.discountValue || 0}% tối đa ${
-                                                                item.maxDiscount
-                                                                    ? `${item.maxDiscount}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                                                                    : 0
-                                                            }đ`
-                                                            : `Giảm ${item.discountValue
-                                                                ? `${item.discountValue}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                                                                : 0}đ`}
-                                                    </Title>
-                                                    <span style={{ color: "black", fontWeight: "normal" }}>
+                                            <div style={{textAlign: "left", marginLeft: "auto"}}>
+                                                <Text strong>{item.voucherName}</Text>
+                                                <Title level={5} style={{margin: 0}}>
+                                                    {item.discountType === "PERCENTAGE"
+                                                        ? `Giảm ${item.discountValue || 0}% tối đa ${
+                                                            item.maxDiscount
+                                                                ? `${item.maxDiscount}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                                                : 0
+                                                        }đ`
+                                                        : `Giảm ${item.discountValue
+                                                            ? `${item.discountValue}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                                            : 0}đ`}
+                                                </Title>
+                                                <span style={{color: "black", fontWeight: "normal"}}>
                                                         Cho đơn từ {item.minOrderValue
-                                                        ? `${item.minOrderValue}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                                                        : 0}đ
+                                                    ? `${item.minOrderValue}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                                    : 0}đ
                                                     </span>
-                                                </div>
                                             </div>
-
                                         </div>
 
-                                    }
-                                    description={
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                justifyContent: "space-between",
-                                                alignItems: "center",
-                                            }}
-                                        >
-                                            <div>
-                                                {/*<span>Mã: {item.voucherCode}</span>&nbsp;|&nbsp;*/}
-                                                <span>Hạn sử dụng: {new Date(item.endDate).toLocaleDateString()}</span>
-                                            </div>
-                                            <Checkbox
-                                                checked={selectedVoucher && selectedVoucher.id === item.id}
-                                                onChange={(e) => handleVoucherSelection(e.target.checked, item)}
-                                            ></Checkbox>
+                                    </div>
+
+                                }
+                                description={
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <div>
+                                            {/*<span>Mã: {item.voucherCode}</span>&nbsp;|&nbsp;*/}
+                                            <span>Hạn sử dụng: {new Date(item.endDate).toLocaleDateString()}</span>
                                         </div>
-                                    }
-                                />
-                            </Card>
-                        </List.Item>
-                    )}
-                />
-            )}
+                                        <Checkbox
+                                            checked={selectedVoucher && selectedVoucher.id === item.id}
+                                            onChange={(e) => handleVoucherSelection(e.target.checked, item)}
+                                        ></Checkbox>
+                                    </div>
+                                }
+                            />
+                        </Card>
+                    </List.Item>
+                )}
+            />
         </Modal>
     );
 

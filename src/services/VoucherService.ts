@@ -31,12 +31,14 @@ export const deleteVoucher = async (id: number) => {
     const response = await httpInstance.delete(`${URL_API_VOUCHER.delete}/${id}`);
     return response.data;
 }
+
 export const findVouchers = async (searchTerm: string, page = 0, size = 10) => {
     const response = await httpInstance.get(`${URL_API_VOUCHER.search}`, {
         params: {searchTerm, page, size},
     });
     return response.data;
 };
+
 export const findVouchersByDate = async (startDate: any, endDate: any, page = 0, size = 10) => {
     const response = await httpInstance.get(`${URL_API_VOUCHER.searchByDate}`, {
         params: {startDate, endDate, page, size},
@@ -44,6 +46,7 @@ export const findVouchersByDate = async (startDate: any, endDate: any, page = 0,
     return response.data;
 
 };
+
 export const findVouchersByTotalAmount = async (totalAmount: number) => {
     const response = await httpInstance.get(URL_API_VOUCHER.findByTotalAmount, {
         params: { totalAmount},
