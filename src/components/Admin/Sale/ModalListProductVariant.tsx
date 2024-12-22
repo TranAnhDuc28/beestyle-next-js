@@ -1,5 +1,5 @@
 import React, {memo, useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
-import {Card, Modal, Select, type SelectProps, Space, Table, TableColumnsType, TableProps, Tag, Typography} from "antd";
+import {Card, Modal, Select, type, SelectProps, Space, Table, TableColumnsType, TableProps, Tag, Typography} from "antd";
 import {IProduct} from "@/types/IProduct";
 import {IProductVariant} from "@/types/IProductVariant";
 import useFilterProductVariant, {ParamFilterProductVariant} from "@/components/Admin/Product/Variant/hooks/useFilterProductVariant";

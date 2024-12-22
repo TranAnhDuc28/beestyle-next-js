@@ -92,7 +92,7 @@ const OrderComponent: React.FC = () => {
                 return (
                     <Col>
                         <Tooltip placement="top" title="Chi tiết">
-                            <Link href={`/admin/order/${record.orderTrackingNumber}/order-detail`}>
+                            <Link href={`/admin/order/${record.id}`}>
                                 <EyeTwoTone
                                     style={{
                                         cursor: "pointer",

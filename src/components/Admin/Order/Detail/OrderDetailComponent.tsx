@@ -1,35 +1,26 @@
 "use client"
-import React, {useState} from "react";
+import React from "react";
 import Link from "next/link";
 import {
-    CheckOutlined, DropboxOutlined,
     HomeOutlined,
-    LoadingOutlined,
 } from "@ant-design/icons";
 import {
     Badge,
     Breadcrumb,
-    Button,
     Descriptions,
     DescriptionsProps,
     Layout,
-    StepProps,
-    Steps,
     theme,
     Typography
 } from "antd";
 import {IOrder} from "@/types/IOrder";
 import {useParams} from "next/navigation";
-import {FaShippingFast} from "react-icons/fa";
-import {LiaBoxSolid} from "react-icons/lia";
 import OrderDetailTable from "@/components/Admin/Order/Detail/OrderDetailTable";
+import TimeLineOrderTrackingComponent from "@/components/Admin/Order/Detail/TimeLineOrderTrackingComponent";
+import useOrder from "@/components/Admin/Order/hooks/useOrder";
 
 const {Content} = Layout;
 const {Title, Text} = Typography;
-
-interface IProps {
-    order?: IOrder;
-}
 
 const itemDescriptions: DescriptionsProps['items'] = [
     {key: '1', label: 'Product', children: 'Cloud Database',},
@@ -62,48 +53,16 @@ const itemDescriptions: DescriptionsProps['items'] = [
     },
 ];
 
+interface IProps {
+    order?: IOrder;
+}
+
 const OrderDetailComponent: React.FC<IProps> = (props) => {
     const {token} = theme.useToken();
-    const {"order-tracking-number": orderTrackingNumber} = useParams();
-
-    const [current, setCurrent] = useState(0);
-
-
-    const next = () => {
-        setCurrent(current + 1);
-    };
-
-    const prev = () => {
-        setCurrent(current - 1);
-    };
-
-    const itemSteps: StepProps[] = [
-        {
-            title: "Đặt hàng",
-            status: "finish",
-            icon: <DropboxOutlined style={{fontSize: 35}}/>,
-        },
-        {
-            title: "Chờ xác nhận",
-            status: 'process',
-            icon: <LoadingOutlined style={{fontSize: 35}}/>,
-        },
-        {
-            title: "Chờ giao hàng",
-            status: 'wait',
-            icon: <LiaBoxSolid style={{fontSize: 35}}/>,
-        },
-        {
-            title: "Đang giao hàng",
-            status: 'wait',
-            icon: <FaShippingFast style={{fontSize: 35}}/>,
-        },
-        {
-            title: 'Hoàn thành',
-            status: 'wait',
-            icon: <CheckOutlined style={{fontSize: 35}}/>,
-        },
-    ];
+    const {id} = useParams();
+    const {handleGetOrderService} = useOrder();
+    const {data: orderDetail, error, isLoading, mutate} =
+        handleGetOrderService(id && Number(id) ? Number(id) : null);
 
     return (
         <>
@@ -118,7 +77,7 @@ const OrderDetailComponent: React.FC<IProps> = (props) => {
             <Title level={4} style={{margin: '20px 10px 10px 10px'}}>
                 Mã đơn hàng
                 <Text type="secondary" style={{marginInlineStart: 10, fontSize: 20}}>
-                    {orderTrackingNumber}
+                    HD123456789
                 </Text>
             </Title>
             <Content
@@ -128,28 +87,7 @@ const OrderDetailComponent: React.FC<IProps> = (props) => {
                     padding: 30
                 }}
             >
-                <Steps
-                    current={current}
-                    items={itemSteps}
-                />
-
-                <div style={{marginTop: 24}}>
-                    {current < itemSteps.length - 1 && (
-                        <Button type="primary" onClick={() => next()}>
-                            Next
-                        </Button>
-                    )}
-                    {current === itemSteps.length - 1 && (
-                        <Button type="primary">
-                            Done
-                        </Button>
-                    )}
-                    {current > 0 && (
-                        <Button style={{margin: '0 8px'}} onClick={() => prev()}>
-                            Previous
-                        </Button>
-                    )}
-                </div>
+                <TimeLineOrderTrackingComponent orderDetail={orderDetail}/>
             </Content>
 
             <Title level={4} style={{margin: '20px 10px 10px 10px'}}>

@@ -3,6 +3,7 @@ import {IOrder, IOrderCreateOrUpdate} from "@/types/IOrder";
 
 export const URL_API_ORDER = {
     getOrderPending: '/admin/order/order-pending',
+    getOrderDetail: (id: number) => `/admin/order/${id}`,
     filter: '/admin/order',
     create: '/admin/order/create',
     update: (id: number) => `/admin/order/update/${id}`,
@@ -22,3 +23,5 @@ export const updateOrder = async (data: IOrder, id: number) => {
     const response = await httpInstance.post(URL_API_ORDER.update(id), data);
     return response.data;
 }
+
+
