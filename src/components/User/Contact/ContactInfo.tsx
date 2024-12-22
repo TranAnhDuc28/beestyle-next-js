@@ -1,59 +1,73 @@
-import {PhoneOutlined, MailOutlined, EnvironmentOutlined} from '@ant-design/icons';
-import Link from "next/link";
-import Image from "next/image";
+import React from 'react';
+import { Typography, Space, Avatar } from 'antd';
+import { EnvironmentOutlined, PhoneOutlined, MailOutlined, ClockCircleOutlined } from '@ant-design/icons';
+
+const { Title, Text } = Typography;
 
 const ContactInfo = () => {
     return (
-        <div className="col-lg-4 col-12">
-            <div className="single-head">
-                {/*<div className="d-flex justify-content-center">*/}
-                {/*    <Image*/}
-                {/*        src="/wait_in_line.png"*/}
-                {/*        alt="IMG" width={300} height={200}*/}
-                {/*        style={{borderRadius: 10}}*/}
-                {/*    />*/}
-                {/*</div>*/}
-                <div className="single-info mt-5">
-                    <div className="d-flex align-items-center">
-                        <i className="fa fa-phone"><PhoneOutlined/></i>
-                        <h4 className="title ml-3">Gọi cho chúng tôi:</h4>
+        <div className="max-w-md mx-auto py-4">
+            <Title level={2} className="text-2xl font-bold mb-4">
+                Thông tin liên hệ
+            </Title>
+            <Space direction="vertical" size="middle" className="w-full">
+                <div className="flex items-start mb-4">
+                    <Avatar
+                        size={40}
+                        className="flex items-center justify-center bg-gray-100 rounded-full mr-4 shrink-0"
+                        icon={<EnvironmentOutlined style={{ color: '#333' }} />}
+                    />
+                    <div>
+                        <Title level={5} className="font-bold">
+                            Địa chỉ
+                        </Title>
+                        <Text>
+                            Phương Canh, Nam Từ Liêm, Hà Nội
+                        </Text>
                     </div>
-                    <ul style={{marginLeft: 30}}>
-                        <li> 0123 456 789</li>
-                        <li> 0987 654 321</li>
-                    </ul>
                 </div>
-                <div className="single-info">
-                    <div className="d-flex align-items-center">
-                        <i className="fa fa-envelope-open"><MailOutlined/></i>
-                        <h4 className="title ml-3">Email:</h4>
+                <div className="flex items-start mb-4">
+                    <Avatar
+                        size={40}
+                        className="flex items-center justify-center bg-gray-100 rounded-full mr-4 shrink-0"
+                        icon={<PhoneOutlined style={{ color: '#333' }} />}
+                    />
+                    <div>
+                        <Title level={5} className="font-bold">
+                            Điện thoại
+                        </Title>
+                        <Text>0123.456.789</Text>
                     </div>
-                    <ul style={{marginLeft: 30}}>
-                        <li><Link className="link-no-decoration"
-                                  href="mailto:info@beestyle.com">info@beestyle.com</Link>
-                        </li>
-                        <li><Link className="link-no-decoration"
-                                  href="mailto:support@beestyle.com">support@beestyle.com</Link>
-                        </li>
-                    </ul>
                 </div>
-                <div className="single-info">
-                    <div className="d-flex align-items-center">
-                        <i className="fa fa-location-arrow"><EnvironmentOutlined/></i>
-                        <h4 className="title ml-3">Địa chỉ:</h4>
+                <div className="flex items-start mb-4">
+                    <Avatar
+                        size={40}
+                        className="flex items-center justify-center bg-gray-100 rounded-full mr-4 shrink-0"
+                        icon={<ClockCircleOutlined style={{ color: '#333' }} />}
+                    />
+                    <div>
+                        <Title level={5} className="font-bold">
+                            Thời gian làm việc
+                        </Title>
+                        <Text>
+                            Thứ 2 đến thứ 6 : từ 8h30 đến 18h
+                        </Text>
                     </div>
-                    <ul style={{marginLeft: 30}}>
-                        <Link
-                            className="link-no-decoration"
-                            href="https://www.google.com/maps?q=ST001, Phường Phương Canh, Quận Nam Từ Liêm, TP Hà Nội"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            ST001, Phường Phương Canh, Quận Nam Từ Liêm, TP Hà Nội
-                        </Link>
-                    </ul>
                 </div>
-            </div>
+                <div className="flex items-start mb-4">
+                    <Avatar
+                        size={40}
+                        className="flex items-center justify-center bg-gray-100 rounded-full mr-4 shrink-0"
+                        icon={<MailOutlined style={{ color: '#333' }} />}
+                    />
+                    <div>
+                        <Title level={5} className="font-bold">
+                            Email
+                        </Title>
+                        <Text>cskh@beestyle.vn</Text>
+                    </div>
+                </div>
+            </Space>
         </div>
     );
 };

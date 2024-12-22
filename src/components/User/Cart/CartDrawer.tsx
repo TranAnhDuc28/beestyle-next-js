@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Drawer, Button, Empty } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
+import { Drawer, Button, Empty, Popconfirm } from 'antd';
+import { CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import styles from './css/cartdrawer.module.css';
 import Image from "next/image";
@@ -30,7 +30,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
     }, []);
 
-    const condition = 498000;
+    const condition = 500000;
     const totalAmount = cartItems.reduce((total, item) => total + item.total_price, 0);
 
     const handleQuantityChange = (index: number, newQuantity: number) => {
@@ -41,6 +41,10 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
         localStorage.setItem(CART_KEY, JSON.stringify(newCartItems));
         window.dispatchEvent(new Event('cartUpdated'));
     };
+
+    const handleRemoveCartItem = (cartId: number) => {
+        removeItemFromCart(cartId);
+    }
 
     return (
         <Drawer
@@ -90,8 +94,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         <p className={styles.itemVariant}>{item.color} / {item.size}</p>
                         <div className={styles.quantityControl}>
                             <QuantityControl
-                                value={item.quantity}
-                                onChange={(value) => handleQuantityChange(index, value)}
+                                quantity={item.quantity}
+                                quantityInStock={item.product_quantity}
                                 onIncrement={() => handleQuantityChange(index, item.quantity + 1)}
                                 onDecrement={() => handleQuantityChange(index, Math.max(1, item.quantity - 1))}
                             />
@@ -99,19 +103,24 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     </div>
 
                     <div>
-                        <Button
-                            type="text"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                removeItemFromCart(item.shopping_cart_id);
-                            }}
-                            icon={<CloseOutlined />}
-                            className="ml-5"
-                        />
+                        <Popconfirm
+                            title="Xoá sản phẩm"
+                            description="Bạn chắc chắn muốn xoá sản phẩm này?"
+                            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                            placement="leftTop"
+                            okText="Xoá"
+                            cancelText="Không"
+                            onConfirm={() => handleRemoveCartItem(item.shopping_cart_id)}
+                        >
+                            <Button
+                                type="text"
+                                icon={<CloseOutlined />}
+                                className="ml-5"
+                            />
+                        </Popconfirm>
                         <div className="d-flex flex-column align-items-center mt-4">
-                            <span
-                                className={styles.itemPrice + ' mb-1'}>{item.discounted_price.toLocaleString('vi-VN')}₫</span>
-                            <span className={styles.originalPrice}>{item.original_price.toLocaleString('vi-VN')}₫</span>
+                            <span className={styles.itemPrice + ' mb-1'}>{item.discounted_price.toLocaleString()}₫</span>
+                            <span className={styles.originalPrice}>{item.sale_price.toLocaleString()}₫</span>
                         </div>
                     </div>
                 </div>
@@ -139,10 +148,11 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 <div className={cartItems && cartItems.length ? '' : 'd-none'}>
                     <div className={styles.totalAmount}>
                         <span className={styles.totalLabel}>TỔNG TIỀN:</span>
-                        <span className={styles.totalValue}>{totalAmount.toLocaleString('vi-VN')}₫</span>
+                        <span className={styles.totalValue}>{totalAmount.toLocaleString()}₫</span>
                     </div>
                     <Link href={"/checkout"}
                         className={styles.checkoutButton + ' btn text-white'}
+                        onClick={onClose}
                     >
                         THANH TOÁN
                     </Link>
@@ -153,7 +163,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         (<Link
                             href={"/cart"}
                             className={styles.footerLink} onClick={onClose}>Xem giỏ hàng</Link>) :
-                        (<Link href="/" className={styles.footerLink} onClick={onClose}>Trở về trang sản phẩm</Link>)
+                        (<Link href="/" className={styles.footerLink} onClick={onClose}>Trở về trang chủ</Link>)
                     }
                     <Link href={"/product"} className={styles.footerLink} onClick={onClose}>
                         Khuyến mãi dành cho bạn

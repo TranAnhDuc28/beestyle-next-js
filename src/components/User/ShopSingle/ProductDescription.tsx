@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import Link from "next/link";
-import { Input, Rate } from 'antd';
+import { Button, Flex, Input, InputNumber, Rate } from 'antd';
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { useProduct } from "@/services/user/SingleProductService";
 import { useParams } from "next/navigation";
 import ColorPickers from "@/components/User/ShopSingle/Properties/ColorPickers";
 import SizePickers from "@/components/User/ShopSingle/Properties/SizePickers";
 import { addToCart } from "@/services/user/ShoppingCartService";
-import { EyeOutlined } from "@ant-design/icons";
+import { EyeOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import InfoSection from "@/components/User/ShopSingle/Properties/InfoSession";
 
 const ProductDescription = (props: any) => {
@@ -24,23 +24,6 @@ const ProductDescription = (props: any) => {
 
     const handleIncrement = () => {
         setQuantity(prevQuantity => Math.min(prevQuantity + 1, 1000));
-    };
-
-    const handleInputChange = (e) => {
-        const value = e.target.value;
-        if (/^\d*$/.test(value)) {
-            setQuantity(value);
-        }
-    };
-
-    const handleInputBlur = (total: number) => {
-        let value = parseInt(String(quantity), 10);
-        if (isNaN(value) || value < 1) {
-            value = 1;
-        } else if (value > total) {
-            value = total;
-        }
-        setQuantity(value);
     };
 
     const handleColorSelect = (color: string) => {
@@ -82,11 +65,14 @@ const ProductDescription = (props: any) => {
                 </div>
                 <p className="price px-3 py-4 m-0" style={{ backgroundColor: '#FAFAFA', borderRadius: '5px' }}>
                     <span className="discount text-center">
-                        {product?.salePrice ? `${product.salePrice.toLocaleString('vi-VN')} đ` : '0 đ'}
+                        {product?.discountPrice ? `${product.discountPrice.toLocaleString()} đ` : '0 đ'}
                     </span>
-                    <s className={product?.originalPrice ? "fw-medium" : "hidden"} style={{ color: '#838383' }}>
-                        {product?.originalPrice.toLocaleString('vi-VN') + ' đ'}
+                    <s className={product?.salePrice ? "fw-medium" : "hidden"} style={{ color: '#838383' }}>
+                        {product?.salePrice.toLocaleString() + ' đ'}
                     </s>
+                    <span className="!text-red-500 fs-6 ms-3">
+                        -{product?.discountValue}%
+                    </span>
                 </p>
             </div>
 
@@ -94,11 +80,12 @@ const ProductDescription = (props: any) => {
                 <div className="flex items-center mb-4">
                     <EyeOutlined style={{ fontSize: 20 }} />
                     <span
-                        className="ml-2"><b>{Math.floor(Math.random() * 50) + 1}</b> người đang xem sản phẩm này</span>
+                        className="ml-2"><b>{Math.floor(Math.random() * 50) + 1}</b> người đang xem sản phẩm này
+                    </span>
                 </div>
 
                 <div className="mb-4">
-                    <span className="text-gray-800">Chỉ còn <b>{product?.quantity}</b> sản phẩm trong kho!</span>
+                    <span className="text-gray-800">Chỉ còn <b>{product?.quantityInStock}</b> sản phẩm trong kho!</span>
                 </div>
             </div>
 
@@ -122,38 +109,34 @@ const ProductDescription = (props: any) => {
             </div>
 
             <div className="product-buy">
-                <div className="quantity">
-                    <h6>Số lượng:</h6>
-                    <div className="input-group me-4">
-                        <div className="button minus">
-                            <button
-                                type="button"
-                                className="btn btn-primary btn-number"
+                <Flex align='end' className='mb-4'>
+                    <div className="quantity">
+                        <h6>Số lượng:</h6>
+                        <div className="flex items-center mt-3">
+                            <Button
                                 onClick={handleDecrement}
+                                className="!bg-gray-200 hover:!bg-gray-300 !text-black !font-bold relative z-10
+                                               !border-none !rounded-none !w-10 !h-10 flex items-center justify-center"
+                                icon={<MinusOutlined />}
                                 disabled={quantity <= 1}
-                            >
-                                <AiOutlineMinus size={20} className="ml-2" />
-                            </button>
-                        </div>
-                        <Input
-                            type="text"
-                            name="quant[1]"
-                            className="input-number"
-                            value={quantity}
-                            onInput={handleInputChange}
-                            onBlur={() => handleInputBlur(product?.quantity)}
-                            style={{ border: '1px solid #333', textAlign: 'center' }}
-                            variant={"borderless"}
-                        />
-                        <div className="button plus">
-                            <button
-                                type="button"
-                                className="btn btn-primary btn-number"
+                            />
+
+                            <InputNumber
+                                min={1}
+                                value={quantity}
+                                style={{ lineHeight: '40px', textAlignLast: 'center' }}
+                                className="!text-black !font-semibold !border-0 !w-16 !h-10 custom-input"
+                                readOnly
+                                controls={false}
+                            />
+
+                            <Button
                                 onClick={handleIncrement}
-                                disabled={quantity >= product?.quantity}
-                            >
-                                <AiOutlinePlus size={20} />
-                            </button>
+                                className="!bg-gray-200 hover:!bg-gray-300 !text-black !font-bold relative z-10
+                                               !border-none !rounded-none !w-10 !h-10 flex items-center justify-center"
+                                icon={<PlusOutlined />}
+                                disabled={quantity >= product?.quantityInStock}
+                            />
                         </div>
                     </div>
                     <div className="add-to-cart">
@@ -164,20 +147,20 @@ const ProductDescription = (props: any) => {
                                 addToCart(product, quantity, props.images);
                             }}
                             className="btn"
-                            style={{ marginBottom: '2px', padding: '0 156px' }}
+                            style={{ margin: '0 0 0 20px', padding: '0 151px' }}
                         >
                             Thêm vào giỏ hàng
                         </Link>
                     </div>
-                </div>
-                <div className="add-to-cart mt-3">
+                </Flex>
+                <div className="add-to-cart">
                     <Link
                         href={"/cart"}
                         onClick={() => {
                             addToCart(product, quantity, props.images);
                         }}
                         className="btn"
-                        style={{ marginBottom: '2px', width: '635px' }}
+                        style={{ width: '635px' }}
                     >
                         Mua ngay
                     </Link>

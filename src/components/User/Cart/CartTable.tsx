@@ -1,22 +1,25 @@
 import React from "react";
 import Image from "next/image";
-import {Progress, Card, Typography} from "antd";
+import { Button, Card, Typography } from "antd";
+import QuantityControl from "@/components/User/Cart/Properties/QuantityControl";
+import { CloseOutlined, FireOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import ProgressShipping from "./Properties/ProgressShipping";
+import { removeItemFromCart } from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
-import QuantityControl from "@/components/User/Cart/QuantityControl";
-import {FireOutlined} from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
 const CartTable = ({ cartItems, updateCartItems }: any) => {
-    const condition = 498000;
+    const condition = 500000;
     const totalAmount = cartItems.reduce((total, item) => total + item.total_price, 0);
+    const { showNotification, showModal } = useAppNotifications();
 
     const handleQuantityChange = (index: number, operation: 'increment' | 'decrement') => {
         const newCartItems = [...cartItems];
         const item = newCartItems[index];
 
         if (operation === 'increment') {
-            item.quantity = Math.min(item.quantity + 1, 1000);
+            item.quantity = Math.min(item.quantity + 1, item.product_quantity);
         } else if (operation === 'decrement') {
             item.quantity = Math.max(item.quantity - 1, 1);
         }
@@ -27,7 +30,25 @@ const CartTable = ({ cartItems, updateCartItems }: any) => {
         updateCartItems(newCartItems);
     };
 
-    console.log(cartItems)
+    const handleRemoveCartItem = (cartId: number) => {
+        showModal('confirm', {
+            title: 'Xoá sản phẩm',
+            content: 'Bạn chắc chắn muốn xoá sản phẩm này?',
+            icon: (<QuestionCircleOutlined style={{ color: 'red' }} />),
+            centered: true,
+            okText: 'Xoá',
+            cancelText: 'Không',
+            onOk() {
+                removeItemFromCart(cartId);
+                showNotification('success', {
+                    message: (<span className="fw-semibold fs-6">Đã gỡ sản phẩm khỏi giỏ hảng</span>),
+                    placement: 'topRight',
+                    duration: 3,
+                    rtl: true,
+                })
+            }
+        })
+    }
 
     return (
         <Card className="rounded-lg shadow-md mb-4">
@@ -35,17 +56,28 @@ const CartTable = ({ cartItems, updateCartItems }: any) => {
                 <ProgressShipping totalAmount={totalAmount} condition={condition} />
             </div>
 
-            {/* <div className="bg-gray-100 p-3 rounded-lg mb-4 flex items-center">
-                <FireOutlined className="text-red-500 text-xl mr-2"/>
+            <div className="bg-gray-100 p-3 rounded-lg mb-4 flex items-center">
+                <FireOutlined className="text-red-500 text-xl mr-2" />
                 <p className="m-0">
-                    Khuyến mại trong giỏ hàng của bạn chỉ còn trong{' '}
-                    <span className="text-red-500 font-bold">9 phút 56 giây</span>
+                    Khuyến mại trong giỏ hàng của bạn
+                    <span className="text-red-500 font-bold ms-1">
+                        {cartItems.reduce((total, item) =>
+                            total + (item.sale_price - item.discounted_price) * item.quantity, 0).toLocaleString()} đ
+                    </span>
                 </p>
-            </div> */}
+            </div>
 
             <div style={{ maxHeight: '515px', overflowY: 'auto' }}>
                 {cartItems.map((item, index) => (
                     <div key={index.toString()}>
+                        <div className="float-end">
+                            <Button
+                                type="text"
+                                onClick={() => handleRemoveCartItem(item.shopping_cart_id)}
+                                icon={<CloseOutlined />}
+                                className="ml-5"
+                            />
+                        </div>
                         <div className="flex mb-4">
                             <Image
                                 width={130}
@@ -59,19 +91,22 @@ const CartTable = ({ cartItems, updateCartItems }: any) => {
                             <div>
                                 <Title level={4} style={{ fontWeight: 500 }}>{item.product_name}</Title>
                                 <Text className="text-red-500 text-xl font-bold">
-                                    {item.discounted_price.toLocaleString('vi-VN')} đ
+                                    {item.discounted_price.toLocaleString()} đ
                                 </Text>
-                                <p className="line-through text-gray-500">{item.original_price.toLocaleString('vi-VN')} đ</p>
+                                <p className="line-through text-gray-500">{item.sale_price.toLocaleString()} đ</p>
                                 <p className="text-red-500">
                                     <span
-                                        style={{ color: "#333" }}>Đã tiết kiệm</span> -{(item.original_price - item.discounted_price).toLocaleString('vi-VN')} đ
+                                        style={{ color: "#333" }}
+                                    >
+                                        Đã tiết kiệm
+                                    </span> -{(item.sale_price - item.discounted_price).toLocaleString()} đ
                                 </p>
-                                <div className="grid grid-cols-2 items-center">
-                                    <p className="m-0">{item.color} / {item.size}</p>
-                                    <div className="justify-self-end mt-[-8px]">
+                                <div className="flex flex-col justify-center">
+                                    <p>{item.color} / {item.size}</p>
+                                    <div className="justify-self-end">
                                         <QuantityControl
-                                            value={item.quantity}
-                                            onChange={(value) => handleQuantityChange(index, 'decrement')}
+                                            quantity={item.quantity}
+                                            quantityInStock={item.quantityInStock}
                                             onIncrement={() => handleQuantityChange(index, 'increment')}
                                             onDecrement={() => handleQuantityChange(index, 'decrement')}
                                         />

@@ -10,7 +10,7 @@
 }
 
 .color-link:hover {
-    transform: scale(1.1); /* Hiệu ứng phóng to khi hover */
+    transform: scale(1.1);
 }
 
 .size-variant {
@@ -25,10 +25,4 @@
 .size-variant:hover {
     background-color: #f0f0f0;
     cursor: pointer;
-}
-
-.selected-size {
-    background-color: #1890ff;
-    color: white;
-    border-color: #1890ff;
 }

@@ -1,111 +1,107 @@
-import Image from "next/image";
 import { Button, Form, Radio } from "antd";
 import React, { useState } from "react";
 import { CART_KEY } from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
+import { RiDiscountPercentLine } from "react-icons/ri";
+import DiscountCodeModal from "../Discount/DiscountCodeModal";
 
 interface IProps {
-    handleSubmit: (payement: any) => Promise<void>;
-    shippingCost: number; // Nhận chi phí vận chuyển từ prop
+    handleSubmit: (payment: any) => Promise<void>;
+    shippingCost: number;
 }
 
 const OrderDetail = (props: IProps) => {
     const { handleSubmit, shippingCost } = props;
     const { showNotification } = useAppNotifications();
     const [selectedPayment, setSelectedPayment] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const openModal = () => setIsModalVisible(true);
+    const closeModal = () => setIsModalVisible(false);
 
     const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
-    const totalAmount = cartItems.reduce(
-        (total, item) => total + item.total_price + shippingCost,0
-    );
+    const productTotal = cartItems.reduce((total: any, item: any) => total + item.total_price, 0);
+    const totalAmount = productTotal >= 500000 ? productTotal : productTotal + shippingCost;
+    const savings = 0;
 
-    const handlePaymentChange = (e) => {
-        setSelectedPayment(e.target.value);
-    };
+    const handlePaymentChange = (e: any) => setSelectedPayment(e.target.value);
+
     const onButtonClick = async () => {
-        // Kiểm tra nếu không có phương thức thanh toán được chọn
         if (!selectedPayment) {
-            showNotification("error", {
-                message: "Vui lòng chọn phương thức thanh toán!",
-            });
+            showNotification("error", { message: "Vui lòng chọn phương thức thanh toán!" });
             return;
         }
-
-        const totalPayment = totalAmount + shippingCost
-        console.log(totalPayment);
-
-        // Gọi handleSubmit với payment đã chọn
-        await handleSubmit({ selectedPayment, totalPayment, shippingCost });
+        await handleSubmit({ selectedPayment, totalAmount, shippingCost });
     };
 
-
     return (
-        <div className="order-details">
-            <div className="single-widget">
-                <h2>THÔNG TIN</h2>
-                <div className="content">
-                    <ul>
-                        <li>
-                            Tổng giá trị sản phẩm<span>{totalAmount} VND</span>
-                        </li>
-                        <li>
-                            Phí vận chuyển<span>{shippingCost} VND</span>{" "}
-                            {/* Hiển thị chi phí vận chuyển đã cập nhật */}
-                        </li>
-                        <li>
-                            Voucher giảm giá<span className="text-danger"> 0 VND</span>
-                        </li>
-                        <li className="last fs-6">
-                            Tổng thanh toán<span>{totalAmount + shippingCost} VND</span>
-                        </li>
-                        <li>
-                            <span className="text-danger" style={{ fontSize: 13 }}>
-                                Bạn đã tiết kiệm được 0 đ
-                            </span>
-                        </li>
-                    </ul>
+        <>
+            <div className="p-5 bg-white rounded-lg shadow-md">
+                <div className="mb-4">
+                    <h3 className="font-semibold mb-2">Thông tin đơn hàng</h3>
                 </div>
-            </div>
-            <div className="single-widget mt-5">
-                <h2>Phương thức thanh toán</h2>
-                <div className="content">
-                    <div style={{ margin: "15px 40px" }}>
-                        <Radio.Group
-                            className="d-flex flex-column"
-                            onChange={handlePaymentChange}
-                            value={selectedPayment}
+
+                <div className="space-y-2 text-sm pb-2 border-b">
+                    <div className="flex justify-between">
+                        <span>Tổng giá trị sản phẩm</span>
+                        <span>{productTotal.toLocaleString()} đ</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Vận chuyển</span>
+                        <span>{shippingCost.toLocaleString()} đ</span>
+                    </div>
+                    <div className="flex justify-between text-red-500">
+                        <span>Giảm giá vận chuyển</span>
+                        <span>{productTotal >= 500000 ? `- ${shippingCost.toLocaleString()} đ` : '0 đ'}</span>
+                    </div>
+                    <div className="flex justify-between text-lg font-semibold">
+                        <span>Tổng thanh toán</span>
+                        <span>{totalAmount.toLocaleString()} đ</span>
+                    </div>
+                    <p className="text-red-500 text-xs mt-2">
+                        Bạn đã tiết kiệm được {savings.toLocaleString()} đ
+                    </p>
+                    <div className="bg-blue-50 p-1 rounded-lg mb-4 mt-4 flex justify-between items-center">
+                        <p className="font-medium mt-3 ms-3 flex items-center">
+                            <RiDiscountPercentLine size={20} className="me-1" /> Mã giảm giá
+                        </p>
+                        <Button
+                            type="link"
+                            className="text-blue-500"
+                            onClick={openModal}
                         >
-                            <label className="checkbox-inline mb-2">
-                                <Radio value="1">Chuyển khoản</Radio>
-                            </label>
-                            <label className="checkbox-inline mb-2">
-                                <Radio value="2">Thanh toán khi nhận hàng (COD)</Radio>
-                            </label>
-                            <label className="checkbox-inline mb-2">
-                                <Radio value="3">Cổng thanh toán VNPay</Radio>
-                            </label>
-                        </Radio.Group>
+                            Chọn mã {">"}
+                        </Button>
                     </div>
                 </div>
-            </div>
-            <div className="single-widget payement">
-                <div className="d-flex justify-content-center">
-                    <Image width={280} height={36} alt="IMG" src="/payment-method.png" />
+
+                <div className="mt-6">
+                    <h3 className="mb-3">Phương thức thanh toán</h3>
+                    <Radio.Group onChange={handlePaymentChange} value={selectedPayment} className="flex flex-col gap-2">
+                        <Radio value="COD">Thanh toán khi nhận hàng (COD)</Radio>
+                        <Radio value="VNPay">Cổng thanh toán VNPay</Radio>
+                    </Radio.Group>
+                </div>
+
+                <div className="mt-6 text-center">
+                    <Form.Item>
+                        <Button
+                            type="primary"
+                            size="large"
+                            className="w-full bg-black hover:!bg-orange-400"
+                            onClick={onButtonClick}
+                        >
+                            THANH TOÁN NGAY
+                        </Button>
+                    </Form.Item>
                 </div>
             </div>
-            <div className="single-widget get-button">
-                <div className="content">
-                    <div className="button">
-                        <Form.Item>
-                            <Button className="btn btn-dark" onClick={onButtonClick}>
-                                THANH TOÁN NGAY
-                            </Button>
-                        </Form.Item>
-                    </div>
-                </div>
-            </div>
-        </div>
+            <DiscountCodeModal
+                isVisible={isModalVisible}
+                onClose={closeModal}
+            />
+        </>
     );
 };
 

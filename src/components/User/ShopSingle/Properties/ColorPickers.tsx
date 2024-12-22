@@ -1,28 +1,31 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CheckOutlined } from '@ant-design/icons';
 import { useProductColors } from '@/services/user/SingleProductService';
 import './css/property.css';
 import { Button } from 'antd';
 
+const getBrightness = (hexColor: string) => {
+    const r = parseInt(hexColor.slice(1, 3), 16);
+    const g = parseInt(hexColor.slice(3, 5), 16);
+    const b = parseInt(hexColor.slice(5, 7), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000;
+};
+
 const ColorPickers = (props: any) => {
     const { data: colors } = useProductColors(props.productId);
     const [selectedColorName, setSelectedColorName] = useState<string | null>(null);
-    const isFirstRender = useRef(true);
 
     useEffect(() => {
-        if (isFirstRender.current) {
-            if (!props.selectedColor) {
-                const defaultColor = colors && colors.length > 0 ? colors[0].colorCode : null;
-                const colorDefault = colors?.find((color) => color.colorCode === defaultColor);
+        if (colors && colors.length > 0) {
+            const defaultColor = colors[0].colorCode;
+            const colorDefault: any = colors.find((color) => color.colorCode === defaultColor);
 
-                if (defaultColor) {
-                    props.onColorSelect(defaultColor);
-                    setSelectedColorName(colorDefault?.colorName || null);
-                }
+            if (!props.selectedColor) {
+                props.onColorSelect(defaultColor);
+                setSelectedColorName(colorDefault?.colorName || null);
             }
-            isFirstRender.current = false;
         }
-    }, [colors, props.productId, props.onColorSelect]);
+    }, [colors, props]);
 
     const handleColorClick = (color: string, colorName: string) => {
         setSelectedColorName(colorName);
@@ -44,17 +47,25 @@ const ColorPickers = (props: any) => {
                 )}
             </div>
             <div className="flex flex-wrap mt-2">
-                {colors?.map((color, index) => (
-                    <Button
-                        key={index.toString()}
-                        className={`mr-2 mb-2 rounded-full w-11 h-11 flex items-center justify-center ${props.selectedColor === color.colorCode ? 'border-2 border-red-500' : ''
-                            }`}
-                        style={{ backgroundColor: color.colorCode }}
-                        onClick={() => handleColorClick(color.colorCode, color.colorName)}
-                    >
-                        {props.selectedColor === color.colorCode && <CheckOutlined style={{ color: 'white' }} />}
-                    </Button>
-                ))}
+                {colors?.map((color: any, index: any) => {
+                    const isSelected = props.selectedColor === color.colorCode;
+                    const brightness = getBrightness(color.colorCode);
+                    const checkColor = brightness > 128 ? 'black' : 'white';
+
+                    return (
+                        <Button
+                            key={index.toString()}
+                            className={`mr-2 mb-2 rounded-full w-11 h-11 flex items-center justify-center ${isSelected ? 'border-1' : ''}`}
+                            style={{
+                                backgroundColor: `#${color.colorCode}`,
+                                border: isSelected ? '1px solid gray' : 'none',
+                            }}
+                            onClick={() => handleColorClick(color.colorCode, color.colorName)}
+                        >
+                            {isSelected && <CheckOutlined style={{ color: checkColor, fontSize: 20 }} />}
+                        </Button>
+                    );
+                })}
             </div>
         </div>
     );

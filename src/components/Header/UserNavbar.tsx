@@ -9,6 +9,7 @@ import Image from "next/image";
 import { LuShoppingBag } from "react-icons/lu";
 import CartDrawer from "@/components/User/Cart/CartDrawer";
 import { CART_KEY } from "@/services/user/ShoppingCartService";
+import SearchDrawer from "../User/Home/Search/SearchDrawer";
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -17,6 +18,7 @@ const Navbar: React.FC = () => {
     const [cartCount, setCartCount] = useState<number>(0);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isSearchOpen, setSearchOpen] = useState(false);
     const pathname = usePathname();
 
     const fetchCartItems = () => {
@@ -25,16 +27,26 @@ const Navbar: React.FC = () => {
     };
 
     useEffect(() => {
+        fetchCartItems();
         const handleScroll = () => {
-            fetchCartItems();
             setIsScrolled(window.scrollY > 110);
         };
 
         window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        window.addEventListener('cartUpdated', fetchCartItems);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('cartUpdated', fetchCartItems);
+        };
     }, []);
 
-    const activeKey = pathname === "/" || pathname === "/home" ? "" : pathname;
+    const handleCartOpen = () => {
+        if (pathname.includes('/cart') || pathname.includes('/checkout')) setIsCartOpen(false);
+        else setIsCartOpen(true);
+    }
+
+    const handleSearchOpen = () => setSearchOpen(true);
 
     const menuItems: MenuProps["items"] = useMemo(() => [
         {
@@ -93,8 +105,9 @@ const Navbar: React.FC = () => {
                 <Image
                     src="/logo.png"
                     alt="BeeStyle"
-                    width={100}
-                    height={90}
+                    width={180}
+                    height={50}
+                    unoptimized
                 />
             </Link>
 
@@ -102,7 +115,6 @@ const Navbar: React.FC = () => {
                 mode="horizontal"
                 className={styles.menuContainer}
                 items={menuItems}
-                selectedKeys={[activeKey]}
             />
 
             <Flex align="center" gap={15}>
@@ -115,7 +127,11 @@ const Navbar: React.FC = () => {
                         }
                         color="#F7941D"
                     >
-                        <Button type="text" icon={<SearchOutlined style={{ fontSize: 20 }} />} />
+                        <Button
+                            type="text"
+                            icon={<SearchOutlined style={{ fontSize: 20 }} />}
+                            onClick={handleSearchOpen}
+                        />
                     </Tooltip>
                 </div>
                 <div className={styles.iconButton}>
@@ -127,7 +143,12 @@ const Navbar: React.FC = () => {
                         }
                         color="#F7941D"
                     >
-                        <Button type="text" icon={<UserOutlined style={{ fontSize: 20 }} />} />
+                        <Link href={'/user-profile'} passHref>
+                            <Button
+                                type="text"
+                                icon={<UserOutlined style={{ fontSize: 20 }} />}
+                            />
+                        </Link>
                     </Tooltip>
                 </div>
                 <div className={styles.iconButton} style={{ marginTop: 5 }}>
@@ -146,14 +167,15 @@ const Navbar: React.FC = () => {
                         >
                             <Button
                                 type="text"
-                                icon={<LuShoppingBag style={{ fontSize: 20 }} onClick={() => setIsCartOpen(true)} />}
+                                icon={<LuShoppingBag style={{ fontSize: 20 }} onClick={handleCartOpen} />}
                             />
                         </Badge>
                     </Tooltip>
                     <CartDrawer open={isCartOpen} onClose={() => setIsCartOpen(false)} />
+                    <SearchDrawer open={isSearchOpen} onClose={() => setSearchOpen(false)} />
                 </div>
             </Flex>
         </Header>
     );
 }
-export default memo(Navbar)
+export default memo(Navbar);

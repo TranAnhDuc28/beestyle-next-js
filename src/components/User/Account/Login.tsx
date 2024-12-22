@@ -1,8 +1,8 @@
 'use client';
 
-import {LoginForm, ProConfigProvider} from '@ant-design/pro-components';
-import {Tabs, theme, ConfigProvider, Divider} from 'antd';
-import {useState} from 'react';
+import { LoginForm, ProConfigProvider } from '@ant-design/pro-components';
+import { Tabs, theme, ConfigProvider } from 'antd';
+import { useState } from 'react';
 import viVN from 'antd/lib/locale/vi_VN';
 import LoginFormComponent from "@/components/User/Account/LoginFormComponent";
 import RegisterFormComponent from "@/components/User/Account/RegisterFormComponent";
@@ -12,32 +12,34 @@ import TabPane from "antd/es/tabs/TabPane";
 type LoginType = 'phone' | 'account';
 
 const Login = () => {
-    const {token} = theme.useToken();
+    const { token } = theme.useToken();
     const [loginType, setLoginType] = useState<LoginType>('account');
 
     return (
         <>
-            <div className="d-flex justify-content-center p-5">
-                <div style={{borderRight: '1px solid #eee'}}>
+            <div className="flex justify-center items-center p-5 my-4">
+                <div style={{ borderRight: '1px solid #eee' }}>
                     <Image
-                        src="/fingerprint_login.png"
-                        alt="IMG" width={650}
-                        height={575}
+                        src="/pd-login.png"
+                        alt="IMG"
+                        width={675}
+                        height={445}
+                        unoptimized
                     />
                 </div>
                 <ConfigProvider locale={viVN}>
                     <ProConfigProvider hashed={false}>
-                        <div style={{backgroundColor: token.colorBgContainer}}>
+                        <div style={{ backgroundColor: token.colorBgContainer }}>
                             <LoginForm
                                 logo=""
-                                title="BeeStyle"
+                                title={<Image src={'/logo.png'} alt='Logo' width={210} height={55} unoptimized />}
                                 subTitle="Vui lòng đăng nhập hoặc đăng ký để sử dụng dịch vụ tốt hơn"
                                 submitter={{
                                     searchConfig: {
                                         submitText: loginType === 'account' ? 'Đăng nhập' : 'Đăng ký',
                                     },
-                                    render: (_, dom) => (
-                                        <div style={{textAlign: 'center'}}>
+                                    render: () => (
+                                        <div style={{ textAlign: 'center' }}>
                                             <button
                                                 type="submit"
                                                 style={{
@@ -66,7 +68,7 @@ const Login = () => {
                                     <TabPane
                                         key="account"
                                         tab={
-                                            <span style={{color: loginType === 'account' ? '#F7941D' : '#333'}}>
+                                            <span style={{ color: loginType === 'account' ? '#F7941D' : '#333' }}>
                                                 Đăng nhập
                                             </span>
                                         }
@@ -74,16 +76,16 @@ const Login = () => {
                                     <TabPane
                                         key="phone"
                                         tab={
-                                            <span style={{color: loginType === 'phone' ? '#F7941D' : '#333'}}>
+                                            <span style={{ color: loginType === 'phone' ? '#F7941D' : '#333' }}>
                                                 Đăng ký
                                             </span>
                                         }
                                     />
                                 </Tabs>
                                 {loginType === 'account' ? (
-                                    <LoginFormComponent/>
+                                    <LoginFormComponent />
                                 ) : (
-                                    <RegisterFormComponent/>
+                                    <RegisterFormComponent />
                                 )}
                             </LoginForm>
                         </div>
