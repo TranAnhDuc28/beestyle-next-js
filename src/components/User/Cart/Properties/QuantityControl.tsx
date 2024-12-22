@@ -1,31 +1,39 @@
-import {Button, InputNumber} from 'antd';
-import {FaMinus, FaPlus} from 'react-icons/fa';
+import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, InputNumber } from 'antd';
 
 interface QuantityControlProps {
-    value: number;
-    onChange: (value: number) => void;
+    quantity: number;
+    quantityInStock: number;
     onIncrement: () => void;
     onDecrement: () => void;
 }
 
-const QuantityControl = ({value, onChange, onIncrement, onDecrement}: QuantityControlProps) => (
-    <div style={{display: 'flex', alignItems: 'center'}}>
+const QuantityControl = ({ quantity, quantityInStock, onIncrement, onDecrement }: QuantityControlProps) => (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+
         <Button
-            onClick={onDecrement} icon={<FaMinus/>}
-            disabled={value <= 1}
+            onClick={onDecrement}
+            className="!bg-gray-200 hover:!bg-gray-300 !text-black !font-bold relative z-10
+                            !border-none !rounded-none !w-7 !h-7 flex items-center justify-center"
+            icon={<MinusOutlined />}
+            disabled={quantity <= 1}
         />
+
         <InputNumber
             min={1}
-            value={value}
-            onChange={onChange}
-            style={{
-                width: 60, textAlign: 'center'
-            }}
+            value={quantity}
+            style={{ textAlignLast: 'center'}}
+            className="!text-black !font-semibold !border-0 !w-11 !h-7 custom-input"
             readOnly
+            controls={false}
         />
+
         <Button
-            onClick={onIncrement} icon={<FaPlus/>}
-            disabled={value >= 1000}
+            onClick={onIncrement}
+            className="!bg-gray-200 hover:!bg-gray-300 !text-black !font-bold relative z-10
+                            !border-none !rounded-none !w-7 !h-7 flex items-center justify-center"
+            icon={<PlusOutlined />}
+            disabled={quantity >= quantityInStock}
         />
     </div>
 );

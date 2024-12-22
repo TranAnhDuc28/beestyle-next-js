@@ -36,7 +36,7 @@ const ProductSection = () => {
                                     <ProductDescription images={images} />
                                 </div>
                             </div>
-                            <ProductInfoTabs />
+                            <ProductInfoTabs productDescription={product?.description} />
                         </div>
                     </div>
                 </div>
