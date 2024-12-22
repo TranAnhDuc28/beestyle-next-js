@@ -78,7 +78,6 @@ const SaleComponent: React.FC = () => {
     const {loading, handleCreateOrder, handleUpdateOrder} = useOrder();
     const {handleCreateOrderItems} = useOrderItem();
     const [orderCreateOrUpdate, setOrderCreateOrUpdate] = useState<IOrderCreateOrUpdate>(defaultOrderCreateOrUpdate);
-    // console.log(JSON.stringify(orderCreateOrUpdate, null, 2));
     const [totalQuantityCart, setTotalQuantityCart] = useState<number>(0);
     const [dataCart, setDataCart] = useState<IOrderItem[]>([])
     const [orderActiveTabKey, setOrderActiveTabKey] = useState<string>('');

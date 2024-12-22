@@ -60,8 +60,9 @@ const CreateVoucher = (props: IProps) => {
                 okButtonProps={{
                     style: {background: "#00b96b"},
                 }}
-                width={800} // Kích thước modal
-                style={{body: {padding: '20px'}}}
+                width={800}
+
+                style={{body: {padding: '20px'}, top: "50px"}}
             >
                 <Form
                     form={form}
@@ -93,39 +94,43 @@ const CreateVoucher = (props: IProps) => {
                         </Col>
                     </Row>
                     <Row gutter={16}>
-
                         <Col span={12}>
                             <Form.Item
                                 label="Giá trị giảm giá"
                                 rules={[{required: true, message: "Vui lòng nhập giá trị giảm giá và chọn kiểu!"}]}
                             >
-                                <Space.Compact style={{ width: '100%' }}>
+                                <Space.Compact style={{width: '100%'}}>
                                     <Form.Item
                                         name="discountValue"
                                         noStyle
                                         rules={[
-                                            { required: true, message: "Giá trị giảm là bắt buộc!" },
-                                            ({ getFieldValue }) => ({
+                                            {required: true, message: "Giá trị giảm là bắt buộc!"},
+                                            ({getFieldValue}) => ({
                                                 validator(_, value) {
-                                                    if (getFieldValue("discountType") === "PERCENTAGE" && value > 100) {
-                                                        return Promise.reject(new Error("Giá trị giảm không được vượt quá 100%"));
+                                                    if (getFieldValue("discountType") === "PERCENTAGE" && (value < 0 || value > 100)) {
+                                                        return Promise.reject(new Error("Giá trị giảm không hợp lệ!"));
                                                     }
                                                     return Promise.resolve();
                                                 },
                                             }),
                                         ]}
                                     >
-                                        <InputNumber style={{ width: '70%' }} placeholder="Giá trị giảm" />
+                                        <InputNumber style={{width: '70%'}} placeholder="Giá trị giảm"/>
                                     </Form.Item>
                                     <Form.Item
                                         name="discountType"
                                         noStyle
-                                        rules={[{ required: true, message: "Kiểu giảm là bắt buộc!" }]}
+                                        rules={[{required: true, message: "Kiểu giảm là bắt buộc!"}]}
                                     >
                                         <Select
-                                            style={{ width: '30%' }}
+                                            style={{width: '30%'}}
                                             placeholder="Chọn kiểu"
                                             suffixIcon={null}
+                                            // onChange={(value) => {
+                                            //     if (value === "CASH") {
+                                            //         form.setFieldsValue({ maxDiscount: null });
+                                            //     }
+                                            // }}
                                         >
                                             {Object.keys(DISCOUNT_TYPE).map((key) => (
                                                 <Option key={key} value={key}>
@@ -135,31 +140,37 @@ const CreateVoucher = (props: IProps) => {
                                         </Select>
                                     </Form.Item>
                                 </Space.Compact>
-
                             </Form.Item>
                         </Col>
-
 
                         <Col span={12}>
                             <Form.Item
                                 name="maxDiscount"
                                 label="Giảm tối đa"
-                                rules={[{required: true, message: "Vui lòng nhập giảm giá tối đa!"}]}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Vui lòng nhập giảm giá tối đa!",
+                                    }
+                                ]}
+                                // disabled={form.getFieldValue("discountType") !== "CASH"}
                             >
                                 <InputNumber style={{width: '100%'}}/>
                             </Form.Item>
                         </Col>
                     </Row>
+
+
                     <Row gutter={16}>
 
                         <Col span={12}>
                             <Form.Item
                                 name="startDate"
                                 label="Ngày bắt đầu"
-                                rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
+                                rules={[{required: true, message: "Vui lòng chọn ngày bắt đầu!"}]}
                             >
                                 <DatePicker
-                                    style={{ width: '100%' }}
+                                    style={{width: '100%'}}
                                     showTime
                                     format="YYYY-MM-DD HH:mm:ss"
                                     disabledDate={current => current && current < dayjs().startOf('day')}
@@ -174,8 +185,8 @@ const CreateVoucher = (props: IProps) => {
                                 label="Ngày kết thúc"
                                 dependencies={['startDate']}
                                 rules={[
-                                    { required: true, message: "Vui lòng chọn ngày kết thúc!" },
-                                    ({ getFieldValue }) => ({
+                                    {required: true, message: "Vui lòng chọn ngày kết thúc!"},
+                                    ({getFieldValue}) => ({
                                         validator(_, value) {
                                             const startDate = getFieldValue("startDate");
                                             if (!value || !startDate || value.isAfter(startDate)) {
@@ -189,7 +200,7 @@ const CreateVoucher = (props: IProps) => {
                                 ]}
                             >
                                 <DatePicker
-                                    style={{ width: '100%' }}
+                                    style={{width: '100%'}}
                                     showTime
                                     format="YYYY-MM-DD HH:mm:ss"
                                     disabledDate={current => current && current < dayjs().startOf('day')}
@@ -215,19 +226,26 @@ const CreateVoucher = (props: IProps) => {
                             <Form.Item
                                 name="usageLimit"
                                 label="Số lượng "
-                                rules={[{required: true, message: "Vui lòng nhập giới hạn sử dụng!"}]}
+                                rules={[{required: true, message: "Vui lòng nhập số lượng sử dụng!"}]}
                             >
                                 <InputNumber style={{width: '100%'}}/>
                             </Form.Item>
                         </Col>
                     </Row>
-
+                    <Row gutter={16}>
+                        <Col span={24}>
+                            <Form.Item
+                                name="note"
+                                label="Mô tả"
+                            >
+                                <Input.TextArea style={{ width: '100%' }} />
+                            </Form.Item>
+                        </Col>
+                    </Row>
                 </Form>
             </Modal>
         </>
     );
-
-
 };
 
 export default memo(CreateVoucher);

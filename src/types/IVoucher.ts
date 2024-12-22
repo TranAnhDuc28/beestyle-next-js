@@ -10,5 +10,6 @@ export interface IVoucher {
     endDate: Date;
     usageLimit: number;
     usagePerUser: number;
+    note: string;
     status: number;
 }

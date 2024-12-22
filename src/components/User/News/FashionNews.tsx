@@ -77,7 +77,7 @@ const FashionNews = () => {
         <div className="container mx-auto p-4">
             <div className='py-5'>
                 <Image
-                    src={"/news-banner.webp"}
+                    src={"/img_news/news-banner.webp"}
                     alt='IMG' unoptimized
                     width={1280} height={555}
                 />

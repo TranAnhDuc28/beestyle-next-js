@@ -1,13 +1,28 @@
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {IOrder, IOrderCreateOrUpdate} from "@/types/IOrder";
-import {createOrder, updateOrder} from "@/services/OrderService";
+import {createOrder, getOrders, updateOrder, URL_API_ORDER} from "@/services/OrderService";
 import {useState} from "react";
+import useSWR from "swr";
 
 const delay = () => new Promise<void>(res => setTimeout(() => res(), 200));
 
 const useOrder = () => {
     const {showNotification, showMessage} = useAppNotifications();
     const [loading, setLoading] = useState<boolean>(false);
+
+    const handleGetOrderService = (orderId: number | null) => {
+        const {data, isLoading, error, mutate} = useSWR(
+           orderId ? URL_API_ORDER.getOrderDetail(orderId) : null,
+            getOrders,
+            {
+                revalidateIfStale: false,
+                revalidateOnReconnect: false,
+                revalidateOnFocus: false
+            }
+        );
+
+        return {data, isLoading, error, mutate};
+    }
 
     const handleCreateOrder =  async (value: IOrderCreateOrUpdate) => {
         setLoading(true);
@@ -50,6 +65,6 @@ const useOrder = () => {
         }
     }
 
-    return {loading, handleCreateOrder, handleUpdateOrder};
+    return {loading, handleCreateOrder, handleUpdateOrder, handleGetOrderService};
 }
 export default useOrder;

@@ -9,10 +9,10 @@ export default function Slider() {
     const [isHovered, setIsHovered] = useState(false);
 
     const images = [
-        { url: "/banner-01.jpg", alt: "Shop Banner 1" },
-        { url: "/banner-02.jpg", alt: "Shop Banner 2" },
-        { url: "/banner-03.jpg", alt: "Shop Banner 3" },
-        { url: "/banner-04.jpg", alt: "Shop Banner 4" }
+        { url: "/banner_slide_user/banner-01.jpg", alt: "Shop Banner 1" },
+        { url: "/banner_slide_user/banner-02.jpg", alt: "Shop Banner 2" },
+        { url: "/banner_slide_user/banner-03.jpg", alt: "Shop Banner 3" },
+        { url: "/banner_slide_user/banner-04.jpg", alt: "Shop Banner 4" }
     ];
 
     const carouselRef = React.useRef<any>(null);

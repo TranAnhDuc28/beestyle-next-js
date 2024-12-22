@@ -6,6 +6,7 @@ import useAppNotifications from "@/hooks/useAppNotifications";
 import { createAddress } from "@/services/AddressService";
 import useAddress from "../Address/hook/useAddress";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
+import { usePhoneValidation } from "@/hooks/usePhoneNumberValidation";
 
 const { Option } = Select;
 
@@ -18,6 +19,7 @@ interface IProps {
 const AddCustomer = (props: IProps) => {
   const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
   const { showNotification } = useAppNotifications();
+  const { validatePhoneNumber } = usePhoneValidation();
 
   const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | null>(null);
   const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | null>(null);
@@ -35,7 +37,8 @@ const AddCustomer = (props: IProps) => {
 
   const [form] = Form.useForm(); 
 
-  console.log(isCreateModalOpen);
+  console.log(provincesData);
+
 
   const onChangeSelectedProvince = useCallback(
     (provinceCode: string) => {
@@ -171,7 +174,6 @@ const AddCustomer = (props: IProps) => {
       <Modal
         title={"Thêm mới khách hàng"}
         cancelText="Hủy"
-        width={600}
         okText="Lưu"
         onOk={() => form.submit()}
         style={{ top: 20 }}
@@ -199,7 +201,7 @@ const AddCustomer = (props: IProps) => {
           <Form.Item
             label="Số điện thoại"
             name="phoneNumber"
-            rules={[{ required: true, message: "Vui lòng nhập sdt!" }]}
+            rules={[{ validator: (_, value) => validatePhoneNumber(value) }]}
           >
             <Input />
           </Form.Item>

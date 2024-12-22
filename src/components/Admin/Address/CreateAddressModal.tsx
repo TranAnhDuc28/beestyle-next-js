@@ -148,6 +148,7 @@ const onChangeSelectedWard = useCallback(
       title="Thêm địa chỉ"
       cancelText="Hủy"
       okText="Lưu"
+      width={600}
       style={{ top: 20 }}
       open={isCreateModalOpen}
       onOk={() => form.submit()}

@@ -59,33 +59,33 @@ const CustomerComponent = () => {
         return <span key={record.id}>{GENDER[value]}</span>;
       },
     },
-    {
-      title: "Địa chỉ",
-      dataIndex: "addresses",
-      key: "addresses",
-      render: (addresses) => {
-        if (addresses && addresses.length > 0) {
-          // List danh sách địa chỉ của customer
-          const listAddresses = addresses|| [];
-          console.log("danh sách địa chỉ của customer", listAddresses);
+    // {
+    //   title: "Địa chỉ",
+    //   dataIndex: "addresses",
+    //   key: "addresses",
+    //   render: (addresses) => {
+    //     if (addresses && addresses.length > 0) {
+    //       // List danh sách địa chỉ của customer
+    //       const listAddresses = addresses|| [];
+    //       console.log("danh sách địa chỉ của customer", listAddresses);
 
-          // Lọc để lấy địa chỉ có isDefault: true
-          const defaultAddress = listAddresses.find(
-            (address: any) => address.isDefault === true
-          );
+    //       // Lọc để lấy địa chỉ có isDefault: true
+    //       const defaultAddress = listAddresses.find(
+    //         (address: any) => address.isDefault === true
+    //       );
 
-          // Kiểm tra nếu tồn tại defaultAddress, nếu không thì trả về rỗng
-          const addressToDisplay = defaultAddress || "";
-          console.log("addressToDisplay ", addressToDisplay);
+    //       // Kiểm tra nếu tồn tại defaultAddress, nếu không thì trả về rỗng
+    //       const addressToDisplay = defaultAddress || "";
+    //       console.log("addressToDisplay ", addressToDisplay);
 
-          // Kiểm tra addressToDisplay trước khi truy cập addressName
-          return addressToDisplay.addressName
-            ? `${addressToDisplay?.addressName} - ${addressToDisplay?.commune} - ${addressToDisplay?.district} - ${addressToDisplay?.city}`
-            : `${addressToDisplay?.commune} - ${addressToDisplay?.district} - ${addressToDisplay?.city}`;
-        }
-        return ""; // Nếu không có địa chỉ nào trong mảng
-      },
-    },
+    //       // Kiểm tra addressToDisplay trước khi truy cập addressName
+    //       return addressToDisplay.addressName
+    //         ? `${addressToDisplay?.addressName} - ${addressToDisplay?.commune} - ${addressToDisplay?.district} - ${addressToDisplay?.city}`
+    //         : `${addressToDisplay?.commune} - ${addressToDisplay?.district} - ${addressToDisplay?.city}`;
+    //     }
+    //     return ""; // Nếu không có địa chỉ nào trong mảng
+    //   },
+    // },
     {
       title: "Trạng thái",
       dataIndex: "status",

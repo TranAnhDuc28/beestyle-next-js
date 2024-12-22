@@ -5,19 +5,19 @@ import { HomeOutlined, PlusOutlined } from "@ant-design/icons";
 import React, { memo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import {findPromotionsByDate} from "../../../services/PromotionService";
 
 type SearchProps = GetProps<typeof Input.Search>;
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
 interface IProps {
-    // setIsCreateModalOpen: (value: boolean) => void; // Không còn cần nữa
+    setPromotion: (Promotion: any[]) => void;
 }
 
-const HeaderPromotion = (props: IProps) => {
+const HeaderPromotion = (setPromotion: IProps) => {
     const [isFilterVisible, setIsFilterVisible] = useState(true);
 
-    // const { setIsCreateModalOpen } = props; // Không còn cần nữa
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
@@ -42,6 +42,22 @@ const HeaderPromotion = (props: IProps) => {
     } else {
         breadcrumbTitle = 'Khuyến mại';
     }
+
+    const handleDateChange = (dates: any, dateStrings: [string, string]) => {
+        if (dates && dateStrings[0] && dateStrings[1]) {
+            params.set("startDate", dateStrings[0]);
+            params.set("endDate", dateStrings[1]);
+
+            if (!params.has("page")) {
+                params.set("page", "1");
+            }
+        } else {
+            params.delete("startDate");
+            params.delete("endDate");
+        }
+
+        replace(`${pathname}?${params.toString()}`);
+    };
     return (
         <>
             <Breadcrumb
@@ -66,7 +82,7 @@ const HeaderPromotion = (props: IProps) => {
                         </div>
                         <div className="flex-grow max-w-xs">
                             <RangePicker
-                                // onChange={handleDateChange}
+                                onChange={handleDateChange}
                                 placeholder={['Từ ngày', 'Đến ngày']}
                                 style={{ width: '100%' }}
                             />
