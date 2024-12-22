@@ -157,9 +157,9 @@ const VoucherComponent = () => {
                 console.log(value)
                 if (value === 'UPCOMING') {
                     color = 'yellow';
-                } else if (value === 'ONGOING') {
+                } else if (value === 'ACTIVE') {
                     color = 'green';
-                } else if (value === 'ENDED') {
+                } else if (value === 'EXPIRED') {
                     color = 'red';
                 }
 
