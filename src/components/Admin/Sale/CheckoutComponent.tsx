@@ -306,8 +306,10 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                                         </Text>
                                         <br/>
                                         <Text>
-                                            Áp dụng cho đơn hàng từ {selectedVoucher.minOrderValue}đ, giảm tối đa
-                                            {selectedVoucher.discountType === "PERCENTAGE" ? `${selectedVoucher.maxDiscount}đ` : `${selectedVoucher.discountValue}đ`}
+                                            Áp dụng cho đơn hàng từ {selectedVoucher.minOrderValue}đ,
+                                            giảm tối đa {selectedVoucher.discountType === "PERCENTAGE" ?
+                                                        `${selectedVoucher.maxDiscount}đ` :
+                                                        `${selectedVoucher.discountValue}đ`}
                                         </Text>
                                     </div>
                                 }

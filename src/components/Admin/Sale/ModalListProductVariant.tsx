@@ -1,16 +1,28 @@
 import React, {memo, useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
-import {Card, Modal, Select, type, SelectProps, Space, Table, TableColumnsType, TableProps, Tag, Typography} from "antd";
+import {
+    Card,
+    Modal,
+    Pagination,
+    Select,
+    SelectProps,
+    Space,
+    Table,
+    TableColumnsType,
+    TableProps,
+    Tag,
+    Typography
+} from "antd";
 import {IProduct} from "@/types/IProduct";
 import {IProductVariant} from "@/types/IProductVariant";
-import useFilterProductVariant, {ParamFilterProductVariant} from "@/components/Admin/Product/Variant/hooks/useFilterProductVariant";
+import useFilterProductVariant, {
+    ParamFilterProductVariant
+} from "@/components/Admin/Product/Variant/hooks/useFilterProductVariant";
 import useOptionColor from "@/components/Admin/Color/hooks/useOptionColor";
 import useOptionSize from "@/components/Admin/Size/hooks/useOptionSize";
 import ColorButton from "@/components/Button/ColorButton";
 import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
 import type {DraggableData, DraggableEvent} from 'react-draggable';
 import Draggable from 'react-draggable';
-import {mutate} from "swr";
-import {URL_API_PRODUCT_VARIANT} from "@/services/ProductVariantService";
 
 const {Text} = Typography;
 
@@ -69,7 +81,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
     const [disabled, setDisabled] = useState(true);
     const [dataSource, setDataSource] = useState([]);
     const [bounds, setBounds] = useState({left: 0, top: 0, bottom: 0, right: 0});
-    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [position, setPosition] = useState({x: 0, y: 0});
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
     const [selectedRows, setSelectedRows] = useState<IProductVariant[]>([]);
 
@@ -105,7 +117,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
     };
 
     const onStop = (_event: DraggableEvent, uiData: DraggableData) => {
-        setPosition({ x: uiData.x, y: uiData.y });
+        setPosition({x: uiData.x, y: uiData.y});
     };
 
     const handleCloseModal = () => {
@@ -113,15 +125,13 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
         setSelectedRowKeys([]);
         setSelectedRows([]);
         setFilterParam(defaultFilterParam);
-        setPosition({ x: 0, y: 0 });
+        setPosition({x: 0, y: 0});
         setBounds({left: 0, top: 0, bottom: 0, right: 0});
     }
 
     const rowSelection: TableProps<IProductVariant>['rowSelection'] = {
         selectedRowKeys,
         onChange: (newSelectedRowKeys: React.Key[], selectedRows: IProductVariant[]) => {
-            // console.log('selectedRowKeys: ', newSelectedRowKeys);
-            // console.log('selectedRows: ', selectedRows);
             setSelectedRowKeys(newSelectedRowKeys);
             setSelectedRows(selectedRows);
         }
@@ -137,17 +147,21 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
         setFilterParam((prevState) => ({...prevState, sizeIds: value}));
     }, []);
 
-    const onChangePagination = useCallback((pagination: any) => {
-        setFilterParam((prevValue) => ({...prevValue, page: pagination?.current ?? 1}));
+    const onChangePagination = useCallback((page: number, pageSize: number) => {
+        setFilterParam((prevValue) => ({...prevValue, page: page ?? 1}));
     }, []);
 
     const handleOkAndClose = async () => {
-        handleSale?.handleAddOrderItemCart(selectedRows);
-        handleCloseModal();
+        if (selectedRows && selectedRows.length > 0) {
+            handleSale?.handleAddOrderItemCart(selectedRows);
+            handleCloseModal();
+        }
     }
 
     const handleOkAndContinue = async () => {
-        handleSale?.handleAddOrderItemCart(selectedRows);
+        if (selectedRows && selectedRows.length > 0) {
+            handleSale?.handleAddOrderItemCart(selectedRows);
+        }
     }
 
     const columns: TableColumnsType<IProductVariant> = [
@@ -187,19 +201,24 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
                             setDisabled(false);
                         }
                     }}
-                    onMouseOut={() => {setDisabled(true);}}
-                    onFocus={() => {}}
-                    onBlur={() => {}}
+                    onMouseOut={() => {
+                        setDisabled(true);
+                    }}
                 >
                     {product?.productName ?? "Sản phẩm"}
                 </div>
             }
             maskClosable
+            width={1000}
             style={{top: 20}}
+            styles={{
+                body: {
+                    height: 710
+                }
+            }}
             open={isOpenModalListProductVariant}
             onCancel={handleCloseModal}
             onOk={() => handleOkAndClose()}
-            width={1000}
             okText="Thêm vào giỏ"
             cancelText="Đóng"
             okButtonProps={{style: {background: "#00b96b"}}}
@@ -219,7 +238,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
                     nodeRef={draggleRef}
                     onStart={(event, uiData) => onStart(event, uiData)}
                     onStop={(event, uiData) => onStop(event, uiData)}
-                    position={isOpenModalListProductVariant ? position : { x: 0, y: 0 }}
+                    position={isOpenModalListProductVariant ? position : {x: 0, y: 0}}
                 >
                     <div ref={draggleRef}>{modal}</div>
                 </Draggable>
@@ -265,7 +284,25 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
                         />
                     </Space>
                 </Card>
-                <Card title="Danh sách sản phẩm" size="small">
+                <Card title="Danh sách sản phẩm"
+                      size="small"
+                      styles={{
+                          body: {height: 500},
+                          actions: {borderTop: "none"}
+                      }}
+                      actions={[
+                          <Pagination
+                              align="center"
+                              size="default"
+                              current={filterParam.page}
+                              pageSize={filterParam.size}
+                              total={dataOptionFilterProductVariant?.totalElements}
+                              showSizeChanger={false}
+                              responsive={true}
+                              onChange={onChangePagination}
+                          />
+                      ]}
+                >
                     <Table<IProductVariant>
                         rowKey={"id"}
                         loading={isLoading}
@@ -273,16 +310,7 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
                         rowSelection={rowSelection}
                         columns={columns}
                         dataSource={dataSource}
-                        onChange={onChangePagination}
-                        pagination={{
-                            position: ["bottomCenter"],
-                            size: "default",
-                            current: filterParam.page,
-                            defaultPageSize: filterParam.size,
-                            total: dataOptionFilterProductVariant?.totalElements,
-                            showSizeChanger: false,
-                            responsive: true,
-                        }}
+                        pagination={false}
                     />
                 </Card>
             </Space>

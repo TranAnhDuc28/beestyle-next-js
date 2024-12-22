@@ -1,8 +1,10 @@
-import React, {useState, useEffect, memo, useContext} from "react";
-import {Modal, List, Card, Avatar, Space, Typography, Button, Checkbox, Pagination} from "antd";
+import React, {useState, useEffect, memo, useContext, useRef} from "react";
+import {Modal, List, Card, Avatar, Space, Typography, Button, Checkbox, Pagination, Flex} from "antd";
 import {findVouchersByTotalAmount} from "@/services/VoucherService";
 import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
 import {IVoucher} from "@/types/IVoucher";
+import Draggable, {DraggableData, DraggableEvent} from "react-draggable";
+import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 
 const {Text, Title} = Typography;
 
@@ -16,6 +18,11 @@ const ModalListVoucher: React.FC<IProps> = (props) => {
     const {isModalOpen, setIsModalOpen, onVoucherSelect} = props;
     const handleSale = useContext(HandleSale);
 
+    const draggleRef = useRef<HTMLDivElement>(null);
+    const [disabled, setDisabled] = useState(true);
+    const [bounds, setBounds] = useState({left: 0, top: 0, bottom: 0, right: 0});
+    const [position, setPosition] = useState({x: 0, y: 0});
+
     const [vouchers, setVouchers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedVoucher, setSelectedVoucher] = useState<IVoucher | undefined>(undefined);
@@ -24,6 +31,24 @@ const ModalListVoucher: React.FC<IProps> = (props) => {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedVouchers = vouchers.slice(startIndex, endIndex);
+
+    const onStart = (_event: DraggableEvent, uiData: DraggableData) => {
+        const {clientWidth, clientHeight} = window.document.documentElement;
+        const targetRect = draggleRef.current?.getBoundingClientRect();
+        if (!targetRect) {
+            return;
+        }
+        setBounds({
+            left: -targetRect.left + uiData.x,
+            right: clientWidth - (targetRect.right - uiData.x),
+            top: -targetRect.top + uiData.y,
+            bottom: clientHeight - (targetRect.bottom - uiData.y),
+        });
+    };
+
+    const onStop = (_event: DraggableEvent, uiData: DraggableData) => {
+        setPosition({x: uiData.x, y: uiData.y});
+    };
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -69,7 +94,7 @@ const ModalListVoucher: React.FC<IProps> = (props) => {
     const handleOk = () => {
         if (selectedVoucher) {
             onVoucherSelect(selectedVoucher);
-            setIsModalOpen(false);
+            handleCloseModal();
         }
         // if (selectedVoucher) {
         //     let discountAmount;
@@ -88,48 +113,70 @@ const ModalListVoucher: React.FC<IProps> = (props) => {
         // }
     };
 
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setPosition({x: 0, y: 0});
+        setBounds({left: 0, top: 0, bottom: 0, right: 0});
+    }
 
     return (
         <Modal
-            title="Voucher"
-            open={isModalOpen}
-            onOk={handleOk}
-            onCancel={() => setIsModalOpen(false)}
-            width={500}
-            footer={
+            title={
                 <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
+                    style={{width: '100%', cursor: 'move'}}
+                    onMouseOver={() => {
+                        if (disabled) {
+                            setDisabled(false);
+                        }
+                    }}
+                    onMouseOut={() => {
+                        setDisabled(true);
                     }}
                 >
+                    Voucher
+                </div>
+            }
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCloseModal}
+            width={600}
+            footer={
+                <Flex align="center" justify="space-between">
                     <Pagination
                         current={currentPage}
                         pageSize={pageSize}
                         total={vouchers.length}
                         onChange={handlePageChange}
-                        style={{
-                            margin: 0,
-                        }}
                     />
                     <div>
-                        <Button key="cancel" onClick={() => setIsModalOpen(false)}>
+                        <Button key="cancel" onClick={handleCloseModal}>
                             Hủy
                         </Button>
                         <Button key="ok" type="primary" onClick={handleOk} style={{marginLeft: "10px"}}>
                             Xác nhận
                         </Button>
                     </div>
-                </div>
+                </Flex>
             }
+            modalRender={(modal) => (
+                <Draggable
+                    disabled={disabled}
+                    bounds={bounds}
+                    nodeRef={draggleRef}
+                    onStart={(event, uiData) => onStart(event, uiData)}
+                    onStop={(event, uiData) => onStop(event, uiData)}
+                    position={isModalOpen ? position : {x: 0, y: 0}}
+                >
+                    <div ref={draggleRef}>{modal}</div>
+                </Draggable>
+            )}
             style={{
                 top: "40px",
             }}
             styles={{
                 body: {
-                    maxHeight: "510px",
-                    minHeight: "510px",
+                    maxHeight: 520,
+                    minHeight: 520,
                     overflowY: "auto",
                 }
             }}
@@ -159,61 +206,39 @@ const ModalListVoucher: React.FC<IProps> = (props) => {
                                     />
                                 }
                                 title={
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "space-between",
-                                        }}
-                                    >
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "space-between",
-                                            }}
-                                        >
+                                    <Flex align="center" justify="space-between">
+                                        <Flex align="center" justify="space-between">
                                             <div style={{textAlign: "left", marginLeft: "auto"}}>
                                                 <Text strong>{item.voucherName}</Text>
                                                 <Title level={5} style={{margin: 0}}>
                                                     {item.discountType === "PERCENTAGE"
                                                         ? `Giảm ${item.discountValue || 0}% tối đa ${
                                                             item.maxDiscount
-                                                                ? `${item.maxDiscount}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                                                                : 0
-                                                        }đ`
+                                                                ? `${item.maxDiscount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ",")
+                                                                : 0}đ`
                                                         : `Giảm ${item.discountValue
-                                                            ? `${item.discountValue}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                                            ? `${item.discountValue}`.replace(FORMAT_NUMBER_WITH_COMMAS, ",")
                                                             : 0}đ`}
                                                 </Title>
-                                                <span style={{color: "black", fontWeight: "normal"}}>
-                                                        Cho đơn từ {item.minOrderValue
-                                                    ? `${item.minOrderValue}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                                                    : 0}đ
-                                                    </span>
                                             </div>
-                                        </div>
-
-                                    </div>
-
+                                        </Flex>
+                                    </Flex>
                                 }
                                 description={
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            justifyContent: "space-between",
-                                            alignItems: "center",
-                                        }}
-                                    >
+                                    <Flex align="center" justify="space-between">
                                         <div>
-                                            {/*<span>Mã: {item.voucherCode}</span>&nbsp;|&nbsp;*/}
+                                           <span>
+                                               Cho đơn từ {item.minOrderValue
+                                                   ? `${item.minOrderValue}`.replace(FORMAT_NUMBER_WITH_COMMAS, ",")
+                                                   : 0}đ
+                                            </span> <br />
                                             <span>Hạn sử dụng: {new Date(item.endDate).toLocaleDateString()}</span>
                                         </div>
                                         <Checkbox
                                             checked={selectedVoucher && selectedVoucher.id === item.id}
                                             onChange={(e) => handleVoucherSelection(e.target.checked, item)}
                                         ></Checkbox>
-                                    </div>
+                                    </Flex>
                                 }
                             />
                         </Card>

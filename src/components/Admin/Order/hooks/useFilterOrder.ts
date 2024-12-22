@@ -31,7 +31,6 @@ const useFilterOrder = (param?: ParamFilterOrder) => {
         useSWR(`${URL_API_ORDER.filter}?${paramString.toString()}`,
             getProducts,
             {
-                revalidateIfStale: false,
                 revalidateOnReconnect: false,
             }
         );
