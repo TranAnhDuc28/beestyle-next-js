@@ -65,11 +65,14 @@ const ProductDescription = (props: any) => {
                 </div>
                 <p className="price px-3 py-4 m-0" style={{ backgroundColor: '#FAFAFA', borderRadius: '5px' }}>
                     <span className="discount text-center">
-                        {product?.salePrice ? `${product.salePrice.toLocaleString()} đ` : '0 đ'}
+                        {product?.discountPrice ? `${product.discountPrice.toLocaleString()} đ` : '0 đ'}
                     </span>
-                    {/* <s className={product?.originalPrice ? "fw-medium" : "hidden"} style={{ color: '#838383' }}>
-                        {product?.originalPrice.toLocaleString() + ' đ'}
-                    </s> */}
+                    <s className={product?.salePrice ? "fw-medium" : "hidden"} style={{ color: '#838383' }}>
+                        {product?.salePrice.toLocaleString() + ' đ'}
+                    </s>
+                    <span className="!text-red-500 fs-6 ms-3">
+                        -{product?.discountValue}%
+                    </span>
                 </p>
             </div>
 
@@ -77,7 +80,8 @@ const ProductDescription = (props: any) => {
                 <div className="flex items-center mb-4">
                     <EyeOutlined style={{ fontSize: 20 }} />
                     <span
-                        className="ml-2"><b>{Math.floor(Math.random() * 50) + 1}</b> người đang xem sản phẩm này</span>
+                        className="ml-2"><b>{Math.floor(Math.random() * 50) + 1}</b> người đang xem sản phẩm này
+                    </span>
                 </div>
 
                 <div className="mb-4">

@@ -1,16 +1,21 @@
-import ProductDescriptionTab from './ProductDescriptionTab';
-import Link from "next/link";
+import { Typography } from 'antd';
+import Title from 'antd/lib/typography/Title';
 
-const ProductInfoTabs = () => {
+const ProductInfoTabs = ({ productDescription }: string) => {
     return (
         <div className="product-info">
             <div className="nav-main">
-                <ul className="nav nav-tabs" id="myTab" role="tablist">
-                    <li className="nav-item"><Link className="nav-link active" data-toggle="tab" href="#" role="tab">Mô tả</Link></li>
-                </ul>
+                <Typography>
+                    <Title level={4}>Giới thiệu sản phẩm</Title>
+                </Typography>
             </div>
             <div className="tab-content" id="myTabContent">
-                <ProductDescriptionTab />
+                <p>
+                    Áo sơ mi nam nữ của chúng tôi mang đến phong cách trẻ trung, hiện đại và phù hợp cho mọi hoàn cảnh.
+                    Được làm từ chất liệu vải cao cấp, sản phẩm không chỉ mang lại cảm giác thoáng mát, dễ chịu mà còn đảm bảo độ bền cao.
+                    Với thiết kế tối giản, tinh tế, áo dễ dàng phối cùng nhiều loại trang phục khác, tạo nên phong cách riêng cho bạn.
+                </p>
+                <p>{productDescription}</p>
             </div>
         </div>
     );

@@ -52,6 +52,8 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
     const handleIncrement = () => setQuantity((prev) => Math.min(prev + 1, productData?.quantity || 1000));
 
     const handleAddToCart = (product: any, quantity: number, images: any) => {
+        console.log(product);
+
         if (selectedColor && selectedSize) addToCart(product, quantity, images);
         else return;
     }
@@ -82,7 +84,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
             <div key="0" className="flex justify-center">
                 <Image
                     loading="lazy"
-                    style={{ width: "100%", height: "auto", objectFit: "cover", aspectRatio: "3/4" }}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", aspectRatio: "3/4" }}
                     src="/no-img.png"
                     alt={product?.productName}
                 />
@@ -95,7 +97,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
             onCancel={onClose}
             footer={null}
             centered
-            className={`!w-[50vw] ${styles.customModal}`}
+            className={`!w-[52vw] ${styles.customModal}`}
             closable
         >
             <div className="flex">
@@ -130,6 +132,11 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                     >
                         {slides}
                     </Carousel>
+                    <div className="text-center mt-2">
+                        <Link href={`/product/${productId}/variant`} className="!text-blue-500">
+                            Xem chi tiết sản phẩm
+                        </Link>
+                    </div>
                 </div>
                 <div className="w-1/2 pl-8 flex flex-col justify-between">
                     <div>
@@ -149,14 +156,14 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                         </p>
                         <div className="flex items-center mb-4">
                             <span className="text-orange-400 text-2xl font-bold">
+                                {productData?.discountPrice?.toLocaleString()} đ
+                            </span>
+                            <span className="text-gray-500 text-lg line-through ml-2">
                                 {productData?.salePrice?.toLocaleString()} đ
                             </span>
-                            {/* <span className="text-gray-500 text-lg line-through ml-2">
-                                {productData?.originalPrice?.toLocaleString()} đ
-                            </span>
                             <span className="text-red-500 font-bold ml-2">
-                                -{Math.round(((productData?.originalPrice - productData?.salePrice) / productData?.originalPrice) * 100)}%
-                            </span> */}
+                                -{productData?.discountValue}%
+                            </span>
                         </div>
 
                         <ColorPickers
@@ -215,11 +222,6 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                         </Button>
                     </div>
                 </div>
-            </div>
-            <div className="text-center mt-2">
-                <Link href={`/product/${productId}/variant`} className="!text-blue-500">
-                    Xem chi tiết sản phẩm
-                </Link>
             </div>
         </Modal>
     );

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { Card, Tooltip, Image } from 'antd';
+import { Card, Tooltip, Image, Badge } from 'antd';
 import Slider from "react-slick";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -98,54 +98,56 @@ function MostPopularProduct() {
                                     products.map((product) => (
                                         <div key={product.id}>
                                             <Card className="product-card">
-                                                <div className="product-image-wrapper">
-                                                    <Image
-                                                        preview={{
-                                                            mask: (
-                                                                <div className="flex items-center justify-center h-full">
-                                                                    <Tooltip
-                                                                        title={
-                                                                            <span style={{ fontSize: 12, padding: 0 }}>
-                                                                                Xem nhanh
-                                                                            </span>
-                                                                        }
-                                                                        color="#F7941D"
-                                                                    >
-                                                                        <TiEye size={25} color="#fff"
-                                                                            className="hover:!text-orange-400"
-                                                                            onClick={() => handleOpenModal(product)}
-                                                                        />
-                                                                    </Tooltip>
-                                                                </div>
-                                                            ),
-                                                            maskClassName:
-                                                                'flex items-center justify-center bg-black bg-opacity-50',
-                                                            visible: false,
-                                                        }}
-                                                        src={product.imageUrl}
-                                                        alt={product.productName}
-                                                        loading="lazy"
-                                                        style={{ width: "100%", height: "auto", objectFit: "cover", aspectRatio: "3/4" }}
-                                                    />
-                                                    {product?.label && (
-                                                        <span className="product-label">{product.productName}</span>
-                                                    )}
-                                                </div>
-                                                <div className="product-content">
-                                                    <h3>
-                                                        <Link
-                                                            href={`/product/${product.id}/variant`}
-                                                            className="product-title fs-6 fw-semibold"
-                                                        >
-                                                            {product.productName}
-                                                        </Link>
-                                                    </h3>
-                                                    <div className="product-price">
-                                                        <span className="old-price">{product.minSalePrice.toLocaleString()} đ</span>
-                                                        <span
-                                                            className="current-price ml-2">{product.minDiscountedPrice.toLocaleString()} đ</span>
+                                                <Badge.Ribbon text={`${product.discountValue}%`} color="red">
+                                                    <div className="product-image-wrapper">
+                                                        <Image
+                                                            preview={{
+                                                                mask: (
+                                                                    <div className="flex items-center justify-center h-full">
+                                                                        <Tooltip
+                                                                            title={
+                                                                                <span style={{ fontSize: 12, padding: 0 }}>
+                                                                                    Xem nhanh
+                                                                                </span>
+                                                                            }
+                                                                            color="#F7941D"
+                                                                        >
+                                                                            <TiEye size={25} color="#fff"
+                                                                                className="hover:!text-orange-400"
+                                                                                onClick={() => handleOpenModal(product)}
+                                                                            />
+                                                                        </Tooltip>
+                                                                    </div>
+                                                                ),
+                                                                maskClassName:
+                                                                    'flex items-center justify-center bg-black bg-opacity-50',
+                                                                visible: false,
+                                                            }}
+                                                            src={product.imageUrl}
+                                                            alt={product.productName}
+                                                            loading="lazy"
+                                                            style={{ width: "100%", height: "auto", objectFit: "cover", aspectRatio: "3/4" }}
+                                                        />
+                                                        {product?.label && (
+                                                            <span className="product-label">{product.productName}</span>
+                                                        )}
                                                     </div>
-                                                </div>
+                                                    <div className="product-content">
+                                                        <h3>
+                                                            <Link
+                                                                href={`/product/${product.id}/variant`}
+                                                                className="product-title fs-6 fw-semibold"
+                                                            >
+                                                                {product.productName}
+                                                            </Link>
+                                                        </h3>
+                                                        <div className="product-price">
+                                                            <span className="old-price">{product.minSalePrice.toLocaleString()} đ</span>
+                                                            <span
+                                                                className="current-price ml-2">{product.minDiscountedPrice.toLocaleString()} đ</span>
+                                                        </div>
+                                                    </div>
+                                                </Badge.Ribbon>
                                             </Card>
                                         </div>
                                     ))

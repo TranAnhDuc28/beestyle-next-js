@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, { useRef, useState } from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -26,9 +26,9 @@ const ProductGallery = (props: any) => {
     const isSingleImage = props.images?.length === 1;
 
     return (
-        <div className="product-gallery d-flex">
+        <div className="product-gallery flex">
             <div
-                className="thumbnails"
+                className="thumbnails mb-4"
                 style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -40,7 +40,7 @@ const ProductGallery = (props: any) => {
                     <Image
                         key={index}
                         src={image.imageUrl}
-                        width={50}
+                        width={60}
                         height={65}
                         unoptimized
                         alt={`Thumbnail ${index + 1}`}
@@ -53,14 +53,14 @@ const ProductGallery = (props: any) => {
                     />
                 ))}
             </div>
-            <div style={{flex: 1, width: '490px', marginLeft: 15}}>
+            <div style={{ flex: 1, width: '490px', marginLeft: 15 }}>
                 {isSingleImage ? (
                     <Image
                         src={props.images[0].imageUrl}
                         alt="ProductCardItem Image"
                         width={490}
                         height={650}
-                        style={{border: 0}}
+                        style={{ border: 0 }}
                         unoptimized
                     />
                 ) : (
@@ -72,7 +72,7 @@ const ProductGallery = (props: any) => {
                                     alt={`ProductCardItem Image ${index + 1}`}
                                     width={490}
                                     height={650}
-                                    style={{border: 0}}
+                                    style={{ border: 0 }}
                                     unoptimized
                                 />
                             </div>

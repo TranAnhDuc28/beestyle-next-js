@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Badge, Button, Flex, Image, Tooltip } from "antd";
+import { Badge, Button, Flex, Image, Tooltip, Row, Col, Card, Typography } from "antd";
 import MenuProductArea from "@/components/User/Home/Products/MenuProductArea";
 import ProductQuickLookupModal from "@/components/User/ProductCommonUser/ProductQuickLookupModal";
 import useSWR from 'swr';
@@ -43,21 +43,20 @@ function ProductArea() {
                         <div className="col-12">
                             <div className="product-info">
                                 <MenuProductArea />
-                                <div className="tab-content" id="myTabContent">
+                                <div className="mt-4">
                                     <div className="tab-pane fade show active" id="man" role="tabpanel">
-                                        <div className="tab-single">
-                                            <div className="row">
-                                                {products && Array.isArray(products) ? (
-                                                    products.map((product) => (
-                                                        <div key={product.id}
-                                                            className="col-xl-3 col-lg-4 col-md-4 col-12">
-                                                            <Badge.Ribbon text="Test" color="red">
-                                                                <div className="single-product">
-                                                                    <div className="product-img">
+                                        <Row gutter={[16, 16]} >
+                                            {products && Array.isArray(products) ? (
+                                                products.map((product) => (
+                                                    <Col key={product.id} xs={24} sm={12} md={12} lg={8} xl={6}>
+                                                        <Badge.Ribbon text={`${product.discountValue}%`} color="red">
+                                                            <Card
+                                                                className="product-card flex flex-col justify-between"
+                                                                cover={
+                                                                    <div className="product-img-container">
                                                                         <Link
                                                                             href={`/product/${product.id}/variant`}
                                                                         >
-
                                                                             <Image
                                                                                 loading="lazy"
                                                                                 alt="avatar"
@@ -103,44 +102,38 @@ function ProductArea() {
                                                                                     destroyOnClose: true,
                                                                                 }}
                                                                             />
-                                                                            <Image
-                                                                                loading="lazy"
-                                                                                alt="avatar"
-                                                                                src={product?.imageUrl}
-                                                                                style={{ width: "100%", height: "410px", objectFit: "cover" }}
-                                                                                className="hover-img"
-                                                                            />
                                                                         </Link>
                                                                     </div>
-                                                                    <div className="product-content mt-1 mb-3">
-                                                                        <h3>
-                                                                            <Link href="#"
-                                                                                className="link-action link-no-decoration text-dark fs-6">
-                                                                                {product.productName}
-                                                                            </Link>
-                                                                        </h3>
-                                                                        <div className="product-price">
-                                                                            <span
-                                                                                className="old-price"
-                                                                            >
-                                                                                {product.minSalePrice.toLocaleString()} đ
-                                                                            </span>
-                                                                            <span
-                                                                                className="current-price ml-2"
-                                                                            >
-                                                                                {product.minDiscountedPrice.toLocaleString()} đ
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
+                                                                }
+                                                            >
+                                                                <Typography.Paragraph
+                                                                    style={{ minHeight: 45, fontSize: 16, margin: 0 }}
+                                                                    ellipsis={{ rows: 2 }}
+                                                                    className="fw-semibold text-uppercase"
+                                                                >
+                                                                    {product?.productName}
+                                                                </Typography.Paragraph>
+
+                                                                <div className="product-price">
+                                                                    <span
+                                                                        className="old-price"
+                                                                    >
+                                                                        {product.minSalePrice.toLocaleString()} đ
+                                                                    </span>
+                                                                    <span
+                                                                        className="current-price ml-2"
+                                                                    >
+                                                                        {product.minDiscountedPrice.toLocaleString()} đ
+                                                                    </span>
                                                                 </div>
-                                                            </Badge.Ribbon>
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <div>No products available</div>
-                                                )}
-                                            </div>
-                                        </div>
+                                                            </Card>
+                                                        </Badge.Ribbon>
+                                                    </Col>
+                                                ))
+                                            ) : (
+                                                <div>No products available</div>
+                                            )}
+                                        </Row>
                                     </div>
                                 </div>
                             </div>

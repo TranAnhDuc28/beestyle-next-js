@@ -55,14 +55,14 @@ const ColorPickers = (props: any) => {
                     return (
                         <Button
                             key={index.toString()}
-                            className={`mr-2 mb-2 rounded-full w-11 h-11 flex items-center justify-center ${isSelected ? 'border-2' : ''}`}
+                            className={`mr-2 mb-2 rounded-full w-11 h-11 flex items-center justify-center ${isSelected ? 'border-1' : ''}`}
                             style={{
-                                backgroundColor: color.colorCode,
-                                border: isSelected ? '2px solid black' : 'none',
+                                backgroundColor: `#${color.colorCode}`,
+                                border: isSelected ? '1px solid gray' : 'none',
                             }}
                             onClick={() => handleColorClick(color.colorCode, color.colorName)}
                         >
-                            {isSelected && <CheckOutlined style={{ color: checkColor }} />}
+                            {isSelected && <CheckOutlined style={{ color: checkColor, fontSize: 20 }} />}
                         </Button>
                     );
                 })}

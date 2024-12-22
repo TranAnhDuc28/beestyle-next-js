@@ -9,6 +9,7 @@ import Image from "next/image";
 import { LuShoppingBag } from "react-icons/lu";
 import CartDrawer from "@/components/User/Cart/CartDrawer";
 import { CART_KEY } from "@/services/user/ShoppingCartService";
+import SearchDrawer from "../User/Home/Search/SearchDrawer";
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -17,6 +18,7 @@ const Navbar: React.FC = () => {
     const [cartCount, setCartCount] = useState<number>(0);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isSearchOpen, setSearchOpen] = useState(false);
     const pathname = usePathname();
 
     const fetchCartItems = () => {
@@ -43,6 +45,8 @@ const Navbar: React.FC = () => {
         if (pathname.includes('/cart') || pathname.includes('/checkout')) setIsCartOpen(false);
         else setIsCartOpen(true);
     }
+
+    const handleSearchOpen = () => setSearchOpen(true);
 
     const menuItems: MenuProps["items"] = useMemo(() => [
         {
@@ -123,7 +127,11 @@ const Navbar: React.FC = () => {
                         }
                         color="#F7941D"
                     >
-                        <Button type="text" icon={<SearchOutlined style={{ fontSize: 20 }} />} />
+                        <Button
+                            type="text"
+                            icon={<SearchOutlined style={{ fontSize: 20 }} />}
+                            onClick={handleSearchOpen}
+                        />
                     </Tooltip>
                 </div>
                 <div className={styles.iconButton}>
@@ -135,7 +143,12 @@ const Navbar: React.FC = () => {
                         }
                         color="#F7941D"
                     >
-                        <Button type="text" icon={<UserOutlined style={{ fontSize: 20 }} />} />
+                        <Link href={'/user-profile'} passHref>
+                            <Button
+                                type="text"
+                                icon={<UserOutlined style={{ fontSize: 20 }} />}
+                            />
+                        </Link>
                     </Tooltip>
                 </div>
                 <div className={styles.iconButton} style={{ marginTop: 5 }}>
@@ -159,6 +172,7 @@ const Navbar: React.FC = () => {
                         </Badge>
                     </Tooltip>
                     <CartDrawer open={isCartOpen} onClose={() => setIsCartOpen(false)} />
+                    <SearchDrawer open={isSearchOpen} onClose={() => setSearchOpen(false)} />
                 </div>
             </Flex>
         </Header>

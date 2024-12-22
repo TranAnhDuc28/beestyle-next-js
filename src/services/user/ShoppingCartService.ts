@@ -33,9 +33,9 @@ export const addToCart = (product: any, quantity: any, images: any) => {
             size: product.sizeName,
             product_quantity: product.quantityInStock,
             quantity: quantity,
-            original_price: product.originalPrice,
-            discounted_price: product.salePrice,
-            total_price: quantity * product.salePrice,
+            sale_price: product.salePrice,
+            discounted_price: product.discountPrice,
+            total_price: quantity * product.discountPrice,
             description: product.description,
             images: images
         };

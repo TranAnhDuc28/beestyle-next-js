@@ -24,39 +24,6 @@ const RegisterFormComponent = () => {
                     },
                 ]}
             />
-            <div className='flex justify-between'>
-                <ProFormDatePicker
-                    name="birthDate"
-                    fieldProps={{
-                        size: 'large',
-                    }}
-                    placeholder="Chọn ngày sinh"
-                    rules={[
-                        {
-                            required: false,
-                            message: 'Vui lòng chọn ngày sinh!',
-                        },
-                    ]}
-                />
-                <ProFormRadio.Group
-                    name="gender"
-                    options={[
-                        { label: 'Nam', value: 'male' },
-                        { label: 'Nữ', value: 'female' },
-                    ]}
-                    fieldProps={{
-                        size: 'large',
-                        buttonStyle: 'solid',
-                        optionType: 'button',
-                    }}
-                    rules={[
-                        {
-                            required: true,
-                            message: '(*)',
-                        },
-                    ]}  
-                />
-            </div>
             <ProFormText
                 fieldProps={{
                     size: 'large',

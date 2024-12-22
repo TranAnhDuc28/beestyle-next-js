@@ -120,7 +120,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         </Popconfirm>
                         <div className="d-flex flex-column align-items-center mt-4">
                             <span className={styles.itemPrice + ' mb-1'}>{item.discounted_price.toLocaleString()}₫</span>
-                            {/* <span className={styles.originalPrice}>{item.original_price.toLocaleString()}₫</span> */}
+                            <span className={styles.originalPrice}>{item.sale_price.toLocaleString()}₫</span>
                         </div>
                     </div>
                 </div>

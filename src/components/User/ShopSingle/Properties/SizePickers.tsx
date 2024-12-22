@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useProductSizes } from '@/services/user/SingleProductService';
 import Link from 'next/link';
 import './css/property.css';
+import SizeGuide from './SizeGuide';
+import { LuPencilRuler } from 'react-icons/lu';
 
 interface SizePickerProps {
     productId: string | number | null;
@@ -16,6 +18,7 @@ const SizePicker: React.FC<SizePickerProps> = ({
     selectedSize,
     onSizeSelect,
 }) => {
+    const [visible, setVisible] = useState(false);
     const { data: sizes } = useProductSizes(productId, colorCode);
 
     useEffect(() => {
@@ -32,7 +35,15 @@ const SizePicker: React.FC<SizePickerProps> = ({
 
     return (
         <>
-            <p className="text-black font-semibold">Kích thước:</p>
+            <div className='flex justify-between items-center'>
+                <p className="text-black font-semibold">Kích thước:</p>
+                <div className='text-blue-500 cursor-pointer mb-3' onClick={() => setVisible(true)}>
+                    <span className='flex items-center'>
+                        <LuPencilRuler className='me-2' />
+                        Bảng kích thước
+                    </span>
+                </div>
+            </div>
             <ul
                 style={{
                     display: 'flex',
@@ -47,7 +58,7 @@ const SizePicker: React.FC<SizePickerProps> = ({
                             href="#"
                             className={
                                 selectedSize === size.id
-                                    ? 'selected-size size-variant'
+                                    ? 'bg-black text-white size-variant'
                                     : 'size-variant'
                             }
                             onClick={(e) => {
@@ -60,6 +71,7 @@ const SizePicker: React.FC<SizePickerProps> = ({
                     </li>
                 ))}
             </ul>
+            <SizeGuide visible={visible} onClose={() => setVisible(false)} />
         </>
     );
 };
