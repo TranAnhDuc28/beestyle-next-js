@@ -231,18 +231,15 @@ const OrderDetailTable: React.FC<IProps> = (props) => {
                 ),
         },
     ], []);
-
-    const defaultFooter = () => 'Here is footer';
-
     return (
         <Table<IOrderItem>
             rowKey="id"
-            loading={isLoading}
             size="small"
-            pagination={false}
+            bordered={true}
+            loading={isLoading}
             columns={columns}
-            footer={defaultFooter}
             dataSource={handleSale?.dataCart}
+            pagination={false}
             scroll={{y: 'calc(100vh - 350px)', scrollToFirstRowOnChange: true}}
         />
     );

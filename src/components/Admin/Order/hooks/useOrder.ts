@@ -17,6 +17,7 @@ const useOrder = () => {
             {
                 revalidateIfStale: false,
                 revalidateOnReconnect: false,
+                revalidateOnFocus: false
             }
         );
 
