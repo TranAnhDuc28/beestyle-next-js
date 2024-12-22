@@ -4,6 +4,8 @@ import React, { memo } from "react";
 import moment from "moment";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { createStaff } from "@/services/StaffService";
+import { usePhoneValidation } from "@/hooks/usePhoneNumberValidation";
+import { useEmailValidation } from "@/hooks/useEmailValidation";
 const { Option } = Select;
 
 interface IProps {
@@ -15,6 +17,8 @@ interface IProps {
 const AddStaff = (props: IProps) => {
   const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
   const { showNotification } = useAppNotifications();
+  const { validatePhoneNumber } = usePhoneValidation();
+  const {validateEmail} = useEmailValidation();
   const [form] = Form.useForm();
 
   const handleCancelModal = () => {
@@ -83,17 +87,17 @@ const AddStaff = (props: IProps) => {
           >
             <Input />
           </Form.Item>
-          <Form.Item
+          {/* <Form.Item
             label="Password"
             name="password"
             rules={[{ required: true, message: "Vui lòng nhập password!" }]}
           >
             <Input.Password />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             label="Email"
             name="email"
-            rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+            rules={[{ validator: (_, value) => validateEmail(value) }]}
           >
             <Input />
           </Form.Item>
@@ -101,7 +105,7 @@ const AddStaff = (props: IProps) => {
           <Form.Item
             label="Sdt"
             name="phoneNumber"
-            rules={[{ required: true, message: "Vui lòng nhập sdt!" }]}
+            rules={[{ validator: (_, value) => validatePhoneNumber(value) }]}
           >
             <Input />
           </Form.Item>
