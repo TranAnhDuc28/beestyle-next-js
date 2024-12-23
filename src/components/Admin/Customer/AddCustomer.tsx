@@ -21,24 +21,36 @@ const AddCustomer = (props: IProps) => {
   const { showNotification } = useAppNotifications();
   const { validatePhoneNumber } = usePhoneValidation();
 
-  const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | null>(null);
-  const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | null>(null);
-  const [selectedWardCode, setSelectedWardsCode] = useState<string | null>( null );
+  const [selectedProvinceCode, setSelectedProvinceCode] = useState<
+    string | null
+  >(null);
+  const [selectedDistrictCode, setSelectedDistrictCode] = useState<
+    string | null
+  >(null);
+  const [selectedWardCode, setSelectedWardsCode] = useState<string | null>(
+    null
+  );
 
-  const [selectedProvinceName, setSelectedProvinceName] = useState<string | null>(null);
-  const [selectedDistrictName, setSelectedDistrictName] = useState< string | null  >(null);
+  const [selectedProvinceName, setSelectedProvinceName] = useState<
+    string | null
+  >(null);
+  const [selectedDistrictName, setSelectedDistrictName] = useState<
+    string | null
+  >(null);
   const [selectedWardName, setSelectedWardName] = useState<string | null>(null);
-  const [selectedAddressDetail, setSelectedAddressDetail] = useState<string | null>(null);
+  const [selectedAddressDetail, setSelectedAddressDetail] = useState<
+    string | null
+  >(null);
 
-  const { handleGetProvinces, handleGetDistricts, handleGetWards } =useAddress();
+  const { handleGetProvinces, handleGetDistricts, handleGetWards } =
+    useAddress();
   const provincesData = handleGetProvinces();
   const districtsData = handleGetDistricts(selectedProvinceCode);
   const wardsData = handleGetWards(selectedDistrictCode);
 
-  const [form] = Form.useForm(); 
+  const [form] = Form.useForm();
 
   console.log(provincesData);
-
 
   const onChangeSelectedProvince = useCallback(
     (provinceCode: string) => {
@@ -175,6 +187,7 @@ const AddCustomer = (props: IProps) => {
         title={"Thêm mới khách hàng"}
         cancelText="Hủy"
         okText="Lưu"
+        width={650}
         onOk={() => form.submit()}
         style={{ top: 20 }}
         open={isCreateModalOpen}
@@ -184,92 +197,138 @@ const AddCustomer = (props: IProps) => {
         <Form
           form={form}
           onFinish={handleSubmit}
-          layout="horizontal"
+          layout="vertical"
           labelAlign="left"
           labelWrap
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 20 }}
         >
-          <Form.Item
-            label="Họ tên"
-            name="fullName"
-            rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
-          >
-            <Input />
-          </Form.Item>
+          {/* Họ tên và Số điện thoại */}
+          <Row gutter={[16, 16]}>
+            {/* Họ tên và Số điện thoại */}
+            <Col xs={24} md={12}>
+              <Form.Item
+                label="Họ tên"
+                name="fullName"
+                rules={[
+                  { required: true, message: "Vui lòng nhập họ và tên!" },
+                ]}
+              >
+                <Input placeholder="Nhập họ và tên" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item
+                label="Số điện thoại"
+                name="phoneNumber"
+                rules={[
+                  { validator: (_, value) => validatePhoneNumber(value) },
+                ]}
+              >
+                <Input placeholder="Nhập số điện thoại" />
+              </Form.Item>
+            </Col>
+          </Row>
 
-          <Form.Item
-            label="Số điện thoại"
-            name="phoneNumber"
-            rules={[{ validator: (_, value) => validatePhoneNumber(value) }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Email"
-            name="email"
-            // rules={[{ required: true, message: "Vui lòng nhập email!" }]}
-          >
-            <Input />
-          </Form.Item>
+          <Row gutter={[16, 16]}>
+            {/* Email và Ngày sinh */}
+            <Col xs={24} md={12}>
+              <Form.Item label="Email" name="email">
+                <Input placeholder="Nhập email" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item label="Ngày sinh" name="dateOfBirth">
+                <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} placeholder="Chọn ngày sinh" />
+              </Form.Item>
+            </Col>
+          </Row>
 
-          <Form.Item
-            label="Ngày sinh"
-            name="dateOfBirth"
-            // rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
-          >
-            <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} />
-          </Form.Item>
+          <Row gutter={[16, 16]}>
+            {/* Giới tính */}
+            <Col xs={24} md={12}>
+              <Form.Item label="Giới tính" name="gender" initialValue="0">
+                <Select placeholder="Chọn giới tính" defaultValue="0">
+                  <Option value="0">Nam</Option>
+                  <Option value="1">Nữ</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item
+                label="Chi tiết"
+                name="addressDetail"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập địa chỉ chi tiết!",
+                  },
+                ]}
+              >
+                <Input
+                  style={{ width: "100%" }}
+                  placeholder="Nhập địa chỉ chi tiết"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
-          <Form.Item label="Giới tính" name="gender" initialValue="0">
-            <Select
-              style={{ width: "100%" }}
-              placeholder="Giới tính"
-              defaultValue="0"
-            >
-              <Select.Option value="0">Nam</Select.Option>
-              <Select.Option value="1">Nữ</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="Tỉnh/Thành phố" name="province"  rules={[{ required: true, message: "Vui lòng chọn tỉnh/thành phố!" }]}>
-            <SelectSearchOptionLabel
-            
-              value={selectedProvinceCode}
-              style={{ width: "100%" }}
-              placeholder="Tỉnh / Thành phố"
-              data={provincesData?.dataOptionProvinces}
-              isLoading={provincesData?.isLoading}
-              onChange={onChangeSelectedProvince}
-            />
-          </Form.Item>
-
-          <Form.Item label="Huyện/Quận" name="district"  rules={[{ required: true, message: "Vui lòng chọn huyện/quận!" }]}>
-            <SelectSearchOptionLabel
-              value={selectedDistrictCode}
-              placeholder="Quận / Huyện"
-              style={{ width: "100%" }}
-              data={districtsData?.dataOptionDistricts}
-              isLoading={districtsData?.isLoading}
-              onChange={onChangeSelectedDistrict}
-            />
-          </Form.Item>
-
-          <Form.Item label="Xã/Phường" name="ward"  rules={[{ required: true, message: "Vui lòng chọn xã/phường!" }]}>
-            <SelectSearchOptionLabel
-              value={selectedWardCode}
-              placeholder="Phường / Xã"
-              style={{ width: "100%" }}
-              data={wardsData?.dataOptionWards}
-              isLoading={wardsData?.isLoading}
-              onChange={onChangeSelectedWard}
-            />
-          </Form.Item>
-
-          <Form.Item label="Chi tiết" name="addressDetail"  rules={[{ required: true, message: "Vui lòng nhập địa chỉ chi tiết!" }]}>
-            <Input style={{ width: "100%" }} placeholder="Địa chỉ" />
-          </Form.Item>
+          <Row gutter={[16, 16]}>
+            {/* Địa chỉ: Tỉnh/Thành phố, Huyện/Quận, Xã/Phường */}
+            <Col xs={24} sm={8}>
+              <Form.Item
+                label="Tỉnh/Thành phố"
+                name="province"
+                rules={[
+                  { required: true, message: "Vui lòng chọn tỉnh/thành phố!" },
+                ]}
+              >
+                <SelectSearchOptionLabel
+                  value={selectedProvinceCode}
+                  style={{ width: "100%" }}
+                  placeholder="Tỉnh / Thành phố"
+                  data={provincesData?.dataOptionProvinces}
+                  isLoading={provincesData?.isLoading}
+                  onChange={onChangeSelectedProvince}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={8}>
+              <Form.Item
+                label="Huyện/Quận"
+                name="district"
+                rules={[
+                  { required: true, message: "Vui lòng chọn huyện/quận!" },
+                ]}
+              >
+                <SelectSearchOptionLabel
+                  value={selectedDistrictCode}
+                  placeholder="Quận / Huyện"
+                  style={{ width: "100%" }}
+                  data={districtsData?.dataOptionDistricts}
+                  isLoading={districtsData?.isLoading}
+                  onChange={onChangeSelectedDistrict}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={8}>
+              <Form.Item
+                label="Xã/Phường"
+                name="ward"
+                rules={[
+                  { required: true, message: "Vui lòng chọn xã/phường!" },
+                ]}
+              >
+                <SelectSearchOptionLabel
+                  value={selectedWardCode}
+                  placeholder="Phường / Xã"
+                  style={{ width: "100%" }}
+                  data={wardsData?.dataOptionWards}
+                  isLoading={wardsData?.isLoading}
+                  onChange={onChangeSelectedWard}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
-
       </Modal>
     </>
   );

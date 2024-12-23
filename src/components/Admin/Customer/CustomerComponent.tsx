@@ -118,7 +118,7 @@ const CustomerComponent = () => {
               />
             </Link>
           </Tooltip>
-          <Tooltip placement="top" title="Cập nhật">
+          {/* <Tooltip placement="top" title="Cập nhật">
             <EditTwoTone
               twoToneColor={"#f57800"}
               style={{
@@ -132,7 +132,7 @@ const CustomerComponent = () => {
                 setDataUpdate(record);
               }}
             />
-          </Tooltip>
+          </Tooltip> */}
         </div>
       ),
     },
