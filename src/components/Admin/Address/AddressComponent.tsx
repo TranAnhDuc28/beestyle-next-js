@@ -1,12 +1,11 @@
 "use client";
-import ColorButton from "@/components/Button/ColorButton";
+
 import { IAddress } from "@/types/IAddress";
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, Popconfirm, Space, Tag, Typography } from "antd";
-import { ColumnType } from "antd/es/table";
-import { Table } from "antd/lib";
+import { Button, Collapse, Popconfirm, Space, Tag, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import {
+  deleteAddress,
   getAddressByCustomerId,
   setIsDefault,
   URL_API_ADDRESS,
@@ -17,15 +16,17 @@ import useAppNotifications from "@/hooks/useAppNotifications";
 import CreateAddressModal from "./CreateAddressModal";
 import UpdateAddress from "./UpdateAddress";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
+const { Panel } = Collapse;
 
 const AddressComponent = () => {
-  const [expandedKey, setExpandedKey] = useState<number | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
+  const [selectedAddress, setSelectedAddress] = useState<IAddress | null>(null);
   const { id } = useParams();
   const { showNotification } = useAppNotifications();
 
-  const { data, error, isLoading, mutate } = useSWR(
+  const { data, error, mutate } = useSWR(
     `${URL_API_ADDRESS.get}?id=${id}`,
     getAddressByCustomerId,
     {
@@ -33,25 +34,45 @@ const AddressComponent = () => {
       revalidateOnReconnect: false,
     }
   );
+  const handleUpdateAddress = (address: IAddress) => {
+    console.log("update");
+    setSelectedAddress(address);
+    setIsUpdateModalOpen(true);
+  };
+  const handleDeleteAddress = async (address: IAddress) => {
+    try {
+      const result = await deleteAddress(address);
+      console.log(result);
+      
+      if (result.code == 200) {
+        mutate()
+        showNotification("success", { message: result.message });
+      }
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message;
+      if (errorMessage && typeof errorMessage === "object") {
+        Object.entries(errorMessage).forEach(([field, message]) => {
+          showNotification("error", { message: String(message) });
+        });
+      } else {
+        showNotification("error", {
+          message: error?.message,
+          description: errorMessage,
+        });
+      }
+    }
+  }
+  const addresses = data?.data?.items || [];
 
   useEffect(() => {
     if (error) {
       showNotification("error", {
         message: error?.message,
-        description: error?.response?.data?.message || "Error fetching addresses",
+        description:
+          error?.response?.data?.message || "Error fetching addresses",
       });
     }
   }, [error]);
-
-  const handleExpand = (expanded: boolean, record: IAddress) => {
-    setExpandedKey(expanded ? record.id : null);
-  };
-  
-
-  const handleUpdate = async () => {
-    setExpandedKey(null); // Reset trạng thái
-    await mutate(); // Làm mới dữ liệu
-  };
 
   const handleSetDefault = async (record: IAddress) => {
     try {
@@ -79,81 +100,115 @@ const AddressComponent = () => {
     }
   };
 
-  const columns: ColumnType<IAddress>[] = [
-    {
-      title: "Địa chỉ",
-      dataIndex: "addressName",
-      key: "addressName",
-      render: (address, record) => (
-        <div>
-          <span>
-            {address
-              ? `${address}, ${record.commune || ""}, ${record.district || ""}, ${record.city || ""}`
-              : `${record.commune || ""}, ${record.district || ""}, ${record.city || ""}`}
-          </span>
-          {record.isDefault && (
-            <Tag color="green" style={{ marginLeft: 8 }}>
-              Default
-            </Tag>
-          )}
-        </div>
-      ),
-    },
-    {
-      title: "",
-      dataIndex: "action",
-      key: "action",
-      render: (_, record: IAddress) => (
-        <Popconfirm
-          placement="left"
-          title="Bạn có muốn đặt địa chỉ làm mặc định hay không?"
-          onConfirm={() => handleSetDefault(record)}
-          okText="Yes"
-          cancelText="No"
-        >
-          <Button disabled={record.isDefault}>Đặt làm mặc định</Button>
-        </Popconfirm>
-      ),
-    },
-  ];
-
   return (
     <div>
-      <Space className="flex justify-between">
-        <Title level={3}>Địa chỉ</Title>
-        <ColorButton
-          bgColor="#00b96b"
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "end",
+          marginBottom: "20px",
+        }}
+      >
+        <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => setIsCreateModalOpen(true)}
         >
           Thêm địa chỉ
-        </ColorButton>
-      </Space>
-      <Table
-        rowKey="id"
-        expandable={{
-            expandedRowRender: (record) =>
-                expandedKey === record.id ? (
-                  <UpdateAddress
-                    initialValues={record}
-                    hanldeClose={handleUpdate}
-                    key={record.id}
-                    mutate={mutate}
-                  />
-                ) : null,
-          onExpand: handleExpand,
-          rowExpandable: () => true,
+        </Button>
+      </div>
+      <Collapse
+        accordion
+        style={{
+          background: "transparent", // Xóa màu nền của Collapse
+          border: "none", // Xóa viền
         }}
-        dataSource={data?.data?.items || []}
-        columns={columns}
-        pagination={false}
-      />
+      >
+        {addresses.map((address: IAddress, index: number) => (
+          <Panel
+            header={
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+              >
+                <Text strong>{`Địa chỉ ${index + 1}`}</Text>
+                {address.isDefault && <Tag color="green">Mặc định</Tag>}
+              </div>
+            }
+            key={address.id}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "30px",
+              }}
+            >
+              <Text>
+                {address.addressName} - {address.commune} - {address.district} -{" "}
+                {address.city}
+              </Text>
+              <br />
+              <div style={{ flexShrink: 0 }}>
+                <div
+                  style={{ display: "flex", gap: "10px", marginBottom: "10px" }}
+                >
+                  <Button
+                    type="primary"
+                    onClick={() => handleUpdateAddress(address)}
+                  >
+                    Sửa
+                  </Button>
+                  <Popconfirm
+                      placement="left"
+                      title="Bạn có muốn xóa địa chỉ này không?"
+                      onConfirm={() => handleDeleteAddress(address)}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+
+                  <Button danger>Xóa</Button>
+                    </Popconfirm>
+                </div>
+                <div>
+                  {address.isDefault ? (
+                    <Button disabled>Đặt mặc định</Button>
+                  ) : (
+                    <Popconfirm
+                      placement="left"
+                      title="Bạn có muốn đặt địa chỉ làm mặc định hay không?"
+                      onConfirm={() => handleSetDefault(address)}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <Button>Đặt mặc định</Button>
+                    </Popconfirm>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Panel>
+        ))}
+      </Collapse>
+
       <CreateAddressModal
         isCreateModalOpen={isCreateModalOpen}
         setIsCreateModalOpen={setIsCreateModalOpen}
         mutate={mutate}
       />
+      {isUpdateModalOpen && selectedAddress && (
+        <UpdateAddress
+          mutate={mutate}
+          isUpdateModalOpen={isUpdateModalOpen}
+          setIsUpdateModalOpen={setIsUpdateModalOpen}
+          initialValues={selectedAddress}
+        />
+      )}
     </div>
   );
 };
