@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Carousel, Tag, InputNumber, Image } from 'antd';
-import { useProductImages, useProduct } from '@/services/user/SingleProductService';
+import { useProduct } from '@/services/user/SingleProductService';
 import ColorPickers from '@/components/User/ShopSingle/Properties/ColorPickers';
 import SizePickers from '@/components/User/ShopSingle/Properties/SizePickers';
 import Link from 'next/link';
@@ -18,7 +18,6 @@ interface IProps {
 }
 
 const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }) => {
-    const productId = product?.id || null;
     const carouselRef = useRef<any>(null);
     const [quantity, setQuantity] = useState(1);
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -26,8 +25,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isSliding, setIsSliding] = useState(false);
 
-    const { data: productData, error: productError } = useProduct(productId, selectedColor, selectedSize);
-    const { data: images, error: imagesError } = useProductImages(productId);
+    const { data: productData, error: productError } = useProduct(product?.id, selectedColor, selectedSize);
 
     useEffect(() => {
         setQuantity(1);
@@ -36,8 +34,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
         setCurrentSlide(0);
 
         if (productError) console.log(productError);
-        if (imagesError) console.log(imagesError);
-    }, [productId, visible]);
+    }, [product?.id, visible, productError]);
 
     const handleColorSelect = (color: string) => {
         setSelectedColor(color);
@@ -49,11 +46,9 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
     };
 
     const handleDecrement = () => setQuantity((prev) => Math.max(prev - 1, 1));
-    const handleIncrement = () => setQuantity((prev) => Math.min(prev + 1, productData?.quantity || 1000));
+    const handleIncrement = () => setQuantity((prev) => Math.min(prev + 1, productData?.quantity));
 
     const handleAddToCart = (product: any, quantity: number, images: any) => {
-        console.log(product);
-
         if (selectedColor && selectedSize) addToCart(product, quantity, images);
         else return;
     }
@@ -68,9 +63,9 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
         setTimeout(() => setIsSliding(false), 500);
     };
 
-    const slides = images
-        ? images.map((image: any, index: number) => (
-            <div key={index.toString()} className="flex justify-center">
+    const slides = product?.images
+        ? product?.images.map((image: any, index: number) => (
+            <div key={index} className="flex justify-center">
                 <Image
                     loading="lazy"
                     style={{ width: "100%", height: "auto", objectFit: "cover", aspectRatio: "3/4" }}
@@ -83,7 +78,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
         : [
             <div key="0" className="flex justify-center">
                 <Image
-                    loading="lazy"
+                    loading="eager"
                     style={{ width: "100%", height: "100%", objectFit: "cover", aspectRatio: "3/4" }}
                     src="/no-img.png"
                     alt={product?.productName}
@@ -102,11 +97,11 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
         >
             <div className="flex">
                 <div className="flex flex-col gap-2 me-1">
-                    {images &&
-                        images.map((image: any, index: number) => (
+                    {product?.images &&
+                        product?.images.map((image: any, index: number) => (
                             <div
                                 key={index}
-                                className={`w-15 h-[84px] flex-shrink-0 cursor-pointer border-2 me-2
+                                className={`w-16 h-[84px] flex-shrink-0 cursor-pointer border-2 me-2
                                         ${currentSlide === index ? 'border-orange-400' : 'border-transparent'}`}
                                 onClick={() => goToSlide(index)}
                             >
@@ -116,6 +111,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                                     src={image.imageUrl}
                                     alt={product.productName}
                                     preview={false}
+                                    loading='lazy'
                                 />
                             </div>
                         ))}
@@ -133,7 +129,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                         {slides}
                     </Carousel>
                     <div className="text-center mt-2">
-                        <Link href={`/product/${productId}/variant`} className="!text-blue-500">
+                        <Link href={`/product/${product?.id}/variant`} className="!text-blue-500">
                             Xem chi tiết sản phẩm
                         </Link>
                     </div>
@@ -158,28 +154,41 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                             <span className="text-orange-400 text-2xl font-bold">
                                 {productData?.discountPrice?.toLocaleString()} đ
                             </span>
-                            <span className="text-gray-500 text-lg line-through ml-2">
+                            <span
+                                className={productData?.salePrice > productData?.discountPrice
+                                    ? 'text-gray-500 text-lg fs-6 line-through ms-2' : 'd-none'
+                                }
+                            >
                                 {productData?.salePrice?.toLocaleString()} đ
                             </span>
-                            <span className="text-red-500 font-bold ml-2">
-                                -{productData?.discountValue}%
-                            </span>
+                            <Tag
+                                color={'pink'}
+                                key={'discount'}
+                                bordered={false}
+                                className={productData?.salePrice > productData?.discountPrice
+                                    ? 'ms-2 rounded-3xl' : 'd-none'
+                                }
+                            >
+                                <span className="text-red-500 font-bold">
+                                    -{productData?.discountValue}%
+                                </span>
+                            </Tag>
                         </div>
 
                         <ColorPickers
-                            productId={productId}
+                            productId={product?.id}
                             selectedColor={selectedColor}
                             onColorSelect={handleColorSelect}
                             style={{ maxWidth: '300px', overflowX: 'auto', whiteSpace: 'nowrap' }}
                         />
 
                         <SizePickers
-                            productId={productId}
+                            productId={product?.id}
                             colorCode={selectedColor}
                             selectedSize={selectedSize}
                             onSizeSelect={handleSizeSelect}
                         />
-                        <div className="flex items-center my-4">
+                        <div className="flex items-center mt-8">
                             <p className="text-black font-semibold mr-5 mb-0">Số lượng</p>
                             <div className="flex items-center">
                                 <Button
@@ -216,7 +225,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                             block
                             size="large"
                             className="bg-black text-white hover:!bg-orange-400"
-                            onClick={() => handleAddToCart(productData, quantity, images)}
+                            onClick={() => handleAddToCart(productData, quantity, product.images)}
                         >
                             Thêm vào giỏ
                         </Button>

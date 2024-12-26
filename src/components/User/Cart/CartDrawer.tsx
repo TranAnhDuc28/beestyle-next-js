@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Drawer, Button, Empty, Popconfirm } from 'antd';
 import { CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import Link from 'next/link';
@@ -7,6 +7,7 @@ import Image from "next/image";
 import { CART_KEY, removeItemFromCart } from "@/services/user/ShoppingCartService";
 import QuantityControl from "@/components/User/Cart/Properties/QuantityControl";
 import ProgressShipping from './Properties/ProgressShipping';
+import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 
 interface CartDrawerProps {
     open: boolean;
@@ -31,7 +32,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
     }, []);
 
     const condition = 500000;
-    const totalAmount = cartItems.reduce((total, item) => total + item.total_price, 0);
+    const totalAmount = cartItems.reduce((total: number, item: { total_price: number; }) => total + item.total_price, 0);
 
     const handleQuantityChange = (index: number, newQuantity: number) => {
         const newCartItems = [...cartItems];
@@ -42,7 +43,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
         window.dispatchEvent(new Event('cartUpdated'));
     };
 
-    const handleRemoveCartItem = (cartId: number) => {
+    const handleRemoveCartItem = (cartId: string) => {
         removeItemFromCart(cartId);
     }
 
@@ -68,8 +69,20 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 maxHeight: cartItems.length > 2 ? 'calc(100vh - 140px)' : ''
             }}
         >
-            {cartItems && cartItems.length ? cartItems.map((item, index) => (
-                <div className={styles.cartItem} key={index.toString()}>
+            {cartItems && cartItems.length ? cartItems.map((
+                item: {
+                    product_variant_id: string;
+                    images: { imageUrl: string | StaticImport; }[];
+                    product_name: string;
+                    color: string;
+                    size: string;
+                    quantity: number;
+                    product_quantity: number;
+                    shopping_cart_id: string;
+                    discounted_price: { toLocaleString: () => string | number | bigint };
+                    sale_price: { toLocaleString: () => string | number | bigint };
+                }, index: number) => (
+                <div className={styles.cartItem} key={index}>
                     <Link
                         href={`/product/${item.product_variant_id}/variant`}
                         onClick={onClose}
@@ -86,10 +99,10 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     <div className={styles.itemInfo}>
                         <Link
                             href={`/product/${item.product_variant_id}/variant`}
-                            className="link-no-decoration"
+                            className="no-underline"
                             onClick={onClose}
                         >
-                            <span className={styles.itemTitle}>{item.product_name}</span>
+                            <span className={styles.itemTitle + ' text-black'}>{item.product_name}</span>
                         </Link>
                         <p className={styles.itemVariant}>{item.color} / {item.size}</p>
                         <div className={styles.quantityControl}>
@@ -119,8 +132,18 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                             />
                         </Popconfirm>
                         <div className="d-flex flex-column align-items-center mt-4">
-                            <span className={styles.itemPrice + ' mb-1'}>{item.discounted_price.toLocaleString()}₫</span>
-                            <span className={styles.originalPrice}>{item.sale_price.toLocaleString()}₫</span>
+                            <span className={item.sale_price > item.discounted_price
+                                ? styles.itemPrice : styles.itemPrice + ' mt-7'
+                            }
+                            >
+                                {item && item.discounted_price.toLocaleString()}₫</span>
+                            <span
+                                className={item.sale_price > item.discounted_price
+                                    ? styles.salePrice : 'd-none'
+                                }
+                            >
+                                {item && item.sale_price.toLocaleString()}₫
+                            </span>
                         </div>
                     </div>
                 </div>

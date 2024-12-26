@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export const CART_KEY = 'shopping_cart';
 
 const getCart = () => {
@@ -29,6 +31,7 @@ export const addToCart = (product: any, quantity: any, images: any) => {
             shopping_cart_id: Date.now(),
             product_variant_id: product.id,
             product_name: product.productName,
+            sku: product.sku,
             color: product.colorName,
             size: product.sizeName,
             product_quantity: product.quantityInStock,
@@ -52,3 +55,56 @@ export const removeItemFromCart = (shoppingCartId: string) => {
     localStorage.setItem(CART_KEY, JSON.stringify(updatedCart));
     window.dispatchEvent(new Event('cartUpdated'));
 };
+
+export const checkShoppingCartData = async () => {
+    const cartItems = getCart();
+
+    if (cartItems && cartItems.length > 0) {
+        const cartDataToCheck = cartItems.map(item => ({
+            sku: item.sku,
+        }));
+
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/cart/check', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(cartDataToCheck),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const updatedCartDataFromBE = await response.json();
+
+            const updatedCartItems = cartItems.map(item => {
+                const matchingItemFromBE = updatedCartDataFromBE.find(beItem =>
+                    beItem.sku === item.sku &&
+                    beItem.salePrice === item.sale_price &&
+                    beItem.discountPrice === item.discounted_price &&
+                    beItem.quantityInStock === item.product_quantity
+                );
+                if (matchingItemFromBE) {
+                    return {
+                        ...item,
+                    };
+                } else {
+                    return {
+
+                    };
+                }
+            });
+
+            const finalCartItems = updatedCartItems.filter(item => item.is_valid !== false);
+
+            saveCart(finalCartItems);
+            window.dispatchEvent(new Event('cartUpdated'));
+            console.log("Dữ liệu giỏ hàng:", finalCartItems);
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+}
