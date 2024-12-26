@@ -149,9 +149,9 @@ const PromotionComponent: React.FC<any> = (props: any) => {
 
                 if (value === 'UPCOMING') {
                     color = 'blue';
-                } else if (value === 'ONGOING') {
+                } else if (value === 'ACTIVE') {
                     color = 'green';
-                } else if (value === 'ENDED') {
+                } else if (value === 'EXPIRED') {
                     color = 'red';
                 }
 
