@@ -12,6 +12,7 @@ export interface IOrder {
     paymentMethod: string;
     pickupMethod: string;
     orderChannel: string;
+    orderType: string;
     orderStatus: string;
     note?: string;
     createdAt?: Date;
