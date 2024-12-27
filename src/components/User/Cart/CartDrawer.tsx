@@ -71,7 +71,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
         >
             {cartItems && cartItems.length ? cartItems.map((
                 item: {
-                    product_variant_id: string;
+                    product_id: string;
                     images: { imageUrl: string | StaticImport; }[];
                     product_name: string;
                     color: string;
@@ -84,7 +84,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 }, index: number) => (
                 <div className={styles.cartItem} key={index}>
                     <Link
-                        href={`/product/${item.product_variant_id}/variant`}
+                        href={`/product/${item.product_id}/variant`}
                         onClick={onClose}
                     >
                         <Image
@@ -98,7 +98,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
                     <div className={styles.itemInfo}>
                         <Link
-                            href={`/product/${item.product_variant_id}/variant`}
+                            href={`/product/${item.product_id}/variant`}
                             className="no-underline"
                             onClick={onClose}
                         >

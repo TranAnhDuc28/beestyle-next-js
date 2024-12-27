@@ -8,7 +8,7 @@ import {
     Table,
     Empty,
     Tag,
-    Typography,
+    Typography, Flex, Pagination, Button,
 } from "antd";
 import {getProductDetails} from "../../../services/ProductVariantService";
 import {IProductVariant} from "../../../types/IProductVariant";
@@ -33,16 +33,32 @@ const ProductVariant: React.FC<IProps> = ({
                                           }) => {
     const [productDetails, setProductDetails] = useState<IProductVariant[]>([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
+    const [totalItems, setTotalItems] = useState(0);
 
     // Fetch color and size options
     const {dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor}
         = useOptionColor(isProductVariantOpen);
     const colorMap = useMemo(() => new Map(dataOptionColor.map(item => [item.label, item.code])), [dataOptionColor]);
 
+    const handlePageChange = (page: number, pageSize?: number) => {
+        setCurrentPage(page);
+        if (pageSize) {
+            setPageSize(pageSize);
+        }
+    };
+    const paginatedData = useMemo(() => {
+        const start = (currentPage - 1) * pageSize;
+        const end = start + pageSize;
+        return productDetails.slice(start, end);
+    }, [productDetails, currentPage, pageSize]);
+
+
 
     const handleCloseProductVariantModal = () => {
         setIsProductVariantOpen(false);
-        setProductDetails([]);
+        // setProductDetails([]);
         setSelectedRowKeys([]);
     };
 
@@ -139,13 +155,35 @@ const ProductVariant: React.FC<IProps> = ({
             title="Chọn sản phẩm chi tiết"
             open={isProductVariantOpen}
             onCancel={handleCloseProductVariantModal}
-            onOk={handleOk}
-            cancelText="Hủy"
-            okText="Chọn"
             okButtonProps={{
                 style: {background: "#00b96b"},
             }}
             width={1000}
+            footer={
+                <Flex align="center" justify="space-between">
+                    <Pagination
+                        current={currentPage}
+                        pageSize={pageSize}
+                        total={productDetails.length}
+                        onChange={handlePageChange}
+                    />
+                    <div>
+                        <Button key="cancel" onClick={handleCloseProductVariantModal}>
+                            Hủy
+                        </Button>
+                        <Button key="ok" type="primary" onClick={handleOk} style={{marginLeft: "10px"}}>
+                            Chọn
+                        </Button>
+                    </div>
+                </Flex>
+            }
+            // styles={{
+            //     body: {
+            //         maxHeight: 520,
+            //         minHeight: 520,
+            //         overflowY: "auto",
+            //     }
+            // }}
             style={{top: 20}}
         >
             <Row>
@@ -159,8 +197,15 @@ const ProductVariant: React.FC<IProps> = ({
                                 key: variant.id,
                             }))}
                             rowKey="id"
-                            bordered
-                            pagination={{pageSize: 5}}
+                            pagination={false}
+                            // pagination={{
+                            //     current: currentPage,
+                            //     pageSize: pageSize,
+                            //     total: productDetails.length,
+                            //     onChange: handlePageChange,
+                            //     showSizeChanger: true,
+                            //     pageSizeOptions: ["5","10", "20", "50", "100"],
+                            // }}
                             style={{backgroundColor: "#fafafa"}}
                         />
                     ) : (

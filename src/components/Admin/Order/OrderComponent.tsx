@@ -9,10 +9,11 @@ import dayjs from "dayjs";
 import {ORDER_CHANEL} from "@/constants/OrderChanel";
 import {EyeTwoTone} from "@ant-design/icons";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
-import {ORDER_STATUS, ORDER_STATUS_COLOR} from "@/constants/OrderStatus";
+import {ORDER_STATUS} from "@/constants/OrderStatus";
 import OrderFilter from "@/components/Admin/Order/OrderFilter";
 import useFilterOrder, {ParamFilterOrder} from "@/components/Admin/Order/hooks/useFilterOrder";
 import Link from "next/link";
+import {ORDER_TYPE} from "@/constants/OrderType";
 
 const {Content} = Layout;
 
@@ -27,12 +28,6 @@ const defaultFilterParam: ParamFilterOrder = {
     orderStatus: undefined,
     orderChannel: undefined,
     paymentMethod: undefined,
-};
-
-const getOrderStatusTagColor = (status: keyof typeof ORDER_STATUS) => {
-    const statusName = ORDER_STATUS[status].name;
-    const color = ORDER_STATUS_COLOR.get(status) || 'default';
-    return <Tag color={color}>{statusName}</Tag>;
 };
 
 const OrderComponent: React.FC = () => {
@@ -66,14 +61,23 @@ const OrderComponent: React.FC = () => {
         {
             title: 'Kênh bán hàng', dataIndex: 'orderChannel', key: 'orderChannel', align: 'center',
             render(value: keyof typeof ORDER_CHANEL, record) {
-                let color: string = value === 'ONLINE' ? 'green' : 'orange';
-                return (<Tag color={color}>{ORDER_CHANEL[value]}</Tag>);
+                let color: string = ORDER_CHANEL[value]?.color_tag ?? "default";
+                return (<Tag color={color}>{ORDER_CHANEL[value].description}</Tag>);
+            }
+        },
+        {
+            title: 'Loại', dataIndex: 'orderType', key: 'orderType', align: 'center',
+            render(value: keyof typeof ORDER_TYPE, record) {
+                let color: string = ORDER_TYPE[value]?.color_tag ?? "default";
+                return (<Tag color={color}>{ORDER_TYPE[value].description}</Tag>);
             }
         },
         {
             title: 'Trạng thái', dataIndex: 'orderStatus', key: 'orderStatus', align: 'center',
             render(value: keyof typeof ORDER_STATUS, record) {
-                return getOrderStatusTagColor(value);
+                const statusName: string = ORDER_STATUS[value].description;
+                const color: string = ORDER_STATUS[value]?.color_tag ?? "default";
+                return <Tag color={color}>{statusName}</Tag>;
             }
         },
         {

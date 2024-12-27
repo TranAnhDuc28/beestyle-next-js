@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export const CART_KEY = 'shopping_cart';
 
 const getCart = () => {
@@ -18,7 +16,7 @@ export const addToCart = (product: any, quantity: any, images: any) => {
     const cart = getCart();
 
     const existingIndex = cart.findIndex((item: any) =>
-        item.product_variant_id === product.id &&
+        item.product_id === product.productId &&
         item.color === product.colorName &&
         item.size === product.sizeName
     );
@@ -30,6 +28,7 @@ export const addToCart = (product: any, quantity: any, images: any) => {
         const newItem = {
             shopping_cart_id: Date.now(),
             product_variant_id: product.id,
+            product_id: product.productId,
             product_name: product.productName,
             sku: product.sku,
             color: product.colorName,
@@ -51,7 +50,7 @@ export const addToCart = (product: any, quantity: any, images: any) => {
 
 export const removeItemFromCart = (shoppingCartId: string) => {
     const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-    const updatedCart = cartItems.filter(item => item.shopping_cart_id !== shoppingCartId);
+    const updatedCart = cartItems.filter((item: { shopping_cart_id: string; }) => item.shopping_cart_id !== shoppingCartId);
     localStorage.setItem(CART_KEY, JSON.stringify(updatedCart));
     window.dispatchEvent(new Event('cartUpdated'));
 };
@@ -60,8 +59,8 @@ export const checkShoppingCartData = async () => {
     const cartItems = getCart();
 
     if (cartItems && cartItems.length > 0) {
-        const cartDataToCheck = cartItems.map(item => ({
-            sku: item.sku,
+        const cartDataToCheck = cartItems.map((item: { product_variant_id: string; }) => ({
+            id: item.product_variant_id,
         }));
 
         try {
@@ -74,37 +73,66 @@ export const checkShoppingCartData = async () => {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
             const updatedCartDataFromBE = await response.json();
 
-            const updatedCartItems = cartItems.map(item => {
-                const matchingItemFromBE = updatedCartDataFromBE.find(beItem =>
-                    beItem.sku === item.sku &&
-                    beItem.salePrice === item.sale_price &&
-                    beItem.discountPrice === item.discounted_price &&
-                    beItem.quantityInStock === item.product_quantity
+            const updatedCartItems = cartItems.map((item:
+                {
+                    product_variant_id: string;
+                    sale_price: number | bigint;
+                    discounted_price: number | bigint;
+                    product_quantity: number;
+                    product_name: string;
+                    color: string;
+                    size: string;
+                    quantity: number;
+                }) => {
+                const matchingItemFromBE = updatedCartDataFromBE.find((beItem: { id: string; }) =>
+                    beItem.id === item.product_variant_id
                 );
                 if (matchingItemFromBE) {
-                    return {
-                        ...item,
-                    };
-                } else {
-                    return {
+                    const updatedItem: any = { ...item };
+                    if (matchingItemFromBE.salePrice !== item.sale_price) {
+                        updatedItem.sale_price = matchingItemFromBE.salePrice;
+                    }
 
-                    };
+                    if (matchingItemFromBE.discountPrice !== item.discounted_price) {
+                        updatedItem.discounted_price = matchingItemFromBE.discountPrice;
+                    }
+
+                    if (matchingItemFromBE.quantityInStock !== item.product_quantity) {
+                        updatedItem.product_quantity = matchingItemFromBE.quantityInStock;
+                    }
+
+                    if (matchingItemFromBE.productName !== item.product_name) {
+                        updatedItem.product_name = matchingItemFromBE.productName;
+                    }
+
+                    if (matchingItemFromBE.colorName !== item.color) {
+                        updatedItem.color = matchingItemFromBE.colorName;
+                    }
+
+                    if (matchingItemFromBE.sizeName !== item.size) {
+                        updatedItem.size = matchingItemFromBE.sizeName;
+                    }
+
+                    if (updatedItem.discounted_price !== item.discounted_price) {
+                        updatedItem.total_price = item.quantity * updatedItem.discounted_price;
+                    } else if (updatedItem.sale_price !== item.sale_price && !updatedItem.discounted_price) {
+                        updatedItem.total_price = item.quantity * updatedItem.sale_price;
+                    }
+                    return updatedItem;
+                } else {
+                    console.warn(`Không tìm thấy Product Variant với ID: ${item.product_variant_id}.`);
                 }
             });
 
-            const finalCartItems = updatedCartItems.filter(item => item.is_valid !== false);
-
-            saveCart(finalCartItems);
+            saveCart(updatedCartItems);
             window.dispatchEvent(new Event('cartUpdated'));
-            console.log("Dữ liệu giỏ hàng:", finalCartItems);
-
         } catch (error) {
-            console.error(error);
+            console.error('Đã xảy ra lỗi trong quá trình đồng bộ dữ liệu', error);
         }
     }
 }

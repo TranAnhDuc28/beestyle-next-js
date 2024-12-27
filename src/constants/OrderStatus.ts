@@ -1,52 +1,53 @@
 export const ORDER_STATUS = {
     PENDING: {
         id: 0,
-        name: "Chờ thanh toán"
+        key: "PENDING",
+        description: "Chờ thanh toán",
+        color_tag: "#FFA500"
     },
     PAID: {
         id: 1,
-        name: "Đã thanh toán",
+        key: "PAID",
+        description: "Đã thanh toán",
+        color_tag: "#3CB371"
     },
     AWAITING_CONFIRMATION: {
         id: 2,
-        name: "Chờ xác nhận",
+        key: "AWAITING_CONFIRMATION",
+        description: "Chờ xác nhận",
+        color_tag: "#FFA500",
     },
     CONFIRMED: {
         id: 3,
-        name: "Đã xác nhận",
+        key: "CONFIRMED",
+        description: "Đã xác nhận",
+        color_tag: "#1E90FF",
     },
     AWAITING_SHIPMENT: {
         id: 4,
-        name: "Chờ giao hàng",
+        key: "AWAITING_SHIPMENT",
+        description: "Chờ giao hàng",
+        color_tag: "#9370DB",
     },
     OUT_FOR_DELIVERY: {
         id: 5,
-        name: "Đang giao hàng",
+        key: "OUT_FOR_DELIVERY",
+        description: "Đang giao hàng",
+        color_tag: "#87CEEB",
     },
     DELIVERED: {
         id: 6,
-        name: "Đã giao hàng",
+        key: "DELIVERED",
+        description: "Đã giao hàng",
+        color_tag: "#3CB371",
     },
     CANCELLED: {
         id: 7,
-        name: "Đã hủy",
+        key: "CANCELLED",
+        description: "Đã hủy",
+        color_tag: "#f50"
     },
     // RETURN_REQUESTED: "Yêu cầu trả hàng",
     // RETURNED: "Đã trả hàng",
     // REFUNDED: "Đã hoàn tiền"
 } as const;
-
-export const ORDER_STATUS_COLOR: Map<keyof typeof ORDER_STATUS, string> =
-    new Map<keyof typeof ORDER_STATUS, string>([
-        ['PENDING', 'orange'],
-        ['PAID', 'green'],
-        ['AWAITING_CONFIRMATION', 'blue'],
-        ['CONFIRMED', 'geekblue'],
-        ['AWAITING_SHIPMENT', 'purple'],
-        ['OUT_FOR_DELIVERY', 'processing'],
-        ['DELIVERED', 'success'],
-        ['CANCELLED', 'red'],
-        // ['RETURN_REQUESTED', 'gold'],
-        // ['RETURNED', 'volcano'],
-        // ['REFUNDED', 'cyan']
-    ]);

@@ -14,7 +14,6 @@ import {
     theme,
     Typography
 } from "antd";
-import {IOrder} from "@/types/IOrder";
 import {useParams} from "next/navigation";
 import OrderDetailTable from "@/components/Admin/Order/Detail/OrderDetailTable";
 import TimeLineOrderTrackingComponent from "@/components/Admin/Order/Detail/TimeLineOrderTrackingComponent";
@@ -25,14 +24,14 @@ const {Content} = Layout;
 const {Title, Text} = Typography;
 
 interface IProps {
-    order?: IOrder;
+
 }
 
 const OrderDetailComponent: React.FC<IProps> = (props) => {
     const {token} = theme.useToken();
     const {id} = useParams();
     const {handleGetOrderService} = useOrder();
-    const {data: orderDetail, error, isLoading, mutate} =
+    const {orderDetail, error, isLoading, mutate} =
         handleGetOrderService(id && Number(id) ? Number(id) : null);
 
     const itemDescriptions: DescriptionsProps['items'] = [
@@ -65,7 +64,6 @@ const OrderDetailComponent: React.FC<IProps> = (props) => {
             ),
         },
     ];
-
 
     return (
         <>

@@ -78,7 +78,7 @@ const CartTable = ({ cartItems, updateCartItems }: { cartItems: any; updateCartI
             <div style={{ maxHeight: '515px', overflowY: 'auto' }}>
                 {cartItems.map((item: {
                     shopping_cart_id: string;
-                    product_variant_id: string;
+                    product_id: string;
                     images: { imageUrl: string }[];
                     product_name: string;
                     discounted_price: number;
@@ -97,7 +97,7 @@ const CartTable = ({ cartItems, updateCartItems }: { cartItems: any; updateCartI
                             />
                         </div>
                         <div className="flex items-center mb-4">
-                            <Link href={`/product/${item.product_variant_id}/variant`} passHref>
+                            <Link href={`/product/${item.product_id}/variant`} passHref>
                                 <Image
                                     width={160}
                                     height={"auto"}
@@ -110,7 +110,7 @@ const CartTable = ({ cartItems, updateCartItems }: { cartItems: any; updateCartI
                             <div className="ms-4">
                                 <Title level={4} style={{ fontWeight: 500 }}>
                                     <Link
-                                        href={`/product/${item.product_variant_id}/variant`}
+                                        href={`/product/${item.product_id}/variant`}
                                         passHref
                                         className="hover:!text-orange-400"
                                     >

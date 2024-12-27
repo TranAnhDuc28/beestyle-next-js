@@ -15,7 +15,7 @@ import TablePagination from "@/components/Table/TablePagination";
 import {useSearchParams} from "next/navigation";
 
 const {Content} = Layout;
-const {Title, Text} = Typography;
+const {Text} = Typography;
 
 interface IProps {
     productId: string;
@@ -33,7 +33,10 @@ const VariantComponent: React.FC<IProps> = (props) => {
         useSWR(
             `${URL_API_PRODUCT_VARIANT.get(productId)}?${params.toString()}`,
             getProductVariantsByProductId,
-            {revalidateOnFocus: false, revalidateOnReconnect: false}
+            {
+                revalidateOnFocus: false,
+                revalidateOnReconnect: false
+            }
         );
 
     const columns: TableColumnsType<IProductVariant> = [

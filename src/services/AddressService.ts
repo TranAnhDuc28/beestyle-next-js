@@ -35,4 +35,9 @@ export const updateAddress = async (data: IAddress) => {
     return response.data;
 }
 
+export const deleteAddress = async (data: IAddress) => {
+    const response = await httpInstance.delete(`${URL_API_ADDRESS.delete}/${data.id}`);
+    return response.data;
+}
+
   

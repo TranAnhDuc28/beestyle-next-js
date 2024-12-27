@@ -230,7 +230,7 @@ const OrderFilter: React.FC<IProps> = (props) => {
                                     <Col span={24} key={status.id} style={{marginBottom: 10}}
                                     >
                                         <Checkbox value={status.id}>
-                                            {status.name}
+                                            {status.description}
                                         </Checkbox>
                                     </Col>
                                 )
@@ -257,7 +257,7 @@ const OrderFilter: React.FC<IProps> = (props) => {
                         {Object.keys(ORDER_CHANEL).map((key) => (
                             <Col key={key} span={24} style={{marginBottom: 10}}>
                                 <Radio value={key}>
-                                    {ORDER_CHANEL[key as keyof typeof ORDER_CHANEL]}
+                                    {ORDER_CHANEL[key as keyof typeof ORDER_CHANEL].description}
                                 </Radio>
                             </Col>
                         ))}

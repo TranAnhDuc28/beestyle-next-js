@@ -1,5 +1,5 @@
 import useAppNotifications from "@/hooks/useAppNotifications";
-import { Button, Col, Form, Row, Select, Space } from "antd";
+import { Button, Col, Form, Modal, Row, Select, Space } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import useAddress from "./hook/useAddress";
 import {
@@ -10,21 +10,23 @@ import {
 import TextArea from "antd/es/input/TextArea";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import useSWR from "swr";
+import { IAddress } from "@/types/IAddress";
 
 interface IProps {
-  mutate: any;
-  initialValues: any;
-  hanldeClose: () => void;
+  mutate: () => Promise<void>;
+  initialValues: any | null;
+  isUpdateModalOpen: boolean;
+  setIsUpdateModalOpen: (value: boolean) => void;
 }
 
 const UpdateAddress = (props: IProps) => {
   const { showNotification } = useAppNotifications();
-  const { mutate, initialValues, hanldeClose } = props;
+  const { mutate, initialValues, isUpdateModalOpen,setIsUpdateModalOpen } = props;
   const [isFormChanged, setIsFormChanged] = useState(false);
   const [form] = Form.useForm();
 
-  console.log("record: ",initialValues);
-  
+  console.log("record: ", initialValues);
+
   const {
     data,
     error,
@@ -37,16 +39,29 @@ const UpdateAddress = (props: IProps) => {
 
   const address = data?.data || {};
 
-  const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | null>(null);
-  const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | null>(null);
-  const [selectedWardCode, setSelectedWardsCode] = useState<string | null>(null);
+  const [selectedProvinceCode, setSelectedProvinceCode] = useState<
+    string | null
+  >(null);
+  const [selectedDistrictCode, setSelectedDistrictCode] = useState<
+    string | null
+  >(null);
+  const [selectedWardCode, setSelectedWardsCode] = useState<string | null>(
+    null
+  );
 
-  const [selectedProvinceName, setSelectedProvinceName] = useState<string | null>(null);
-  const [selectedDistrictName, setSelectedDistrictName] = useState<string | null>(null);
+  const [selectedProvinceName, setSelectedProvinceName] = useState<
+    string | null
+  >(null);
+  const [selectedDistrictName, setSelectedDistrictName] = useState<
+    string | null
+  >(null);
   const [selectedWardName, setSelectedWardName] = useState<string | null>(null);
-  const [selectedDetailName, setSelectedDetailName] = useState<string | null>(null);
+  const [selectedDetailName, setSelectedDetailName] = useState<string | null>(
+    null
+  );
 
-  const { handleGetProvinces, handleGetDistricts, handleGetWards } = useAddress();
+  const { handleGetProvinces, handleGetDistricts, handleGetWards } =
+    useAddress();
   const provincesData = handleGetProvinces();
   const districtsData = handleGetDistricts(selectedProvinceCode);
   const wardsData = handleGetWards(selectedDistrictCode);
@@ -80,6 +95,7 @@ const UpdateAddress = (props: IProps) => {
       province: province?.label || undefined,
       district: undefined,
       ward: undefined,
+      addressName:undefined
     });
 
     setSelectedProvinceName(province?.label);
@@ -89,34 +105,53 @@ const UpdateAddress = (props: IProps) => {
     setSelectedWardName(null);
   }, []);
 
-  const onChangeSelectedDistrict = useCallback((districtCode: string) => {
-    setSelectedDistrictCode(districtCode);
-    const district = districtsData.dataOptionDistricts.find(
-      (prev) => prev.key === districtCode
-    );
+  const onChangeSelectedDistrict = useCallback(
+    (districtCode: string) => {
+      setSelectedDistrictCode(districtCode);
+      const district = districtsData.dataOptionDistricts.find(
+        (prev) => prev.key === districtCode
+      );
 
-    form.setFieldsValue({
-      district: district?.label || undefined,
-      ward: undefined,
-    });
+      form.setFieldsValue({
+        district: district?.label || undefined,
+        ward: undefined,
+        addressName:undefined
+      });
 
-    setSelectedDistrictName(district?.label);
-    setSelectedWardsCode(null);
-    setSelectedWardName(null);
-  }, [districtsData]);
+      setSelectedDistrictName(district?.label);
+      setSelectedWardsCode(null);
+      setSelectedWardName(null);
+    },
+    [districtsData]
+  );
 
-  const onChangeSelectedWard = useCallback((wardCode: string) => {
-    setSelectedWardsCode(wardCode);
-    const ward = wardsData.dataOptionWards.find(
-      (prev) => prev.key === wardCode
-    );
+  const onChangeSelectedWard = useCallback(
+    (wardCode: string) => {
+      setSelectedWardsCode(wardCode);
+      const ward = wardsData.dataOptionWards.find(
+        (prev) => prev.key === wardCode
+      );
+      form.setFieldsValue({
+        ward: ward?.label || undefined,
+        addressName: undefined
+      });
 
-    setSelectedWardName(ward?.label);
-  }, [wardsData]);
+      setSelectedWardName(ward?.label);
+    },
+    [wardsData]
+  );
 
   const handleDetailAddressChange = (value: string) => {
     setSelectedDetailName(value);
   };
+
+  const hanldeClose = () => {
+    form.resetFields();
+  setSelectedProvinceCode(null);
+  setSelectedDistrictCode(null);
+  setSelectedWardsCode(null);
+  setIsUpdateModalOpen(false);
+  }
 
   const onFinish = async (value: any) => {
     try {
@@ -137,7 +172,7 @@ const UpdateAddress = (props: IProps) => {
         const result = await updateAddress(data);
         mutate();
         if (result.data) {
-          form.resetFields()
+          form.resetFields();
           hanldeClose();
           showNotification("success", { message: result.message });
         }
@@ -158,81 +193,98 @@ const UpdateAddress = (props: IProps) => {
   };
   return (
     <>
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        onValuesChange={() => setIsFormChanged(true)} // Mở nút cập nhật khi có thay đổi
+      <Modal
+        title="Cập nhật địa chỉ"
+        // cancelText="Hủy"
+        // okText="Lưu"
+        footer=""
+        width={650}
+        style={{ top: 20 }}
+        open={isUpdateModalOpen}
+        onOk={() => form.submit()}
+        onCancel={() => hanldeClose()}
+        // okButtonProps={{ style: { background: "#00b96b" } }}
       >
-        <Row gutter={16}>
-          {" "}
-          {/* Thêm khoảng cách giữa các cột */}
-          <Col span={8}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          onValuesChange={() => setIsFormChanged(true)} // Mở nút cập nhật khi có thay đổi
+        >
+          <Row gutter={16}>
             {" "}
-            {/* Mỗi cột chiếm 1/3 chiều rộng */}
-            <Form.Item
-              label="Tỉnh/Thành phố"
-              name="province"
-              rules={[
-                { required: true, message: "Vui lòng chọn tỉnh/thành phố!" },
-              ]}
-            >
-              <SelectSearchOptionLabel
-                value={selectedProvinceCode}
-                style={{ width: "100%" }}
-                placeholder="Tỉnh / Thành phố"
-                data={provincesData?.dataOptionProvinces}
-                isLoading={provincesData?.isLoading}
-                onChange={onChangeSelectedProvince}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item
-              label="Huyện/Quận"
-              name="district"
-              rules={[{ required: true, message: "Vui lòng chọn huyện/quận!" }]}
-            >
-              <SelectSearchOptionLabel
-                value={selectedDistrictCode}
-                placeholder="Quận / Huyện"
-                style={{ width: "100%" }}
-                data={districtsData?.dataOptionDistricts}
-                isLoading={districtsData?.isLoading}
-                onChange={onChangeSelectedDistrict}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item
-              label="Xã/Phường"
-              name="ward"
-              rules={[{ required: true, message: "Vui lòng chọn xã/phường!" }]}
-            >
-              <SelectSearchOptionLabel
-                value={selectedWardCode}
-                placeholder="Phường / Xã"
-                style={{ width: "100%" }}
-                data={wardsData?.dataOptionWards}
-                isLoading={wardsData?.isLoading}
-                onChange={onChangeSelectedWard}
-              />
-            </Form.Item>
-          </Col>
-        </Row>
+            {/* Thêm khoảng cách giữa các cột */}
+            <Col span={8}>
+              {" "}
+              {/* Mỗi cột chiếm 1/3 chiều rộng */}
+              <Form.Item
+                label="Tỉnh/Thành phố"
+                name="province"
+                rules={[
+                  { required: true, message: "Vui lòng chọn tỉnh/thành phố!" },
+                ]}
+              >
+                <SelectSearchOptionLabel
+                  value={selectedProvinceCode}
+                  style={{ width: "100%" }}
+                  placeholder="Tỉnh / Thành phố"
+                  data={provincesData?.dataOptionProvinces}
+                  isLoading={provincesData?.isLoading}
+                  onChange={onChangeSelectedProvince}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                label="Huyện/Quận"
+                name="district"
+                rules={[
+                  { required: true, message: "Vui lòng chọn huyện/quận!" },
+                ]}
+              >
+                <SelectSearchOptionLabel
+                  value={selectedDistrictCode}
+                  placeholder="Quận / Huyện"
+                  style={{ width: "100%" }}
+                  data={districtsData?.dataOptionDistricts}
+                  isLoading={districtsData?.isLoading}
+                  onChange={onChangeSelectedDistrict}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                label="Xã/Phường"
+                name="ward"
+                rules={[
+                  { required: true, message: "Vui lòng chọn xã/phường!" },
+                ]}
+              >
+                <SelectSearchOptionLabel
+                  value={selectedWardCode}
+                  placeholder="Phường / Xã"
+                  style={{ width: "100%" }}
+                  data={wardsData?.dataOptionWards}
+                  isLoading={wardsData?.isLoading}
+                  onChange={onChangeSelectedWard}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
-        <Form.Item label="Chi tiết" name="addressName">
-          <TextArea
-            onChange={(e) => handleDetailAddressChange(e.target.value)}
-            placeholder="Nhập địa chỉ chi tiết"
-          />
-        </Form.Item>
-        <Space className="flex justify-center">
-          <Button type="primary" htmlType="submit" disabled={!isFormChanged}>
-            Cập nhật
-          </Button>
-        </Space>
-      </Form>
+          <Form.Item label="Chi tiết" name="addressName">
+            <TextArea
+              onChange={(e) => handleDetailAddressChange(e.target.value)}
+              placeholder="Nhập địa chỉ chi tiết"
+            />
+          </Form.Item>
+          <Space className="flex justify-center">
+            <Button type="primary" htmlType="submit" disabled={!isFormChanged}>
+              Cập nhật
+            </Button>
+          </Space>
+        </Form>
+      </Modal>
     </>
   );
 };

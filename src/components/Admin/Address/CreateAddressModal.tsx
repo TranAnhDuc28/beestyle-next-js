@@ -198,7 +198,7 @@ const onChangeSelectedWard = useCallback(
             />
           </Form.Item>
 
-        <Form.Item label="Chi tiết" name="detail">
+        <Form.Item label="Chi tiết" name="detail" rules={[{ required: true, message: "Vui lòng nhập địa chỉ chi tiết!" }]}>
           <TextArea
             onChange={(e) => handleDetailAddressChange(e.target.value)}
             placeholder="Nhập địa chỉ chi tiết"

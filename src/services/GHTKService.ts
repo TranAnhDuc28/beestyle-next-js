@@ -1,9 +1,9 @@
 import httpInstance from "@/utils/HttpInstance";
 
 export const URL_API_GHTK = {
-  // getProvinces: "/ghn/provinces", // API lấy danh sách tỉnh thành
-  // getDistricts: "/ghn/districts", // API lấy danh sách quận huyện
-  calculateShippingFee: "/ghtk/calculate-fee", // API tính phí vận chuyển
+    // getProvinces: "/ghn/provinces", // API lấy danh sách tỉnh thành
+    // getDistricts: "/ghn/districts", // API lấy danh sách quận huyện
+    calculateShippingFee: "/ghtk/calculate-fee", // API tính phí vận chuyển
 };
 
 // /**
@@ -13,7 +13,7 @@ export const URL_API_GHTK = {
 // export const getProvinces = async () => {
 //   try {
 //     const response = await httpInstance.get(URL_API_GHN.getProvinces);
-//     console.log("Dữ liệu tỉnh thành:", response.data.data); 
+//     console.log("Dữ liệu tỉnh thành:", response.data.data);
 //     return response.data.data;
 //   } catch (error) {
 //     console.error("Lỗi khi lấy danh sách tỉnh thành GHN:", error);
@@ -45,18 +45,17 @@ export const URL_API_GHTK = {
 //  * @returns Dữ liệu phí vận chuyển
 //  */
 export const calculateShippingFee = async (params: Record<string, any>) => {
-  try {
-    const response = await httpInstance.post("/ghtk/calculate-fee", params);
-    console.log("Phản hồi từ GHTK:", response.data.fee);
+    try {
+        const response = await httpInstance.post("/ghtk/calculate-fee", params);
+        console.log("Phản hồi từ GHTK:", response.data.fee);
 
-    if (response.data.success) {
-      return response.data.fee; // Trả về phần `fee` từ API
-    } else {
-      throw new Error(response.data.message || "Không tính được phí vận chuyển");
+        if (response.data.success) {
+            return response.data.fee; // Trả về phần `fee` từ API
+        } else {
+            throw new Error(response.data.message || "Không tính được phí vận chuyển");
+        }
+    } catch (error) {
+        console.error("Lỗi khi tính phí vận chuyển:", error);
+        throw error;
     }
-  } catch (error) {
-    console.error("Lỗi khi tính phí vận chuyển:", error);
-    throw error;
-  }
 };
-

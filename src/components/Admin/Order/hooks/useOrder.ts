@@ -21,7 +21,9 @@ const useOrder = () => {
             }
         );
 
-        return {data, isLoading, error, mutate};
+        const orderDetail = data?.data ? data.data : undefined;
+
+        return {orderDetail, isLoading, error, mutate};
     }
 
     const handleCreateOrder =  async (value: IOrderCreateOrUpdate) => {
