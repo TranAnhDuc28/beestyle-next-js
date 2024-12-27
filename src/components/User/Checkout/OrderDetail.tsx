@@ -20,6 +20,8 @@ const OrderDetail = (props: IProps) => {
     const closeModal = () => setIsModalVisible(false);
 
     const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    console.log(cartItems);
+    
 
     const productTotal = cartItems.reduce((total: any, item: any) => total + item.total_price, 0);
     const totalAmount = productTotal >= 500000 ? productTotal : productTotal + shippingCost;
