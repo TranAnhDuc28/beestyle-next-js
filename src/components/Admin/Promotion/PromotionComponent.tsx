@@ -240,18 +240,6 @@ const PromotionComponent: React.FC<any> = (props: any) => {
                     </TablePagination>
                 </Content>
             </Flex>
-            {/*<CreatePromotion*/}
-            {/*    isCreateModalOpen={isCreateModalOpen}*/}
-            {/*    setIsCreateModalOpen={setIsCreateModalOpen}*/}
-            {/*    mutate={mutate}*/}
-            {/*/>*/}
-            <UpdatePromotion
-                isUpdateModalOpen={isUpdateModalOpen}
-                setIsUpdateModalOpen={setIsUpdateModalOpen}
-                mutate={mutate}
-                dataUpdate={dataUpdate}
-                setDataUpdate={setDataUpdate}
-            />
         </>
     );
 

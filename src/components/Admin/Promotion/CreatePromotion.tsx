@@ -73,14 +73,6 @@ const CreatePromotion = (props: IProps) => {
         = useOptionColor(isProductVariantOpen);
     const colorMap = useMemo(() => new Map(dataOptionColor.map(item => [item.label, item.code])), [dataOptionColor]);
 
-
-    const handleCloseProductVariantModal = () => {
-        form.resetFields();
-        setIsProductVariantOpen(false);
-        setSelectedProducts([]);
-        setProductDetails([]);
-    };
-
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -127,7 +119,7 @@ const CreatePromotion = (props: IProps) => {
                     colorName: item[6],
                     sizeName: item[7],
                     originalPrice: item[8],
-                    promotionName: item[11],
+                    promotionName: item[10],
                 })) : [];
             } catch (error) {
                 console.error("Error fetching product details:", error);
@@ -196,8 +188,6 @@ const CreatePromotion = (props: IProps) => {
                 const colorName = record?.colorName || "_";
                 const colorCode = colorMap.get(record?.colorName) || "";
                 const sizeName = record?.sizeName ? record.sizeName : "_";
-                console.log("màu: ", colorCode)
-                console.log("màu: ", colorMap)
                 return (
                     <span>
                         <Text>{record.productVariantName}</Text>
