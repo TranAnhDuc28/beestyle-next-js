@@ -1,5 +1,5 @@
 import React, {memo, useContext, useEffect, useMemo, useRef, useState} from "react";
-import {InputNumber, Table, TableProps, Tag, Typography} from "antd";
+import {Badge, Button, InputNumber, Popover, Table, TableProps, Tag, Tooltip, Typography} from "antd";
 import {DeleteOutlined} from "@ant-design/icons";
 import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
 import {FORMAT_NUMBER_WITH_COMMAS, PARSER_NUMBER_WITH_COMMAS_TO_NUMBER} from "@/constants/AppConstants";
@@ -182,11 +182,12 @@ const AdminCart: React.FC = () => {
             render: (value, record, index) => <Text strong>{index + 1}</Text>,
         },
         {
-            title: 'Sản phẩm', dataIndex: 'product', key: 'product', width: 250,
+            title: 'Sản phẩm', dataIndex: 'product', key: 'product', width: 350,
             render: (value, record, index) => {
                 return (
                     <div className="ml-1">
-                        <Text type="secondary">{record.sku}</Text> | <Text>{record.productName}</Text><br/>
+                        <Text type="secondary">{record.sku} | </Text>
+                        <Text> {record.productName}</Text><br/>
                         <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
                             <span style={{marginInlineEnd: 4}}>
                                 {`Màu: ${record.colorName}`}
@@ -244,10 +245,14 @@ const AdminCart: React.FC = () => {
             title: 'Hành động', key: 'action', align: "center", width: 70,
             render:
                 (_, record) => (
-                    <DeleteOutlined
-                        style={{cursor: "pointer", padding: "5px", borderRadius: "5px"}}
-                        onClick={() => handleDeleteOrderItemCart(record.id, record.productId)}
-                    />
+                    <Tooltip>
+                        <Button
+                            type="text"
+                            shape="circle"
+                            icon={<DeleteOutlined/>}
+                            onClick={() => handleDeleteOrderItemCart(record.id, record.productId)}
+                        />
+                    </Tooltip>
                 ),
         },
     ], [handleSale?.dataCart]);

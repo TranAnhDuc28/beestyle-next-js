@@ -412,7 +412,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                                         {Object.keys(PAYMENT_METHOD).map((key) => (
                                             <Col key={key}>
                                                 <Radio value={key}>
-                                                    {PAYMENT_METHOD[key as keyof typeof PAYMENT_METHOD]}
+                                                    {PAYMENT_METHOD[key as keyof typeof PAYMENT_METHOD].description}
                                                 </Radio>
                                             </Col>
                                         ))}

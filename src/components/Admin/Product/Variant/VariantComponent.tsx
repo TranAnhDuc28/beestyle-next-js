@@ -85,7 +85,6 @@ const VariantComponent: React.FC<IProps> = (props) => {
             title: 'Hành động', align: 'center', width: 100,
             render: (record) => {
                 return (
-
                     <Tooltip placement="top" title="Chỉnh sửa">
                         <EditTwoTone
                             twoToneColor={"#f57800"}

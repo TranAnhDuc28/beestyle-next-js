@@ -143,7 +143,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                     <div>
                         <h2 className="text-xl font-bold mb-2">{productData?.productName || 'No product data'}</h2>
                         <p className="mb-2">
-                            <span className="font-semibold">SKU:</span> {productData?.sku} |{' '}
+                            <span className="font-semibold">SKU:</span> {productData?.sku} | {' '}
                             <span className="font-semibold">Tình trạng:</span>{' '}
                             {productData?.quantityInStock > 0 ? (
                                 <Tag color="green">Còn hàng</Tag>

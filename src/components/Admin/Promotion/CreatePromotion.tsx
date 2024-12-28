@@ -2,8 +2,6 @@
 import {
     Form,
     Input,
-    Modal,
-    notification,
     Select,
     DatePicker,
     InputNumber,
@@ -19,7 +17,6 @@ import dayjs from "dayjs";
 import Search from "antd/es/input/Search";
 import Link from "next/link";
 import {
-    CheckCircleTwoTone,
     DeleteTwoTone,
     HomeOutlined
 } from "@ant-design/icons";
@@ -41,14 +38,7 @@ type SearchProps = GetProps<typeof Input.Search>;
 const {Option} = Select;
 const {Text} = Typography;
 
-interface IProps {
-    isProductVariantOpen: boolean;
-    setIsProductVariantOpen: (value: boolean) => void;
-    mutate: any;
-    productId: number;
-}
-
-const CreatePromotion = (props: IProps) => {
+const CreatePromotion = () => {
     const {showNotification} = useAppNotifications();
     const [form] = Form.useForm();
     const router = useRouter();
@@ -72,7 +62,6 @@ const CreatePromotion = (props: IProps) => {
     const {dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor}
         = useOptionColor(isProductVariantOpen);
     const colorMap = useMemo(() => new Map(dataOptionColor.map(item => [item.label, item.code])), [dataOptionColor]);
-
 
     const handleCloseProductVariantModal = () => {
         form.resetFields();
