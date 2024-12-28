@@ -25,7 +25,10 @@ const OrderDetail = (props: IProps) => {
     const totalAmount = productTotal >= 500000 ? productTotal : productTotal + shippingCost;
     const savings = 0;
 
-    const handlePaymentChange = (e: any) => setSelectedPayment(e.target.value);
+    const handlePaymentChange = (e: any) => {
+        setSelectedPayment(e.target.value);
+        if (e.target.value === 'COD') console.log(cartItems);
+    };
 
     const onButtonClick = async () => {
         if (!selectedPayment) {

@@ -1,5 +1,5 @@
 import React, {memo, useContext, useMemo, useRef, useState} from "react";
-import {InputNumber, Table, TableProps, Tag, Typography} from "antd";
+import {Card, Col, Flex, InputNumber, Row, Table, TableProps, Tag, Typography} from "antd";
 import {IOrderItem} from "@/types/IOrderItem";
 import {FORMAT_NUMBER_WITH_COMMAS, PARSER_NUMBER_WITH_COMMAS_TO_NUMBER} from "@/constants/AppConstants";
 import {DeleteOutlined} from "@ant-design/icons";
@@ -10,7 +10,7 @@ import {STOCK_ACTION} from "@/constants/StockAction";
 import useSWR, {mutate} from "swr";
 import {URL_API_PRODUCT_VARIANT} from "@/services/ProductVariantService";
 import useAppNotifications from "@/hooks/useAppNotifications";
-import {getOrderItemsByOrderId} from "@/services/OrderItemService";
+import {useParams} from "next/navigation";
 
 const {Text} = Typography;
 
@@ -18,23 +18,17 @@ interface IProps {
 
 }
 
-const OrderDetailTable: React.FC<IProps> = (props) => {
+const OrderedProductDetails: React.FC<IProps> = (props) => {
     const {showMessage} = useAppNotifications();
+    const {id} = useParams();
     const handleSale = useContext(HandleSale);
     const inputRefs = useRef<Map<number, HTMLInputElement>>(new Map());
-    const {handleUpdateQuantityOrderItem, handleDeleteOrderItem} = useOrderItem();
+    const {handleGetOrderItemsByOrderId, handleUpdateQuantityOrderItem, handleDeleteOrderItem} = useOrderItem();
     const {handleUpdateQuantityInStockProductVariant} = useProductVariant();
     const [initialQuantities, setInitialQuantities] = useState<Map<number, number>>(new Map());
 
-    const {data, error, isLoading, mutate: mutateDataCart} =
-        useSWR(null,
-            getOrderItemsByOrderId,
-            {
-                revalidateIfStale: false,
-                revalidateOnFocus: false,
-                revalidateOnReconnect: false
-            }
-        );
+    const {orderItems, error, isLoading, mutateOrderItems} =
+        handleGetOrderItemsByOrderId(id && Number(id) ? `${id}` : undefined);
 
     const onChangeQuantity = (orderItemId: number, productVariantId: number, value: number | null) => {
         const newValue = Number(value);
@@ -105,7 +99,7 @@ const OrderDetailTable: React.FC<IProps> = (props) => {
                         {revalidate: true}
                     );
 
-                    await mutateDataCart();
+                    await mutateOrderItems();
                 } catch (e) {
                     showMessage("error", "Cập nhật số lượng thất bại.");
 
@@ -153,7 +147,7 @@ const OrderDetailTable: React.FC<IProps> = (props) => {
             {revalidate: true}
         );
 
-        await mutateDataCart();
+        await mutateOrderItems();
     };
 
     const columns: TableProps<IOrderItem>['columns'] = useMemo(() => [
@@ -231,17 +225,95 @@ const OrderDetailTable: React.FC<IProps> = (props) => {
                 ),
         },
     ], []);
+
     return (
-        <Table<IOrderItem>
-            rowKey="id"
-            size="small"
-            bordered={true}
-            loading={isLoading}
-            columns={columns}
-            dataSource={handleSale?.dataCart}
-            pagination={false}
-            scroll={{y: 'calc(100vh - 350px)', scrollToFirstRowOnChange: true}}
-        />
+        <Row gutter={[24, 0]} wrap>
+            <Col xs={24} sm={24} md={24} lg={24} xl={18}>
+                <Table<IOrderItem>
+                    rowKey="id"
+                    size="small"
+                    bordered={true}
+                    loading={isLoading}
+                    columns={columns}
+                    dataSource={orderItems}
+                    pagination={false}
+                    scroll={{y: 'calc(100vh - 350px)', scrollToFirstRowOnChange: true}}
+                />
+            </Col>
+            <Col xs={24} sm={24} md={24} lg={24} xl={6}>
+                <Card title="Thông tin thanh toán" style={{width: "100%", marginTop: 5}}>
+                    <Flex justify="end">
+                        <Flex align="center" style={{width: "100%"}} wrap gap={10}>
+                            <Flex justify="space-between" align="center"
+                                  style={{width: "100%", paddingBottom: 4}} wrap>
+                                <Text style={{fontSize: 16}}>
+                                    <span style={{marginInlineEnd: 30}}>Tổng số lượng</span>
+                                </Text>
+
+                                <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
+                                    {`${10}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                </Text>
+                            </Flex>
+
+                            <Flex justify="space-between" align="center"
+                                  style={{width: "100%", paddingBottom: 4}} wrap>
+                                <Text style={{fontSize: 16}}>
+                                    <span style={{marginInlineEnd: 30}}>Tổng tiền hàng</span>
+                                </Text>
+
+                                <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
+                                    {`${500000}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                </Text>
+                            </Flex>
+
+                            <Flex justify="space-between" align="center"
+                                  style={{width: "100%", paddingBottom: 4}} wrap>
+                                <Text style={{fontSize: 16}}>
+                                    <span style={{marginInlineEnd: 30}}>Giảm giá</span>
+                                </Text>
+
+                                <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
+                                    {`${50000}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                </Text>
+                            </Flex>
+
+                            <Flex justify="space-between" align="center"
+                                  style={{width: "100%", paddingBottom: 4}} wrap>
+                                <Text style={{fontSize: 16}}>
+                                    <span style={{marginInlineEnd: 30}}>Phí vận chuyển</span>
+                                </Text>
+
+                                <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
+                                    {`${30000}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                </Text>
+                            </Flex>
+
+                            <Flex justify="space-between" align="center"
+                                  style={{width: "100%", paddingBottom: 4}} wrap>
+                                <Text style={{fontSize: 16}}>
+                                    <span style={{marginInlineEnd: 30}}>Tổng thanh toán</span>
+                                </Text>
+
+                                <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
+                                    {`${480000}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                </Text>
+                            </Flex>
+
+                            <Flex justify="space-between" align="center"
+                                  style={{width: "100%", paddingBottom: 4}} wrap>
+                                <Text style={{fontSize: 16}}>
+                                    <span style={{marginInlineEnd: 30}}>Khách cần trả</span>
+                                </Text>
+
+                                <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
+                                    {`${480000}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                </Text>
+                            </Flex>
+                        </Flex>
+                    </Flex>
+                </Card>
+            </Col>
+        </Row>
     );
 }
-export default memo(OrderDetailTable);
+export default memo(OrderedProductDetails);

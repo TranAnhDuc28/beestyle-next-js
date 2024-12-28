@@ -1,7 +1,11 @@
 import { Typography } from 'antd';
 import Title from 'antd/lib/typography/Title';
 
-const ProductInfoTabs = ({ productDescription }: string) => {
+interface IProductInfo {
+    productDescription:  | undefined;
+}
+
+const ProductInfoTabs: React.FC<IProductInfo> = ({ productDescription }) => {
     return (
         <div className="product-info">
             <div className="nav-main">
@@ -10,6 +14,7 @@ const ProductInfoTabs = ({ productDescription }: string) => {
                 </Typography>
             </div>
             <div className="tab-content" id="myTabContent">
+                {/* Test */}
                 <p>
                     Áo sơ mi nam nữ của chúng tôi mang đến phong cách trẻ trung, hiện đại và phù hợp cho mọi hoàn cảnh.
                     Được làm từ chất liệu vải cao cấp, sản phẩm không chỉ mang lại cảm giác thoáng mát, dễ chịu mà còn đảm bảo độ bền cao.

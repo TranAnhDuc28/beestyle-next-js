@@ -22,7 +22,6 @@ const BreadcrumbSection: React.FC<BreadcrumbSectionProps> = ({ items }) => {
         ) : (
             <span style={{ color: '#333' }}>{item.title}</span>
         ),
-        path: item.path,
     }));
 
     return (

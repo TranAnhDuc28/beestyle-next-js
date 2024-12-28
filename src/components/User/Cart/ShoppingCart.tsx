@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import CartTable from "@/components/User/Cart/CartTable";
 import TotalAmount from "@/components/User/Cart/OrderSummary";
-import { CART_KEY } from "@/services/user/ShoppingCartService";
+import { CART_KEY, checkShoppingCartData } from "@/services/user/ShoppingCartService";
 import { Typography } from 'antd';
 import BreadcrumbSection from '@/components/Breadcrumb/BreadCrumb';
 import Image from 'next/image';
@@ -16,6 +16,7 @@ const ShoppingCart = () => {
     const [cartItems, setCartItems] = useState(JSON.parse(localStorage.getItem(CART_KEY) || '[]'));
 
     useEffect(() => {
+        checkShoppingCartData();
         const handleCartUpdate = () => {
             setCartItems(JSON.parse(localStorage.getItem(CART_KEY) || '[]'));
         };

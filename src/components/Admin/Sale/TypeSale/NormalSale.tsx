@@ -1,13 +1,11 @@
 "use client"
 import {
     AutoComplete, AutoCompleteProps, Button, Col, Flex, Layout,
-    Pagination, PaginationProps, Row, Segmented, Space, theme, Tooltip, Typography
+    Pagination, PaginationProps, Row, Space, theme, Tooltip, Typography
 } from "antd";
-import React, {memo, useCallback, useContext, useState} from "react";
+import React, {memo, useCallback, useContext, useRef, useState} from "react";
 import CheckoutComponent from "@/components/Admin/Sale/CheckoutComponent";
 import {
-    AppstoreOutlined,
-    BarsOutlined,
     FilterOutlined,
     PlusOutlined,
     ReloadOutlined,
@@ -19,12 +17,15 @@ import FilterProduct from "@/components/Admin/Sale/FilterProductSale";
 import AdminCart from "@/components/Admin/Sale/AdminCart";
 import {mutate} from "swr";
 import {URL_API_PRODUCT} from "@/services/ProductService";
-import ProductListView from "@/components/Admin/Sale/TypeDisplayProductList/ProductListView";
 import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
+import ProductCardView from "@/components/Admin/Sale/TypeDisplayProductList/ProductCardView";
+import ProductListView from "@/components/Admin/Sale/TypeDisplayProductList/ProductListView";
+import SettingViewProductList from "@/components/Admin/Sale/TypeDisplayProductList/SettingViewProductList";
+import {CSSTransition, TransitionGroup} from "react-transition-group";
 
 const {Content} = Layout;
-const {Text, Paragraph, Title} = Typography;
+const {Text} = Typography;
 
 export const defaultFilterParam: ParamFilterProduct = {
     page: 1,
@@ -44,6 +45,10 @@ interface IProps {
 const NormalSale: React.FC<IProps> = (props) => {
     const {} = props;
     const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
+    const nodeViewModeRef = useRef(null);
+    const [viewModeSaleProductList, setViewModeSaleProductList] = useState<string>(
+        localStorage.getItem('viewModeSaleProductList') || 'list'
+    );
 
     const handleSale = useContext(HandleSale);
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
@@ -64,6 +69,14 @@ const NormalSale: React.FC<IProps> = (props) => {
 
     const onClose = useCallback((drawerType: "checkout" | "filter", isOpen: boolean) => {
         setOpenDrawer((prevDrawer) => ({...prevDrawer, [drawerType]: isOpen}));
+    }, []);
+
+    const refreshDataProductList = useCallback(async () => {
+        await mutate(key =>
+                typeof key === 'string' && key.startsWith(`${URL_API_PRODUCT.filter}`),
+            undefined,
+            {revalidate: true}
+        )
     }, []);
 
     return (
@@ -130,13 +143,7 @@ const NormalSale: React.FC<IProps> = (props) => {
                             <Space direction="horizontal">
                                 <Tooltip placement="top" title="Tải danh sách sản phẩm">
                                     <Button icon={<ReloadOutlined/>} type="text" shape="circle"
-                                            onClick={async () => {
-                                                await mutate(key =>
-                                                        typeof key === 'string' && key.startsWith(`${URL_API_PRODUCT.filter}`),
-                                                    undefined,
-                                                    {revalidate: true}
-                                                )
-                                            }}
+                                            onClick={() => refreshDataProductList()}
                                     />
                                 </Tooltip>
                                 <Tooltip placement="top" title="Lọc sản phẩm">
@@ -144,11 +151,9 @@ const NormalSale: React.FC<IProps> = (props) => {
                                             onClick={() => showDrawer("filter", true)}
                                     />
                                 </Tooltip>
-                                <Segmented
-                                    options={[
-                                        {value: 'list', icon: <BarsOutlined/>},
-                                        {value: 'kanban', icon: <AppstoreOutlined/>},
-                                    ]}
+                                <SettingViewProductList
+                                    viewMode={viewModeSaleProductList}
+                                    setViewMode={setViewModeSaleProductList}
                                 />
                             </Space>
                         </div>
@@ -158,11 +163,27 @@ const NormalSale: React.FC<IProps> = (props) => {
                                 isLoading ? (
                                     <SubLoader size="small" spinning={isLoading}/>
                                 ) : (
-                                    <>
-                                        <ProductListView dataSource={dataFilterProduct?.items}/>
-
-                                        {/*<ShopProductGridComponent dataSource={dataOptionFilterProduct?.items}/>*/}
-                                    </>
+                                    <TransitionGroup>
+                                        {viewModeSaleProductList === 'list' ? (
+                                            <CSSTransition
+                                                key="list"
+                                                timeout={300}
+                                                classNames="fade"
+                                                nodeRef={nodeViewModeRef}
+                                            >
+                                                <ProductListView dataSource={dataFilterProduct?.items} nodeRef={nodeViewModeRef}/>
+                                            </CSSTransition>
+                                        ) : (
+                                            <CSSTransition
+                                                key="grid"
+                                                timeout={300}
+                                                classNames="fade"
+                                                nodeRef={nodeViewModeRef}
+                                            >
+                                                <ProductCardView dataSource={dataFilterProduct?.items} nodeRef={nodeViewModeRef}/>
+                                            </CSSTransition>
+                                        )}
+                                    </TransitionGroup>
                                 )
                             }
                         </div>

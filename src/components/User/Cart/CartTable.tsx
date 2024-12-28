@@ -1,17 +1,18 @@
 import React from "react";
-import Image from "next/image";
-import { Button, Card, Typography } from "antd";
+import { Button, Card, Image, Typography } from "antd";
 import QuantityControl from "@/components/User/Cart/Properties/QuantityControl";
 import { CloseOutlined, FireOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import ProgressShipping from "./Properties/ProgressShipping";
 import { removeItemFromCart } from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
+import Link from "next/link";
 
 const { Title, Text } = Typography;
 
-const CartTable = ({ cartItems, updateCartItems }: any) => {
+const CartTable = ({ cartItems, updateCartItems }: { cartItems: any; updateCartItems: any }) => {
     const condition = 500000;
-    const totalAmount = cartItems.reduce((total, item) => total + item.total_price, 0);
+    const totalAmount = cartItems.reduce((total: number, item: { total_price: number; }) => total + item.total_price, 0);
+    const promotionPrice = cartItems.reduce((total: number, item: { sale_price: number; discounted_price: number; quantity: number; }) => total + (item.sale_price - item.discounted_price) * item.quantity, 0);
     const { showNotification, showModal } = useAppNotifications();
 
     const handleQuantityChange = (index: number, operation: 'increment' | 'decrement') => {
@@ -30,7 +31,7 @@ const CartTable = ({ cartItems, updateCartItems }: any) => {
         updateCartItems(newCartItems);
     };
 
-    const handleRemoveCartItem = (cartId: number) => {
+    const handleRemoveCartItem = (cartId: string) => {
         showModal('confirm', {
             title: 'Xoá sản phẩm',
             content: 'Bạn chắc chắn muốn xoá sản phẩm này?',
@@ -56,19 +57,32 @@ const CartTable = ({ cartItems, updateCartItems }: any) => {
                 <ProgressShipping totalAmount={totalAmount} condition={condition} />
             </div>
 
-            <div className="bg-gray-100 p-3 rounded-lg mb-4 flex items-center">
+            <div
+                className={promotionPrice && promotionPrice > 0
+                    ? "bg-gray-100 p-3 rounded-lg mb-4 flex items-center" : "d-none"
+                }
+            >
                 <FireOutlined className="text-red-500 text-xl mr-2" />
                 <p className="m-0">
                     Khuyến mại trong giỏ hàng của bạn
                     <span className="text-red-500 font-bold ms-1">
-                        {cartItems.reduce((total, item) =>
-                            total + (item.sale_price - item.discounted_price) * item.quantity, 0).toLocaleString()} đ
+                        {promotionPrice.toLocaleString()} đ
                     </span>
                 </p>
             </div>
 
             <div style={{ maxHeight: '515px', overflowY: 'auto' }}>
-                {cartItems.map((item, index) => (
+                {cartItems.map((item: {
+                    shopping_cart_id: string;
+                    product_id: string;
+                    images: { imageUrl: string }[];
+                    product_name: string;
+                    discounted_price: number;
+                    sale_price: number;
+                    color: string;
+                    size: string;
+                    quantity: number; quantityInStock: number;
+                }, index: number) => (
                     <div key={index.toString()}>
                         <div className="float-end">
                             <Button
@@ -78,29 +92,42 @@ const CartTable = ({ cartItems, updateCartItems }: any) => {
                                 className="ml-5"
                             />
                         </div>
-                        <div className="flex mb-4">
-                            <Image
-                                width={130}
-                                height={100}
-                                src={item.images[0].imageUrl}
-                                alt={item.product_name}
-                                className="rounded-lg mr-4"
-                                layout="intrinsic"
-                                unoptimized
-                            />
-                            <div>
-                                <Title level={4} style={{ fontWeight: 500 }}>{item.product_name}</Title>
+                        <div className="flex items-center mb-4">
+                            <Link href={`/product/${item.product_id}/variant`} passHref>
+                                <Image
+                                    width={160}
+                                    height={"auto"}
+                                    src={item.images[0].imageUrl}
+                                    alt={item.product_name}
+                                    className="rounded-lg"
+                                    preview={false}
+                                />
+                            </Link>
+                            <div className="ms-4">
+                                <Title level={4} style={{ fontWeight: 500 }}>
+                                    <Link
+                                        href={`/product/${item.product_id}/variant`}
+                                        passHref
+                                        className="hover:!text-orange-400"
+                                    >
+                                        {item.product_name}
+                                    </Link>
+                                </Title>
                                 <Text className="text-red-500 text-xl font-bold">
                                     {item.discounted_price.toLocaleString()} đ
                                 </Text>
-                                <p className="line-through text-gray-500">{item.sale_price.toLocaleString()} đ</p>
-                                <p className="text-red-500">
-                                    <span
-                                        style={{ color: "#333" }}
-                                    >
-                                        Đã tiết kiệm
-                                    </span> -{(item.sale_price - item.discounted_price).toLocaleString()} đ
-                                </p>
+                                <div style={item.sale_price > item.discounted_price ? {} : { visibility: 'hidden' }}>
+                                    <p className="line-through text-gray-500">
+                                        {item.sale_price.toLocaleString()} đ
+                                    </p>
+                                    <p className="text-red-500">
+                                        <span
+                                            style={{ color: "#333" }}
+                                        >
+                                            Đã tiết kiệm
+                                        </span> -{(item.sale_price - item.discounted_price).toLocaleString()} đ
+                                    </p>
+                                </div>
                                 <div className="flex flex-col justify-center">
                                     <p>{item.color} / {item.size}</p>
                                     <div className="justify-self-end">
