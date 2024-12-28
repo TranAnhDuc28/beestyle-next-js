@@ -1,8 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 import React from "react";
 import Link from "next/link";
 import { IoHomeOutline, IoMailUnreadOutline } from "react-icons/io5";
 import { FiMapPin } from "react-icons/fi";
-import Image from "next/image";
 import { FaPhone } from "react-icons/fa6";
 
 export default function UserFooter() {
@@ -15,12 +15,11 @@ export default function UserFooter() {
                             <div className="single-footer about">
                                 <div className="logo">
                                     <Link className="link-no-decoration" href="/">
-                                        <Image
+                                        <img
                                             src="/logo2.png"
                                             alt="BeeStyle"
-                                            width={180}
-                                            height={50}
-                                            unoptimized
+                                            width={150}
+                                            height="auto"
                                         />
                                     </Link>
                                 </div>
@@ -102,20 +101,18 @@ export default function UserFooter() {
                             </div>
                             <div className="col-lg-6 col-12">
                                 <div className="right d-flex">
-                                    <Image
+                                    <img
                                         src="https://yody.vn/images/identity-badge/bct_v1.png"
                                         alt="#"
                                         width={105}
-                                        height={50}
+                                        height="auto"
                                         className="mr-5"
-                                        unoptimized
                                     />
-                                    <Image
+                                    <img
                                         src="https://yody.vn/images/identity-badge/dmca_v1.png"
                                         alt="#"
                                         width={80}
-                                        height={50}
-                                        unoptimized
+                                        height="auto"
                                     />
                                 </div>
                             </div>

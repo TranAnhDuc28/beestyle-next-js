@@ -1,10 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useRef, useState } from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Image from "next/image";
+import { Image } from 'antd';
+import { ProductImage } from '@/services/user/SingleProductService';
 
-const ProductGallery = (props: any) => {
+const ProductGallery = ({ images }: ProductImage) => {
 
     const settings = {
         dots: false,
@@ -23,7 +25,7 @@ const ProductGallery = (props: any) => {
         sliderRef.current.slickGoTo(index);
     };
 
-    const isSingleImage = props.images?.length === 1;
+    const isSingleImage = images?.length === 1;
 
     return (
         <div className="product-gallery flex">
@@ -32,22 +34,20 @@ const ProductGallery = (props: any) => {
                 style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    gap: 15
                 }}
             >
-                {!isSingleImage && props.images?.map((image, index) => (
-                    <Image
+                {!isSingleImage && images?.map((image: { imageUrl: string | undefined; }, index: number) => (
+                    <img
                         key={index}
                         src={image.imageUrl}
                         width={60}
-                        height={65}
-                        unoptimized
+                        height="auto"
                         alt={`Thumbnail ${index + 1}`}
                         style={{
                             cursor: 'pointer',
-                            margin: '5px 0',
-                            border: selectedIndex === index ? '2px solid #F7941D' : 'none',
+                            border: selectedIndex === index ? '1px solid #333' : 'none',
                         }}
                         onClick={() => handleThumbnailClick(index)}
                     />
@@ -56,24 +56,24 @@ const ProductGallery = (props: any) => {
             <div style={{ flex: 1, width: '490px', marginLeft: 15 }}>
                 {isSingleImage ? (
                     <Image
-                        src={props.images[0].imageUrl}
+                        src={images[0].imageUrl}
                         alt="ProductCardItem Image"
-                        width={490}
-                        height={650}
+                        width={500}
+                        height={'auto'}
                         style={{ border: 0 }}
-                        unoptimized
+                        preview={false}
                     />
                 ) : (
                     <Slider ref={sliderRef} {...settings}>
-                        {props.images?.map((image, index) => (
+                        {images?.map((image: { imageUrl: string }, index: number) => (
                             <div key={index}>
                                 <Image
                                     src={image.imageUrl}
                                     alt={`ProductCardItem Image ${index + 1}`}
-                                    width={490}
-                                    height={650}
+                                    width={500}
+                                    height={'auto'}
                                     style={{ border: 0 }}
-                                    unoptimized
+                                    preview={false}
                                 />
                             </div>
                         ))}

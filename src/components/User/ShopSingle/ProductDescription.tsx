@@ -1,22 +1,31 @@
 import React, { useState } from 'react';
 import Link from "next/link";
-import { Button, Flex, Input, InputNumber, Rate } from 'antd';
-import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
-import { useProduct } from "@/services/user/SingleProductService";
-import { useParams } from "next/navigation";
+import { Button, Flex, InputNumber, Rate, Tag } from 'antd';
+import { ProductVariant, ProductImage } from "@/services/user/SingleProductService";
 import ColorPickers from "@/components/User/ShopSingle/Properties/ColorPickers";
 import SizePickers from "@/components/User/ShopSingle/Properties/SizePickers";
 import { addToCart } from "@/services/user/ShoppingCartService";
 import { EyeOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import InfoSection from "@/components/User/ShopSingle/Properties/InfoSession";
 
-const ProductDescription = (props: any) => {
-    const params = useParams();
-    const productId = params?.id;
+interface ProductDescriptionProps {
+    product: ProductVariant | undefined;
+    productId: string;
+    selectedColor: string | undefined;
+    selectedSize: string | undefined;
+    onColorSelect: (color: string) => void;
+    onSizeSelect: (size: string) => void;
+}
+
+const ProductDescription: React.FC<ProductDescriptionProps> = ({
+    product,
+    productId,
+    selectedColor,
+    selectedSize,
+    onColorSelect,
+    onSizeSelect
+}) => {
     const [quantity, setQuantity] = useState(1);
-    const [selectedColor, setSelectedColor] = useState<string | null>(null);
-    const [selectedSize, setSelectedSize] = useState<string | null>(null);
-    const { data: product, error } = useProduct(productId, selectedColor, selectedSize);
 
     const handleDecrement = () => {
         setQuantity(prevQuantity => Math.max(prevQuantity - 1, 1));
@@ -26,22 +35,15 @@ const ProductDescription = (props: any) => {
         setQuantity(prevQuantity => Math.min(prevQuantity + 1, 1000));
     };
 
-    const handleColorSelect = (color: string) => {
-        setSelectedColor(color);
-        setSelectedSize(null);
-    };
-
-    const handleSizeSelect = (size: string) => {
-        setSelectedSize(size);
-    };
-
     return (
         <div className="product-des">
             <div className="short">
-                <h6 className="text-capitalize fw-bold mb-0">{product?.productName || 'No product variant'}</h6>
+                <h6 className="text-capitalize fw-bold mb-0">
+                    {product && product.productName || 'Không có thông tin về sản phẩm'}
+                </h6>
                 <div className="rating-main" style={{ fontSize: '13px' }}>
                     <span className="pe-2" style={{ borderRight: '2px solid #EDF0F5' }}>
-                        SKU: {product?.sku}
+                        SKU: {product && product.sku || '?'}
                     </span>
 
                     <ul className="rating ps-5">
@@ -57,22 +59,38 @@ const ProductDescription = (props: any) => {
                         </li>
                         <li>
                             <div className="ml-2" style={{ borderLeft: '2px solid #EDF0F5' }}>
-                                <span className="ml-2">Thương hiệu:</span>
-                                <span className="fw-bold"> {product?.brandName}</span>
+                                <span className="ml-2">Thương hiệu: </span>
+                                <span className="fw-bold">
+                                    {product && product.brandName || '?'}
+                                </span>
                             </div>
                         </li>
                     </ul>
                 </div>
-                <p className="price px-3 py-4 m-0" style={{ backgroundColor: '#FAFAFA', borderRadius: '5px' }}>
+                <p className="price px-3 py-4 m-0 flex items-center" style={{ backgroundColor: '#FAFAFA', borderRadius: '5px' }}>
                     <span className="discount text-center">
                         {product?.discountPrice ? `${product.discountPrice.toLocaleString()} đ` : '0 đ'}
                     </span>
-                    <s className={product?.salePrice ? "fw-medium" : "hidden"} style={{ color: '#838383' }}>
+                    <s
+                        className={product && product.salePrice > product.discountPrice
+                            ? "fw-medium fs-6" : "hidden"
+                        }
+                        style={{ color: '#838383' }}
+                    >
                         {product?.salePrice.toLocaleString() + ' đ'}
                     </s>
-                    <span className="!text-red-500 fs-6 ms-3">
-                        -{product?.discountValue}%
-                    </span>
+                    <Tag
+                        color={'pink'}
+                        key={'discount'}
+                        bordered={false}
+                        className={product && product.salePrice > product.discountPrice
+                            ? 'ms-2 rounded-3xl' : 'd-none'
+                        }
+                    >
+                        <span className="!text-red-500 font-bold me-0">
+                            -{product?.discountValue}%
+                        </span>
+                    </Tag>
                 </p>
             </div>
 
@@ -85,7 +103,15 @@ const ProductDescription = (props: any) => {
                 </div>
 
                 <div className="mb-4">
-                    <span className="text-gray-800">Chỉ còn <b>{product?.quantityInStock}</b> sản phẩm trong kho!</span>
+                    {product && product.quantityInStock > 0 ? (
+                        <span className="text-gray-800">
+                            Chỉ còn <b>{product.quantityInStock}</b> sản phẩm trong kho!
+                        </span>
+                    ) : (
+                        <span className="text-red-800">
+                            Hết hàng!
+                        </span>
+                    )}
                 </div>
             </div>
 
@@ -94,7 +120,7 @@ const ProductDescription = (props: any) => {
                     <ColorPickers
                         productId={productId}
                         selectedColor={selectedColor}
-                        onColorSelect={handleColorSelect}
+                        onColorSelect={onColorSelect}
                     />
                 </div>
 
@@ -103,7 +129,7 @@ const ProductDescription = (props: any) => {
                         productId={productId}
                         colorCode={selectedColor}
                         selectedSize={selectedSize}
-                        onSizeSelect={handleSizeSelect}
+                        onSizeSelect={onSizeSelect}
                     />
                 </div>
             </div>
@@ -135,7 +161,7 @@ const ProductDescription = (props: any) => {
                                 className="!bg-gray-200 hover:!bg-gray-300 !text-black !font-bold relative z-10
                                                !border-none !rounded-none !w-10 !h-10 flex items-center justify-center"
                                 icon={<PlusOutlined />}
-                                disabled={quantity >= product?.quantityInStock}
+                                disabled={quantity >= (product?.quantityInStock || 0)}
                             />
                         </div>
                     </div>
@@ -144,7 +170,7 @@ const ProductDescription = (props: any) => {
                             href="#"
                             onClick={(e) => {
                                 e.preventDefault();
-                                addToCart(product, quantity, props.images);
+                                addToCart(product, quantity, product?.images as ProductImage[]);
                             }}
                             className="btn"
                             style={{ margin: '0 0 0 20px', padding: '0 151px' }}
@@ -157,7 +183,7 @@ const ProductDescription = (props: any) => {
                     <Link
                         href={"/cart"}
                         onClick={() => {
-                            addToCart(product, quantity, props.images);
+                            addToCart(product, quantity, product?.images as ProductImage[]);
                         }}
                         className="btn"
                         style={{ width: '635px' }}
