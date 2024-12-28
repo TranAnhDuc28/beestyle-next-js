@@ -1,5 +1,5 @@
 import useAppNotifications from "@/hooks/useAppNotifications";
-import {IOrder, IOrderCreateOrUpdate} from "@/types/IOrder";
+import {IOrder, IOrderCreateOrUpdate, IOrderDetail} from "@/types/IOrder";
 import {createOrder, getOrders, updateOrder, URL_API_ORDER} from "@/services/OrderService";
 import {useState} from "react";
 import useSWR from "swr";
@@ -10,18 +10,24 @@ const useOrder = () => {
     const {showNotification, showMessage} = useAppNotifications();
     const [loading, setLoading] = useState<boolean>(false);
 
-    const handleGetOrderService = (orderId: number | null) => {
+    const handleGetOrderDetail = (orderId: number | null) => {
         const {data, isLoading, error, mutate} = useSWR(
            orderId ? URL_API_ORDER.getOrderDetail(orderId) : null,
             getOrders,
             {
-                revalidateIfStale: false,
                 revalidateOnReconnect: false,
                 revalidateOnFocus: false
             }
         );
 
-        const orderDetail = data?.data ? data.data : undefined;
+        if (error) {
+            showNotification("error", {
+                message: error?.message,
+                description: error?.response?.data?.message || "Error fetching order detail",
+            });
+        }
+
+        const orderDetail: IOrderDetail = data?.data ? data.data : undefined;
 
         return {orderDetail, isLoading, error, mutate};
     }
@@ -67,6 +73,6 @@ const useOrder = () => {
         }
     }
 
-    return {loading, handleCreateOrder, handleUpdateOrder, handleGetOrderService};
+    return {loading, handleCreateOrder, handleUpdateOrder, handleGetOrderService: handleGetOrderDetail};
 }
 export default useOrder;

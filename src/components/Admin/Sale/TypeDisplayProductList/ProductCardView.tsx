@@ -1,24 +1,27 @@
-import {Card, List, Space, Tooltip, Typography} from "antd";
+import {Card, Image, List, Space, Tooltip, Typography} from "antd";
 import React, {memo, useState} from "react";
 import Marquee from "react-fast-marquee";
 import {IProduct} from "@/types/IProduct";
 import ModalListProductVariant from "@/components/Admin/Sale/ModalListProductVariant";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
+import {EyeOutlined} from "@ant-design/icons";
 
 const {Text, Title} = Typography;
 
 interface IProps {
     dataSource?: any[];
+    nodeRef: any;
 }
 
 const ProductCardView: React.FC<IProps> = (props) => {
-    const {dataSource} = props;
+    const {dataSource, nodeRef} = props;
     const [isOpenModalListProductVariant, setOpenModalListProductVariant] = useState(false);
     const [productSelected, setProductSelected] = useState<IProduct | undefined>(undefined);
 
     return (
         <>
             <List
+                ref={nodeRef}
                 grid={{gutter: 8, xs: 1, sm: 1, md: 2, lg: 3, xl: 3, xxl: 4}}
                 dataSource={dataSource}
                 renderItem={(item: IProduct) => (
@@ -27,13 +30,25 @@ const ProductCardView: React.FC<IProps> = (props) => {
                             hoverable
                             style={{flex: "1", cursor: "pointer"}}
                             styles={{body: {padding: 10}}}
-                            cover={<img alt="example" src="/BuiQuangLan.png"/>}
-                            onClick={() => {
-                                setProductSelected(item);
-                                setOpenModalListProductVariant(true);
-                            }}
+                            cover={
+                                <Image
+                                    loading="lazy"
+                                    src={item?.imageUrl}
+                                    alt={item?.imageUrl}
+                                    fallback={"/no-image.png"}
+                                    style={{width: "100%", height: "auto"}}
+                                    preview={{
+                                        mask: <EyeOutlined/>
+                                    }}
+                                />
+                            }
                         >
-                            <Space direction="vertical">
+                            <Space direction="vertical"
+                                   onClick={() => {
+                                       setProductSelected(item);
+                                       setOpenModalListProductVariant(true);
+                                   }}
+                            >
                                 <Tooltip title={item.productName}>
                                     <div>
                                         <Marquee speed={30} pauseOnHover={true}>

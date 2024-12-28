@@ -180,7 +180,6 @@ const ModalListVoucher: React.FC<IProps> = (props) => {
                     overflowY: "auto",
                 }
             }}
-
         >
             <List
                 loading={loading}
@@ -225,7 +224,7 @@ const ModalListVoucher: React.FC<IProps> = (props) => {
                                     </Flex>
                                 }
                                 description={
-                                    <Flex align="center" justify="space-between">
+                                    <Flex align="end" justify="space-between">
                                         <div>
                                            <span>
                                                Cho đơn từ {item.minOrderValue
@@ -237,7 +236,7 @@ const ModalListVoucher: React.FC<IProps> = (props) => {
                                         <Checkbox
                                             checked={selectedVoucher && selectedVoucher.id === item.id}
                                             onChange={(e) => handleVoucherSelection(e.target.checked, item)}
-                                        ></Checkbox>
+                                        />
                                     </Flex>
                                 }
                             />

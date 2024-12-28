@@ -1,5 +1,5 @@
 export const ORDER_STATUS = {
-    PENDING: {
+        PENDING: {
         id: 0,
         key: "PENDING",
         description: "Chờ thanh toán",

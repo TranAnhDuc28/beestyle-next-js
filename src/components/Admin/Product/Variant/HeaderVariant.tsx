@@ -43,7 +43,7 @@ const HeaderFilter: React.FC<IProps> = (props) => {
                 ]}
             />
             <Flex align={"flex-start"} justify={"flex-start"} gap={"small"} style={{margin: '10px 0px'}}>
-                <Title level={3} style={{marginLeft: 10, minWidth: 256, flexGrow: 1}}>Sản phẩm</Title>
+                <Title level={3} style={{marginLeft: 10, minWidth: 256, flexGrow: 1}}>Sản phẩm chi tiết</Title>
                 <div className="w-full">
                     <Flex justify={'space-between'} align={'center'}>
                         <div className="flex-grow max-w-96">

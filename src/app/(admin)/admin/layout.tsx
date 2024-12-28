@@ -15,7 +15,7 @@ export default function RootAdminLayout({children,}: Readonly<{ children: ReactN
                     </AdminLayout>
                 </App>
             </AntdRegistry>
-            <FloatButton.BackTop visibilityHeight={400}/>
+            <FloatButton.BackTop visibilityHeight={700}/>
         </>
     );
 }
