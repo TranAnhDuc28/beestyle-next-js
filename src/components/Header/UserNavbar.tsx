@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { memo, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Layout, Menu, Badge, Button, Flex, Typography, Tooltip } from "antd";
@@ -5,7 +6,6 @@ import { SearchOutlined, UserOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { usePathname } from "next/navigation";
 import styles from "./css/navbar.module.css";
-import Image from "next/image";
 import { LuShoppingBag } from "react-icons/lu";
 import CartDrawer from "@/components/User/Cart/CartDrawer";
 import { CART_KEY } from "@/services/user/ShoppingCartService";
@@ -102,12 +102,11 @@ const Navbar: React.FC = () => {
     return (
         <Header className={`${styles.navbar} ${isScrolled ? styles.scrolled : ""}`}>
             <Link href="/">
-                <Image
+                <img
                     src="/logo.png"
                     alt="BeeStyle"
-                    width={180}
-                    height={50}
-                    unoptimized
+                    width={150}
+                    height="auto"
                 />
             </Link>
 

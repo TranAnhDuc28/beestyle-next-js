@@ -7,8 +7,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import React, { useState } from "react";
 import ProductQuickLookupModal from "@/components/User/ProductCommonUser/ProductQuickLookupModal";
-import useSWR from "swr";
-import { getSellingProduct, URL_API_PRODUCT_SELLER } from "@/services/user/ProductAreaService";
+import { useSellingProducts } from "@/services/user/ProductHomeService";
 import { TiEye, TiArrowLeft, TiArrowRight } from 'react-icons/ti';
 
 const CustomPrevArrow = ({ onClick }) => (
@@ -56,7 +55,7 @@ function MostPopularProduct() {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
-    const { data: products } = useSWR(URL_API_PRODUCT_SELLER, getSellingProduct);
+    const { products } = useSellingProducts();
 
     const settings = {
         dots: false,
@@ -65,7 +64,7 @@ function MostPopularProduct() {
         slidesToShow: 4,
         slidesToScroll: 1,
         autoplay: true,
-        autoplaySpeed: 3000,
+        autoplaySpeed: 5000,
         prevArrow: <CustomPrevArrow onClick={undefined} />,
         nextArrow: <CustomNextArrow onClick={undefined} />
     };
@@ -82,88 +81,88 @@ function MostPopularProduct() {
 
     return (
         <>
-            <div className="product-area most-popular section pb-0">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-12">
-                            <div className="section-title">
-                                <h2>Top sản phẩm bán chạy</h2>
+            {products && Array.isArray(products) && products.length > 0 ? (
+                <>
+                    <div className="product-area most-popular section pb-0">
+                        <div className="container">
+                            <div className="row">
+                                <div className="col-12">
+                                    <div className="section-title">
+                                        <h2>Top sản phẩm bán chạy</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-12">
+                                    <Slider {...settings}>
+                                        {products.map((product) => (
+                                            <div key={product.id}>
+                                                <Card className="product-card">
+                                                    <Badge.Ribbon text={`${product.discountValue}%`} color="red">
+                                                        <div className="product-image-wrapper">
+                                                            <Image
+                                                                preview={{
+                                                                    mask: (
+                                                                        <div className="flex items-center justify-center h-full">
+                                                                            <Tooltip
+                                                                                title={
+                                                                                    <span style={{ fontSize: 12, padding: 0 }}>
+                                                                                        Xem nhanh
+                                                                                    </span>
+                                                                                }
+                                                                                color="#F7941D"
+                                                                            >
+                                                                                <TiEye size={25} color="#fff"
+                                                                                    className="hover:!text-orange-400"
+                                                                                    onClick={() => handleOpenModal(product)}
+                                                                                />
+                                                                            </Tooltip>
+                                                                        </div>
+                                                                    ),
+                                                                    maskClassName:
+                                                                        'flex items-center justify-center bg-black bg-opacity-50',
+                                                                    visible: false,
+                                                                }}
+                                                                src={product.imageUrl}
+                                                                alt={product.productName}
+                                                                loading="lazy"
+                                                                style={{ width: "100%", height: "auto", objectFit: "cover", aspectRatio: "3/4" }}
+                                                            />
+                                                            {product?.label && (
+                                                                <span className="product-label">{product.productName}</span>
+                                                            )}
+                                                        </div>
+                                                        <div className="product-content">
+                                                            <h3>
+                                                                <Link
+                                                                    href={`/product/${product.id}/variant`}
+                                                                    className="product-title fs-6 fw-semibold"
+                                                                >
+                                                                    {product.productName}
+                                                                </Link>
+                                                            </h3>
+                                                            <div className="product-price">
+                                                                <span className="old-price">{product.minSalePrice.toLocaleString()} đ</span>
+                                                                <span
+                                                                    className="current-price ml-2">{product.minDiscountedPrice.toLocaleString()} đ</span>
+                                                            </div>
+                                                        </div>
+                                                    </Badge.Ribbon>
+                                                </Card>
+                                            </div>
+                                        ))}
+                                    </Slider>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div className="row">
-                        <div className="col-12">
-                            <Slider {...settings}>
-                                {products && Array.isArray(products) ? (
-                                    products.map((product) => (
-                                        <div key={product.id}>
-                                            <Card className="product-card">
-                                                <Badge.Ribbon text={`${product.discountValue}%`} color="red">
-                                                    <div className="product-image-wrapper">
-                                                        <Image
-                                                            preview={{
-                                                                mask: (
-                                                                    <div className="flex items-center justify-center h-full">
-                                                                        <Tooltip
-                                                                            title={
-                                                                                <span style={{ fontSize: 12, padding: 0 }}>
-                                                                                    Xem nhanh
-                                                                                </span>
-                                                                            }
-                                                                            color="#F7941D"
-                                                                        >
-                                                                            <TiEye size={25} color="#fff"
-                                                                                className="hover:!text-orange-400"
-                                                                                onClick={() => handleOpenModal(product)}
-                                                                            />
-                                                                        </Tooltip>
-                                                                    </div>
-                                                                ),
-                                                                maskClassName:
-                                                                    'flex items-center justify-center bg-black bg-opacity-50',
-                                                                visible: false,
-                                                            }}
-                                                            src={product.imageUrl}
-                                                            alt={product.productName}
-                                                            loading="lazy"
-                                                            style={{ width: "100%", height: "auto", objectFit: "cover", aspectRatio: "3/4" }}
-                                                        />
-                                                        {product?.label && (
-                                                            <span className="product-label">{product.productName}</span>
-                                                        )}
-                                                    </div>
-                                                    <div className="product-content">
-                                                        <h3>
-                                                            <Link
-                                                                href={`/product/${product.id}/variant`}
-                                                                className="product-title fs-6 fw-semibold"
-                                                            >
-                                                                {product.productName}
-                                                            </Link>
-                                                        </h3>
-                                                        <div className="product-price">
-                                                            <span className="old-price">{product.minSalePrice.toLocaleString()} đ</span>
-                                                            <span
-                                                                className="current-price ml-2">{product.minDiscountedPrice.toLocaleString()} đ</span>
-                                                        </div>
-                                                    </div>
-                                                </Badge.Ribbon>
-                                            </Card>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div>No products available</div>
-                                )}
-                            </Slider>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <ProductQuickLookupModal
-                visible={isModalVisible}
-                onClose={handleCloseModal}
-                product={selectedProduct}
-            />
+                    <ProductQuickLookupModal
+                        visible={isModalVisible}
+                        onClose={handleCloseModal}
+                        product={selectedProduct}
+                    />
+                </>
+            ) : (<div className="p-4"></div>)}
         </>
     );
 }
