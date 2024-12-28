@@ -1,5 +1,5 @@
 import useAppNotifications from "@/hooks/useAppNotifications";
-import {ICreateOrUpdateOrderItem} from "@/types/IOrderItem";
+import {ICreateOrUpdateOrderItem, IOrderItem} from "@/types/IOrderItem";
 import {
     createOrderItem, createOrderItems, deleteOrderItem, getOrderItemsByOrderId,
     updateOrderItem,
@@ -12,24 +12,25 @@ const useOrderItem = () => {
     const {showNotification, showMessage} = useAppNotifications();
 
     const handleGetOrderItemsByOrderId = (orderId: string | undefined) => {
-        // const {data, error, isLoading, mutate} =
-        //     useSWR(orderId ? URL_API_ORDER_ITEM.get(orderId) : null,
-        //     getOrderItemsByOrderId,
-        //     {
-        //         revalidateIfStale: false,
-        //         revalidateOnFocus: false,
-        //         revalidateOnReconnect: false
-        //     }
-        // );
-        //
-        // if (error) {
-        //     showNotification("error", {
-        //         message: error?.message,
-        //         description: error?.response?.data?.message || "Error fetching order items",
-        //     });
-        // }
-        //
-        // return {data, error, isLoading, mutate};
+        const {data, error, isLoading, mutate: mutateOrderItems} =
+            useSWR(orderId ? URL_API_ORDER_ITEM.get(orderId) : null,
+            getOrderItemsByOrderId,
+            {
+                revalidateIfStale: false,
+                revalidateOnReconnect: false
+            }
+        );
+
+        if (error) {
+            showNotification("error", {
+                message: error?.message,
+                description: error?.response?.data?.message || "Error fetching order items",
+            });
+        }
+
+        const orderItems: IOrderItem[] = data?.data ? data.data : [];
+
+        return {orderItems, error, isLoading, mutateOrderItems};
     }
 
     const handleCreateOrderItem =  async (value: ICreateOrUpdateOrderItem) => {

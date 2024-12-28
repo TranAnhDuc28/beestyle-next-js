@@ -20,11 +20,7 @@ import { DatePicker, Typography } from "antd";
 import { deleteVoucher } from '@/services/VoucherService';
 import { useSearchParams } from "next/navigation";
 import useAppNotifications from "../../../hooks/useAppNotifications";
-import {STATUS} from "@/constants/Status";
-import {DISCOUNTTYPE} from "@/constants/DiscountType";
 import VoucherFilter from "./VoucherFilter";
-import CreateMaterial from "../Material/CreateMaterial";
-import UpdateMaterial from "../Material/UpdateMaterial";
 import {DISCOUNT_TYPE} from "../../../constants/DiscountType";
 import dayjs from "dayjs";
 import {DISCOUNT_STATUS} from "../../../constants/DiscountStastus";
@@ -153,8 +149,7 @@ const VoucherComponent = () => {
         {
             title: 'Trạng thái', dataIndex: 'status', key: 'status',
             render(value: keyof typeof DISCOUNT_STATUS, record, index) {
-                let color: string;
-                console.log(value)
+                let color: string = 'default';
                 if (value === 'UPCOMING') {
                     color = 'yellow';
                 } else if (value === 'ACTIVE') {

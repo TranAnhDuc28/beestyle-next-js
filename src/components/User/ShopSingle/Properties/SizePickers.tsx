@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useProductSizes } from '@/services/user/SingleProductService';
+import { ProductSize, useProductSizes } from '@/services/user/SingleProductService';
 import Link from 'next/link';
+import { usePathname } from "next/navigation";
 import './css/property.css';
 import SizeGuide from './SizeGuide';
 import { LuPencilRuler } from 'react-icons/lu';
 
 interface SizePickerProps {
-    productId: string | number | null;
-    colorCode: string | null;
-    selectedSize: string | null;
+    productId: string;
+    colorCode: string;
+    selectedSize: string | undefined;
     onSizeSelect: (size: string | null) => void;
 }
 
@@ -18,11 +19,12 @@ const SizePicker: React.FC<SizePickerProps> = ({
     selectedSize,
     onSizeSelect,
 }) => {
+    const pathName = usePathname();
     const [visible, setVisible] = useState(false);
     const { data: sizes } = useProductSizes(productId, colorCode);
 
     useEffect(() => {
-        if (colorCode && sizes && sizes.length > 0 && !selectedSize) {
+        if (sizes && sizes.length > 0 && colorCode && !selectedSize) {
             onSizeSelect(sizes[0].id);
         } else if (!colorCode || (sizes && sizes.length === 0)) {
             onSizeSelect(null)
@@ -37,8 +39,13 @@ const SizePicker: React.FC<SizePickerProps> = ({
         <>
             <div className='flex justify-between items-center'>
                 <p className="text-black font-semibold">Kích thước:</p>
-                <div className='text-blue-500 cursor-pointer mb-3' onClick={() => setVisible(true)}>
-                    <span className='flex items-center'>
+                <div
+                    className={
+                        pathName.includes('variant') && 'text-blue-500 cursor-pointer' || 'd-none'
+                    }
+                    onClick={() => setVisible(true)}
+                >
+                    <span className='flex items-center hover:!text-purple-500'>
                         <LuPencilRuler className='me-2' />
                         Bảng kích thước
                     </span>
@@ -52,7 +59,7 @@ const SizePicker: React.FC<SizePickerProps> = ({
                     margin: '0',
                 }}
             >
-                {sizes?.map((size: any) => (
+                {sizes?.map((size: ProductSize) => (
                     <li key={size.id} style={{ marginRight: '10px' }}>
                         <Link
                             href="#"

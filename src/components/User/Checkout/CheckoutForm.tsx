@@ -81,16 +81,16 @@ const CheckoutForm = (props: IProps) => {
             setSelectedDistrictName(district?.label);
 
             const params = {
-                pick_province: "Hà Nội", // TODO: Lấy từ cấu hình
-                pick_district: "Huyện Hoài Đức", // TODO: Lấy từ cấu hình
+                pick_province: "Hà Nội", // Lấy từ cấu hình
+                pick_district: "Huyện Hoài Đức", // Lấy từ cấu hình
                 province: selectedProvinceName,
                 district: district?.label,
-                address: detailAddress, // TODO: Lấy từ state, có thể bỏ trống tạm thời, cập nhật khi user nhập
-                weight: 100, // TODO: Lấy từ giỏ hàng
-                value: 500000, // TODO: Lấy từ giỏ hàng
-                transport: "road", // TODO: Cho phép người dùng chọn
+                address: detailAddress, // Lấy từ state, có thể bỏ trống tạm thời, cập nhật khi user nhập
+                weight: 100, // Lấy từ giỏ hàng
+                value: 500000, // Lấy từ giỏ hàng
+                transport: "road", // Cho phép người dùng chọn
             };
-
+            
             try {
                 const fee = await calculateShippingFee(params);
                 setShippingPrice(fee.fee);
@@ -219,7 +219,7 @@ const CheckoutForm = (props: IProps) => {
                                 >
                                     <SelectSearchOptionLabel
                                         value={selectedProvinceCode}
-                                        style={{ width: "100%" }}
+                                        style={{ width: "100%", height: "48px" }}
                                         placeholder="Tỉnh / Thành phố"
                                         data={provincesData?.dataOptionProvinces}
                                         isLoading={provincesData?.isLoading}
@@ -235,7 +235,7 @@ const CheckoutForm = (props: IProps) => {
                                     <SelectSearchOptionLabel
                                         value={selectedDistrictCode}
                                         placeholder="Quận / Huyện"
-                                        style={{ width: "100%" }}
+                                        style={{ width: "100%", height: "48px" }}
                                         data={districtsData?.dataOptionDistricts}
                                         isLoading={districtsData?.isLoading}
                                         onChange={onChangeSelectedDistrict}
@@ -250,7 +250,7 @@ const CheckoutForm = (props: IProps) => {
                                     <SelectSearchOptionLabel
                                         value={selectedWardCode}
                                         placeholder="Phường / Xã"
-                                        style={{ width: "100%" }}
+                                        style={{ width: "100%", height: "48px" }}
                                         data={wardsData?.dataOptionWards}
                                         isLoading={wardsData?.isLoading}
                                         onChange={onChangeSelectedWard}

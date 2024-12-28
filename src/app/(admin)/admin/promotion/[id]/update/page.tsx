@@ -10,7 +10,7 @@ import {
     Table,
     Tag,
     Image,
-    Space, GetProps, Pagination, Breadcrumb, Button, Tooltip, Card, Typography
+    Space, GetProps, Breadcrumb, Button, Tooltip, Card, Typography
 } from "antd";
 import React, {memo, useEffect, useMemo, useState} from "react";
 import {IProduct} from "../../../../../../types/IProduct";
