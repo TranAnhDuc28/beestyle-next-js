@@ -75,7 +75,7 @@ function ProductArea() {
                                                                                                 loading="lazy"
                                                                                                 src={product.images.find((image: { isDefault: boolean; }) => image.isDefault)?.imageUrl}
                                                                                                 alt={`${product.name} image ${index + 1}`}
-                                                                                                style={{ width: "100%", height: "410px", objectFit: "cover" }}
+                                                                                                style={{ width: "100vh", height: "410px", objectFit: "cover" }}
                                                                                                 className="default-img"
                                                                                                 preview={{
                                                                                                     mask: (

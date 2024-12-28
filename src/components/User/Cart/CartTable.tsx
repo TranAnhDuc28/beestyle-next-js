@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Button, Card, Image, Typography } from "antd";
 import QuantityControl from "@/components/User/Cart/Properties/QuantityControl";
 import { CloseOutlined, FireOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import ProgressShipping from "./Properties/ProgressShipping";
-import { checkShoppingCartData, removeItemFromCart } from "@/services/user/ShoppingCartService";
+import { removeItemFromCart } from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import Link from "next/link";
 
@@ -50,10 +50,6 @@ const CartTable = ({ cartItems, updateCartItems }: { cartItems: any; updateCartI
             }
         })
     }
-
-    useEffect(() => {
-        checkShoppingCartData();
-    }, []);
 
     return (
         <Card className="rounded-lg shadow-md mb-4">

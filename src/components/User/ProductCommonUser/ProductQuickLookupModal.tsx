@@ -46,7 +46,11 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
     };
 
     const handleDecrement = () => setQuantity((prev) => Math.max(prev - 1, 1));
-    const handleIncrement = () => setQuantity((prev) => Math.min(prev + 1, productData?.quantity));
+
+    const handleIncrement = () => {
+        const maxQuantity = Number(productData?.quantityInStock);
+        setQuantity((prev) => Math.min(prev + 1, isNaN(maxQuantity) ? Infinity : maxQuantity));
+    };
 
     const handleAddToCart = (product: any, quantity: number, images: any) => {
         if (selectedColor && selectedSize) addToCart(product, quantity, images);
@@ -92,7 +96,8 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
             onCancel={onClose}
             footer={null}
             centered
-            className={`!w-[52vw] ${styles.customModal}`}
+            width={1000}
+            className={` ${styles.customModal}`}
             closable
         >
             <div className="flex">

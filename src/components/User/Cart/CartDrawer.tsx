@@ -28,7 +28,6 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
         return () => {
             window.removeEventListener('cartUpdated', handleCartUpdate);
         };
-
     }, []);
 
     const condition = 500000;
