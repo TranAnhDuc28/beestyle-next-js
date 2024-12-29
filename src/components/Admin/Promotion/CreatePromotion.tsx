@@ -2,6 +2,8 @@
 import {
     Form,
     Input,
+    Modal,
+    notification,
     Select,
     DatePicker,
     InputNumber,
@@ -17,6 +19,7 @@ import dayjs from "dayjs";
 import Search from "antd/es/input/Search";
 import Link from "next/link";
 import {
+    CheckCircleTwoTone,
     DeleteTwoTone,
     HomeOutlined
 } from "@ant-design/icons";
@@ -38,7 +41,14 @@ type SearchProps = GetProps<typeof Input.Search>;
 const {Option} = Select;
 const {Text} = Typography;
 
-const CreatePromotion = () => {
+interface IProps {
+    isProductVariantOpen: boolean;
+    setIsProductVariantOpen: (value: boolean) => void;
+    mutate: any;
+    productId: number;
+}
+
+const CreatePromotion = (props: IProps) => {
     const {showNotification} = useAppNotifications();
     const [form] = Form.useForm();
     const router = useRouter();
@@ -62,13 +72,6 @@ const CreatePromotion = () => {
     const {dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor}
         = useOptionColor(isProductVariantOpen);
     const colorMap = useMemo(() => new Map(dataOptionColor.map(item => [item.label, item.code])), [dataOptionColor]);
-
-    const handleCloseProductVariantModal = () => {
-        form.resetFields();
-        setIsProductVariantOpen(false);
-        setSelectedProducts([]);
-        setProductDetails([]);
-    };
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -116,7 +119,7 @@ const CreatePromotion = () => {
                     colorName: item[6],
                     sizeName: item[7],
                     originalPrice: item[8],
-                    promotionName: item[11],
+                    promotionName: item[10],
                 })) : [];
             } catch (error) {
                 console.error("Error fetching product details:", error);
@@ -185,8 +188,6 @@ const CreatePromotion = () => {
                 const colorName = record?.colorName || "_";
                 const colorCode = colorMap.get(record?.colorName) || "";
                 const sizeName = record?.sizeName ? record.sizeName : "_";
-                console.log("màu: ", colorCode)
-                console.log("màu: ", colorMap)
                 return (
                     <span>
                         <Text>{record.productVariantName}</Text>
