@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import CreatePromotion from "../../../../../components/Admin/Promotion/CreatePromotion";
 
 export const metadata: Metadata = {
-    title: "Đợt giảm giá",
+    title: "Thêm đợt giảm giá",
     description: "Promotion service"
 }
 

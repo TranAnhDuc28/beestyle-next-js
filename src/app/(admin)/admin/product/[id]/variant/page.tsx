@@ -2,6 +2,7 @@ import {Suspense} from "react";
 import AdminLoader from "@/components/Loader/AdminLoader";
 import {Metadata} from "next";
 import VariantComponent from "@/components/Admin/Product/Variant/VariantComponent";
+import {useParams} from "next/navigation";
 
 export const metadata: Metadata = {
     title: "Sản phẩm",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 function Variant({ params }: { params: { id: string }}) {
-    const productId = params.id;
+    const {id} = useParams()
     return (
         <Suspense fallback={<AdminLoader/>}>
             <VariantComponent productId={productId}/>
