@@ -70,7 +70,7 @@ const UpdatePromotion = (props: IProps) => {
     const [selectedProducts, setSelectedProducts] = useState<React.Key[]>([]);
     const [selectedDetailProducts, setSelectedDetailProducts] = useState<React.Key[]>([]);
     const {dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor}
-        = useOptionColor(isProductVariantOpen);
+        = useOptionColor(true);
     const colorMap = useMemo(() => new Map(dataOptionColor.map(item => [item.label, item.code])), [dataOptionColor]);
 
 

@@ -70,7 +70,7 @@ const CreatePromotion = (props: IProps) => {
     const [pageSize, setPageSize] = useState(10);
     const [totalItems, setTotalItems] = useState(0);
     const {dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor}
-        = useOptionColor(isProductVariantOpen);
+        = useOptionColor(true);
     const colorMap = useMemo(() => new Map(dataOptionColor.map(item => [item.label, item.code])), [dataOptionColor]);
 
     useEffect(() => {

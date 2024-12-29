@@ -118,3 +118,10 @@ const StatisticChart = (props:IProps) => {
 };
 
 export default StatisticChart;
+
+
+
+
+
+
+
