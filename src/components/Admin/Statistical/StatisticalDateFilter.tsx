@@ -67,18 +67,15 @@ const StatisticalDateFilter: React.FC<DateFilterProps> = ({ onFilterChange }) =>
     );
 
     return (
-        <div className="w-[397px] bg-white rounded-lg p-3 mt-4">
-            <Title level={4}>Bộ lọc</Title>
-            <div className='mt-3'>
+        <>
+            <div className='flex space-x-5 items-center'>
                 <Radio.Group onChange={handleFilterTypeChange} value={filterType}>
                     <Radio value="day">Ngày</Radio>
                     <Radio value="month">Tháng</Radio>
                     <Radio value="year">Năm</Radio>
                     <Radio value="range">Khoảng thời gian</Radio>
                 </Radio.Group>
-            </div>
 
-            <div className='text-center mt-4'>
                 {filterType === 'day' && (
                     <DatePicker onChange={handleDateChange} value={selectedDate} placeholder="Chọn ngày" />
                 )}
@@ -109,7 +106,7 @@ const StatisticalDateFilter: React.FC<DateFilterProps> = ({ onFilterChange }) =>
                     />
                 )}
             </div>
-        </div>
+        </>
     );
 };
 
