@@ -1,9 +1,10 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Table, Avatar, Space, TableProps, Select, Tag, Typography} from 'antd';
+import {Table, Avatar, Space, TableProps, Select, Tag, Typography, Image} from 'antd';
 import {getProductByStock, getTopSellingProduct} from "../../../services/StatisticalService";
 import {IStatistical} from "../../../types/IStatistical";
 import useOptionColor from "@/components/Admin/Color/hooks/useOptionColor";
-const { Text } = Typography;
+
+const {Text} = Typography;
 
 const TopSellingProductsTable: React.FC = () => {
     const [sortedInfo, setSortedInfo] = useState<any>({});
@@ -11,7 +12,7 @@ const TopSellingProductsTable: React.FC = () => {
     const [topSellingProducts, setTopSellingProducts] = useState<IStatistical[]>([]);
     const [stockThreshold, setStockThreshold] = useState<number>(5);
 
-    const { dataOptionColor = [], error: errorDataOptionColor, isLoading: isLoadingDataOptionColor } =
+    const {dataOptionColor = [], error: errorDataOptionColor, isLoading: isLoadingDataOptionColor} =
         useOptionColor(true);
 
     const colorMap = useMemo(() => {
@@ -62,12 +63,10 @@ const TopSellingProductsTable: React.FC = () => {
             title: "Ảnh",
             dataIndex: "imageUrl",
             key: "imageUrl",
-            render: (imageUrl) => <Avatar shape="square" size={40} src={imageUrl} />,
-        },
-        {
-            title: "Mã sản phẩm",
-            dataIndex: "sku",
-            key: "sku",
+            render: (imageUrl) => <Image width={80} height={80}
+                                         src={imageUrl}
+                                         fallback="/no-img.png"
+            />,
         },
         {
             title: "Tên sản phẩm",
@@ -76,14 +75,18 @@ const TopSellingProductsTable: React.FC = () => {
                 const colorName = record?.colorName || "_";
                 const colorCode = colorMap.get(record?.colorName) || "";
                 const sizeName = record?.sizeName || "_";
-
+                const sku = record?.sku || "_";
                 return (
                     <span>
                         <Text>{record.productName}</Text>
-                        <Text type="secondary" style={{ display: "flex", alignItems: "center" }}>
-                            <span style={{ marginInlineEnd: 4 }}>{`Màu: ${colorName}`}</span>
-                            {colorCode && <Tag className="custom-tag" color={colorCode} />} |
+                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
+                            <span style={{marginInlineEnd: 4}}>{`Màu: ${colorName}`}</span>
+                            {colorCode && <Tag className="custom-tag" color={colorCode}/>} |
                             {` Kích cỡ: ${sizeName}`}
+                        </Text>
+                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
+                            <span style={{marginInlineEnd: 4}}>{`Mã: ${sku}`}</span>
+
                         </Text>
                     </span>
                 );
@@ -104,17 +107,17 @@ const TopSellingProductsTable: React.FC = () => {
                 <h3 className="text-lg text-center leading-6 font-medium text-gray-900">
                     Top sản phẩm bán chạy
                 </h3>
-                <Select defaultValue={stockThreshold} style={{ width: 100 }} onChange={handleStockThresholdChange}>
+                <Select defaultValue={stockThreshold} style={{width: 120}} onChange={handleStockThresholdChange}>
                     <Select.Option value={5}>Top 5</Select.Option>
                     <Select.Option value={10}>Top 10</Select.Option>
-                    <Select.Option value={15}>Top 15</Select.Option>
+                    <Select.Option value={20}>Top 20</Select.Option>
                 </Select>
             </div>
             <div className="overflow-x-auto">
                 <Table
                     dataSource={topSellingProducts}
                     columns={columns}
-                    pagination={{ pageSize }}
+                    pagination={{pageSize}}
                     onChange={handleTableChange}
                     className="ant-table-wrapper"
                     rowKey="id"
@@ -130,7 +133,7 @@ const LowStockProductsTable: React.FC = () => {
     const [products, setProducts] = useState<IStatistical[]>([]);
     const [stockThreshold, setStockThreshold] = useState<number>(10); // Giá trị ngưỡng số lượng tồn kho
 
-    const { dataOptionColor = [], error: errorDataOptionColor, isLoading: isLoadingDataOptionColor } =
+    const {dataOptionColor = [], error: errorDataOptionColor, isLoading: isLoadingDataOptionColor} =
         useOptionColor(true);
 
     const colorMap = useMemo(() => {
@@ -182,12 +185,10 @@ const LowStockProductsTable: React.FC = () => {
             title: "Ảnh",
             dataIndex: "imageUrl",
             key: "imageUrl",
-            render: (imageUrl) => <Avatar shape="square" size={40} src={imageUrl} />,
-        },
-        {
-            title: "Mã sản phẩm",
-            dataIndex: "sku",
-            key: "sku",
+            render: (imageUrl) => <Image width={80} height={80}
+                                         src={imageUrl}
+                                         fallback="/no-img.png"
+            />,
         },
         {
             title: "Tên sản phẩm",
@@ -196,14 +197,18 @@ const LowStockProductsTable: React.FC = () => {
                 const colorName = record?.colorName || "_";
                 const colorCode = colorMap.get(record?.colorName) || "";
                 const sizeName = record?.sizeName || "_";
-
+                const sku = record?.sku || "_";
                 return (
                     <span>
                         <Text>{record.productName}</Text>
-                        <Text type="secondary" style={{ display: "flex", alignItems: "center" }}>
-                            <span style={{ marginInlineEnd: 4 }}>{`Màu: ${colorName}`}</span>
-                            {colorCode && <Tag className="custom-tag" color={colorCode} />} |
+                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
+                            <span style={{marginInlineEnd: 4}}>{`Màu: ${colorName}`}</span>
+                            {colorCode && <Tag className="custom-tag" color={colorCode}/>} |
                             {` Kích cỡ: ${sizeName}`}
+                        </Text>
+                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
+                            <span style={{marginInlineEnd: 4}}>{`Mã: ${sku}`}</span>
+
                         </Text>
                     </span>
                 );
@@ -224,17 +229,17 @@ const LowStockProductsTable: React.FC = () => {
                 <h3 className="text-lg text-center leading-6 font-medium text-gray-900">
                     Sản phẩm sắp hết hàng
                 </h3>
-                <Select defaultValue={10} style={{ width: 100 }} onChange={handleStockThresholdChange}>
-                    <Select.Option value={5}>Top 5</Select.Option>
-                    <Select.Option value={10}>Top 10</Select.Option>
-                    <Select.Option value={15}>Top 15</Select.Option>
+                <Select defaultValue={10} style={{width: 120}} onChange={handleStockThresholdChange}>
+                    <Select.Option value={5}>Nhỏ hơn 5</Select.Option>
+                    <Select.Option value={10}>Nhỏ hơn 10</Select.Option>
+                    <Select.Option value={20}>Nhỏ hơn 20</Select.Option>
                 </Select>
             </div>
             <div className="overflow-x-auto">
                 <Table
                     dataSource={products}
                     columns={columns}
-                    pagination={{ pageSize }}
+                    pagination={{pageSize}}
                     onChange={handleTableChange}
                     className="ant-table-wrapper"
                     rowKey="id"
@@ -247,8 +252,8 @@ const StatisticTables: React.FC = () => {
     return (
         <div className="w-full mx-auto bg-white rounded-lg p-4 mt-4">
             <div className='grid grid-cols-2 gap-5'>
-                <TopSellingProductsTable />
-                <LowStockProductsTable />
+                <TopSellingProductsTable/>
+                <LowStockProductsTable/>
             </div>
         </div>
     );
