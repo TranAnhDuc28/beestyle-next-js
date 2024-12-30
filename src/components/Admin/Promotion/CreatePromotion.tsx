@@ -12,7 +12,7 @@ import {
     Table,
     Tag,
     Image,
-    Space, GetProps, Pagination, Breadcrumb, Button, Tooltip, Card, Typography
+    Space, GetProps, Pagination, Breadcrumb, Button, Tooltip, Card, Typography, Avatar
 } from "antd";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import dayjs from "dayjs";
@@ -23,7 +23,7 @@ import {
     DeleteTwoTone,
     HomeOutlined
 } from "@ant-design/icons";
-import {memo, Suspense, useEffect, useMemo, useState} from "react";
+import React, {memo, Suspense, useEffect, useMemo, useState} from "react";
 import useAppNotifications from "../../../hooks/useAppNotifications";
 import {IProduct} from "../../../types/IProduct";
 import {IProductVariant} from "../../../types/IProductVariant";
@@ -154,11 +154,11 @@ const CreatePromotion = (props: IProps) => {
 
     const productColumns = [
         {
-            title: '', dataIndex: 'imageUrl', key: 'imageUrl', align: 'center', width: 70,
+            title: '', dataIndex: 'imageUrl', key: 'imageUrl', align: 'center', width: 120,
             render: (value, record) => {
                 return (
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <Image width={35} height={35}
+                        <Image width={53} height={53}
                                src={value ? value : "/no-img.png"}
                                fallback="/no-img.png"
                         />

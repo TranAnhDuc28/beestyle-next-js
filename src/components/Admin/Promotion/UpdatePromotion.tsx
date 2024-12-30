@@ -12,7 +12,7 @@ import {
     Table,
     Tag,
     Image,
-    Space, GetProps, Pagination, Breadcrumb, Button, Tooltip, Card, Typography
+    Space, GetProps, Pagination, Breadcrumb, Button, Tooltip, Card, Typography, Avatar
 } from "antd";
 import Search from "antd/es/input/Search";
 import React, {memo, useEffect, useMemo, useState} from "react";
@@ -214,7 +214,7 @@ const UpdatePromotion = (props: IProps) => {
             render: (value, record) => {
                 return (
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <Image width={35} height={35}
+                        <Image width={53} height={53}
                                src={value ? value : "/no-img.png"}
                                fallback="/no-img.png"
                         />
