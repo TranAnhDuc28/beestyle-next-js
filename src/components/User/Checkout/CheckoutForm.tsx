@@ -1,47 +1,75 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { Form, Input, Radio, Row, Col, Alert } from "antd";
 import {
     MailOutlined,
     PhoneOutlined,
     UserOutlined,
-    HomeOutlined,
-    ShopOutlined,
 } from "@ant-design/icons";
-import styles from "@/css/user/styles/checkout.module.css";
+import { TbCreditCardPay } from "react-icons/tb";
+import styles from "./css/checkout.module.css";
 import useAddress from "@/components/Admin/Address/hook/useAddress";
 import TextArea from "antd/es/input/TextArea";
 import { calculateShippingFee } from "@/services/GHTKService";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
+import { AiOutlineHome } from "react-icons/ai";
+import { RiStore2Line } from "react-icons/ri";
 
 interface IProps {
     addressForm: any;
     userForm: any;
     onShippingCostChange: (cost: number) => void;
+    pickUpAddress?: { province: string; district: string };
+    defaultWeight?: number;
+    defaultValue?: number;
+    selectedPayment: string;
+    onPaymentChange: (value: string) => void;
+    selectedProvinceCode: string | null;
+    onProvinceChange: (code: string) => void;
+    selectedDistrictCode: string | null;
+    onDistrictChange: (code: string | null) => void;
+    selectedWardCode: string | null;
+    onWardChange: (code: string | null) => void;
+    selectedProvinceName: string | null;
+    onProvinceNameChange: (name: string | null) => void;
+    selectedDistrictName: string | null;
+    onDistrictNameChange: (name: string | null) => void;
+    detailAddress: string | null;
+    onDetailAddressChange: (address: string | null) => void;
 }
 
 const CheckoutForm = (props: IProps) => {
-    const { addressForm, userForm, onShippingCostChange } = props;
-    const [selectedMethod, setSelectedMethod] = useState("home");
-    const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | null>(null);
-    const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | null>(null);
-    const [selectedWardCode, setSelectedWardsCode] = useState<string | null>(null);
-
-    const [selectedProvinceName, setSelectedProvinceName] = useState<string | null>(null);
-    const [selectedDistrictName, setSelectedDistrictName] = useState<string | null>(null);
-    const [selectedWardName, setSelectedWardName] = useState<string | null>(null);
-    const [detailAddress, setDetailAddress] = useState<string | null>(null);
+    const {
+        addressForm,
+        userForm,
+        onShippingCostChange,
+        pickUpAddress,
+        defaultWeight = 100,
+        defaultValue = 500000,
+        selectedPayment,
+        onPaymentChange,
+        selectedProvinceCode,
+        onProvinceChange,
+        selectedDistrictCode,
+        onDistrictChange,
+        selectedWardCode,
+        onWardChange,
+        selectedProvinceName,
+        onProvinceNameChange,
+        selectedDistrictName,
+        onDistrictNameChange,
+        detailAddress,
+        onDetailAddressChange,
+    } = props;
 
     const { handleGetProvinces, handleGetDistricts, handleGetWards } = useAddress();
     const provincesData = handleGetProvinces();
     const districtsData = handleGetDistricts(selectedProvinceCode);
     const wardsData = handleGetWards(selectedDistrictCode);
-    const [shippingPrice, setShippingPrice] = useState(20000);
 
-    const onChangeMethod = (e: any) => {
+    const handlePaymentChange = (e: any) => {
         const value = e.target.value;
-        setSelectedMethod(value);
-
-        if (value === "home") {
+        onPaymentChange(value);
+        if (value === 'COD') {
             addressForm.setFieldsValue({ district: undefined, ward: undefined });
         }
     };
@@ -51,21 +79,19 @@ const CheckoutForm = (props: IProps) => {
             const province = provincesData.dataOptionProvinces.find(
                 (prev) => prev.key === provinceCode
             );
-            setSelectedProvinceCode(provinceCode);
+            onProvinceChange(provinceCode);
             addressForm.setFieldsValue({
                 province: provinceCode,
                 district: undefined,
                 ward: undefined,
             });
 
-            setSelectedProvinceName(province?.label);
-            setSelectedDistrictCode(null);
-            setSelectedWardsCode(null);
-            setSelectedDistrictName(null);
-            setSelectedWardName(null);
-            console.log(provinceCode);
+            onProvinceNameChange(province?.label);
+            onDistrictChange(null);
+            onWardChange(null);
+            onDistrictNameChange(null);
         },
-        [addressForm, provincesData.dataOptionProvinces]
+        [addressForm, provincesData.dataOptionProvinces, onProvinceChange, onProvinceNameChange, onDistrictChange, onWardChange, onDistrictNameChange]
     );
 
     const onChangeSelectedDistrict = useCallback(
@@ -73,27 +99,26 @@ const CheckoutForm = (props: IProps) => {
             const district = districtsData.dataOptionDistricts.find(
                 (prev) => prev.key === districtCode
             );
-            setSelectedDistrictCode(districtCode);
+            onDistrictChange(districtCode);
             addressForm.setFieldsValue({
                 district: districtCode,
                 ward: undefined,
             });
-            setSelectedDistrictName(district?.label);
+            onDistrictNameChange(district?.label);
 
             const params = {
-                pick_province: "Hà Nội", // Lấy từ cấu hình
-                pick_district: "Huyện Hoài Đức", // Lấy từ cấu hình
+                pick_province: pickUpAddress?.province || "Hà Nội", // Lấy từ props hoặc giá trị mặc định
+                pick_district: pickUpAddress?.district || "Huyện Hoài Đức", // Lấy từ props hoặc giá trị mặc định
                 province: selectedProvinceName,
                 district: district?.label,
-                address: detailAddress, // Lấy từ state, có thể bỏ trống tạm thời, cập nhật khi user nhập
-                weight: 100, // Lấy từ giỏ hàng
-                value: 500000, // Lấy từ giỏ hàng
-                transport: "road", // Cho phép người dùng chọn
+                address: detailAddress,
+                weight: defaultWeight, // Lấy từ props hoặc giá trị mặc định
+                value: defaultValue, // Lấy từ props hoặc giá trị mặc định
+                transport: "road", // Có thể cho phép người dùng chọn sau
             };
-            
+
             try {
                 const fee = await calculateShippingFee(params);
-                setShippingPrice(fee.fee);
                 onShippingCostChange(fee.fee);
             } catch (error) {
                 console.error("Lỗi tính phí vận chuyển:", error);
@@ -104,36 +129,29 @@ const CheckoutForm = (props: IProps) => {
             selectedProvinceName,
             addressForm,
             onShippingCostChange,
-            setShippingPrice,
             detailAddress,
+            pickUpAddress,
+            defaultWeight,
+            defaultValue,
+            onDistrictChange,
+            onDistrictNameChange
         ]
     );
 
     const onChangeSelectedWard = useCallback(
         (wardCode: string) => {
-            const ward = wardsData.dataOptionWards.find((prev) => prev.key === wardCode);
-            setSelectedWardsCode(wardCode);
-            setSelectedWardName(ward?.label);
-            console.log(selectedWardName, wardCode);
+            onWardChange(wardCode);
         },
-        [selectedWardName, wardsData.dataOptionWards]
+        [onWardChange]
     );
 
     const handleDetailAddressChange = (value: string) => {
-        setDetailAddress(value);
-    };
-
-    const normFile = (e: any) => {
-        console.log("Upload event:", e);
-        if (Array.isArray(e)) {
-            return e;
-        }
-        return e?.fileList;
+        onDetailAddressChange(value);
     };
 
     return (
         <div className={styles["checkout-form"]}>
-            <h3 className={styles["heading"]}>Người nhận</h3>
+            <h3 className={styles["heading"]}>Thông tin người nhận</h3>
             <Form layout="horizontal" className={styles["form"]} form={userForm} action="#">
                 <Form.Item
                     name="customerName"
@@ -167,42 +185,66 @@ const CheckoutForm = (props: IProps) => {
             </Form>
 
             <div className={`${styles["delivery-method"]} my-4`}>
-                <h3 className={styles["heading"]}>Hình thức nhận hàng</h3>
+                <h3 className={styles["heading"]}>Hình thức thanh toán</h3>
                 <Radio.Group
-                    onChange={onChangeMethod}
-                    value={selectedMethod}
+                    onChange={handlePaymentChange}
+                    value={selectedPayment}
                     className={styles["delivery-radio-group"]}
                 >
-                    <div className="max-w-[210px] mt-2 me-4">
+                    <div>
                         <Radio.Button
-                            value="home"
-                            className={`${styles["delivery-option"]} ${selectedMethod === "home" ? styles["selected"] : ""
+                            value="COD"
+                            className={`${styles["delivery-option"]} ${selectedPayment === "COD" ? styles["selected"] : ""
                                 }`}
-                            style={{ padding: 25 }}
+                            style={{ padding: '25px 5px', width: '190px' }}
                         >
-                            <div style={{ marginTop: "-15px" }}>
-                                <HomeOutlined style={{ fontSize: "20px", margin: "0 10px 0 5px" }} />
-                                Giao hàng tận nhà
+                            <div
+                                className="flex flex-col items-center justify-between text-center"
+                                style={{ marginTop: -15 }}
+                            >
+                                <AiOutlineHome size={15} />
+                                <span style={{ fontSize: 12, lineHeight: '20px' }}>Thanh toán khi nhận hàng (COD)</span>
                             </div>
                         </Radio.Button>
                     </div>
-                    <div className="max-w-[210px] mt-2">
+
+                    <div>
                         <Radio.Button
-                            value="store"
-                            className={`${styles["delivery-option"]} ${selectedMethod === "store" ? styles["selected"] : ""
+                            value="VNPay"
+                            className={`${styles["delivery-option"]} ${selectedPayment === "VNPay" ? styles["selected"] : ""
                                 }`}
-                            style={{ padding: 25 }}
+                            style={{ padding: '25px 0', width: '190px' }}
                         >
-                            <div style={{ marginTop: "-15px" }}>
-                                <ShopOutlined style={{ fontSize: "20px", margin: "0 10px 0 5px" }} />
-                                Lấy tại cửa hàng
+                            <div
+                                className="flex flex-col items-center justify-center"
+                                style={{ marginTop: -15 }}
+                            >
+                                <TbCreditCardPay size={15} />
+                                <span style={{ fontSize: 12, lineHeight: '20px' }}>Thanh toán qua VNPay</span>
+                            </div>
+                        </Radio.Button>
+                    </div>
+
+                    <div>
+                        <Radio.Button
+                            value="Store"
+                            className={`${styles["delivery-option"]} ${selectedPayment === "Store" ? styles["selected"] : ""
+                                }`}
+                            style={{ padding: '25px 0', width: '190px' }}
+                        >
+                            <div
+                                className="flex flex-col items-center justify-center"
+                                style={{ marginTop: -15 }}
+                            >
+                                <RiStore2Line size={15} />
+                                <span style={{ fontSize: 12, lineHeight: '20px' }}>Nhận tại cửa hàng</span>
                             </div>
                         </Radio.Button>
                     </div>
                 </Radio.Group>
             </div>
 
-            {selectedMethod === "home" && (
+            {selectedPayment === "COD" || selectedPayment === "VNPay" ? (
                 <>
                     <h3 className={styles["heading"] + " my-4"}>Địa chỉ nhận hàng</h3>
                     <Form layout="horizontal" className={styles["form"]} form={addressForm} action="#">
@@ -259,7 +301,7 @@ const CheckoutForm = (props: IProps) => {
                             </Col>
                         </Row>
 
-                        <Form.Item name="detail" style={{ marginTop: -10 }}>
+                        <Form.Item name="addressDetail" style={{ marginTop: -10 }}>
                             <TextArea
                                 onChange={(e) => handleDetailAddressChange(e.target.value)}
                                 placeholder="Nhập địa chỉ chi tiết"
@@ -271,17 +313,15 @@ const CheckoutForm = (props: IProps) => {
                         </Form.Item>
                     </Form>
                 </>
-            ) || (
-                    <>
-                        <Alert
-                            message="Thử nghiệm"
-                            description="Tính năng này đang trong giai đoạn thử nghiệm, có thể hoạt động chưa ổn định."
-                            type="warning"
-                            className="mt-7"
-                            showIcon
-                        />
-                    </>
-                )}
+            ) : (
+                <Alert
+                    message="Thử nghiệm"
+                    description="Tính năng này đang trong giai đoạn thử nghiệm, có thể hoạt động chưa ổn định."
+                    type="warning"
+                    className="mt-7"
+                    showIcon
+                />
+            )}
         </div>
     );
 };

@@ -12,7 +12,7 @@ const saveCart = (cart: any[]) => {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
 };
 
-export const addToCart = (product: any, quantity: any, images: any) => {
+export const addToCart = (product: any, quantity: any) => {
     const cart = getCart();
 
     const existingIndex = cart.findIndex((item: any) =>
@@ -39,7 +39,7 @@ export const addToCart = (product: any, quantity: any, images: any) => {
             discounted_price: product.discountPrice,
             total_price: quantity * product.discountPrice,
             description: product.description,
-            images: images
+            image: product.images.find((image: { isDefault: boolean; }) => image.isDefault)
         };
         cart.push(newItem);
     }

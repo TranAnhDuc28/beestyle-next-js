@@ -156,11 +156,13 @@ function MostPopularProduct() {
                             </div>
                         </div>
                     </div>
-                    <ProductQuickLookupModal
-                        visible={isModalVisible}
-                        onClose={handleCloseModal}
-                        product={selectedProduct}
-                    />
+                    {isModalVisible && (
+                        <ProductQuickLookupModal
+                            visible={isModalVisible}
+                            onClose={handleCloseModal}
+                            product={selectedProduct}
+                        />
+                    )}
                 </>
             ) : (<div className="p-4"></div>)}
         </>

@@ -1,5 +1,4 @@
 import Title from "antd/lib/typography/Title";
-import StatisticalDateFilter from "./StatisticalDateFilter";
 import SalesStatistics from "./SalesStatistics";
 import StatisticChart from "./StatisticChart";
 import StatisticTables from "./StatisticTables";

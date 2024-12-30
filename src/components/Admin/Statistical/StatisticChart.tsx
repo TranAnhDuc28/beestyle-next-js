@@ -7,30 +7,37 @@ const dataHoaDon = [
     {
         name: 'Page A',
         hoadon: 40,
+        hoadonhuy: 5,
     },
     {
         name: 'Page B',
         hoadon: 30,
+        hoadonhuy: 3,
     },
     {
         name: 'Page C',
         hoadon: 20,
+        hoadonhuy: 2,
     },
     {
         name: 'Page D',
         hoadon: 27,
+        hoadonhuy: 4,
     },
     {
         name: 'Page E',
         hoadon: 18,
+        hoadonhuy: 1,
     },
     {
         name: 'Page F',
         hoadon: 23,
+        hoadonhuy: 3,
     },
     {
         name: 'Page G',
         hoadon: 34,
+        hoadonhuy: 6,
     },
 ];
 
@@ -111,6 +118,7 @@ const InvoiceChart = () => (
             <Tooltip />
             <Legend />
             <Bar dataKey="hoadon" fill="#4096FF" name="Hoá đơn" barSize={15} />
+            <Bar dataKey="hoadonhuy" fill="#FF0000" name="Hoá đơn hủy" barSize={15} />
         </BarChart>
     </ResponsiveContainer>
 );

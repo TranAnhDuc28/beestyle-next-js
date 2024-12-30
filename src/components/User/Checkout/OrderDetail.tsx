@@ -1,4 +1,4 @@
-import { Button, Form, Radio } from "antd";
+import { Button, Form } from "antd";
 import React, { useState } from "react";
 import { CART_KEY } from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
@@ -8,12 +8,28 @@ import DiscountCodeModal from "../Discount/DiscountCodeModal";
 interface IProps {
     handleSubmit: (payment: any) => Promise<void>;
     shippingCost: number;
+    selectedPayment: string;
+    userForm: any;
+    addressForm: any;
+    selectedProvinceName: string | null;
+    selectedDistrictName: string | null;
+    selectedWardCode: string | null;
+    detailAddress: string | null;
 }
 
 const OrderDetail = (props: IProps) => {
-    const { handleSubmit, shippingCost } = props;
+    const {
+        handleSubmit,
+        shippingCost,
+        selectedPayment,
+        userForm,
+        addressForm,
+        selectedProvinceName,
+        selectedDistrictName,
+        selectedWardCode,
+        detailAddress,
+    } = props;
     const { showNotification } = useAppNotifications();
-    const [selectedPayment, setSelectedPayment] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const openModal = () => setIsModalVisible(true);
@@ -21,20 +37,22 @@ const OrderDetail = (props: IProps) => {
 
     const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
-    const productTotal = cartItems.reduce((total: any, item: any) => total + item.total_price, 0);
+    const productTotal = cartItems.reduce((total: number, item: any) => total + item.total_price, 0);
     const totalAmount = productTotal >= 500000 ? productTotal : productTotal + shippingCost;
     const savings = 0;
-
-    const handlePaymentChange = (e: any) => {
-        setSelectedPayment(e.target.value);
-        if (e.target.value === 'COD') console.log(cartItems);
-    };
 
     const onButtonClick = async () => {
         if (!selectedPayment) {
             showNotification("error", { message: "Vui lòng chọn phương thức thanh toán!" });
             return;
         }
+
+        const data = {
+            productTotal,
+            totalAmount,
+            shippingCost
+        }
+        console.log("Thông tin đơn hàng:", data);
         await handleSubmit({ selectedPayment, totalAmount, shippingCost });
     };
 
@@ -80,11 +98,7 @@ const OrderDetail = (props: IProps) => {
                 </div>
 
                 <div className="mt-6">
-                    <h3 className="mb-3">Phương thức thanh toán</h3>
-                    <Radio.Group onChange={handlePaymentChange} value={selectedPayment} className="flex flex-col gap-2">
-                        <Radio value="COD">Thanh toán khi nhận hàng (COD)</Radio>
-                        <Radio value="VNPay">Cổng thanh toán VNPay</Radio>
-                    </Radio.Group>
+                    <h3 className="mb-3">:::</h3>
                 </div>
 
                 <div className="mt-6 text-center">

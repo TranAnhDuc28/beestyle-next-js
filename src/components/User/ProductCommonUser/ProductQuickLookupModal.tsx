@@ -10,11 +10,12 @@ import { useRef } from 'react';
 import { addToCart } from '@/services/user/ShoppingCartService';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import styles from "./css/modal.module.css";
+import { IProduct } from '@/types/IProduct';
 
 interface IProps {
     visible: boolean;
     onClose: () => void;
-    product: { id: string | number } | any;
+    product: IProduct | null;
 }
 
 const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }) => {
@@ -24,8 +25,9 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
     const [selectedSize, setSelectedSize] = useState<string | null>(null);
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isSliding, setIsSliding] = useState(false);
+    const productId: number = product && product.id;
 
-    const { data: productData, error: productError } = useProduct(product?.id, selectedColor, selectedSize);
+    const { data: productData, error: productError } = useProduct(productId, selectedColor, selectedSize);
 
     useEffect(() => {
         setQuantity(1);
@@ -34,7 +36,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
         setCurrentSlide(0);
 
         if (productError) console.log(productError);
-    }, [product?.id, visible, productError]);
+    }, [productId, visible, productError]);
 
     const handleColorSelect = (color: string) => {
         setSelectedColor(color);
@@ -52,8 +54,8 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
         setQuantity((prev) => Math.min(prev + 1, isNaN(maxQuantity) ? Infinity : maxQuantity));
     };
 
-    const handleAddToCart = (product: any, quantity: number, images: any) => {
-        if (selectedColor && selectedSize) addToCart(product, quantity, images);
+    const handleAddToCart = (product: any, quantity: number) => {
+        if (selectedColor && selectedSize) addToCart(product, quantity);
         else return;
     }
 
@@ -67,8 +69,8 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
         setTimeout(() => setIsSliding(false), 500);
     };
 
-    const slides = product?.images
-        ? product?.images.map((image: any, index: number) => (
+    const slides = productData?.images
+        ? productData?.images.map((image: any, index: number) => (
             <div key={index} className="flex justify-center">
                 <Image
                     loading="lazy"
@@ -102,8 +104,8 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
         >
             <div className="flex">
                 <div className="flex flex-col gap-2 me-1">
-                    {product?.images &&
-                        product?.images.map((image: any, index: number) => (
+                    {productData?.images &&
+                        productData?.images.map((image: any, index: number) => (
                             <div
                                 key={index}
                                 className={`w-16 h-[84px] flex-shrink-0 cursor-pointer border-2 me-2
@@ -141,7 +143,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                 </div>
                 <div className="w-1/2 pl-8 flex flex-col justify-between">
                     <div>
-                        <h2 className="text-xl font-bold mb-2">{productData?.productName || 'No product data'}</h2>
+                        <h2 className="text-xl font-bold mb-2">{product?.productName || 'No product data'}</h2>
                         <p className="mb-2">
                             <span className="font-semibold">SKU:</span> {productData?.sku} |{' '}
                             <span className="font-semibold">Tình trạng:</span>{' '}
@@ -153,7 +155,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                         </p>
                         <p className="mb-4">
                             <span className="font-semibold">Thương hiệu:</span>{' '}
-                            <span className="text-blue-500">{productData?.brandName}</span>
+                            <span className="text-blue-500">{product?.brandName}</span>
                         </p>
                         <div className="flex items-center mb-4">
                             <span className="text-orange-400 text-2xl font-bold">
@@ -181,14 +183,14 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                         </div>
 
                         <ColorPickers
-                            productId={product?.id}
+                            productId={productId}
                             selectedColor={selectedColor}
                             onColorSelect={handleColorSelect}
                             style={{ maxWidth: '300px', overflowX: 'auto', whiteSpace: 'nowrap' }}
                         />
 
                         <SizePickers
-                            productId={product?.id}
+                            productId={productId}
                             colorCode={selectedColor}
                             selectedSize={selectedSize}
                             onSizeSelect={handleSizeSelect}
@@ -218,7 +220,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                                     className="!bg-gray-200 hover:!bg-gray-300 !text-black !font-bold relative z-10
                                                !border-none !rounded-none !w-10 !h-10 flex items-center justify-center"
                                     icon={<PlusOutlined />}
-                                    disabled={quantity >= productData?.quantity}
+                                    disabled={quantity >= product?.quantity}
                                 />
                             </div>
                         </div>
@@ -230,7 +232,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                             block
                             size="large"
                             className="bg-black text-white hover:!bg-orange-400"
-                            onClick={() => handleAddToCart(productData, quantity, product.images)}
+                            onClick={() => handleAddToCart(productData, quantity)}
                         >
                             Thêm vào giỏ
                         </Button>
