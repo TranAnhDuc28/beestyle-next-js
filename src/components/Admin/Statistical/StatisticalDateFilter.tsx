@@ -75,6 +75,12 @@ const StatisticalDateFilter: React.FC<DateFilterProps> = ({ onFilterChange }) =>
         (date: Moment | null, dateString: string | string[]) => {
             setSelectedDate(date);
             console.log(`Selected year: ${date ? date.format('YYYY') : 'null'}`);
+            if (date) {
+                params.set("periodValue", date ? date.format('YYYY') : 'null');
+            } else {
+                params.delete("periodValue");
+            }
+            replace(`${pathname}?${params.toString()}`);
             onFilterChange(date ? date.format('YYYY') : null, 'year');
         },
         [onFilterChange]
