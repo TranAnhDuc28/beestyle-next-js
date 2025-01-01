@@ -1,16 +1,16 @@
 import React, {memo, useContext, useEffect, useMemo, useRef, useState} from "react";
-import {Badge, Button, InputNumber, Popover, Table, TableProps, Tag, Tooltip, Typography} from "antd";
+import {Button, InputNumber, Popover, Table, TableProps, Tag, Tooltip, Typography} from "antd";
 import {DeleteOutlined} from "@ant-design/icons";
 import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
 import {FORMAT_NUMBER_WITH_COMMAS, PARSER_NUMBER_WITH_COMMAS_TO_NUMBER} from "@/constants/AppConstants";
 import {IOrderItem} from "@/types/IOrderItem";
-import useSWR, {mutate} from "swr";
-import {getOrderItemsByOrderId, URL_API_ORDER_ITEM} from "@/services/OrderItemService";
+import {mutate} from "swr";
 import useOrderItem from "@/components/Admin/Order/hooks/useOrderItem";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {URL_API_PRODUCT_VARIANT} from "@/services/ProductVariantService";
 import useProductVariant from "@/components/Admin/Product/Variant/hooks/useProductVariant";
 import {STOCK_ACTION} from "@/constants/StockAction";
+import {calculateCartTotalAmount, calculateCartTotalQuantity} from "@/utils/AppUtil";
 
 const {Text} = Typography;
 
@@ -19,42 +19,33 @@ const AdminCart: React.FC = () => {
     const inputRefs = useRef<Map<number, HTMLInputElement>>(new Map());
     const handleSale = useContext(HandleSale);
     const [initialQuantities, setInitialQuantities] = useState<Map<number, number>>(new Map());
-    const {handleUpdateQuantityOrderItem, handleDeleteOrderItem} = useOrderItem();
+    const {handleGetOrderItemsByOrderId, handleUpdateQuantityOrderItem, handleDeleteOrderItem} = useOrderItem();
     const {handleUpdateQuantityInStockProductVariant} = useProductVariant();
 
-    const {data, error, isLoading, mutate: mutateDataCart} =
-        useSWR(handleSale?.orderActiveTabKey ? URL_API_ORDER_ITEM.get(handleSale?.orderActiveTabKey) : null,
-            getOrderItemsByOrderId,
-            {
-                revalidateIfStale: false,
-                revalidateOnFocus: false,
-                revalidateOnReconnect: false
-            }
+    const {orderItems, error, isLoading, mutateOrderItems} =
+        handleGetOrderItemsByOrderId(
+            handleSale?.orderActiveTabKey && Number(handleSale.orderActiveTabKey) ? handleSale.orderActiveTabKey : undefined
         );
 
     useEffect(() => {
-        if (!isLoading && data?.data) {
-            handleSale?.setDataCart(data.data);
+        if (!isLoading && orderItems) {
+            handleSale?.setDataCart(orderItems);
 
             // lưu trữ số lượng ban đầu của các sản phẩm trong giỏ để xử lý update sản phẩm trong kho
             const initialQuantityMap: Map<number, number> = new Map();
-            data.data.forEach((item: any) => {
+            orderItems.forEach((item: any) => {
                 initialQuantityMap.set(item.id, item.quantity);
             });
             setInitialQuantities(initialQuantityMap);
-            handleSale?.setTotalQuantityCart(handleSale?.calcuTotalQuantityCart(data.data));
+            handleSale?.setTotalQuantityCart(calculateCartTotalQuantity(orderItems));
             handleSale?.setOrderCreateOrUpdate((prevValue) => {
                 return {
                     ...prevValue,
-                    totalAmount: handleSale?.calcuTotalAmountCart(data.data)
+                    totalAmount: calculateCartTotalAmount(orderItems)
                 }
             });
         }
-    }, [data, isLoading]);
-
-    useEffect(() => {
-        if (error) handleSale?.setDataCart([]);
-    }, [error]);
+    }, [orderItems]);
 
     const onChangeQuantity = (orderItemId: number, productVariantId: number, value: number | null) => {
         const newValue = Number(value);
@@ -125,7 +116,7 @@ const AdminCart: React.FC = () => {
                         {revalidate: true}
                     );
 
-                    await mutateDataCart();
+                    await mutateOrderItems();
                 } catch (e) {
                     showMessage("error", "Cập nhật số lượng thất bại.");
 
@@ -165,15 +156,18 @@ const AdminCart: React.FC = () => {
     const handleDeleteOrderItemCart = async (id: number, productId: number) => {
         handleSale?.setDataCart((prevCart) => prevCart.filter((item) => item.id !== id));
 
+        // delete order item
         await handleDeleteOrderItem(id);
 
+        // refresh list product variant by product id
         await mutate(key =>
                 typeof key === 'string' && key.startsWith(`${URL_API_PRODUCT_VARIANT.filter(productId.toString())}`),
             undefined,
             {revalidate: true}
         );
 
-        await mutateDataCart();
+        // refresh list data cart by order id
+        await mutateOrderItems();
     };
 
     const columns: TableProps<IOrderItem>['columns'] = useMemo(() => [
@@ -245,7 +239,7 @@ const AdminCart: React.FC = () => {
             title: 'Hành động', key: 'action', align: "center", width: 70,
             render:
                 (_, record) => (
-                    <Tooltip>
+                    <Tooltip title="Xóa sản phẩm">
                         <Button
                             type="text"
                             shape="circle"

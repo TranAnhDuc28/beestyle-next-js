@@ -5,10 +5,11 @@ import {Badge, Button, Descriptions, DescriptionsProps, Flex, Tooltip, Typograph
 import dayjs from "dayjs";
 import {ORDER_STATUS} from "@/constants/OrderStatus";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
-import {EditOutlined} from "@ant-design/icons";
 import {ORDER_TYPE} from "@/constants/OrderType";
 import {PAYMENT_METHOD} from "@/constants/PaymentMethod";
 import UpdateShippingInfoModal from "@/components/Admin/Order/Detail/UpdateShippingInfoModal";
+import {formatAddress} from "@/utils/AppUtil";
+import {ORDER_CHANEL} from "@/constants/OrderChanel";
 
 const {Text} = Typography;
 
@@ -38,6 +39,16 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
             children: orderDetail?.phoneNumber
         },
         {
+            key: 'orderType', label: 'Kênh bán hàng', span: {xs: 3, sm: 3, md: 1, lg: 1, xl: 1, xxl: 1},
+            children: (
+                <Badge
+                    status="processing"
+                    color={ORDER_CHANEL[orderDetail?.orderChannel as keyof typeof ORDER_CHANEL]?.color_tag}
+                    text={ORDER_CHANEL[orderDetail?.orderChannel as keyof typeof ORDER_CHANEL]?.description}
+                />
+            )
+        },
+        {
             key: 'orderType', label: 'Loại hóa đơn', span: {xs: 3, sm: 3, md: 1, lg: 1, xl: 1, xxl: 1},
             children: (
                 <Badge
@@ -50,21 +61,22 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
                 />
             )
         },
-        {
-            key: 'shippingAddress', label: 'Địa chỉ nhận hàng', span: {xs: 3, sm: 3, md: 2, lg: 2, xl: 2, xxl: 2},
-            children: orderDetail?.shippingAddressId && (
-                <>
-                    <Text style={{marginInlineEnd: 4}}>
-                        Địa chỉ nhận hàng, Địa chỉ nhận hàng, Địa chỉ nhận hàng, Địa chỉ nhận hàng
-                    </Text>
-                </>
-            )
-        },
+
         {
             key: 'createdAt',
             label: orderDetail?.orderType === ORDER_TYPE.DELIVERY.key ? 'Ngày đặt hàng' : 'Ngày tạo hóa đơn',
-            span: {xs: 3, sm: 3, md: 3, lg: 3, xl: 3, xxl: 3},
+            span: {xs: 3, sm: 3, md: 1, lg: 1, xl: 1, xxl: 1},
             children: dayjs(orderDetail?.createdAt).format('DD-MM-YYYY HH:mm:ss')
+        },
+        {
+            key: 'shippingAddress', label: 'Địa chỉ nhận hàng', span: {xs: 3, sm: 3, md: 3, lg: 3, xl: 3, xxl: 3},
+            children: orderDetail?.shippingAddressId && (
+                <>
+                    <Text style={{marginInlineEnd: 4}}>
+                        {formatAddress(orderDetail?.shippingAddress)}
+                    </Text>
+                </>
+            )
         },
         {
             key: 'paymentMethod', label: 'Hình thức thanh toán', span: {xs: 3, sm: 3, md: 1, lg: 1, xl: 1, xxl: 1},
@@ -89,7 +101,7 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
         },
         {
             key: 'totalAmount',
-            label: 'Tổng tiền thanh toán',
+            label: 'Tổng tiền đã thanh toán',
             span: {xs: 3, sm: 3, md: 1.5, lg: 1.5, xl: 1.5, xxl: 1.5},
             children: `${orderDetail?.totalAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')
         },
@@ -172,8 +184,9 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
             <Flex justify="flex-end">
                 {
                     orderDetail?.orderType === ORDER_TYPE.DELIVERY.key &&
+                    orderDetail?.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key &&
                     <Tooltip title="Cập nhật thông tin giao hàng" placement="topRight">
-                        <Button type="primary" style={{marginBottom: 20}} onClick={() => showShippingInfoModal()}>
+                        <Button type="primary" style={{marginBottom: 10}} onClick={() => showShippingInfoModal()}>
                             Cập nhật
                         </Button>
                     </Tooltip>

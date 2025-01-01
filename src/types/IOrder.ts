@@ -59,7 +59,6 @@ export interface IOrderCreateOrUpdate {
     paymentDate?: Date;
     paymentMethod?: string;
     isPrepaid?: boolean;
-    pickupMethod?: string;
     orderChannel?: string;
     orderType?: string;
     orderStatus?: string;
