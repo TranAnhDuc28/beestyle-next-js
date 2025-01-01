@@ -167,7 +167,7 @@ const CreatePromotion = (props: IProps) => {
             }
         },
 
-        {title: 'Mã sản phẩm', dataIndex: 'productCode', key: 'productCode'},
+        {title: 'Mã sản phẩm', dataIndex: 'productCode', key: 'productCode',width: 200},
         {title: 'Tên sản phẩm', dataIndex: 'productName', key: 'productName'},
         {
             title: 'Giới tính', dataIndex: 'genderProduct', key: 'genderProduct',
