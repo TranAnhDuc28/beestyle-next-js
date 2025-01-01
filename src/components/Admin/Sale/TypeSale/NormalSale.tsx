@@ -3,7 +3,7 @@ import {
     AutoComplete, AutoCompleteProps, Button, Col, Flex, Layout,
     Pagination, PaginationProps, Row, Space, theme, Tooltip, Typography
 } from "antd";
-import React, {memo, useCallback, useContext, useRef, useState} from "react";
+import React, {memo, useCallback, useContext, useEffect, useRef, useState} from "react";
 import CheckoutComponent from "@/components/Admin/Sale/CheckoutComponent";
 import {
     FilterOutlined,
@@ -13,15 +13,15 @@ import {
 } from "@ant-design/icons";
 import useFilterProduct, {ParamFilterProduct} from "@/components/Admin/Product/hooks/useFilterProduct";
 import SubLoader from "@/components/Loader/SubLoader";
-import FilterProduct from "@/components/Admin/Sale/FilterProductSale";
+import FilterProductSale from "@/components/Admin/Sale/FilterProductSaleDrawer";
 import AdminCart from "@/components/Admin/Sale/AdminCart";
 import {mutate} from "swr";
 import {URL_API_PRODUCT} from "@/services/ProductService";
 import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
-import ProductCardView from "@/components/Admin/Sale/TypeDisplayProductList/ProductCardView";
-import ProductListView from "@/components/Admin/Sale/TypeDisplayProductList/ProductListView";
-import SettingViewProductList from "@/components/Admin/Sale/TypeDisplayProductList/SettingViewProductList";
+import ProductCardView from "@/components/Admin/Sale/TypeDisplayProductListSale/ProductCardView";
+import ProductListView from "@/components/Admin/Sale/TypeDisplayProductListSale/ProductListView";
+import SettingViewProductList from "@/components/Admin/Sale/TypeDisplayProductListSale/SettingViewProductList";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
 
 const {Content} = Layout;
@@ -43,9 +43,10 @@ interface IProps {
 }
 
 const NormalSale: React.FC<IProps> = (props) => {
-    const {} = props;
+
     const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
-    const nodeViewModeRef = useRef(null);
+    const nodeListViewModeRef = useRef(null); // ref List view hiển thị
+    const elementWrapperProductListRef = useRef<HTMLDivElement>(null); // ref element bọc List view
     const [viewModeSaleProductList, setViewModeSaleProductList] = useState<string>(
         localStorage.getItem('viewModeSaleProductList') || 'list'
     );
@@ -59,7 +60,7 @@ const NormalSale: React.FC<IProps> = (props) => {
     const [filterParam, setFilterParam] = useState<ParamFilterProduct>({...defaultFilterParam});
     const {dataFilterProduct, isLoading} = useFilterProduct(filterParam);
 
-    const onChange: PaginationProps['onChange'] = (page, pageSize) => {
+    const onChangePaginationProductList: PaginationProps['onChange'] = (page, pageSize) => {
         setFilterParam((prevValue) => ({...prevValue, page: page, size: pageSize}));
     }
 
@@ -78,6 +79,19 @@ const NormalSale: React.FC<IProps> = (props) => {
             {revalidate: true}
         )
     }, []);
+
+    const scrollToTop = () => {
+        if (elementWrapperProductListRef.current) {
+            elementWrapperProductListRef.current.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+    useEffect(() => {
+        scrollToTop();
+    }, [filterParam.page]);
 
     return (
         <Layout className="px-1.5" style={{backgroundColor: colorBgContainer}}>
@@ -141,7 +155,7 @@ const NormalSale: React.FC<IProps> = (props) => {
                                 <Button icon={<PlusOutlined/>} type="text" shape="circle"/>
                             </div>
                             <Space direction="horizontal">
-                                <Tooltip placement="top" title="Tải danh sách sản phẩm">
+                                <Tooltip placement="top" title="Làm mới sản phẩm">
                                     <Button icon={<ReloadOutlined/>} type="text" shape="circle"
                                             onClick={() => refreshDataProductList()}
                                     />
@@ -151,14 +165,19 @@ const NormalSale: React.FC<IProps> = (props) => {
                                             onClick={() => showDrawer("filter", true)}
                                     />
                                 </Tooltip>
+
+                                {/* Change view list product */}
                                 <SettingViewProductList
                                     viewMode={viewModeSaleProductList}
                                     setViewMode={setViewModeSaleProductList}
+                                    scrollToTop={scrollToTop}
                                 />
                             </Space>
                         </div>
 
-                        <div style={{height: 'calc(100vh - 200px)', overflowY: "auto", padding: 5}}>
+                        <div ref={elementWrapperProductListRef}
+                             style={{height: 'calc(100vh - 200px)', overflowY: "auto", padding: 5}}
+                        >
                             {
                                 isLoading ? (
                                     <SubLoader size="small" spinning={isLoading}/>
@@ -169,18 +188,29 @@ const NormalSale: React.FC<IProps> = (props) => {
                                                 key="list"
                                                 timeout={300}
                                                 classNames="fade"
-                                                nodeRef={nodeViewModeRef}
+                                                nodeRef={nodeListViewModeRef}
                                             >
-                                                <ProductListView dataSource={dataFilterProduct?.items} nodeRef={nodeViewModeRef}/>
+                                                <ProductListView
+                                                    dataSource={dataFilterProduct?.items}
+                                                    nodeRef={nodeListViewModeRef}
+                                                    responsiveImage={{xs: 24, sm: 24, md: 12, lg: 12, xl:8, xxl: 3}}
+                                                    responsiveContent={{xs: 24, sm: 24, md: 12, lg: 12, xl: 16, xxl: 21}}
+                                                    handleAddOrderItemCart={handleSale?.handleAddOrderItemCart ?? (() => {})}
+                                                />
                                             </CSSTransition>
                                         ) : (
                                             <CSSTransition
                                                 key="grid"
                                                 timeout={300}
                                                 classNames="fade"
-                                                nodeRef={nodeViewModeRef}
+                                                nodeRef={nodeListViewModeRef}
                                             >
-                                                <ProductCardView dataSource={dataFilterProduct?.items} nodeRef={nodeViewModeRef}/>
+                                                <ProductCardView
+                                                    dataSource={dataFilterProduct?.items}
+                                                    nodeRef={nodeListViewModeRef}
+                                                    grid={{gutter: 8, xs: 1, sm: 1, md: 2, lg: 3, xl: 3, xxl: 4}}
+                                                    handleAddOrderItemCart={handleSale?.handleAddOrderItemCart ?? (() => {})}
+                                                />
                                             </CSSTransition>
                                         )}
                                     </TransitionGroup>
@@ -193,7 +223,7 @@ const NormalSale: React.FC<IProps> = (props) => {
                                     size="small"
                                     simple={{readOnly: true}}
                                     current={filterParam.page ?? 1}
-                                    onChange={onChange}
+                                    onChange={onChangePaginationProductList}
                                     showSizeChanger={false}
                                     defaultPageSize={filterParam.size ?? 20}
                                     total={dataFilterProduct?.totalElements}
@@ -215,7 +245,7 @@ const NormalSale: React.FC<IProps> = (props) => {
                 onClose={onClose}
             />
 
-            <FilterProduct
+            <FilterProductSale
                 open={openDrawer.filter}
                 onClose={() => onClose("filter", false)}
                 filterParam={filterParam}

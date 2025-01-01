@@ -61,6 +61,7 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
     const [current, setCurrent] = useState<number>(0);
 
     useEffect(() => {
+        // dựa vào loại hóa đơn để hiển thị time line theo dõi trạng thái hóa đơn
         const step: number = orderDetail?.orderType === ORDER_TYPE.IN_STORE_PURCHASE.key
             ? getCounterBillStep(orderDetail?.orderStatus)
             : getOrderDeliverySaleStep(orderDetail?.orderStatus);
@@ -75,6 +76,7 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
         // setCurrent(current - 1);
     };
 
+    // time line cho giao hàng
     const itemTrackingOrderDeliverySaleSteps: StepProps[] = [
         {
             title: "Đặt hàng",
@@ -103,6 +105,7 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
         }
     ];
 
+    // time line cho đơn hàng tại quầy
     const itemTrackingCounterBillSteps: StepProps[] = [
         {
             title: current === 0 ? "Chờ thanh toán" : "Đã thanh toán",
