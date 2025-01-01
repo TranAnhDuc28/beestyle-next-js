@@ -513,7 +513,7 @@ const UpdatePromotion = (props: IProps) => {
                                             <Select style={{width: '30%'}} placeholder="Chọn kiểu" suffixIcon={null}>
                                                 {Object.keys(DISCOUNT_TYPE).map((key) => (
                                                     <Option key={key} value={key}>
-                                                        {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE]}
+                                                        {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE].description}
                                                     </Option>
                                                 ))}
                                             </Select>

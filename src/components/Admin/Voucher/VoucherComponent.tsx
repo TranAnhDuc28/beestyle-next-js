@@ -124,7 +124,7 @@ const VoucherComponent = () => {
                 };
 
                 return (
-                    <Tooltip title={DISCOUNT_TYPE[value]}>
+                    <Tooltip title={DISCOUNT_TYPE[value].description}>
                         {icons[value] || <QuestionOutlined style={{ color: '#ff4d4f',fontSize: '18px' }} />}
                     </Tooltip>
                 );
