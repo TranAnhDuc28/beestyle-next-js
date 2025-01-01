@@ -10,7 +10,7 @@ import {
 import styles from "@/css/user/styles/checkout.module.css";
 import useAddress from "@/components/Admin/Address/hook/useAddress";
 import TextArea from "antd/es/input/TextArea";
-import { calculateShippingFee } from "@/services/GHTKService";
+import { ghtkCalculateShippingFee } from "@/services/GhtkCalculateShippingFee";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 
 interface IProps {
@@ -21,6 +21,7 @@ interface IProps {
 
 const CheckoutForm = (props: IProps) => {
     const { addressForm, userForm, onShippingCostChange } = props;
+
     const [selectedMethod, setSelectedMethod] = useState("home");
     const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | null>(null);
     const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | null>(null);
@@ -68,12 +69,12 @@ const CheckoutForm = (props: IProps) => {
         [addressForm, provincesData.dataOptionProvinces]
     );
 
-    const onChangeSelectedDistrict = useCallback(
-        async (districtCode: string) => {
+    const onChangeSelectedDistrict = useCallback(async (districtCode: string) => {
             const district = districtsData.dataOptionDistricts.find(
                 (prev) => prev.key === districtCode
             );
             setSelectedDistrictCode(districtCode);
+
             addressForm.setFieldsValue({
                 district: districtCode,
                 ward: undefined,
@@ -92,7 +93,7 @@ const CheckoutForm = (props: IProps) => {
             };
             
             try {
-                const fee = await calculateShippingFee(params);
+                const fee = await ghtkCalculateShippingFee(params);
                 setShippingPrice(fee.fee);
                 onShippingCostChange(fee.fee);
             } catch (error) {

@@ -9,11 +9,10 @@ export const metadata: Metadata = {
     description: "",
 };
 
-function UpdatePromotionPage({ params }: { params: { id: string }}) {
-    const id = params.id;
+function UpdatePromotionPage() {
     return (
         <Suspense fallback={<AdminLoader/>}>
-            <UpdatePromotion productId={id}/>
+            <UpdatePromotion/>
         </Suspense>
     );
 }

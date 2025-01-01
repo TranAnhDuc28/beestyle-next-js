@@ -3,7 +3,7 @@ import {
     AutoCompleteProps,
     Button,
     Checkbox,
-    CheckboxProps, Col,
+    Col,
     Divider,
     Drawer,
     Flex, Input, InputNumber, Modal, Popover, QRCode, Radio, RadioChangeEvent, Row, Select, Tag,
@@ -16,13 +16,14 @@ import {PAYMENT_METHOD} from "@/constants/PaymentMethod";
 import {FORMAT_NUMBER_WITH_COMMAS, PARSER_NUMBER_WITH_COMMAS_TO_NUMBER} from "@/constants/AppConstants";
 import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
 import {debounce} from "lodash";
-import QuickSelectMoney from "@/components/Admin/Sale/QuickSelectMoney";
+import QuickSelectMoney from "@/components/Admin/Sale/QuickSelectMoneyTag";
 import {ExclamationCircleFilled} from "@ant-design/icons";
 import {IOrderCreateOrUpdate} from "@/types/IOrder";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import useAddress from "@/components/Admin/Address/hook/useAddress";
 import ModalListVoucher from "./ModalListVoucher";
 import {IVoucher} from "@/types/IVoucher";
+import {ORDER_TYPE} from "@/constants/OrderType";
 
 const {Title, Text} = Typography;
 const {TextArea} = Input;
@@ -89,6 +90,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
 
     const handleCancel = () => setIsModalOpen(false);
 
+    // xử lý khi chọn phương thức thanh toán
     const handlePaymentMethod = (e: RadioChangeEvent) => {
         handleSale?.setOrderCreateOrUpdate((prevValue) => {
             return {
@@ -100,8 +102,12 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
 
     // xử lí khi chọn bán giao hàng
     const handleDeliverySale = (checked: boolean) => {
+        // show thông tin nhập bán giao hàng
         setDeliverySale(checked);
+
+        // reset selected tag quick money
         setSelectedTag(0);
+
         // tính phí vận chuyển
         let shippingFee = 0;
 
@@ -115,7 +121,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
             return {
                 ...prevValue,
                 shippingFee: shippingFee,
-                pickupMethod: checked ? "DELIVERY" : "AT_STORE"
+                orderType: checked ? ORDER_TYPE.DELIVERY.key : ORDER_TYPE.IN_STORE_PURCHASE.key
             };
         });
 
@@ -155,6 +161,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
     // const onChangeSwitch = (checked: boolean) => {
     //     console.log(`switch to ${checked}`);
     // };
+
     const onChangeSelectedProvince = useCallback((provinceCode: string) => {
         setSelectedProvinceCode(provinceCode);
         setSelectedDistrictCode(null);
@@ -247,6 +254,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
         </Flex>
     );
 
+
     const calculateDiscountAmount = (voucher: IVoucher) => {
         let totalAmount = handleSale?.orderCreateOrUpdate.totalAmount ?? 0;
         let discountAmount;
@@ -261,7 +269,6 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
         }
 
         return discountAmount;
-
     };
 
     const handleVoucherSelect = (voucherSelected: IVoucher) => {
