@@ -59,8 +59,14 @@ export const checkShoppingCartData = async () => {
     const cartItems = getCart();
 
     if (cartItems && cartItems.length > 0) {
-        const cartDataToCheck = cartItems.map((item: { product_variant_id: string; }) => ({
+        const cartDataToCheck = cartItems.map((
+            item: {
+                product_variant_id: string;
+                quantity: number;
+            }
+        ) => ({
             id: item.product_variant_id,
+            quantity: item.quantity
         }));
 
         try {
@@ -120,8 +126,6 @@ export const checkShoppingCartData = async () => {
 
                     if (updatedItem.discounted_price !== item.discounted_price) {
                         updatedItem.total_price = item.quantity * updatedItem.discounted_price;
-                    } else if (updatedItem.sale_price !== item.sale_price && !updatedItem.discounted_price) {
-                        updatedItem.total_price = item.quantity * updatedItem.sale_price;
                     }
                     return updatedItem;
                 } else {

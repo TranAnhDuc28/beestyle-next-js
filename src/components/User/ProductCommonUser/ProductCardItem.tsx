@@ -29,10 +29,15 @@ const ProductCardItem: React.FC<IProps> = (props) => {
         setIsOpenModal(false);
         setSelectedProduct(null);
     };
+    console.log(product);
+
 
     return (
         <>
-            <Badge.Ribbon text="Test" color="red">
+            <Badge.Ribbon
+                text="Test"
+                color="red"
+            >
                 <Card
                     hoverable
                     styles={{ body: { padding: 0, overflow: 'hidden' } }}

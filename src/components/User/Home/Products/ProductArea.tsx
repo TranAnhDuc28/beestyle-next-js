@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Badge, Button, Flex, Image, Tooltip, Row, Col, Card, Typography } from "antd";
-import MenuProductArea from "@/components/User/Home/Products/MenuProductArea";
 import ProductQuickLookupModal from "@/components/User/ProductCommonUser/ProductQuickLookupModal";
 import { useProducts } from "@/services/user/ProductHomeService";
 import ColorButton from "@/components/Button/ColorButton";
@@ -14,8 +13,9 @@ function ProductArea() {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [query, setQuery] = useState<string>('');
 
-    const { products } = useProducts();
+    const { products } = useProducts(query);
 
     const handleOpenModal = (product: any) => {
         setSelectedProduct(product);
@@ -26,6 +26,16 @@ function ProductArea() {
         setIsModalVisible(false);
         setSelectedProduct(null);
     };
+
+    const handleSetParams = (param: string, event: any) => {
+        event.preventDefault();
+        if (
+            typeof param === 'string' && param.includes('0') ||
+            param.includes('1') || param.includes('2')
+        ) {
+            setQuery(param);
+        }
+    }
 
     return (
         <>
@@ -43,7 +53,56 @@ function ProductArea() {
                             <div className="row">
                                 <div className="col-12">
                                     <div className="product-info">
-                                        <MenuProductArea />
+                                        <div className="nav-main">
+                                            <ul className="nav nav-tabs" id="myTab" role="tablist">
+                                                <li className="nav-item">
+                                                    <Link
+                                                        href="#"
+                                                        className={`nav-link w-[85px] ${query === '0' ? 'active' : ''}`}
+                                                        onClick={(e) => handleSetParams('0', e)}
+                                                        role="tab">
+                                                        Nam
+                                                    </Link>
+                                                </li>
+                                                <li className="nav-item">
+                                                    <Link
+                                                        href="#"
+                                                        className={`nav-link w-[85px] ${query === '1' ? 'active' : ''}`}
+                                                        onClick={(e) => handleSetParams('1', e)}
+                                                        role="tab"
+                                                    >
+                                                        Nữ
+                                                    </Link>
+                                                </li>
+                                                <li className="nav-item">
+                                                    <Link
+                                                        href="#"
+                                                        className={`nav-link w-[85px] ${query === '2' ? 'active' : ''}`}
+                                                        role="tab"
+                                                    >
+                                                        Trẻ em
+                                                    </Link>
+                                                </li>
+                                                <li className="nav-item">
+                                                    <Link
+                                                        href="#"
+                                                        className={`nav-link w-[85px] px-1 ${query === '3' ? 'active' : ''}`}
+                                                        role="tab"
+                                                    >
+                                                        Phổ biến
+                                                    </Link>
+                                                </li>
+                                                <li className="nav-item">
+                                                    <Link
+                                                        href="#"
+                                                        className={`nav-link w-[85px] ${query === '4' ? 'active' : ''}`}
+                                                        role="tab"
+                                                    >
+                                                        Ưu đãi
+                                                    </Link>
+                                                </li>
+                                            </ul>
+                                        </div>
                                         <div className="mt-4">
                                             <div className="tab-pane fade show active" id="man" role="tabpanel">
                                                 <Row gutter={[16, 16]} >
@@ -123,13 +182,19 @@ function ProductArea() {
                                                                         </div>
                                                                     }
                                                                 >
-                                                                    <Typography.Paragraph
-                                                                        style={{ minHeight: 45, fontSize: 16, margin: 0 }}
-                                                                        ellipsis={{ rows: 2 }}
-                                                                        className="fw-semibold"
+                                                                    <Link
+                                                                        href={`/product/${product.id}/variant`}
+                                                                        className="no-underline"
+                                                                        passHref
                                                                     >
-                                                                        {product?.productName}
-                                                                    </Typography.Paragraph>
+                                                                        <Typography.Paragraph
+                                                                            style={{ minHeight: 45, fontSize: 16, margin: 0 }}
+                                                                            ellipsis={{ rows: 2 }}
+                                                                            className="h-12 fw-semibold flex justify-center items-start"
+                                                                        >
+                                                                            {product?.productName}
+                                                                        </Typography.Paragraph>
+                                                                    </Link>
 
                                                                     <div className="product-price">
                                                                         <span

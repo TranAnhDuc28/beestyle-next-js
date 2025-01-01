@@ -1,11 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-import React from "react";
+import React, { memo } from "react";
 import Link from "next/link";
 import { IoHomeOutline, IoMailUnreadOutline } from "react-icons/io5";
 import { FiMapPin } from "react-icons/fi";
 import { FaPhone } from "react-icons/fa6";
 
-export default function UserFooter() {
+function UserFooter() {
     return (
         <div className="footer">
             <div className="footer-top pt-5">
@@ -123,3 +123,5 @@ export default function UserFooter() {
         </div>
     )
 }
+
+export default memo(UserFooter);

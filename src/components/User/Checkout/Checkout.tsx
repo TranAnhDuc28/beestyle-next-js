@@ -39,7 +39,7 @@ const Checkout = () => {
             if (response && response.paymentUrl) {
                 window.location.href = response.paymentUrl;
             } else {
-                alert("Có lỗi khi tạo thanh toán, vui lòng thử lại.");
+                console.error("Có lỗi khi tạo thanh toán, vui lòng thử lại.");
             }
         } catch (error) {
             console.error("Lỗi thanh toán VNPay:", error);

@@ -85,9 +85,10 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
             <div key="0" className="flex justify-center">
                 <Image
                     loading="eager"
-                    style={{ width: "100%", height: "100%", objectFit: "cover", aspectRatio: "3/4" }}
+                    style={{ width: "350px", height: "100%", objectFit: "cover", aspectRatio: "3/4" }}
                     src="/no-img.png"
                     alt={product?.productName}
+                    preview={false}
                 />
             </div>,
         ];

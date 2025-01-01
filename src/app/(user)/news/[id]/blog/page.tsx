@@ -5,7 +5,7 @@ import BlogPage from "@/components/User/News/BlogPage";
 
 export const metadata: Metadata = {
     title: "Tin thời trang",
-    description: "news",
+    description: "news"
 };
 
 export default function Home() {

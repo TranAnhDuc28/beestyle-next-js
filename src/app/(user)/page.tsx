@@ -14,6 +14,9 @@ import ShopServices from "@/components/Footer/ShopServices";
 export const metadata: Metadata = {
     title: "Trang chủ",
     description: "home",
+    icons: {
+        icon: '/b_icon.png'
+    }
 };
 
 export default function HomeUser() {

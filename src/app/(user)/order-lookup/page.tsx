@@ -5,7 +5,7 @@ import OrderLookup from "@/components/User/OrderLookup/OrderLookup";
 
 export const metadata: Metadata = {
     title: "Tra cứu đơn hàng",
-    description: "order-lookup",
+    description: "order-lookup"
 };
 
 export default function OrderLookupPage() {
