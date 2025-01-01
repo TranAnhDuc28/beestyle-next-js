@@ -47,10 +47,10 @@ const {Option} = Select;
 const {Text} = Typography;
 
 interface IProps {
-    mutate: any;
-    dataUpdate: any;
-    isProductVariantOpen: boolean;
-    setIsProductVariantOpen: (value: boolean) => void;
+    mutate?: any;
+    dataUpdate?: any;
+    isProductVariantOpen?: boolean;
+    setIsProductVariantOpen?: (value: boolean) => void;
 }
 
 const UpdatePromotion = (props: IProps) => {

@@ -1,9 +1,13 @@
 import httpInstance from "@/utils/HttpInstance";
 
 export const URL_API_GHTK = {
-    // getProvinces: "/ghn/provinces", // API lấy danh sách tỉnh thành
-    // getDistricts: "/ghn/districts", // API lấy danh sách quận huyện
     calculateShippingFee: "/ghtk/calculate-fee", // API tính phí vận chuyển
+};
+
+
+export const ghtkCalculateShippingFee = async (params: Record<string, any>) => {
+    const response = await httpInstance.post(URL_API_GHTK.calculateShippingFee, params);
+    return response.data;
 };
 
 // /**
@@ -44,18 +48,4 @@ export const URL_API_GHTK = {
 //  * @param params Thông tin yêu cầu tính phí vận chuyển
 //  * @returns Dữ liệu phí vận chuyển
 //  */
-export const calculateShippingFee = async (params: Record<string, any>) => {
-    try {
-        const response = await httpInstance.post("/ghtk/calculate-fee", params);
-        console.log("Phản hồi từ GHTK:", response.data.fee);
 
-        if (response.data.success) {
-            return response.data.fee; // Trả về phần `fee` từ API
-        } else {
-            throw new Error(response.data.message || "Không tính được phí vận chuyển");
-        }
-    } catch (error) {
-        console.error("Lỗi khi tính phí vận chuyển:", error);
-        throw error;
-    }
-};

@@ -4,6 +4,7 @@ import {getProducts, URL_API_PRODUCT} from "@/services/ProductService";
 export interface ParamFilterProduct {
     page?: number;
     size?: number;
+    keyword?: string;
     category?: string;
     gender?: string;
     brand?: string;
@@ -33,7 +34,7 @@ const useFilterProduct = (param?: ParamFilterProduct) => {
                 revalidateIfStale: false,
                 revalidateOnFocus: false,
                 revalidateOnReconnect: false,
-                refreshInterval: 1000 * 60 * 30, // 30 minute
+                refreshInterval: 1000 * 60 * 10, // 30 minute
             }
         );
 

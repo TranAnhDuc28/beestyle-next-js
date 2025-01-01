@@ -2,6 +2,7 @@
 import useSWR from "swr";
 import axios from "axios";
 import useAppNotifications from "@/hooks/useAppNotifications";
+import {URL_API_ADDRESS} from "@/services/AddressService";
 
 const transformData = (data: any[]) => {
     return data.map((item) => ({
@@ -11,12 +12,6 @@ const transformData = (data: any[]) => {
         title: item.name,
     }));
 };
-
-const AddressAPIUrls  = {
-    provinces: "https://esgoo.net/api-tinhthanh/1/0.htm",
-    districts: (provinceCode: string) => `https://esgoo.net/api-tinhthanh/2/${provinceCode}.htm`,
-    wards: (districtCode: string) => `https://esgoo.net/api-tinhthanh/3/${districtCode}.htm`,
-}
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
@@ -41,7 +36,7 @@ const useAddress = () => {
 
     const handleGetProvinces = () => {
         const {data, error, isLoading, mutate} =
-            fetchApiAdress(AddressAPIUrls.provinces, 'provinces');
+            fetchApiAdress(URL_API_ADDRESS.provinces, 'provinces');
 
         const dataProvinces = !isLoading && data?.data ? data.data : [];
         const dataOptionProvinces = !isLoading && data?.data ? transformData(data.data) : [];
@@ -51,7 +46,7 @@ const useAddress = () => {
 
     const handleGetDistricts = (provinceCode: string | null) => {
         const {data, error, isLoading, mutate} =
-            fetchApiAdress(provinceCode ? AddressAPIUrls.districts(provinceCode) : null, 'districts');
+            fetchApiAdress(provinceCode ? URL_API_ADDRESS.districts(provinceCode) : null, 'districts');
 
         const dataDistricts = !isLoading && data?.data ? data.data : [];
         const dataOptionDistricts = !isLoading && data?.data ? transformData(data.data) : [];
@@ -61,7 +56,7 @@ const useAddress = () => {
 
     const handleGetWards = (districtCode: string | null) => {
         const {data, error, isLoading, mutate} =
-            fetchApiAdress(districtCode ? AddressAPIUrls.wards(districtCode) : null, 'wards');
+            fetchApiAdress(districtCode ? URL_API_ADDRESS.wards(districtCode) : null, 'wards');
 
         const dataWards = !isLoading && data?.data ? data.data : [];
         const dataOptionWards = !isLoading && data?.data ? transformData(data.data) : [];

@@ -1,6 +1,6 @@
 "use client"
-import React, {createContext, CSSProperties, useCallback, useEffect, useMemo, useRef, useState} from "react";
-import {Badge, Layout, Spin, Tabs, TabsProps, theme} from "antd";
+import React, {createContext, CSSProperties, useEffect, useState} from "react";
+import {Layout, Spin, Tabs, TabsProps, theme} from "antd";
 import ContentTabPanelSale from "@/components/Admin/Sale/ContentTabPanelSale";
 import TabBarExtraContentLeft from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentLeft";
 import TabBarExtraContentRight from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentRight";
@@ -14,7 +14,7 @@ import useOrder from "@/components/Admin/Order/hooks/useOrder";
 import useOrderItem from "@/components/Admin/Order/hooks/useOrderItem";
 import {URL_API_PRODUCT_VARIANT} from "@/services/ProductVariantService";
 import {URL_API_ORDER_ITEM} from "@/services/OrderItemService";
-
+import {calculateCartTotalAmount, calculateCartTotalQuantity} from "@/utils/AppUtil";
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 type PositionType = 'left' | 'right';
@@ -33,22 +33,12 @@ const defaultOrderCreateOrUpdate: IOrderCreateOrUpdate = {
     shippingFee: 0,
     totalAmount: 0,
     paymentMethod: "CASH_ON_DELIVERY",
-    pickupMethod: "IN_STORE",
+    orderType: "IN_STORE_PURCHASE",
     orderChannel: "OFFLINE",
     orderStatus: "PENDING",
 };
 
-const calcuTotalAmountCart = (dataCart: IOrderItem[]): number => {
-    return dataCart.reduce((total, item) => total + (item.salePrice ?? 0) * item.quantity, 0);
-};
-
-const calcuTotalQuantityCart = (dataCart: IOrderItem[]): number => {
-    return dataCart.reduce((total, item) => total + item.quantity, 0);
-};
-
 interface HandleCartContextType {
-    calcuTotalAmountCart: (dataCart: IOrderItem[]) => number;
-    calcuTotalQuantityCart: (dataCart: IOrderItem[]) => number;
     totalQuantityCart: number;
     setTotalQuantityCart: React.Dispatch<React.SetStateAction<number>>;
     orderCreateOrUpdate: IOrderCreateOrUpdate;
@@ -79,7 +69,7 @@ const SaleComponent: React.FC = () => {
     const {handleCreateOrderItems} = useOrderItem();
     const [orderCreateOrUpdate, setOrderCreateOrUpdate] = useState<IOrderCreateOrUpdate>(defaultOrderCreateOrUpdate);
     const [totalQuantityCart, setTotalQuantityCart] = useState<number>(0);
-    const [dataCart, setDataCart] = useState<IOrderItem[]>([])
+    const [dataCart, setDataCart] = useState<IOrderItem[]>([]);
     const [orderActiveTabKey, setOrderActiveTabKey] = useState<string>('');
     const [itemTabs, setItemTabs] = useState<TabsProps['items']>([]);
 
@@ -108,13 +98,13 @@ const SaleComponent: React.FC = () => {
                 setItemTabs(newTabsItems);
                 if (newTabsItems.length > 0 && orderActiveTabKey !== newTabsItems[0].key) {
                     setOrderActiveTabKey(newTabsItems[0].key);
-                    setTotalQuantityCart(calcuTotalQuantityCart(dataCart));
+                    setTotalQuantityCart(calculateCartTotalQuantity(dataCart));
                     setOrderCreateOrUpdate((prevValue) => {
                         return {
                             ...prevValue,
                             id: Number(newTabsItems[0].key),
                             orderTrackingNumber: newTabsItems[0].label,
-                            totalAmount: calcuTotalAmountCart(dataCart)
+                            totalAmount: calculateCartTotalAmount(dataCart)
                         }
                     });
                 }
@@ -129,27 +119,29 @@ const SaleComponent: React.FC = () => {
 
             if (newTabsItems.length > 0 && newTabsItems[0].key !== orderActiveTabKey) {
                 setOrderActiveTabKey(newTabsItems[0].key);
-                setTotalQuantityCart(calcuTotalQuantityCart(dataCart));
+                setTotalQuantityCart(calculateCartTotalQuantity(dataCart));
                 setOrderCreateOrUpdate((prevValue) => {
                     return {
                         ...prevValue,
                         id: Number(newTabsItems[0].key),
                         orderTrackingNumber: newTabsItems[0].label,
-                        totalAmount: calcuTotalAmountCart(dataCart)
+                        totalAmount: calculateCartTotalAmount(dataCart)
                     }
                 });
             }
         }
     }, [data?.data]);
 
+    // xử lý thêm sản phẩm vào giỏ
     const handleAddOrderItemCart = async (productVariantSelected: IProductVariant[]) => {
+        // khởi tạo mảng giá trị rỗng để lưu trữ item sản phẩm trong giỏ
         let newOrderItemsCreateOrUpdate: ICreateOrUpdateOrderItem[] = [];
 
+        // chuyển đổi danh sách lưu trữ dataCart sang Map để truy xuất dữ liệu nhanh hơn
         const cartMap = new Map<number, IOrderItem>(
             dataCart.map(item => [item.productVariantId, item])
         );
         // console.log("current cart", cartMap)
-
 
         // Lưu trữ bản sao của cartMap để rollback khi cần
         const cartMapBackup = new Map(cartMap);
@@ -184,24 +176,27 @@ const SaleComponent: React.FC = () => {
                     showMessage("warning", `Sản phẩm mã ${selectedProduct.sku} - ${selectedProduct.productName} đã hết hàng`);
                     return;
                 }
-            } else {
+
+            } else { // cập nhật số lượng với sản phẩm đã tồn tại trong giỏ
+
                 // Thêm sản phẩm mới vào giỏ hàng nếu tồn kho lớn hơn 0
                 if (quantityInStock > 0) {
                     let quantityToAdd: number = 1;  // Thêm mặc định 1 sản phẩm
 
+                    // thêm vào list item sản phẩm trong để cập nhật vào giỏ thiếu id để cập nhật số lượng sản phẩm
                     newOrderItemsCreateOrUpdate.push({
                         productVariantId: selectedProduct.id,
                         quantity: quantityToAdd,
                         salePrice: selectedProduct.salePrice,
                     });
-                } else {
-                    // Nếu tồn kho = 0, cảnh báo người dùng
+                } else { // Nếu tồn kho = 0, cảnh báo người dùng
                     showMessage("warning", `Sản phẩm ${selectedProduct.sku} - ${selectedProduct.productName} đã hết hàng`);
                     return;
                 }
             }
         }
 
+        // thêm sản phẩm vào giỏ đối với các sản phẩm mới chưa có trong giỏ
         try {
             if (newOrderItemsCreateOrUpdate.length > 0) {
                 let response = await handleCreateOrderItems(Number(orderActiveTabKey), newOrderItemsCreateOrUpdate)
@@ -254,9 +249,11 @@ const SaleComponent: React.FC = () => {
         }
     }
 
+    // chọn tab hóa đơn chờ khác
     const onChange = (newActiveKey: string) => {
+        console.log(orderActiveTabKey)
         setOrderActiveTabKey(newActiveKey);
-        setTotalQuantityCart(calcuTotalQuantityCart(dataCart));
+        setTotalQuantityCart(calculateCartTotalQuantity(dataCart));
         setOrderCreateOrUpdate((prevValue) => {
             const currentTab = itemTabs?.find((item) => item.key === newActiveKey);
 
@@ -266,18 +263,20 @@ const SaleComponent: React.FC = () => {
                 ...prevValue,
                 id: Number(newActiveKey),
                 orderTrackingNumber: orderTrackingNumber,
-                totalAmount: calcuTotalAmountCart(dataCart)
+                totalAmount: calculateCartTotalAmount(dataCart)
             }
         });
     };
 
+    // tạo tab và tạo luôn hóa đơn chờ
     const add = async () => {
         await handleCreateOrder(defaultOrderCreateOrUpdate)
             .then((result) => {
                 const newActiveKey = `${result.id}`;
                 const newPanes = [...itemTabs ?? []];
-                newPanes.push({label: result.orderTrackingNumber, children: <ContentTabPanelSale/>, key: newActiveKey});
+                newPanes.push({label: result.orderTrackingNumber, children: <ContentTabPanelSale/>, key: newActiveKey, closable: false});
                 setItemTabs(newPanes);
+                console.log(result.id)
                 setOrderActiveTabKey(newActiveKey);
                 setOrderCreateOrUpdate((prevValue) => {
                    return {
@@ -293,6 +292,7 @@ const SaleComponent: React.FC = () => {
         await mutateOrderPending();
     };
 
+    // đóng tab
     const remove = (targetKey: TargetKey) => {
         let newActiveKey = orderActiveTabKey;
         let lastIndex = -1;
@@ -326,8 +326,6 @@ const SaleComponent: React.FC = () => {
         <Layout style={{background: colorBgContainer}}>
             <HandleSale.Provider
                 value={{
-                    calcuTotalQuantityCart,
-                    calcuTotalAmountCart,
                     totalQuantityCart,
                     setTotalQuantityCart,
                     orderCreateOrUpdate,
@@ -337,7 +335,8 @@ const SaleComponent: React.FC = () => {
                     setDataCart,
                     handleAddOrderItemCart,
                     mutateOrderPending
-                }}>
+                }}
+            >
                 <Content style={{background: colorBgContainer}}>
                     <Spin size="default" spinning={loading}>
                         <Tabs
