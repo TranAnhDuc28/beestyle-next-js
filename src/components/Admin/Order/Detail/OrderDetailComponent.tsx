@@ -12,7 +12,7 @@ import {useParams} from "next/navigation";
 import OrderedProductDetails from "@/components/Admin/Order/Detail/OrderedProductDetails";
 import TimeLineOrderTrackingComponent from "@/components/Admin/Order/Detail/TimeLineOrderTrackingComponent";
 import useOrder from "@/components/Admin/Order/hooks/useOrder";
-import OrderDetailDescriptionTable from "@/components/Admin/Order/Detail/OrderDetailInfoTable";
+import OrderDetailInfoTable from "@/components/Admin/Order/Detail/OrderDetailInfoTable";
 
 const {Content} = Layout;
 const {Title, Text} = Typography;
@@ -57,7 +57,7 @@ const OrderDetailComponent: React.FC<IProps> = (props) => {
                 Thông tin đơn hàng
             </Title>
             <Content style={{backgroundColor: token.colorBgContainer, padding: 20}}>
-                <OrderDetailDescriptionTable orderDetail={orderDetail}/>
+                <OrderDetailInfoTable orderDetail={orderDetail}/>
             </Content>
 
             <Title level={4} style={{margin: '20px 10px 10px 10px'}}>
@@ -69,7 +69,7 @@ const OrderDetailComponent: React.FC<IProps> = (props) => {
                     borderRadius: token.borderRadiusLG,
                     padding: 20
                 }}>
-                <OrderedProductDetails/>
+                <OrderedProductDetails orderDetail={orderDetail}/>
             </Content>
         </>
     );
