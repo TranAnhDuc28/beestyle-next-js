@@ -1,23 +1,13 @@
 "use client";
-import React, { memo, useEffect } from 'react';
-import { Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, Col } from 'antd';
+import React, {memo, useEffect, useState} from 'react';
+import {Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, Col, Space} from 'antd';
 import { updateVoucher } from '@/services/VoucherService';
 import dayjs from 'dayjs';
-import {EuroOutlined, PercentageOutlined} from "@ant-design/icons"; // Thay thế moment bằng dayjs
 import useAppNotifications from "../../../hooks/useAppNotifications";
-import {STATUS} from "@/constants/Status";
-import {DISCOUNTTYPE} from "@/constants/DiscountType";
-import {DISCOUNT_STATUS} from "../../../constants/DiscountStastus";
+import {DISCOUNT_TYPE} from "../../../constants/DiscountType";
 const { Option } = Select;
 
 
-// interface IProps {
-//     isUpdateModalOpen: boolean;
-//     setIsUpdateModalOpen: (v: boolean) => void;
-//     mutate: any;
-//     dataUpdate: IVoucher | null;
-//     setDataUpdate: (data: IVoucher | null) => void;
-// }
 interface IProps {
     isUpdateModalOpen: boolean;
     setIsUpdateModalOpen: (v: boolean) => void;
@@ -30,7 +20,27 @@ const UpdateVoucher = (props: IProps) => {
     const {showNotification} =useAppNotifications();
     const { isUpdateModalOpen, setIsUpdateModalOpen, mutate, dataUpdate, setDataUpdate } = props;
     const [form] = Form.useForm();
+    const [isCash, setIsCash] = useState(false);
 
+    const handleValuesChange = (changedValues: any, allValues: any) => {
+        if (changedValues.discountType) {
+            setIsCash(changedValues.discountType === "CASH");
+
+            if (changedValues.discountType === "CASH" && allValues.discountValue) {
+                // Tự động gán giá trị giảm giá sang giảm giá tối đa
+                form.setFieldsValue({ maxDiscount: allValues.discountValue });
+            }
+            if (changedValues.discountType === "PERCENTAGE") {
+                // Đặt lại giá trị giảm tối đa về null (hoặc giá trị mặc định) khi chọn phần trăm
+                form.setFieldsValue({ maxDiscount: null });
+            }
+        }
+
+        if (changedValues.discountValue && allValues.discountType === "CASH") {
+            // Cập nhật giảm giá tối đa khi giá trị giảm thay đổi và kiểu là tiền mặt
+            form.setFieldsValue({ maxDiscount: changedValues.discountValue });
+        }
+    };
     useEffect(() => {
         if (dataUpdate) {
             form.setFieldsValue({
@@ -124,13 +134,14 @@ const UpdateVoucher = (props: IProps) => {
                     style: { background: "#00b96b" },
                 }}
                 width={800} // Kích thước modal
-                style={{ body: {padding: '20px'} }}
+                style={{ body: {padding: '20px'}, top: "50px"}}
             >
                 <Form
                     form={form}
                     name="createVoucher"
                     layout="vertical"
                     onFinish={onFinish}
+                    onValuesChange={handleValuesChange}
                 >
                     <Row gutter={16}>
 
@@ -162,7 +173,7 @@ const UpdateVoucher = (props: IProps) => {
                                 label="Giá trị giảm giá"
                                 rules={[{required: true, message: "Vui lòng nhập giá trị giảm giá và chọn kiểu!"}]}
                             >
-                                <Input.Group compact>
+                                <Space.Compact style={{width: '100%'}}>
                                     <Form.Item
                                         name="discountValue"
                                         noStyle
@@ -178,7 +189,7 @@ const UpdateVoucher = (props: IProps) => {
                                             }),
                                         ]}
                                     >
-                                        <InputNumber style={{width: '70%'}} placeholder="Giá trị giảm"/>
+                                        <InputNumber style={{width: '65%'}} placeholder="Giá trị giảm"/>
                                     </Form.Item>
                                     <Form.Item
                                         name="discountType"
@@ -186,15 +197,18 @@ const UpdateVoucher = (props: IProps) => {
                                         rules={[{required: true, message: "Kiểu giảm là bắt buộc!"}]}
                                     >
                                         <Select
-                                            style={{width: '30%'}}
+                                            style={{width: '35%'}}
                                             placeholder="Chọn kiểu"
                                             suffixIcon={null}
                                         >
-                                            <Option value="PERCENTAGE" icon={<PercentageOutlined/>}>%</Option>
-                                            <Option value="CASH" icon={<EuroOutlined/>}>VND </Option>
+                                            {Object.keys(DISCOUNT_TYPE).map((key) => (
+                                                <Option key={key} value={key}>
+                                                    {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE].description}
+                                                </Option>
+                                            ))}
                                         </Select>
                                     </Form.Item>
-                                </Input.Group>
+                                </Space.Compact>
                             </Form.Item>
                         </Col>
 
@@ -205,7 +219,7 @@ const UpdateVoucher = (props: IProps) => {
                                 label="Giảm tối đa"
                                 rules={[{required: true, message: "Vui lòng nhập giảm giá tối đa!"}]}
                             >
-                                <InputNumber style={{width: '100%'}}/>
+                                <InputNumber style={{ width: '100%' }} readOnly={isCash} />
                             </Form.Item>
                         </Col>
                     </Row>
