@@ -107,11 +107,15 @@ const TopSellingProductsTable: React.FC = () => {
                 <h3 className="text-lg text-center leading-6 font-medium text-gray-900">
                     Top sản phẩm bán chạy
                 </h3>
-                <Select defaultValue={stockThreshold} style={{width: 120}} onChange={handleStockThresholdChange}>
-                    <Select.Option value={5}>Top 5</Select.Option>
-                    <Select.Option value={10}>Top 10</Select.Option>
-                    <Select.Option value={20}>Top 20</Select.Option>
-                </Select>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ marginRight: '8px' }}>Top</span>
+                    <Select defaultValue={stockThreshold} style={{width: 70}} onChange={handleStockThresholdChange}>
+                        <Select.Option value={5}>5</Select.Option>
+                        <Select.Option value={10}>10</Select.Option>
+                        <Select.Option value={20}>20</Select.Option>
+                    </Select>
+                </div>
+
             </div>
             <div className="overflow-x-auto">
                 <Table
@@ -128,7 +132,7 @@ const TopSellingProductsTable: React.FC = () => {
 };
 
 const LowStockProductsTable: React.FC = () => {
-    const [sortedInfo, setSortedInfo] = useState<any>({});
+
     const [pageSize, setPageSize] = useState<number>(5);
     const [products, setProducts] = useState<IStatistical[]>([]);
     const [stockThreshold, setStockThreshold] = useState<number>(10); // Giá trị ngưỡng số lượng tồn kho
@@ -139,25 +143,31 @@ const LowStockProductsTable: React.FC = () => {
     const colorMap = useMemo(() => {
         return new Map(dataOptionColor.map((item) => [item.label, item.code]));
     }, [dataOptionColor]);
+    const [sortedInfo, setSortedInfo] = useState<any>({
+        columnKey: "quantityInStock", // Cột mặc định để sắp xếp
+        order: "ascend", // Mặc định là tăng dần
+    });
 
     // Lấy dữ liệu sản phẩm dựa vào threshold
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const response = await getProductByStock(stockThreshold);
-                if (response?.data?.items && Array.isArray(response.data.items)) {
-                    setProducts(response.data.items);
+                if (Array.isArray(response?.data)) {
+                    setProducts(response.data); // Gán toàn bộ danh sách sản phẩm vào state
                 } else {
                     console.error("API không trả về danh sách sản phẩm:", response);
-                    setProducts([]);
+                    setProducts([]); // Nếu API không trả về danh sách hợp lệ
                 }
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu từ API:", error);
-                setProducts([]);
+                setProducts([]); // Xử lý lỗi nếu API không thành công
             }
         };
+
         fetchProducts();
     }, [stockThreshold]);
+
 
     // Cập nhật thông tin sắp xếp
     const handleTableChange = (pagination, filters, sorter) => {
@@ -214,12 +224,19 @@ const LowStockProductsTable: React.FC = () => {
                 );
             },
         },
+        // {
+        //     title: "Số lượng còn lại",
+        //     dataIndex: "quantityInStock",
+        //     key: "quantityInStock",
+        //     sorter: (a, b) => a.quantityInStock - b.quantityInStock,
+        //     sortOrder: sortedInfo.columnKey === "quantityInStock" ? sortedInfo.order : null,
+        // },
         {
             title: "Số lượng còn lại",
             dataIndex: "quantityInStock",
             key: "quantityInStock",
-            sorter: (a, b) => a.quantityInStock - b.quantityInStock,
-            sortOrder: sortedInfo.columnKey === "quantityInStock" ? sortedInfo.order : null,
+            sorter: (a, b) => a.quantityInStock - b.quantityInStock, // Hàm so sánh cho sắp xếp
+            sortOrder: sortedInfo.columnKey === "quantityInStock" ? sortedInfo.order : null, // Áp dụng thứ tự sắp xếp
         },
     ];
 
@@ -229,11 +246,14 @@ const LowStockProductsTable: React.FC = () => {
                 <h3 className="text-lg text-center leading-6 font-medium text-gray-900">
                     Sản phẩm sắp hết hàng
                 </h3>
-                <Select defaultValue={10} style={{width: 120}} onChange={handleStockThresholdChange}>
-                    <Select.Option value={5}>Nhỏ hơn 5</Select.Option>
-                    <Select.Option value={10}>Nhỏ hơn 10</Select.Option>
-                    <Select.Option value={20}>Nhỏ hơn 20</Select.Option>
-                </Select>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ marginRight: '8px' }}>Nhỏ hơn</span>
+                    <Select defaultValue={10} style={{ width: 70 }} onChange={handleStockThresholdChange}>
+                        <Select.Option value={5}>5</Select.Option>
+                        <Select.Option value={10}>10</Select.Option>
+                        <Select.Option value={20}>20</Select.Option>
+                    </Select>
+                </div>
             </div>
             <div className="overflow-x-auto">
                 <Table

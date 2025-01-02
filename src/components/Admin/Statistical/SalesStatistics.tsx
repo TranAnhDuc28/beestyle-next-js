@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Card, Col, Row, Statistic } from "antd";
-import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
+import React, {useEffect, useState} from "react";
+import {Card, Col, Row, Statistic} from "antd";
+import {ArrowDownOutlined, ArrowUpOutlined} from "@ant-design/icons";
 import useSWR from "swr";
-import { getRevenues, URL_API_STATISTICAL } from "@/services/StatisticalService";
+import {getRevenues, URL_API_STATISTICAL} from "@/services/StatisticalService";
 import {getOrderStatus} from "../../../services/StatisticalService";
 
 const SalesStatistics: React.FC = () => {
@@ -11,17 +11,18 @@ const SalesStatistics: React.FC = () => {
     const [soldProducts, setSoldProducts] = useState<number>(0);
     const [totalOrders, setTotalOrders] = useState<number>(0);
     const [todayOrders, setTodayOrders] = useState<number>(0);
-    const { data: revuneData} = useSWR(
+    const {data: revuneData} = useSWR(
         `${URL_API_STATISTICAL.getRevenue}`,
         getRevenues,
-        { revalidateOnFocus: false, revalidateOnReconnect: false }
+        {revalidateOnFocus: false, revalidateOnReconnect: false}
     );
-    const { data: oderData} = useSWR(
+    const {data: oderData} = useSWR(
         `${URL_API_STATISTICAL.getOrderStatus}`,
         getOrderStatus,
-        { revalidateOnFocus: false, revalidateOnReconnect: false }
+        {revalidateOnFocus: false, revalidateOnReconnect: false}
     );
-
+    console.log("doanh thu: ",revuneData )
+    console.log("hao don: ",oderData )
     // Hàm tính doanh thu tháng này
     const calculateCurrentMonthRevenue = (data: any[]) => {
         return data.reduce((acc: number, item: any) => {
@@ -116,58 +117,71 @@ const SalesStatistics: React.FC = () => {
     }, [revuneData, oderData]);
 
 
-
     // Hiển thị doanh thu
     return (
         <Row gutter={16}>
             <Col span={8}>
                 <Card
-                    title="Doanh số tháng này"
-                    bodyStyle={{ padding: "12px 24px" }}
-                    headStyle={{
-                        fontSize: "18px",
-                        minHeight: "40px",
+                    title="Doanh số hôm nay"
+                    styles={{
+                        body: { padding: "12px 24px" },
+                        header: { fontSize: "18px", minHeight: "40px" },
                     }}
                 >
                     <div>
-                        <div style={{ fontSize: "18px", color: "#4096FF", fontWeight: "bold", marginBottom: "4px" }}>
-                            <ArrowUpOutlined /> {totalOrders.toLocaleString()} Đơn hàng / {totalRevenue.toLocaleString()} VND
+                        <div
+                            style={{
+                                fontSize: "18px",
+                                color: "#4096FF",
+                                fontWeight: "bold",
+                            }}
+                        >
+                            <ArrowUpOutlined /> {todayOrders.toLocaleString()} Đơn hàng
+                            / {todayRevenue.toLocaleString()} VND
                         </div>
-
                     </div>
                 </Card>
             </Col>
             <Col span={8}>
                 <Card
-                    title="Doanh số hôm nay"
-                    bodyStyle={{ padding: "12px 24px" }}
-                    headStyle={{
-                        fontSize: "18px",
-                        minHeight: "40px",
+                    title="Doanh số tháng này"
+                    styles={{
+                        body: { padding: "12px 24px" },
+                        header: { fontSize: "18px", minHeight: "40px" },
                     }}
                 >
                     <div>
-                        <div style={{ fontSize: "18px", color: "#4096FF", fontWeight: "bold", marginBottom: "4px" }}>
-                            <ArrowUpOutlined /> {todayOrders.toLocaleString()} Đơn hàng / {todayRevenue.toLocaleString()} VND
+                        <div
+                            style={{
+                                fontSize: "18px",
+                                color: "#4096FF",
+                                fontWeight: "bold",
+                            }}
+                        >
+                            <ArrowUpOutlined /> {totalOrders.toLocaleString()} Đơn hàng
+                            / {totalRevenue.toLocaleString()} VND
                         </div>
-
                     </div>
                 </Card>
             </Col>
             <Col span={8}>
                 <Card
                     title="Sản phẩm bán được trong tháng này"
-                    bodyStyle={{ padding: "12px 24px" }}
-                    headStyle={{
-                        fontSize: "18px",
-                        minHeight: "40px",
+                    styles={{
+                        body: { padding: "12px 24px" },
+                        header: { fontSize: "18px", minHeight: "40px" },
                     }}
                 >
                     <div>
-                        <div style={{ fontSize: "18px", color: "#4096FF", fontWeight: "bold", marginBottom: "4px" }}>
+                        <div
+                            style={{
+                                fontSize: "18px",
+                                color: "#4096FF",
+                                fontWeight: "bold",
+                            }}
+                        >
                             <ArrowUpOutlined /> {soldProducts} Sản phẩm
                         </div>
-
                     </div>
                 </Card>
             </Col>
