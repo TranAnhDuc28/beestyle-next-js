@@ -1,22 +1,40 @@
-import React from 'react';
-import { Form, Input, Button, Typography, message } from 'antd';
-import useEmailSender from '@/hooks/useEmailSender';
+import React, { useState } from 'react';
+import { Form, Input, Button, Typography } from 'antd';
+import useAppNotifications from '@/hooks/useAppNotifications';
 
 const { Title, Text } = Typography;
 
 const ContactForm = () => {
     const [form] = Form.useForm();
-    const { sendEmail, loading, error, success } = useEmailSender();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { showNotification } = useAppNotifications();
 
-    const onFinish = async (values) => {
-        await sendEmail(values);
-        if (success) {
-            message.success('Email sent successfully!');
+    async function onFinish(values: object) {
+        const body = JSON.stringify(values);
+        setIsLoading(true);
+
+        const response = await fetch('/api/send-mail', {
+            method: 'POST',
+            body: body
+        });
+
+        if (response.ok) {
+            setIsLoading(false);
+            showNotification('success', {
+                message: 'Gửi thắc mắc thành công!',
+                description: 'Chúng tôi sẽ liên lạc lại với bạn trong vòng 24 giờ.',
+            });
             form.resetFields();
         } else {
-            message.error(error || 'Failed to send email.');
+            setIsLoading(false);
+            const errorData = await response.json();
+            showNotification('error', {
+                message: 'Gửi thắc mắc thất bại!',
+                description: errorData.message,
+            });
         }
     };
+
 
     return (
         <div className='py-4'>
@@ -45,7 +63,7 @@ const ContactForm = () => {
                     />
                 </Form.Item>
                 <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.email !== currentValues.email || prevValues.phone !== currentValues.phone}>
-                    {({ getFieldValue }) => {
+                    {({ }) => {
                         return (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <Form.Item
@@ -87,7 +105,17 @@ const ContactForm = () => {
                     }}
                 </Form.Item>
                 <Form.Item
-                    name="message"
+                    name="subject"
+                    rules={[{ required: true, message: 'Vui lòng nhập tên của bạn!' }]}
+                >
+                    <Input
+                        placeholder="Tiêu đề"
+                        className="w-full p-3 border border-gray-300 rounded"
+                        size="large"
+                    />
+                </Form.Item>
+                <Form.Item
+                    name="content"
                     rules={[{ required: true, message: 'Vui lòng nhập nội dung!' }]}
                 >
                     <Input.TextArea
@@ -101,9 +129,9 @@ const ContactForm = () => {
                     <Button
                         type="primary"
                         htmlType="submit"
-                        className="bg-black hover:!bg-orange-400 text-white px-6 py-3 rounded mt-2"
+                        className="bg-black hover:!bg-orange-400 text-white px-6 py-3 rounded"
                         size="large"
-                        loading={loading}
+                        loading={isLoading}
                     >
                         GỬI CHO CHÚNG TÔI
                     </Button>
