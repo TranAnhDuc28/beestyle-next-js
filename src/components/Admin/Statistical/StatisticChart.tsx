@@ -34,8 +34,8 @@ const InvoiceChart = ({data} : any) => (
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="totalOderSuccess" fill="#4096FF" name="Hoá đơn" barSize={15} />
-        <Bar dataKey="totalOderFailed" fill="#FF0000" name="Hoá đơn hủy" barSize={15} />
+        <Bar dataKey="totalOderSuccess" fill="#4096FF" name="Hoá đơn" barSize={30} />
+        <Bar dataKey="totalOderFailed" fill="#FF0000" name="Hoá đơn hủy" barSize={30} />
     </BarChart>
 </ResponsiveContainer>
 );
@@ -52,7 +52,7 @@ const RevenueChart = ({data} : any) => (
             />
             <Tooltip />
             <Legend />
-            <Bar dataKey="revenue" fill="#4096FF" name="Doanh thu" barSize={15} />
+            <Bar dataKey="revenue" fill="#4096FF" name="Doanh thu" barSize={30} />
         </BarChart>
     </ResponsiveContainer>
 );
@@ -66,7 +66,7 @@ const ProductChart = ({data} : any) => (
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="quantity" fill="#4096FF" name="Số lượng" barSize={15} />
+            <Bar dataKey="quantity" fill="#4096FF" name="Số lượng" barSize={30} />
         </BarChart>
     </ResponsiveContainer>
 );
