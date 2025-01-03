@@ -63,7 +63,8 @@ const TopSellingProductsTable: React.FC = () => {
             title: "Ảnh",
             dataIndex: "imageUrl",
             key: "imageUrl",
-            render: (imageUrl) => <Image width={80} height={80}
+            width: 110,
+            render: (imageUrl) => <Image width={70} height={90}
                                          src={imageUrl}
                                          fallback="/no-img.png"
             />,
@@ -80,14 +81,15 @@ const TopSellingProductsTable: React.FC = () => {
                     <span>
                         <Text>{record.productName}</Text>
                         <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
+                            <span style={{marginInlineEnd: 4}}>{`Mã: ${sku}`}</span>
+
+                        </Text>
+                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
                             <span style={{marginInlineEnd: 4}}>{`Màu: ${colorName}`}</span>
                             {colorCode && <Tag className="custom-tag" color={colorCode}/>} |
                             {` Kích cỡ: ${sizeName}`}
                         </Text>
-                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
-                            <span style={{marginInlineEnd: 4}}>{`Mã: ${sku}`}</span>
 
-                        </Text>
                     </span>
                 );
             },
@@ -135,7 +137,7 @@ const LowStockProductsTable: React.FC = () => {
 
     const [pageSize, setPageSize] = useState<number>(5);
     const [products, setProducts] = useState<IStatistical[]>([]);
-    const [stockThreshold, setStockThreshold] = useState<number>(10); // Giá trị ngưỡng số lượng tồn kho
+    const [stockThreshold, setStockThreshold] = useState<number>(5); // Giá trị ngưỡng số lượng tồn kho
 
     const {dataOptionColor = [], error: errorDataOptionColor, isLoading: isLoadingDataOptionColor} =
         useOptionColor(true);
@@ -143,10 +145,7 @@ const LowStockProductsTable: React.FC = () => {
     const colorMap = useMemo(() => {
         return new Map(dataOptionColor.map((item) => [item.label, item.code]));
     }, [dataOptionColor]);
-    const [sortedInfo, setSortedInfo] = useState<any>({
-        columnKey: "quantityInStock", // Cột mặc định để sắp xếp
-        order: "ascend", // Mặc định là tăng dần
-    });
+    const [sortedInfo, setSortedInfo] = useState<any>({});
 
     // Lấy dữ liệu sản phẩm dựa vào threshold
     useEffect(() => {
@@ -174,10 +173,6 @@ const LowStockProductsTable: React.FC = () => {
         setSortedInfo(sorter);
     };
 
-    // Thay đổi số lượng sản phẩm hiển thị trên bảng
-    const handlePageSizeChange = (value: number) => {
-        setPageSize(value);
-    };
 
     // Thay đổi ngưỡng số lượng tồn kho
     const handleStockThresholdChange = (value: number) => {
@@ -195,7 +190,8 @@ const LowStockProductsTable: React.FC = () => {
             title: "Ảnh",
             dataIndex: "imageUrl",
             key: "imageUrl",
-            render: (imageUrl) => <Image width={80} height={80}
+            width: 110,
+            render: (imageUrl) => <Image width={70} height={90}
                                          src={imageUrl}
                                          fallback="/no-img.png"
             />,
@@ -212,25 +208,19 @@ const LowStockProductsTable: React.FC = () => {
                     <span>
                         <Text>{record.productName}</Text>
                         <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
+                            <span style={{marginInlineEnd: 4}}>{`Mã: ${sku}`}</span>
+
+                        </Text>
+                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
                             <span style={{marginInlineEnd: 4}}>{`Màu: ${colorName}`}</span>
                             {colorCode && <Tag className="custom-tag" color={colorCode}/>} |
                             {` Kích cỡ: ${sizeName}`}
                         </Text>
-                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
-                            <span style={{marginInlineEnd: 4}}>{`Mã: ${sku}`}</span>
 
-                        </Text>
                     </span>
                 );
             },
         },
-        // {
-        //     title: "Số lượng còn lại",
-        //     dataIndex: "quantityInStock",
-        //     key: "quantityInStock",
-        //     sorter: (a, b) => a.quantityInStock - b.quantityInStock,
-        //     sortOrder: sortedInfo.columnKey === "quantityInStock" ? sortedInfo.order : null,
-        // },
         {
             title: "Số lượng còn lại",
             dataIndex: "quantityInStock",
@@ -248,7 +238,7 @@ const LowStockProductsTable: React.FC = () => {
                 </h3>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <span style={{ marginRight: '8px' }}>Nhỏ hơn</span>
-                    <Select defaultValue={10} style={{ width: 70 }} onChange={handleStockThresholdChange}>
+                    <Select defaultValue={5} style={{ width: 70 }} onChange={handleStockThresholdChange}>
                         <Select.Option value={5}>5</Select.Option>
                         <Select.Option value={10}>10</Select.Option>
                         <Select.Option value={20}>20</Select.Option>

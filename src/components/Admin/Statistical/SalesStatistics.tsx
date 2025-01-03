@@ -131,7 +131,7 @@ const SalesStatistics: React.FC = () => {
                     <div>
                         <div
                             style={{
-                                fontSize: "18px",
+                                fontSize: "20px",
                                 color: "#4096FF",
                                 fontWeight: "bold",
                             }}
@@ -153,7 +153,7 @@ const SalesStatistics: React.FC = () => {
                     <div>
                         <div
                             style={{
-                                fontSize: "18px",
+                                fontSize: "20px",
                                 color: "#4096FF",
                                 fontWeight: "bold",
                             }}
@@ -175,7 +175,7 @@ const SalesStatistics: React.FC = () => {
                     <div>
                         <div
                             style={{
-                                fontSize: "18px",
+                                fontSize: "20px",
                                 color: "#4096FF",
                                 fontWeight: "bold",
                             }}
