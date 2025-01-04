@@ -1,4 +1,4 @@
-// import httpInstance from "@/utils/HttpInstance";
+import httpInstance from "@/utils/HttpInstance";
 //
 // export const URL_API_INVOICE = {
 //   generatePdf: '/invoice',
@@ -45,7 +45,12 @@
 import axios from 'axios';
 
 // URL của API
-const URL_API_INVOICE = '/invoice';
+// const URL_API_INVOICE = '/invoice';
+export const URL_API_INVOICE = {
+  generatePdf: '/invoice',
+  previewPdf: "/preview",
+};
+
 
 // Hàm để tải file PDF của hóa đơn
 export const downloadInvoicePdf = async (invoiceId) => {
@@ -74,3 +79,21 @@ export const downloadInvoicePdf = async (invoiceId) => {
         console.error('Lỗi khi tải hóa đơn:', error);
     }
 };
+  export const previewInvoicePdf = async (invoiceId: any): Promise<string | null> => {
+    try {
+      const response = await httpInstance.get(`${URL_API_INVOICE.previewPdf}/${invoiceId}`, {
+        responseType: "arraybuffer", // Nhận dữ liệu PDF từ backend
+      });
+
+      // Chuyển đổi sang Base64
+      const base64Pdf = `data:application/pdf;base64,${btoa(
+        new Uint8Array(response.data)
+          .reduce((data, byte) => data + String.fromCharCode(byte), "")
+      )}`;
+
+      return base64Pdf; // Trả về chuỗi Base64
+    } catch (error) {
+      console.error("Lỗi khi lấy preview PDF:", error);
+      return null;
+    }
+  };
