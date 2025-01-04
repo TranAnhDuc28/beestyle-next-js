@@ -1,177 +1,105 @@
-import React, { useState } from 'react';
-import { Table, Avatar, Space, TableProps, Select } from 'antd';
-import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import React, {useEffect, useMemo, useState} from 'react';
+import {Table, Avatar, Space, TableProps, Select, Tag, Typography, Image} from 'antd';
+import {getProductByStock, getTopSellingProduct} from "../../../services/StatisticalService";
+import {IStatistical} from "../../../types/IStatistical";
+import useOptionColor from "@/components/Admin/Color/hooks/useOptionColor";
 
-interface TopSellingProduct {
-    key: string | React.Key;
-    image: string;
-    name: string;
-    sold: number;
-}
-
-interface LowStockProduct {
-    key: string | React.Key;
-    image: string;
-    name: string;
-    remaining: number;
-}
-
-interface TableSortState {
-    order: 'ascend' | 'descend' | null;
-    columnKey: string | null;
-}
-
-const topSellingProductsData: TopSellingProduct[] = [
-    {
-        key: '1',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm A',
-        sold: 150,
-    },
-    {
-        key: '2',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm B',
-        sold: 120,
-    },
-    {
-        key: '3',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm C',
-        sold: 95,
-    },
-    {
-        key: '4',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm D',
-        sold: 80,
-    },
-    {
-        key: '5',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm E',
-        sold: 70,
-    },
-    {
-        key: '6',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm F',
-        sold: 60,
-    },
-    {
-        key: '7',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm G',
-        sold: 50,
-    },
-    {
-        key: '8',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm H',
-        sold: 40,
-    },
-    {
-        key: '9',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm I',
-        sold: 30,
-    },
-    {
-        key: '10',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm J',
-        sold: 20,
-    },
-];
-
-const lowStockProductsData: LowStockProduct[] = [
-    {
-        key: '1',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm X',
-        remaining: 15,
-    },
-    {
-        key: '2',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm Y',
-        remaining: 8,
-    },
-    {
-        key: '3',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm Z',
-        remaining: 5,
-    },
-    {
-        key: '4',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm W',
-        remaining: 3,
-    },
-    {
-        key: '5',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm V',
-        remaining: 2,
-    },
-    {
-        key: '6',
-        image: 'https://via.placeholder.com/50',
-        name: 'Sản phẩm U',
-        remaining: 1,
-    },
-];
+const {Text} = Typography;
 
 const TopSellingProductsTable: React.FC = () => {
-    const [sortedInfo, setSortedInfo] = useState<TableSortState>({});
+    const [sortedInfo, setSortedInfo] = useState<any>({});
     const [pageSize, setPageSize] = useState<number>(5);
+    const [topSellingProducts, setTopSellingProducts] = useState<IStatistical[]>([]);
+    const [stockThreshold, setStockThreshold] = useState<number>(5);
 
-    const handleChange: TableProps<TopSellingProduct>['onChange'] = (pagination, filters, sorter) => {
-        console.log('Various parameters', pagination, filters, sorter);
-        setSortedInfo(sorter as TableSortState);
+    const {dataOptionColor = [], error: errorDataOptionColor, isLoading: isLoadingDataOptionColor} =
+        useOptionColor(true);
+
+    const colorMap = useMemo(() => {
+        return new Map(dataOptionColor.map((item) => [item.label, item.code]));
+    }, [dataOptionColor]);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await getTopSellingProduct(stockThreshold);
+                if (response?.data?.items && Array.isArray(response.data.items)) {
+                    setTopSellingProducts(response.data.items);
+                } else {
+                    console.error("API không trả về danh sách sản phẩm:", response);
+                    setTopSellingProducts([]);
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu từ API:", error);
+                setTopSellingProducts([]);
+            }
+        };
+        fetchProducts();
+    }, [stockThreshold]);
+
+    // Cập nhật thông tin sắp xếp
+    const handleTableChange = (pagination, filters, sorter) => {
+        setSortedInfo(sorter);
     };
 
+    // Thay đổi số lượng sản phẩm hiển thị trên bảng
     const handlePageSizeChange = (value: number) => {
         setPageSize(value);
     };
 
-    const columns: TableProps<TopSellingProduct>['columns'] = [
+    // Thay đổi ngưỡng sản phẩm bán chạy
+    const handleStockThresholdChange = (value: number) => {
+        setStockThreshold(value);
+    };
+
+    // Định nghĩa các cột của bảng
+    const columns = [
         {
-            title: 'STT',
-            key: 'stt',
-            sorter: (a, b) => Number(a.key) - Number(b.key),
-            sortOrder: sortedInfo.columnKey === 'stt' ? sortedInfo.order : null,
-            render: (text, record, index) => index + 1,
-            showSorterTooltip: false,
-            sortIcon: (filtered) =>
-                filtered ? <ArrowUpOutlined /> : <Space><ArrowUpOutlined /><ArrowDownOutlined /></Space>,
+            title: "STT",
+            key: "stt",
+            render: (_text, _record, index) => index + 1,
         },
         {
-            title: 'Ảnh',
-            dataIndex: 'image',
-            key: 'image',
-            render: (image) => <Avatar shape="square" size={40} src={image} />,
+            title: "Ảnh",
+            dataIndex: "imageUrl",
+            key: "imageUrl",
+            width: 110,
+            render: (imageUrl) => <Image width={70} height={90}
+                                         src={imageUrl}
+                                         fallback="/no-img.png"
+            />,
         },
         {
-            title: 'Tên sản phẩm',
-            dataIndex: 'name',
-            key: 'name',
-            sorter: (a, b) => a.name.localeCompare(b.name),
-            sortOrder: sortedInfo.columnKey === 'name' ? sortedInfo.order : null,
-            showSorterTooltip: false,
-            sortIcon: (filtered) =>
-                filtered ? <ArrowUpOutlined /> : <Space><ArrowUpOutlined /><ArrowDownOutlined /></Space>,
+            title: "Tên sản phẩm",
+            key: "productName",
+            render: (record: IStatistical) => {
+                const colorName = record?.colorName || "_";
+                const colorCode = colorMap.get(record?.colorName) || "";
+                const sizeName = record?.sizeName || "_";
+                const sku = record?.sku || "_";
+                return (
+                    <span>
+                        <Text>{record.productName}</Text>
+                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
+                            <span style={{marginInlineEnd: 4}}>{`Mã: ${sku}`}</span>
+
+                        </Text>
+                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
+                            <span style={{marginInlineEnd: 4}}>{`Màu: ${colorName}`}</span>
+                            {colorCode && <Tag className="custom-tag" color={colorCode}/>} |
+                            {` Kích cỡ: ${sizeName}`}
+                        </Text>
+
+                    </span>
+                );
+            },
         },
         {
-            title: 'Số lượng đã bán',
-            dataIndex: 'sold',
-            key: 'sold',
-            sorter: (a, b) => a.sold - b.sold,
-            sortOrder: sortedInfo.columnKey === 'sold' ? sortedInfo.order : null,
-            showSorterTooltip: false,
-            sortIcon: (filtered) =>
-                filtered ? <ArrowUpOutlined /> : <Space><ArrowUpOutlined /><ArrowDownOutlined /></Space>,
+            title: "Số lượng đã bán",
+            dataIndex: "totalQuantitySold",
+            key: "totalQuantitySold",
+            sorter: (a, b) => a.totalQuantitySold - b.totalQuantitySold,
+            sortOrder: sortedInfo.columnKey === "totalQuantitySold" ? sortedInfo.order : null,
         },
     ];
 
@@ -181,19 +109,24 @@ const TopSellingProductsTable: React.FC = () => {
                 <h3 className="text-lg text-center leading-6 font-medium text-gray-900">
                     Top sản phẩm bán chạy
                 </h3>
-                <Select defaultValue={5} style={{ width: 100 }} onChange={handlePageSizeChange}>
-                    <Select.Option value={5}>Top 5</Select.Option>
-                    <Select.Option value={10}>Top 10</Select.Option>
-                    <Select.Option value={15}>Top 15</Select.Option>
-                </Select>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ marginRight: '8px' }}>Top</span>
+                    <Select defaultValue={stockThreshold} style={{width: 70}} onChange={handleStockThresholdChange}>
+                        <Select.Option value={5}>5</Select.Option>
+                        <Select.Option value={10}>10</Select.Option>
+                        <Select.Option value={20}>20</Select.Option>
+                    </Select>
+                </div>
+
             </div>
             <div className="overflow-x-auto">
                 <Table
-                    dataSource={topSellingProductsData}
+                    dataSource={topSellingProducts}
                     columns={columns}
-                    pagination={{ pageSize: pageSize }}
-                    onChange={handleChange}
+                    pagination={{pageSize}}
+                    onChange={handleTableChange}
                     className="ant-table-wrapper"
+                    rowKey="id"
                 />
             </div>
         </div>
@@ -201,54 +134,99 @@ const TopSellingProductsTable: React.FC = () => {
 };
 
 const LowStockProductsTable: React.FC = () => {
-    const [sortedInfo, setSortedInfo] = useState<TableSortState>({});
+
     const [pageSize, setPageSize] = useState<number>(5);
+    const [products, setProducts] = useState<IStatistical[]>([]);
+    const [stockThreshold, setStockThreshold] = useState<number>(5); // Giá trị ngưỡng số lượng tồn kho
 
-    const handleChange: TableProps<LowStockProduct>['onChange'] = (pagination, filters, sorter) => {
-        console.log('Various parameters', pagination, filters, sorter);
-        setSortedInfo(sorter as TableSortState);
+    const {dataOptionColor = [], error: errorDataOptionColor, isLoading: isLoadingDataOptionColor} =
+        useOptionColor(true);
+
+    const colorMap = useMemo(() => {
+        return new Map(dataOptionColor.map((item) => [item.label, item.code]));
+    }, [dataOptionColor]);
+    const [sortedInfo, setSortedInfo] = useState<any>({});
+
+    // Lấy dữ liệu sản phẩm dựa vào threshold
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await getProductByStock(stockThreshold);
+                if (Array.isArray(response?.data)) {
+                    setProducts(response.data); // Gán toàn bộ danh sách sản phẩm vào state
+                } else {
+                    console.error("API không trả về danh sách sản phẩm:", response);
+                    setProducts([]); // Nếu API không trả về danh sách hợp lệ
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu từ API:", error);
+                setProducts([]); // Xử lý lỗi nếu API không thành công
+            }
+        };
+
+        fetchProducts();
+    }, [stockThreshold]);
+
+
+    // Cập nhật thông tin sắp xếp
+    const handleTableChange = (pagination, filters, sorter) => {
+        setSortedInfo(sorter);
     };
 
-    const handlePageSizeChange = (value: number) => {
-        setPageSize(value);
+
+    // Thay đổi ngưỡng số lượng tồn kho
+    const handleStockThresholdChange = (value: number) => {
+        setStockThreshold(value);
     };
 
-    const columns: TableProps<LowStockProduct>['columns'] = [
+    // Định nghĩa các cột của bảng
+    const columns = [
         {
-            title: 'STT',
-            key: 'stt',
-            sorter: (a, b) => Number(a.key) - Number(b.key),
-            sortOrder: sortedInfo.columnKey === 'stt' ? sortedInfo.order : null,
-            render: (text, record, index) => index + 1,
-            showSorterTooltip: false,
-            sortIcon: (filtered) =>
-                filtered ? <ArrowUpOutlined /> : <Space><ArrowUpOutlined /><ArrowDownOutlined /></Space>,
+            title: "STT",
+            key: "stt",
+            render: (_text, _record, index) => index + 1,
         },
         {
-            title: 'Ảnh',
-            dataIndex: 'image',
-            key: 'image',
-            render: (image) => <Avatar shape="square" size={40} src={image} />,
+            title: "Ảnh",
+            dataIndex: "imageUrl",
+            key: "imageUrl",
+            width: 110,
+            render: (imageUrl) => <Image width={70} height={90}
+                                         src={imageUrl}
+                                         fallback="/no-img.png"
+            />,
         },
         {
-            title: 'Tên sản phẩm',
-            dataIndex: 'name',
-            key: 'name',
-            sorter: (a, b) => a.name.localeCompare(b.name),
-            sortOrder: sortedInfo.columnKey === 'name' ? sortedInfo.order : null,
-            showSorterTooltip: false,
-            sortIcon: (filtered) =>
-                filtered ? <ArrowUpOutlined /> : <Space><ArrowUpOutlined /><ArrowDownOutlined /></Space>,
+            title: "Tên sản phẩm",
+            key: "productName",
+            render: (record: IStatistical) => {
+                const colorName = record?.colorName || "_";
+                const colorCode = colorMap.get(record?.colorName) || "";
+                const sizeName = record?.sizeName || "_";
+                const sku = record?.sku || "_";
+                return (
+                    <span>
+                        <Text>{record.productName}</Text>
+                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
+                            <span style={{marginInlineEnd: 4}}>{`Mã: ${sku}`}</span>
+
+                        </Text>
+                        <Text type="secondary" style={{display: "flex", alignItems: "center"}}>
+                            <span style={{marginInlineEnd: 4}}>{`Màu: ${colorName}`}</span>
+                            {colorCode && <Tag className="custom-tag" color={colorCode}/>} |
+                            {` Kích cỡ: ${sizeName}`}
+                        </Text>
+
+                    </span>
+                );
+            },
         },
         {
-            title: 'Số lượng còn lại',
-            dataIndex: 'remaining',
-            key: 'remaining',
-            sorter: (a, b) => a.remaining - b.remaining,
-            sortOrder: sortedInfo.columnKey === 'remaining' ? sortedInfo.order : null,
-            showSorterTooltip: false,
-            sortIcon: (filtered) =>
-                filtered ? <ArrowDownOutlined /> : <Space><ArrowUpOutlined /><ArrowDownOutlined /></Space>,
+            title: "Số lượng còn lại",
+            dataIndex: "quantityInStock",
+            key: "quantityInStock",
+            sorter: (a, b) => a.quantityInStock - b.quantityInStock, // Hàm so sánh cho sắp xếp
+            sortOrder: sortedInfo.columnKey === "quantityInStock" ? sortedInfo.order : null, // Áp dụng thứ tự sắp xếp
         },
     ];
 
@@ -258,31 +236,34 @@ const LowStockProductsTable: React.FC = () => {
                 <h3 className="text-lg text-center leading-6 font-medium text-gray-900">
                     Sản phẩm sắp hết hàng
                 </h3>
-                <Select defaultValue={5} style={{ width: 100 }} onChange={handlePageSizeChange}>
-                    <Select.Option value={5}>Top 5</Select.Option>
-                    <Select.Option value={10}>Top 10</Select.Option>
-                    <Select.Option value={15}>Top 15</Select.Option>
-                </Select>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ marginRight: '8px' }}>Nhỏ hơn</span>
+                    <Select defaultValue={5} style={{ width: 70 }} onChange={handleStockThresholdChange}>
+                        <Select.Option value={5}>5</Select.Option>
+                        <Select.Option value={10}>10</Select.Option>
+                        <Select.Option value={20}>20</Select.Option>
+                    </Select>
+                </div>
             </div>
             <div className="overflow-x-auto">
                 <Table
-                    dataSource={lowStockProductsData}
+                    dataSource={products}
                     columns={columns}
-                    pagination={{ pageSize: pageSize }}
-                    onChange={handleChange}
+                    pagination={{pageSize}}
+                    onChange={handleTableChange}
                     className="ant-table-wrapper"
+                    rowKey="id"
                 />
             </div>
         </div>
     );
 };
-
 const StatisticTables: React.FC = () => {
     return (
         <div className="w-full mx-auto bg-white rounded-lg p-4 mt-4">
             <div className='grid grid-cols-2 gap-5'>
-                <TopSellingProductsTable />
-                <LowStockProductsTable />
+                <TopSellingProductsTable/>
+                <LowStockProductsTable/>
             </div>
         </div>
     );

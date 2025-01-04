@@ -12,7 +12,7 @@ import {
     Table,
     Tag,
     Image,
-    Space, GetProps, Pagination, Breadcrumb, Button, Tooltip, Card, Typography
+    Space, GetProps, Pagination, Breadcrumb, Button, Tooltip, Card, Typography, Avatar
 } from "antd";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import dayjs from "dayjs";
@@ -23,7 +23,7 @@ import {
     DeleteTwoTone,
     HomeOutlined
 } from "@ant-design/icons";
-import {memo, Suspense, useEffect, useMemo, useState} from "react";
+import React, {memo, Suspense, useEffect, useMemo, useState} from "react";
 import useAppNotifications from "../../../hooks/useAppNotifications";
 import {IProduct} from "../../../types/IProduct";
 import {IProductVariant} from "../../../types/IProductVariant";
@@ -70,7 +70,7 @@ const CreatePromotion = (props: IProps) => {
     const [pageSize, setPageSize] = useState(10);
     const [totalItems, setTotalItems] = useState(0);
     const {dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor}
-        = useOptionColor(isProductVariantOpen);
+        = useOptionColor(true);
     const colorMap = useMemo(() => new Map(dataOptionColor.map(item => [item.label, item.code])), [dataOptionColor]);
 
     useEffect(() => {
@@ -154,11 +154,11 @@ const CreatePromotion = (props: IProps) => {
 
     const productColumns = [
         {
-            title: '', dataIndex: 'imageUrl', key: 'imageUrl', align: 'center', width: 70,
+            title: '', dataIndex: 'imageUrl', key: 'imageUrl', align: 'center', width: 120,
             render: (value, record) => {
                 return (
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <Image width={35} height={35}
+                        <Image width={53} height={53}
                                src={value ? value : "/no-img.png"}
                                fallback="/no-img.png"
                         />
@@ -167,7 +167,7 @@ const CreatePromotion = (props: IProps) => {
             }
         },
 
-        {title: 'Mã sản phẩm', dataIndex: 'productCode', key: 'productCode'},
+        {title: 'Mã sản phẩm', dataIndex: 'productCode', key: 'productCode',width: 200},
         {title: 'Tên sản phẩm', dataIndex: 'productName', key: 'productName'},
         {
             title: 'Giới tính', dataIndex: 'genderProduct', key: 'genderProduct',
@@ -377,7 +377,7 @@ const CreatePromotion = (props: IProps) => {
                                         <Select style={{width: '30%'}} placeholder="Chọn kiểu" suffixIcon={null}>
                                             {Object.keys(DISCOUNT_TYPE).map((key) => (
                                                 <Option key={key} value={key}>
-                                                    {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE]}
+                                                    {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE].description}
                                                 </Option>
                                             ))}
                                         </Select>

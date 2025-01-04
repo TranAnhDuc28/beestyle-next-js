@@ -45,6 +45,12 @@ const OrderedProductDetails: React.FC<IProps> = (props) => {
         setDataCart(orderItems);
     }, [orderItems]);
 
+    /**
+     * sự kiện thay đổi số lượng qua input
+     * @param orderItemId
+     * @param productVariantId
+     * @param value
+     */
     const onChangeQuantity = (orderItemId: number, productVariantId: number, value: number | null) => {
         const newValue = Number(value);
         if (newValue && !isNaN(newValue) && newValue > 0) {
@@ -56,6 +62,13 @@ const OrderedProductDetails: React.FC<IProps> = (props) => {
         }
     };
 
+    /**
+     * sự kiện onblur khi blur ra ngoài input sẽ lưu số lương
+     * @param e
+     * @param orderItemId
+     * @param productVariantId
+     * @param productId
+     */
     const onBlurQuantity = async (e: React.FocusEvent<HTMLInputElement>, orderItemId: number, productVariantId: number, productId: number) => {
         let newValue = Number(e.target.value);
 
@@ -68,8 +81,8 @@ const OrderedProductDetails: React.FC<IProps> = (props) => {
         }
         // console.log("new quantity value: ", newValue)
 
+        // lấy ra số lượng trước đó của sản phẩm thay đổi
         const oldValue = initialQuantities.get(orderItemId) || 1;
-        // console.log('old quantity value', oldValue)
 
         if (newValue !== oldValue) {
             // Tính toán số lượng thay đổi
@@ -145,6 +158,10 @@ const OrderedProductDetails: React.FC<IProps> = (props) => {
         }
     };
 
+    /**
+     * nhấn enter với input để lưu số lượng
+     * @param orderItemId
+     */
     const handlePressEnter = (orderItemId: number) => {
         // nhấn enter sẽ blur ra ngoài input kích hoạt sự kiện blur và update số lượng
         const input = inputRefs.current.get(orderItemId);

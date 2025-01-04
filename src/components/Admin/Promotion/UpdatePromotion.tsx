@@ -12,7 +12,7 @@ import {
     Table,
     Tag,
     Image,
-    Space, GetProps, Pagination, Breadcrumb, Button, Tooltip, Card, Typography
+    Space, GetProps, Pagination, Breadcrumb, Button, Tooltip, Card, Typography, Avatar
 } from "antd";
 import Search from "antd/es/input/Search";
 import React, {memo, useEffect, useMemo, useState} from "react";
@@ -70,7 +70,7 @@ const UpdatePromotion = (props: IProps) => {
     const [selectedProducts, setSelectedProducts] = useState<React.Key[]>([]);
     const [selectedDetailProducts, setSelectedDetailProducts] = useState<React.Key[]>([]);
     const {dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor}
-        = useOptionColor(isProductVariantOpen);
+        = useOptionColor(true);
     const colorMap = useMemo(() => new Map(dataOptionColor.map(item => [item.label, item.code])), [dataOptionColor]);
 
 
@@ -214,7 +214,7 @@ const UpdatePromotion = (props: IProps) => {
             render: (value, record) => {
                 return (
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <Image width={35} height={35}
+                        <Image width={53} height={53}
                                src={value ? value : "/no-img.png"}
                                fallback="/no-img.png"
                         />
@@ -513,7 +513,7 @@ const UpdatePromotion = (props: IProps) => {
                                             <Select style={{width: '30%'}} placeholder="Chọn kiểu" suffixIcon={null}>
                                                 {Object.keys(DISCOUNT_TYPE).map((key) => (
                                                     <Option key={key} value={key}>
-                                                        {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE]}
+                                                        {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE].description}
                                                     </Option>
                                                 ))}
                                             </Select>

@@ -5,19 +5,21 @@ import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
 import {IVoucher} from "@/types/IVoucher";
 import Draggable, {DraggableData, DraggableEvent} from "react-draggable";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
+import {DISCOUNT_TYPE} from "@/constants/DiscountType";
 
 const {Text, Title} = Typography;
 
 interface IProps {
     isModalOpen: boolean;
     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    onVoucherSelect: (voucherSelected: IVoucher) => void;
+    handleVoucherSelect: (voucherSelected: IVoucher) => void;
 }
 
 const ModalListVoucher: React.FC<IProps> = (props) => {
-    const {isModalOpen, setIsModalOpen, onVoucherSelect} = props;
+    const {isModalOpen, setIsModalOpen, handleVoucherSelect} = props;
     const handleSale = useContext(HandleSale);
 
+    // drag modal
     const draggleRef = useRef<HTMLDivElement>(null);
     const [disabled, setDisabled] = useState(true);
     const [bounds, setBounds] = useState({left: 0, top: 0, bottom: 0, right: 0});
@@ -31,6 +33,32 @@ const ModalListVoucher: React.FC<IProps> = (props) => {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedVouchers = vouchers.slice(startIndex, endIndex);
+
+    const fetchVouchers = async () => {
+        try {
+            setLoading(true);
+            const totalAmount = handleSale?.totalAmountCart ?? 0;
+            const data = await findVouchersByTotalAmount(totalAmount);
+
+            const sortedData = data.sort((a: any, b: any) => {
+                const discountValueA =
+                    a.discountType === DISCOUNT_TYPE.CASH.key
+                        ? Math.min((a.discountValue * totalAmount) / 100, a.maxDiscount)
+                        : Math.min(a.discountValue, a.maxDiscount);
+                const discountValueB =
+                    b.discountType === DISCOUNT_TYPE.PERCENTAGE.key
+                        ? Math.min((b.discountValue * totalAmount) / 100, b.maxDiscount)
+                        : Math.min(b.discountValue, b.maxDiscount);
+                return discountValueB - discountValueA;
+            });
+
+            setVouchers(sortedData);
+        } catch (error) {
+            console.error("Lỗi khi lấy danh sách voucher:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const onStart = (_event: DraggableEvent, uiData: DraggableData) => {
         const {clientWidth, clientHeight} = window.document.documentElement;
@@ -54,32 +82,6 @@ const ModalListVoucher: React.FC<IProps> = (props) => {
         setCurrentPage(page);
     };
 
-    const fetchVouchers = async () => {
-        try {
-            setLoading(true);
-            const totalAmount = handleSale?.orderCreateOrUpdate.totalAmount ?? 0;
-            const data = await findVouchersByTotalAmount(totalAmount);
-
-            const sortedData = data.sort((a: any, b: any) => {
-                const discountValueA =
-                    a.discountType === "PERCENTAGE"
-                        ? Math.min((a.discountValue * totalAmount) / 100, a.maxDiscount)
-                        : Math.min(a.discountValue, a.maxDiscount);
-                const discountValueB =
-                    b.discountType === "PERCENTAGE"
-                        ? Math.min((b.discountValue * totalAmount) / 100, b.maxDiscount)
-                        : Math.min(b.discountValue, b.maxDiscount);
-                return discountValueB - discountValueA;
-            });
-
-            setVouchers(sortedData);
-        } catch (error) {
-            console.error("Lỗi khi lấy danh sách voucher:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
 
     useEffect(() => {
         if (isModalOpen) {
@@ -93,24 +95,9 @@ const ModalListVoucher: React.FC<IProps> = (props) => {
 
     const handleOk = () => {
         if (selectedVoucher) {
-            onVoucherSelect(selectedVoucher);
+            handleVoucherSelect(selectedVoucher);
             handleCloseModal();
         }
-        // if (selectedVoucher) {
-        //     let discountAmount;
-        //
-        //     if (selectedVoucher.discountType === "PERCENTAGE") {
-        //         discountAmount = (totalAmount * selectedVoucher.discountValue) / 100;
-        //         if (discountAmount > selectedVoucher.maxDiscount) {
-        //             discountAmount = selectedVoucher.maxDiscount;
-        //         }
-        //     } else if (selectedVoucher.discountType === "CASH") {
-        //         discountAmount = Math.min(selectedVoucher.discountValue, selectedVoucher.maxDiscount);
-        //     }
-        //
-        //     onVoucherSelect(discountAmount);
-        //     setIsModalOpen(false);
-        // }
     };
 
     const handleCloseModal = () => {
@@ -210,7 +197,7 @@ const ModalListVoucher: React.FC<IProps> = (props) => {
                                             <div style={{textAlign: "left", marginLeft: "auto"}}>
                                                 <Text strong>{item.voucherName}</Text>
                                                 <Title level={5} style={{margin: 0}}>
-                                                    {item.discountType === "PERCENTAGE"
+                                                    {item.discountType === DISCOUNT_TYPE.PERCENTAGE.key
                                                         ? `Giảm ${item.discountValue || 0}% tối đa ${
                                                             item.maxDiscount
                                                                 ? `${item.maxDiscount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ",")
