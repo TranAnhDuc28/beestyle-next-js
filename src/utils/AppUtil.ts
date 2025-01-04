@@ -28,9 +28,9 @@ export const calculateCartTotalQuantity = (dataCart: IOrderItem[]): number => {
  * @param voucher
  * @param totalAmount
  */
-export const calculateInvoiceDiscount = (voucher: IVoucher | undefined, totalAmount: number): number => {
+export const calculateInvoiceDiscount = (voucher: IVoucher | undefined, totalAmount: number | undefined): number => {
     // nếu không áp dụng voucher trả về 0
-    if (!voucher) return 0;
+    if (!voucher || !totalAmount) return 0;
 
     let discountAmount: number = 0;
 
@@ -59,7 +59,7 @@ export const calculateInvoiceDiscount = (voucher: IVoucher | undefined, totalAmo
  * @param shippingAddress
  */
 export const calculateShippingFee = async (totalAmount: number, shippingAddress: IAddress | undefined): Promise<number> => {
-    if (totalAmount > FREE_SHIPPING_THRESHOLD || !shippingAddress) return 0;
+    if (totalAmount === 0 || totalAmount > FREE_SHIPPING_THRESHOLD || !shippingAddress) return 0;
 
     const paramCalculateFee: Record<string, any> = {
         pick_province: shippingAddress?.city,
@@ -90,19 +90,10 @@ export const calculateShippingFee = async (totalAmount: number, shippingAddress:
  * @param discountAmount
  * @param shippingFee
  */
-export const calculateFinalAmount = (totalAmount: number, discountAmount: number, shippingFee: number): number => {
-    const finalTotalAmount = totalAmount - discountAmount + shippingFee;
+export const calculateFinalAmount = (totalAmount: number | undefined, discountAmount: number, shippingFee: number): number => {
+    if (!totalAmount) return 0;
+    const finalTotalAmount = Math.max(totalAmount - discountAmount + shippingFee);
     return finalTotalAmount;
-};
-
-
-/**
- * tính tiền khách cần trả
- * @param finalTotalAmount
- */
-export const calculateAmountDue = (finalTotalAmount: number): number => {
-    const finalAmount = finalTotalAmount;
-    return finalAmount;
 };
 
 

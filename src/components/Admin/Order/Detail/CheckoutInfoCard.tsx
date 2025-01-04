@@ -4,9 +4,7 @@ import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 import {IOrderItem} from "@/types/IOrderItem";
 import {IOrderDetail} from "@/types/IOrder";
 import {
-    calculateCartTotalAmount,
-    calculateCartTotalQuantity,
-    calculateFinalAmount,
+    calculateCartTotalAmount, calculateCartTotalQuantity, calculateFinalAmount,
     calculateInvoiceDiscount, calculateShippingFee
 } from "@/utils/AppUtil";
 import {ORDER_TYPE} from "@/constants/OrderType";
