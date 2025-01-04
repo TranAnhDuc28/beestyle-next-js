@@ -75,6 +75,7 @@ import {
   downloadInvoicePdf,
   previewInvoicePdf,
 } from "@/services/InvoiceService";
+import { getSendThankMail } from "@/services/MailService";
 
 const InvoiceComponent = () => {
   const [invoiceId, setInvoiceId] = useState<number>(44); // ID của hóa đơn
@@ -106,7 +107,7 @@ const InvoiceComponent = () => {
   const handlePreviewAndPrint = async () => {
     try {
       console.log("Đang gửi yêu cầu xem trước PDF...");
-      const base64Pdf = await previewInvoicePdf(44);
+      const base64Pdf = await previewInvoicePdf(invoiceId);
 
       if (base64Pdf) {
         // Kiểm tra Base64 và thêm prefix nếu thiếu
@@ -126,6 +127,15 @@ const InvoiceComponent = () => {
         const pdfBlobUrl = URL.createObjectURL(blob);
         setPdfUrl(pdfBlobUrl); // Lưu URL vào state
 
+        const fileName = `Invoice_${invoiceId || "Unknown"}.pdf`;
+        const pdfFile = new File([blob], fileName, { type: "application/pdf" });
+        const dataMail = {
+          recipient:"locnhph38787@fpt.edu.vn",
+          customerName:"Nguyễn Hữu Lộc",
+          files: pdfFile}
+          console.log(dataMail);
+          const mail = await getSendThankMail(dataMail);
+          console.log('Mail sent successfully: ',mail);
         // Tự động in từ iframe
         const iframe = document.getElementById(
           "pdf-iframe"

@@ -1,6 +1,6 @@
 "use client";
 import { DatePicker, Form, Input, Modal, Select } from "antd";
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import moment from "moment";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { createStaff } from "@/services/StaffService";
@@ -19,6 +19,7 @@ const AddStaff = (props: IProps) => {
   const { showNotification } = useAppNotifications();
   const { validatePhoneNumber } = usePhoneValidation();
   const {validateEmail} = useEmailValidation();
+  const [loading, setLoading] = useState(false); // Thêm trạng thái loading
   const [form] = Form.useForm();
 
   const handleCancelModal = () => {
@@ -28,6 +29,7 @@ const AddStaff = (props: IProps) => {
 
   const handleSubmit = async (value: IStaff) => {
     console.log(value);
+    setLoading(true)
 
     try {
       const result = await createStaff(value);
@@ -51,6 +53,9 @@ const AddStaff = (props: IProps) => {
         });
       }
     }
+    finally{
+      setLoading(false)
+    }
   };
   return (
     <>
@@ -62,7 +67,7 @@ const AddStaff = (props: IProps) => {
         style={{ top: 20 }}
         open={isCreateModalOpen}
         onCancel={() => handleCancelModal()}
-        okButtonProps={{ style: { background: "#00b96b" } }}
+        okButtonProps={{ style: { background: "#00b96b" },loading }}
       >
         <Form
           form={form}
