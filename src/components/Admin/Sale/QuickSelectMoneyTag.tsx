@@ -18,7 +18,7 @@ const QuickSelectMoneyTag: React.FC<IProps> = (props) => {
 
     const handleChangeQuickSelectMoney = (tag: number, checked: boolean) => {
         const valueSelectedTag = checked ? tag : tagMoneyOptions.find((t) => t === tag);
-        console.log('money quick select: ', valueSelectedTag);
+        // console.log('money quick select: ', valueSelectedTag);
         setSelectedTag(valueSelectedTag ?? 0);
         setPaymentInfo((prevValue: PaymentInfo) => ({
             ...prevValue,

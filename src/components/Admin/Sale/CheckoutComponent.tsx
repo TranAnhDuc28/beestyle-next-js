@@ -6,7 +6,7 @@ import {
     Col,
     Divider,
     Drawer,
-    Flex, Input, InputNumber, Modal, Popover, QRCode, Radio, RadioChangeEvent, Row, Select, Tag,
+    Flex, Input, InputNumber, Modal, Popover, QRCode, Radio, RadioChangeEvent, Row, Tag,
     Typography
 } from "antd";
 import {CloseIcon} from "next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon";
@@ -24,14 +24,18 @@ import useAddress from "@/components/Admin/Address/hook/useAddress";
 import ModalListVoucher from "./ModalListVoucher";
 import {IVoucher} from "@/types/IVoucher";
 import {ORDER_TYPE} from "@/constants/OrderType";
+import {ORDER_STATUS} from "@/constants/OrderStatus";
+import {calculateFinalAmount, calculateInvoiceDiscount, calculateShippingFee} from "@/utils/AppUtil";
+import {DISCOUNT_TYPE} from "@/constants/DiscountType";
 
 const {Title, Text} = Typography;
 const {TextArea} = Input;
 
 export interface PaymentInfo {
-    discount: number; // giảm giá của voucher
-    amountDue: number; // tiền khách cần trả
-    amountPaid: number; // tiền khách trả
+    discountAmount: number; // giảm giá của voucher
+    shippingFee: number // phí ship với bán giao hàng
+    finalTotalAmount: number; // tiền khách cần trả cuối cùng
+    amountPaid: number; // tiền khách thanh tóán
     change: number; // tiền dư
 }
 
@@ -54,34 +58,41 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
     const districtsData = handleGetDistricts(selectedProvinceCode);
     const wardsData = handleGetWards(selectedDistrictCode);
 
-    const [discount, setDiscount] = useState<string[]>();
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalQROpen, setIsModalQROpen] = useState(false);
     const [selectedTag, setSelectedTag] = React.useState<number>(0);
     const [deliverySale, setDeliverySale] = React.useState<boolean>(false);
     const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>(
-        {discount: 0, amountDue: 0, amountPaid: 0, change: 0});
-    const [discountAmount, setDiscountAmount] = useState<number>(0);
-    const [selectedVoucher, setSelectedVoucher] = useState<IVoucher | null>(null);
+        {
+            discountAmount: 0,
+            shippingFee: 0,
+            finalTotalAmount: 0,
+            amountPaid: 0,
+            change: 0
+        });
+    const [selectedVoucher, setSelectedVoucher] = useState<IVoucher | undefined>(undefined);
 
     // console.log(JSON.stringify(paymentInfo, null, 2));
 
+    // show QR thanh toán với chuyển khoản
     const showModalQR = () => setIsModalQROpen(true);
     const handleModalQRCancel = () => setIsModalQROpen(false);
 
-    const showModal = () => {
-        if (!selectedVoucher) {
-            setSelectedVoucher(null);
-        }
+    // hiển thị modal list voucher
+    const showModalListVoucher = () => {
         setIsModalOpen(true);
     };
 
+    // xác nhận thanh toán, hoàn thành hóa đơn
     const handleOk = () => {
         const orderCreateOrUpdate: IOrderCreateOrUpdate = {
             ...handleSale?.orderCreateOrUpdate,
-            orderStatus: "PAID"
+            shippingFee: paymentInfo.shippingFee,
+            totalAmount: paymentInfo.finalTotalAmount,
+            orderStatus: ORDER_STATUS.PAID.key
         }
+
         console.log(JSON.stringify(orderCreateOrUpdate, null, 2));
 
         setIsModalOpen(false);
@@ -137,6 +148,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
         });
     }
 
+    // xử lý khi nhập tiền khách trả
     const handleInputAmountPaidChange = useCallback(debounce((value: number | null) => {
         setPaymentInfo(prev => ({
             ...prev,
@@ -144,7 +156,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
         }));
     }, 1000), []);
 
-    // note in OrderCreateOrUpdate
+    // xử lý giá trị ghi chú đơn hàng
     const handleChangeTextAreaNote = useCallback(debounce((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         handleSale?.setOrderCreateOrUpdate((prevValue) => {
             return {
@@ -154,67 +166,135 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
         });
     }, 1500), []);
 
-    // const onChange: CheckboxProps['onChange'] = (e) => {
-    //     console.log(`checked = ${e.target.checked}`);
-    // };
-
-    // const onChangeSwitch = (checked: boolean) => {
-    //     console.log(`switch to ${checked}`);
-    // };
-
+    // xử lý khi chọn tỉnh/TP
     const onChangeSelectedProvince = useCallback((provinceCode: string) => {
         setSelectedProvinceCode(provinceCode);
         setSelectedDistrictCode(null);
         setSelectedWardsCode(null);
     }, []);
 
+    // xử lý khi chọn quận/huyện
     const onChangeSelectedDistrict = useCallback((districtCode: string) => {
         setSelectedDistrictCode(districtCode);
         setSelectedWardsCode(null);
     }, []);
 
+    // xử lý khi chọn xã/phường
     const onChangeSelectedWard = useCallback((wardCode: string) => {
         setSelectedWardsCode(wardCode);
     }, []);
 
-    useEffect(() => {
-        if (handleSale?.orderCreateOrUpdate) {
-            const {totalAmount = 0} = handleSale?.orderCreateOrUpdate;
-            const discount = 0;
+    // xử lý khi chọn voucher
+    const handleVoucherSelect = (voucherSelected: IVoucher) => {
+        setSelectedVoucher(voucherSelected);
 
-            // Kiểm tra tổng tiền để áp dụng phí vận chuyển
-            let shippingFee = deliverySale && totalAmount < 500000 ? 30000 : 0;
+        // giá trị giảm giá cho hóa đơn
+        const discountAmount = calculateInvoiceDiscount(voucherSelected, handleSale?.totalAmountCart);
 
-            // Khách cần trả và đảm bảo không có số âm
-            let amountDue = Math.max(0, totalAmount - discount + shippingFee);
+        // set id voucher vào hóa đơn thanh toán
+        handleSale?.setOrderCreateOrUpdate((prevValue) => {
+            return {
+                ...prevValue,
+                voucherId: voucherSelected.id
+            };
+        });
 
-            setPaymentInfo((prevValue: PaymentInfo) => {
-                // Tiền khách đã trả (hoặc được gán bằng số tiền cần thanh toán nếu chưa trả gì)
-                const amountPaid = prevValue.amountPaid === 0 || prevValue.amountDue !== amountDue
-                    ? amountDue
-                    : paymentInfo.amountPaid;
+        // set và hiển thị tiền giảm giá voucher
+        setPaymentInfo(prev => ({
+            ...prev,
+            discountAmount: discountAmount,
+        }));
 
-                // Tính tiền dư
-                const change = Math.max(0, amountPaid - amountDue);
+        console.log("Giá trị giảm và id voucher là: ", discountAmount, voucherSelected.id);
+    };
 
-                return {
-                    ...prevValue,
-                    amountPaid: amountPaid,
-                    amountDue: amountDue,
-                    change: change
-                };
-            });
+    // xử lý khi hủy chọn voucher
+    const handleClearTagVoucherSelected = useCallback(() => {
+        // reset voucher được chọn về giá trị null
+        setSelectedVoucher(undefined);
 
-            handleSale?.setOrderCreateOrUpdate((prevValue) => {
-                return {
-                    ...prevValue,
-                    shippingFee: shippingFee
-                };
-            });
+        // reset giá trị giảm giá về 0
+        setPaymentInfo(prev => ({
+            ...prev,
+            discountAmount: 0,
+        }));
+
+        // reset id voucher trong hóa đơn
+        handleSale?.setOrderCreateOrUpdate((prevValue) => {
+            return {
+                ...prevValue,
+                voucherId: undefined
+            };
+        });
+    }, []);
+
+
+    // tính toán hiển thị thông tin thanh toán
+    const displayInfoCheckout = async () => {
+        try {
+            if (handleSale?.totalAmountCart) {
+                // tính tiền giảm giá cho hóa đơn dựa trên tổng tiền hàng
+                const discountAmount = calculateInvoiceDiscount(selectedVoucher, handleSale.totalAmountCart);
+
+                // Tính phí vận chuyển
+                const shippingFee = deliverySale
+                    ? await calculateShippingFee(handleSale.totalAmountCart, handleSale?.orderCreateOrUpdate.shippingAddress)
+                    : 0;
+
+                // tính tổng tiền cuối cùng cần thanh toán
+                const finalTotalAmount = calculateFinalAmount(handleSale.totalAmountCart, discountAmount, shippingFee);
+
+                // tính tiền dư
+                const change = paymentInfo.amountPaid - finalTotalAmount;
+
+                // đưa thông tin vào state
+                setPaymentInfo((prevValue) => {
+                    return {
+                       ...prevValue,
+                        shippingFee: shippingFee,
+                        discountAmount: discountAmount,
+                        finalTotalAmount: finalTotalAmount,
+                        amountPaid: finalTotalAmount,
+                        change: change
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Error calculating checkout information:", error);
         }
-    }, [paymentInfo.amountPaid, handleSale?.orderCreateOrUpdate?.totalAmount, deliverySale]);
+    }
 
-    // UI
+    useEffect(() => {
+        if (handleSale?.totalAmountCart) {
+            displayInfoCheckout();
+        }
+    }, [handleSale?.totalAmountCart]);
+
+    // tính lại tổng tiền thanh toán khi giảm giá thay đổi
+    useEffect(() => {
+        const finalTotalAmount = calculateFinalAmount(handleSale?.totalAmountCart, paymentInfo.discountAmount, paymentInfo.shippingFee);
+
+        setPaymentInfo((prevValue) => {
+            return {
+                ...prevValue,
+                finalTotalAmount: finalTotalAmount
+            }
+        });
+    }, [paymentInfo.discountAmount]);
+
+    // tính tiền thừa trả khách
+    useEffect(() => {
+        const change = paymentInfo.amountPaid - paymentInfo.finalTotalAmount;
+
+        setPaymentInfo((prevValue) => {
+            return {
+                ...prevValue,
+                change: change
+            }
+        });
+    }, [paymentInfo.amountPaid, paymentInfo.finalTotalAmount]);
+
+    // title drawer checkout
     const titleDrawer = (
         <div>
             <Title level={4} style={{margin: 0}}>Khách lẻ</Title>
@@ -254,30 +334,6 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
         </Flex>
     );
 
-
-    const calculateDiscountAmount = (voucher: IVoucher) => {
-        let totalAmount = handleSale?.orderCreateOrUpdate.totalAmount ?? 0;
-        let discountAmount;
-
-        if (voucher.discountType === "PERCENTAGE") {
-            discountAmount = (totalAmount * voucher.discountValue) / 100;
-            if (discountAmount > voucher.maxDiscount) {
-                discountAmount = voucher.maxDiscount;
-            }
-        } else if (voucher.discountType === "CASH") {
-            discountAmount = Math.min(voucher.discountValue, voucher.maxDiscount);
-        }
-
-        return discountAmount;
-    };
-
-    const handleVoucherSelect = (voucherSelected: IVoucher) => {
-        const discountAmount = calculateDiscountAmount(voucherSelected) ?? 0;
-        setDiscountAmount(discountAmount);
-        setSelectedVoucher(voucherSelected);
-        console.log("Giá trị giảm là: ", discountAmount);
-    };
-
     return (
         <>
             <Drawer
@@ -296,7 +352,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
             >
 
                 <Flex justify="space-between" align="center" style={{width: "100%"}} wrap gap={10}>
-                    <Button onClick={showModal} type="primary" size="large">
+                    <Button onClick={showModalListVoucher} type="primary" size="large">
                         Chọn Voucher
                     </Button>
 
@@ -314,9 +370,9 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                                         <br/>
                                         <Text>
                                             Áp dụng cho đơn hàng từ {selectedVoucher.minOrderValue}đ,
-                                            giảm tối đa {selectedVoucher.discountType === "PERCENTAGE" ?
-                                                        `${selectedVoucher.maxDiscount}đ` :
-                                                        `${selectedVoucher.discountValue}đ`}
+                                            giảm tối đa {selectedVoucher.discountType === DISCOUNT_TYPE.PERCENTAGE.key ?
+                                            `${selectedVoucher.maxDiscount}đ` :
+                                            `${selectedVoucher.discountValue}đ`}
                                         </Text>
                                     </div>
                                 }
@@ -327,7 +383,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                                     closeIcon
                                     style={{display: "flex", alignItems: "center", padding: 5, fontSize: 16}}
                                     color="processing"
-                                    onClose={() => setSelectedVoucher(null)}
+                                    onClose={handleClearTagVoucherSelected}
                                 >
                                     <BiSolidCoupon style={{display: "inline", marginInlineEnd: 5}}/>
                                     <Text style={{fontSize: 16}}>
@@ -353,7 +409,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                             </Text>
                         </Flex>
                         <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
-                            {`${handleSale?.orderCreateOrUpdate.totalAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                            {`${handleSale?.totalAmountCart}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                         </Text>
                     </Flex>
 
@@ -361,7 +417,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                     <Flex justify="space-between" align="center" style={{width: "100%", padding: "4px 0px"}} wrap>
                         <Text style={{fontSize: 16}}>Giảm giá</Text>
                         <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
-                            {`0`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                            {`${paymentInfo.discountAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                         </Text>
                     </Flex>
 
@@ -374,7 +430,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                                       wrap>
                                     <Text style={{fontSize: 16}}>Phí vận chuyển</Text>
                                     <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
-                                        {`${handleSale?.orderCreateOrUpdate.shippingFee}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                        {`${paymentInfo.shippingFee}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                                     </Text>
                                 </Flex>
                             </>
@@ -385,7 +441,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                     <Flex justify="space-between" align="center" style={{width: "100%", padding: "4px 0px"}} wrap>
                         <Text style={{fontSize: 16}} strong>Tổng thanh toán</Text>
                         <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
-                            {`${paymentInfo.amountDue}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                            {`${paymentInfo.finalTotalAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                         </Text>
                     </Flex>
 
@@ -407,14 +463,14 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                 <Divider style={{margin: "15px 0px"}}/>
 
                 {
-                    handleSale?.dataCart && handleSale?.dataCart.length > 0 &&
-                    (handleSale?.orderCreateOrUpdate?.totalAmount ?? 0) > 0 &&
+                    handleSale?.dataCart && handleSale.dataCart.length > 0 &&
+                    (handleSale?.totalAmountCart ?? 0) > 0 &&
                     (
                         <Flex style={{width: "100%"}} wrap>
                             {/* phương thức thanh toán */}
                             <Flex justify="flex-start" align="center" style={{width: "100%", marginBottom: 10}}
                                   wrap>
-                                <Radio.Group defaultValue="CASH_ON_DELIVERY" onChange={handlePaymentMethod}>
+                                <Radio.Group defaultValue={PAYMENT_METHOD.CASH.key} onChange={handlePaymentMethod}>
                                     <Row gutter={[16, 16]}>
                                         {Object.keys(PAYMENT_METHOD).map((key) => (
                                             <Col key={key}>
@@ -429,7 +485,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
 
                             {/* chọn nhanh tiền khách trả */}
                             <QuickSelectMoney
-                                amountDue={paymentInfo.amountDue}
+                                amountDue={paymentInfo.finalTotalAmount}
                                 step={50000}
                                 selectedTag={selectedTag}
                                 setSelectedTag={setSelectedTag}
@@ -473,12 +529,6 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                                                 <Title level={5} style={{marginBottom: 0}}>
                                                     Thông tin giao hàng
                                                 </Title>
-                                                {/*<Flex justify="flex-start" align="center" wrap>*/}
-                                                {/*    <Switch onChange={onChangeSwitch} style={{marginInlineEnd: 10}}/>*/}
-                                                {/*    <Text style={{fontSize: 16, marginInlineEnd: 10}}>*/}
-                                                {/*        Thanh toán khi nhận hàng*/}
-                                                {/*    </Text>*/}
-                                                {/*</Flex>*/}
                                             </Flex>
 
                                             <div style={{width: "100%"}}>
@@ -530,8 +580,8 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                                 <Row style={{width: "100%"}} wrap>
                                     {
                                         !deliverySale &&
-                                        (handleSale.orderCreateOrUpdate.paymentMethod === "BANK_TRANSFER" ||
-                                            handleSale.orderCreateOrUpdate.paymentMethod === "COD_AND_BANK_TRANSFER") &&
+                                        (handleSale.orderCreateOrUpdate.paymentMethod === PAYMENT_METHOD.BANK_TRANSFER.key ||
+                                            handleSale.orderCreateOrUpdate.paymentMethod === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key) &&
                                         (
                                             <Col flex="none">
                                                 <QRCode type="svg" value="https://ant.design/" size={120}
@@ -560,7 +610,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
             <ModalListVoucher
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
-                onVoucherSelect={handleVoucherSelect}
+                handleVoucherSelect={handleVoucherSelect}
             />
 
             {/* modal quét QR thanh toán */}
