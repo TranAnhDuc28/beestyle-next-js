@@ -1,7 +1,6 @@
-import React, {memo, useState} from 'react';
+import React, {memo} from 'react';
 import {Col, Row, Tag} from 'antd';
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
-import {IOrderItem} from "@/types/IOrderItem";
 import {PaymentInfo} from "@/components/Admin/Sale/CheckoutComponent";
 
 interface IProps {
@@ -12,7 +11,7 @@ interface IProps {
     setPaymentInfo: React.Dispatch<React.SetStateAction<PaymentInfo>>;
 }
 
-const QuickSelectMoney: React.FC<IProps> = (props) => {
+const QuickSelectMoneyTag: React.FC<IProps> = (props) => {
     const {amountDue, step, selectedTag, setSelectedTag, setPaymentInfo} = props;
 
     const tagMoneyOptions = Array.from({ length: 5 }, (_, index) => amountDue + index * step);
@@ -44,4 +43,4 @@ const QuickSelectMoney: React.FC<IProps> = (props) => {
         </Row>
     );
 };
-export default memo(QuickSelectMoney);
+export default memo(QuickSelectMoneyTag);

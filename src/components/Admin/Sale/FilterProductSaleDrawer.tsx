@@ -11,7 +11,7 @@ import {
     Row,
     Typography
 } from "antd";
-import React, {memo, useCallback, useEffect, useState} from "react";
+import React, {memo, useState} from "react";
 import {GENDER_PRODUCT} from "@/constants/GenderProduct";
 import useCategory from "@/components/Admin/Category/hooks/useCategory";
 import useBrand from "@/components/Admin/Brand/hooks/useBrand";
@@ -28,9 +28,10 @@ interface IProps {
     onClose: () => void;
     filterParam: ParamFilterProduct;
     setFilterParam: (value: ParamFilterProduct) => void;
+    getContainer?: any;
 }
 
-const FilterProductSale: React.FC<IProps> = (props) => {
+const FilterProductSaleDrawer: React.FC<IProps> = (props) => {
     const {open, onClose, filterParam, setFilterParam} = props;
     const [tempFilterParam, setTempFilterParam] = useState<ParamFilterProduct>(filterParam);
 
@@ -153,6 +154,7 @@ const FilterProductSale: React.FC<IProps> = (props) => {
                 styles={{
                     header: {padding: '10px 24px'}
                 }}
+
             >
                 {/* Khoảng giá*/}
                 <Title level={5} style={{marginBottom: 10}}>Khoảng giá</Title>
@@ -249,4 +251,4 @@ const FilterProductSale: React.FC<IProps> = (props) => {
         </>
     );
 }
-export default memo(FilterProductSale);
+export default memo(FilterProductSaleDrawer);

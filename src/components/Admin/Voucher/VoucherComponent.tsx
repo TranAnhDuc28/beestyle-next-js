@@ -1,6 +1,5 @@
 "use client";
-
-import { Flex, Layout, notification, TableColumnsType, Tooltip, Modal, Tag } from "antd";
+import { Flex, Layout, TableColumnsType, Tooltip, Modal, Tag } from "antd";
 import {
     EditTwoTone,
     DeleteTwoTone,
@@ -16,15 +15,11 @@ import { useEffect, useState } from "react";
 import CreateVoucher from "./CreateVoucher";
 import UpdateVoucher from "./UpdateVoucher";
 import HeaderVoucher from "@/components/Admin/Voucher/HeaderVoucher";
-import { DatePicker, Typography } from "antd";
+import { Typography } from "antd";
 import { deleteVoucher } from '@/services/VoucherService';
 import { useSearchParams } from "next/navigation";
 import useAppNotifications from "../../../hooks/useAppNotifications";
-import {STATUS} from "@/constants/Status";
-import {DISCOUNTTYPE} from "@/constants/DiscountType";
 import VoucherFilter from "./VoucherFilter";
-import CreateMaterial from "../Material/CreateMaterial";
-import UpdateMaterial from "../Material/UpdateMaterial";
 import {DISCOUNT_TYPE} from "../../../constants/DiscountType";
 import dayjs from "dayjs";
 import {DISCOUNT_STATUS} from "../../../constants/DiscountStastus";
@@ -33,7 +28,6 @@ const { Content } = Layout;
 const { Title } = Typography;
 
 const VoucherComponent = () => {
-    const [api, contextHolder] = notification.useNotification();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
     const [dataUpdate, setDataUpdate] = useState<IVoucher | null>(null);
@@ -69,7 +63,7 @@ const VoucherComponent = () => {
             if (result.code === 200) {
                 showNotification("success",{message: 'Xóa thành công!', description: result.message,});
 
-                mutate(); // Gọi lại dữ liệu sau khi xóa
+                 await mutate(); // Gọi lại dữ liệu sau khi xóa
             } else {
                 showNotification("error",{message: 'Xóa không thành công!',
                     description: result.message || 'Không có thông tin thêm.',});
@@ -87,8 +81,8 @@ const VoucherComponent = () => {
             okText: 'Xóa',
             okType: 'danger',
             cancelText: 'Hủy',
-            onOk: () => {
-                handleDeleteVoucher(record.id);
+            onOk: async () => {
+                await handleDeleteVoucher(record.id);
             }
         });
     };
@@ -128,7 +122,7 @@ const VoucherComponent = () => {
                 };
 
                 return (
-                    <Tooltip title={DISCOUNT_TYPE[value]}>
+                    <Tooltip title={DISCOUNT_TYPE[value].description}>
                         {icons[value] || <QuestionOutlined style={{ color: '#ff4d4f',fontSize: '18px' }} />}
                     </Tooltip>
                 );
@@ -153,8 +147,7 @@ const VoucherComponent = () => {
         {
             title: 'Trạng thái', dataIndex: 'status', key: 'status',
             render(value: keyof typeof DISCOUNT_STATUS, record, index) {
-                let color: string;
-                console.log(value)
+                let color: string = 'default';
                 if (value === 'UPCOMING') {
                     color = 'yellow';
                 } else if (value === 'ACTIVE') {

@@ -59,5 +59,15 @@ body {
     font-weight: bold;
 }
 
+/* hover underline text*/
+.underline-text {
+    transition: text-decoration 0.3s ease;
+}
+
+.underline-text:hover {
+    cursor: pointer;
+    text-decoration: underline !important;
+}
+
 
 

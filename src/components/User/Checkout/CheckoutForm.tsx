@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Form, Input, Radio, Row, Col, Alert } from "antd";
+import { Form, Input, Radio, Row, Col, Alert, FormInstance } from "antd";
 import {
     MailOutlined,
     PhoneOutlined,
@@ -9,14 +9,14 @@ import { TbCreditCardPay } from "react-icons/tb";
 import styles from "./css/checkout.module.css";
 import useAddress from "@/components/Admin/Address/hook/useAddress";
 import TextArea from "antd/es/input/TextArea";
-import { calculateShippingFee } from "@/services/GHTKService";
+import { ghtkCalculateShippingFee } from "@/services/GhtkCalculateShippingFee";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import { AiOutlineHome } from "react-icons/ai";
 import { RiStore2Line } from "react-icons/ri";
 
 interface IProps {
-    addressForm: any;
-    userForm: any;
+    addressForm: FormInstance;
+    userForm: FormInstance;
     onShippingCostChange: (cost: number) => void;
     pickUpAddress?: { province: string; district: string };
     defaultWeight?: number;
@@ -24,15 +24,17 @@ interface IProps {
     selectedPayment: string;
     onPaymentChange: (value: string) => void;
     selectedProvinceCode: string | null;
-    onProvinceChange: (code: string) => void;
+    onProvinceChange: (code: string, name: string | null) => void; // Updated
     selectedDistrictCode: string | null;
-    onDistrictChange: (code: string | null) => void;
+    onDistrictChange: (code: string | null, name: string | null) => void; // Updated
     selectedWardCode: string | null;
-    onWardChange: (code: string | null) => void;
+    onWardChange: (code: string | null, name: string | null) => void; // Updated
     selectedProvinceName: string | null;
     onProvinceNameChange: (name: string | null) => void;
     selectedDistrictName: string | null;
     onDistrictNameChange: (name: string | null) => void;
+    selectedWardName: string | null;
+    onWardNameChange: (name: string | null) => void;
     detailAddress: string | null;
     onDetailAddressChange: (address: string | null) => void;
 }
@@ -57,6 +59,8 @@ const CheckoutForm = (props: IProps) => {
         onProvinceNameChange,
         selectedDistrictName,
         onDistrictNameChange,
+        selectedWardName,
+        onWardNameChange,
         detailAddress,
         onDetailAddressChange,
     } = props;
@@ -69,61 +73,67 @@ const CheckoutForm = (props: IProps) => {
     const handlePaymentChange = (e: any) => {
         const value = e.target.value;
         onPaymentChange(value);
-        if (value === 'COD') {
+        if (value === 'CASH_AND_BANK_TRANSFER' || value === "BANK_TRANSFER") {
             addressForm.setFieldsValue({ district: undefined, ward: undefined });
         }
     };
 
     const onChangeSelectedProvince = useCallback(
-        (provinceCode: string) => {
+        (provinceCode: string, provinceName: string) => {
             const province = provincesData.dataOptionProvinces.find(
                 (prev) => prev.key === provinceCode
             );
-            onProvinceChange(provinceCode);
+            onProvinceChange(provinceCode, provinceName);
+            onProvinceNameChange(provinceName);
             addressForm.setFieldsValue({
                 province: provinceCode,
                 district: undefined,
                 ward: undefined,
             });
 
-            onProvinceNameChange(province?.label);
-            onDistrictChange(null);
-            onWardChange(null);
+            onDistrictChange(null, null);
+            onWardChange(null, null);
             onDistrictNameChange(null);
+            onWardNameChange(null);
         },
-        [addressForm, provincesData.dataOptionProvinces, onProvinceChange, onProvinceNameChange, onDistrictChange, onWardChange, onDistrictNameChange]
+        [
+            addressForm, provincesData.dataOptionProvinces,
+            onProvinceChange, onProvinceNameChange, onDistrictChange,
+            onWardChange, onDistrictNameChange, onWardNameChange
+        ]
     );
 
-    const onChangeSelectedDistrict = useCallback(
-        async (districtCode: string) => {
-            const district = districtsData.dataOptionDistricts.find(
-                (prev) => prev.key === districtCode
-            );
-            onDistrictChange(districtCode);
-            addressForm.setFieldsValue({
-                district: districtCode,
-                ward: undefined,
-            });
-            onDistrictNameChange(district?.label);
+    const onChangeSelectedDistrict = useCallback(async (districtCode: string, districtName: string) => {
+        const district = districtsData.dataOptionDistricts.find(
+            (prev) => prev.key === districtCode
+        );
+        onDistrictChange(districtCode, districtName);
+        addressForm.setFieldsValue({
+            district: districtCode,
+            ward: undefined,
+        });
+        onDistrictNameChange(districtName);
+        onWardChange(null, null);
+        onWardNameChange(null);
 
-            const params = {
-                pick_province: pickUpAddress?.province || "Hà Nội", // Lấy từ props hoặc giá trị mặc định
-                pick_district: pickUpAddress?.district || "Huyện Hoài Đức", // Lấy từ props hoặc giá trị mặc định
-                province: selectedProvinceName,
-                district: district?.label,
-                address: detailAddress,
-                weight: defaultWeight, // Lấy từ props hoặc giá trị mặc định
-                value: defaultValue, // Lấy từ props hoặc giá trị mặc định
-                transport: "road", // Có thể cho phép người dùng chọn sau
-            };
+        const params = {
+            pick_province: pickUpAddress?.province || "Hà Nội", // Lấy từ props hoặc giá trị mặc định
+            pick_district: pickUpAddress?.district || "Huyện Hoài Đức", // Lấy từ props hoặc giá trị mặc định
+            province: selectedProvinceName,
+            district: district?.label,
+            address: detailAddress,
+            weight: defaultWeight, // Lấy từ props hoặc giá trị mặc định
+            value: defaultValue, // Lấy từ props hoặc giá trị mặc định
+            transport: "road", // Có thể cho phép người dùng chọn sau
+        };
 
-            try {
-                const fee = await calculateShippingFee(params);
-                onShippingCostChange(fee.fee);
-            } catch (error) {
-                console.error("Lỗi tính phí vận chuyển:", error);
-            }
-        },
+        try {
+            const fee = await ghtkCalculateShippingFee(params);
+            onShippingCostChange(fee.fee.fee);
+        } catch (error) {
+            console.error("Lỗi tính phí vận chuyển:", error);
+        }
+    },
         [
             districtsData.dataOptionDistricts,
             selectedProvinceName,
@@ -134,15 +144,21 @@ const CheckoutForm = (props: IProps) => {
             defaultWeight,
             defaultValue,
             onDistrictChange,
-            onDistrictNameChange
+            onDistrictNameChange,
+            onWardChange,
+            onWardNameChange
         ]
     );
 
     const onChangeSelectedWard = useCallback(
-        (wardCode: string) => {
-            onWardChange(wardCode);
+        (wardCode: string, wardName: string) => {
+            const ward = wardsData.dataOptionWards.find(
+                (prev) => prev.key === wardCode
+            );
+            onWardChange(wardCode, wardName);
+            onWardNameChange(wardName);
         },
-        [onWardChange]
+        [onWardChange, wardsData.dataOptionWards, onWardNameChange]
     );
 
     const handleDetailAddressChange = (value: string) => {
@@ -193,8 +209,8 @@ const CheckoutForm = (props: IProps) => {
                 >
                     <div>
                         <Radio.Button
-                            value="COD"
-                            className={`${styles["delivery-option"]} ${selectedPayment === "COD" ? styles["selected"] : ""
+                            value="CASH_AND_BANK_TRANSFER"
+                            className={`${styles["delivery-option"]} ${selectedPayment === "CASH_AND_BANK_TRANSFER" ? styles["selected"] : ""
                                 }`}
                             style={{ padding: '25px 5px', width: '190px' }}
                         >
@@ -210,8 +226,8 @@ const CheckoutForm = (props: IProps) => {
 
                     <div>
                         <Radio.Button
-                            value="VNPay"
-                            className={`${styles["delivery-option"]} ${selectedPayment === "VNPay" ? styles["selected"] : ""
+                            value="BANK_TRANSFER"
+                            className={`${styles["delivery-option"]} ${selectedPayment === "BANK_TRANSFER" ? styles["selected"] : ""
                                 }`}
                             style={{ padding: '25px 0', width: '190px' }}
                         >
@@ -227,8 +243,8 @@ const CheckoutForm = (props: IProps) => {
 
                     <div>
                         <Radio.Button
-                            value="Store"
-                            className={`${styles["delivery-option"]} ${selectedPayment === "Store" ? styles["selected"] : ""
+                            value="TEST"
+                            className={`${styles["delivery-option"]} ${selectedPayment === "TEST" ? styles["selected"] : ""
                                 }`}
                             style={{ padding: '25px 0', width: '190px' }}
                         >
@@ -244,7 +260,7 @@ const CheckoutForm = (props: IProps) => {
                 </Radio.Group>
             </div>
 
-            {selectedPayment === "COD" || selectedPayment === "VNPay" ? (
+            {selectedPayment === "CASH_AND_BANK_TRANSFER" || selectedPayment === "BANK_TRANSFER" ? (
                 <>
                     <h3 className={styles["heading"] + " my-4"}>Địa chỉ nhận hàng</h3>
                     <Form layout="horizontal" className={styles["form"]} form={addressForm} action="#">
@@ -265,7 +281,7 @@ const CheckoutForm = (props: IProps) => {
                                         placeholder="Tỉnh / Thành phố"
                                         data={provincesData?.dataOptionProvinces}
                                         isLoading={provincesData?.isLoading}
-                                        onChange={onChangeSelectedProvince}
+                                        onChange={(value, option) => onChangeSelectedProvince(value, option?.label || '')} // Updated
                                     />
                                 </Form.Item>
                             </Col>
@@ -280,7 +296,7 @@ const CheckoutForm = (props: IProps) => {
                                         style={{ width: "100%", height: "48px" }}
                                         data={districtsData?.dataOptionDistricts}
                                         isLoading={districtsData?.isLoading}
-                                        onChange={onChangeSelectedDistrict}
+                                        onChange={(value, option) => onChangeSelectedDistrict(value, option?.label || '')} // Updated
                                     />
                                 </Form.Item>
                             </Col>
@@ -295,7 +311,7 @@ const CheckoutForm = (props: IProps) => {
                                         style={{ width: "100%", height: "48px" }}
                                         data={wardsData?.dataOptionWards}
                                         isLoading={wardsData?.isLoading}
-                                        onChange={onChangeSelectedWard}
+                                        onChange={(value, option) => onChangeSelectedWard(value, option?.label || '')} // Updated
                                     />
                                 </Form.Item>
                             </Col>

@@ -95,19 +95,6 @@ const dataSanPham = [
     },
 ];
 
-const CustomYAxisTick = (props: any) => {
-    const { x, y, payload } = props;
-
-    return (
-        <g transform={`translate(${x},${y})`}>
-            <text x={0} y={0} dy={0} textAnchor="end" fill="#666">
-                {payload.value.toLocaleString('vi-VN')}
-                <tspan x={8} dy={0}></tspan>
-            </text>
-        </g>
-    );
-};
-
 //Hoá đơn
 const InvoiceChart = () => (
     <ResponsiveContainer width="100%" height="100%">
@@ -126,12 +113,13 @@ const InvoiceChart = () => (
 //Doanh thu
 const RevenueChart = () => (
     <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={dataDoanhThu}>
+        <BarChart data={dataDoanhThu} layout="horizontal" margin={{ top: 5, right: 0, left: 30, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis
-                tickFormatter={(value) => value}
-                tick={<CustomYAxisTick />}
+                type="number"
+                tickFormatter={(value) => value.toLocaleString()}
+                tick={{ fontSize: 14, width: 500 }}
             />
             <Legend />
             <Bar dataKey="doanhthu" fill="#4096FF" name="Doanh thu" barSize={15} />

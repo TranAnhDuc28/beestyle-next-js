@@ -1,5 +1,22 @@
 export const CART_KEY = 'shopping_cart';
 
+export interface ICartItem {
+    shopping_cart_id: number;
+    product_variant_id: string;
+    product_id: string;
+    product_name: string;
+    sku: string;
+    color: string;
+    size: string;
+    product_quantity: number;
+    quantity: number;
+    sale_price: number;
+    discounted_price: number;
+    total_price: number;
+    description: string;
+    image?: object[];
+}
+
 const getCart = () => {
     if (typeof window !== 'undefined') {
         const cart = localStorage.getItem(CART_KEY);
@@ -12,10 +29,10 @@ const saveCart = (cart: any[]) => {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
 };
 
-export const addToCart = (product: any, quantity: any) => {
+export const addToCart = (product: any, quantity: number) => {
     const cart = getCart();
 
-    const existingIndex = cart.findIndex((item: any) =>
+    const existingIndex = cart.findIndex((item: ICartItem) =>
         item.product_id === product.productId &&
         item.color === product.colorName &&
         item.size === product.sizeName
@@ -79,27 +96,17 @@ export const checkShoppingCartData = async () => {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                throw new Error(`Lỗi HTTP! Trạng thái: ${response.status}`);
             }
 
             const updatedCartDataFromBE = await response.json();
 
-            const updatedCartItems = cartItems.map((item:
-                {
-                    product_variant_id: string;
-                    sale_price: number | bigint;
-                    discounted_price: number | bigint;
-                    product_quantity: number;
-                    product_name: string;
-                    color: string;
-                    size: string;
-                    quantity: number;
-                }) => {
+            const updatedCartItems = cartItems.map((item: ICartItem) => {
                 const matchingItemFromBE = updatedCartDataFromBE.find((beItem: { id: string; }) =>
                     beItem.id === item.product_variant_id
                 );
                 if (matchingItemFromBE) {
-                    const updatedItem: any = { ...item };
+                    const updatedItem: ICartItem = { ...item };
                     if (matchingItemFromBE.salePrice !== item.sale_price) {
                         updatedItem.sale_price = matchingItemFromBE.salePrice;
                     }

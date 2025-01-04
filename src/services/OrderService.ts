@@ -7,6 +7,7 @@ export const URL_API_ORDER = {
     filter: '/admin/order',
     create: '/admin/order/create',
     update: (id: number) => `/admin/order/update/${id}`,
+    updateOrderStatus: (id: number) => `/admin/order/${id}/update-status`
 };
 
 export const getOrders = async (url: string) => {
@@ -21,6 +22,11 @@ export const createOrder = async (data: IOrderCreateOrUpdate) => {
 
 export const updateOrder = async (data: IOrder, id: number) => {
     const response = await httpInstance.post(URL_API_ORDER.update(id), data);
+    return response.data;
+}
+
+export const updateOrderStatus = async (id: number) => {
+    const response = await httpInstance.patch(URL_API_ORDER.updateOrderStatus(id));
     return response.data;
 }
 

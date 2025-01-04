@@ -35,7 +35,7 @@ const ColorPickers = (props: any) => {
     return (
         <div className="mb-4">
             <div className="flex items-center">
-                <span className="font-semibold mb-2">Màu sắc :</span>
+                <span className="font-semibold">Màu sắc :</span>
                 {props.selectedColor ? (
                     <span className="ml-2 font-normal" style={{ color: '#da880d' }}>
                         {selectedColorName}
@@ -59,7 +59,7 @@ const ColorPickers = (props: any) => {
                             key={index.toString()}
                             className={`mr-2 mb-2 rounded-full w-11 h-11 flex items-center justify-center ${isSelected ? 'border-1' : ''}`}
                             style={{
-                                backgroundColor: color.colorCode,
+                                backgroundColor: `${color.colorCode}`,
                                 border: isSelected ? '1px solid gray' : 'none',
                             }}
                             onClick={() => handleColorClick(color.colorCode, color.colorName)}

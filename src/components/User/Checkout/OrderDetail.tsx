@@ -1,4 +1,4 @@
-import { Button, Form } from "antd";
+import { Button, Form, FormInstance } from "antd";
 import React, { useState } from "react";
 import { CART_KEY } from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
@@ -7,10 +7,10 @@ import DiscountCodeModal from "../Discount/DiscountCodeModal";
 
 interface IProps {
     handleSubmit: (payment: any) => Promise<void>;
-    shippingCost: number;
+    shippingFee: number;
     selectedPayment: string;
-    userForm: any;
-    addressForm: any;
+    userForm: FormInstance;
+    addressForm: FormInstance;
     selectedProvinceName: string | null;
     selectedDistrictName: string | null;
     selectedWardCode: string | null;
@@ -20,14 +20,14 @@ interface IProps {
 const OrderDetail = (props: IProps) => {
     const {
         handleSubmit,
-        shippingCost,
+        shippingFee,
         selectedPayment,
-        userForm,
-        addressForm,
-        selectedProvinceName,
-        selectedDistrictName,
-        selectedWardCode,
-        detailAddress,
+        // userForm,
+        // addressForm,
+        // selectedProvinceName,
+        // selectedDistrictName,
+        // selectedWardCode,
+        // detailAddress,
     } = props;
     const { showNotification } = useAppNotifications();
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -38,7 +38,7 @@ const OrderDetail = (props: IProps) => {
     const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
     const productTotal = cartItems.reduce((total: number, item: any) => total + item.total_price, 0);
-    const totalAmount = productTotal >= 500000 ? productTotal : productTotal + shippingCost;
+    const totalAmount = productTotal >= 500000 ? productTotal : productTotal + shippingFee;
     const savings = 0;
 
     const onButtonClick = async () => {
@@ -48,12 +48,11 @@ const OrderDetail = (props: IProps) => {
         }
 
         const data = {
-            productTotal,
+            shippingFee,
             totalAmount,
-            shippingCost
+            selectedPayment
         }
-        console.log("Thông tin đơn hàng:", data);
-        await handleSubmit({ selectedPayment, totalAmount, shippingCost });
+        await handleSubmit({ ...data });
     };
 
     return (
@@ -70,11 +69,11 @@ const OrderDetail = (props: IProps) => {
                     </div>
                     <div className="flex justify-between">
                         <span>Vận chuyển</span>
-                        <span>{shippingCost.toLocaleString()} đ</span>
+                        <span>{shippingFee.toLocaleString()} đ</span>
                     </div>
                     <div className="flex justify-between text-red-500">
                         <span>Giảm giá vận chuyển</span>
-                        <span>{productTotal >= 500000 ? `- ${shippingCost.toLocaleString()} đ` : '0 đ'}</span>
+                        <span>{productTotal >= 500000 ? `- ${shippingFee.toLocaleString()} đ` : '0 đ'}</span>
                     </div>
                     <div className="flex justify-between text-lg font-semibold">
                         <span>Tổng thanh toán</span>

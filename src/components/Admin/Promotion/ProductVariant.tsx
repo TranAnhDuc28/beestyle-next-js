@@ -34,7 +34,7 @@ const ProductVariant: React.FC<IProps> = ({
     const [productDetails, setProductDetails] = useState<IProductVariant[]>([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(5);
+    const [pageSize, setPageSize] = useState(10);
     const [totalItems, setTotalItems] = useState(0);
 
     // Fetch color and size options
@@ -83,8 +83,8 @@ const ProductVariant: React.FC<IProps> = ({
                         colorName: item[6],
                         sizeName: item[7],
                         originalPrice: item[8],
-                        promotionName: item[11],
-                        imageUrl: item[10] || "/no-img.png",
+                        promotionName: item[10],
+
                     }))
                     : [];
                 setProductDetails(productDetails);
@@ -140,9 +140,7 @@ const ProductVariant: React.FC<IProps> = ({
             ),
         },
     ];
-    useEffect(() => {
-        console.log(dataOptionColor);
-    }, [dataOptionColor]);
+
     const rowSelection = {
         selectedRowKeys,
         onChange: (newSelectedRowKeys: number[]) => {
@@ -164,9 +162,16 @@ const ProductVariant: React.FC<IProps> = ({
                     <Pagination
                         current={currentPage}
                         pageSize={pageSize}
-                        total={productDetails.length}
+                        total={totalItems || productDetails.length}
                         onChange={handlePageChange}
+                        showSizeChanger
+                        onShowSizeChange={(current, size) => {
+                            setPageSize(size);
+                            setCurrentPage(1);
+                        }}
+                        pageSizeOptions={["10", "20", "50", "100"]}
                     />
+
                     <div>
                         <Button key="cancel" onClick={handleCloseProductVariantModal}>
                             Hủy
@@ -177,37 +182,31 @@ const ProductVariant: React.FC<IProps> = ({
                     </div>
                 </Flex>
             }
-            // styles={{
-            //     body: {
-            //         maxHeight: 520,
-            //         minHeight: 520,
-            //         overflowY: "auto",
-            //     }
-            // }}
+            styles={{
+                body: {
+                    maxHeight: 520,
+                    minHeight: 520,
+                    overflowY: "auto",
+                }
+            }}
             style={{top: 20}}
         >
             <Row>
                 <Col span={24}>
                     {productDetails.length > 0 ? (
+
                         <Table
                             rowSelection={rowSelection}
                             columns={detailColumns}
-                            dataSource={productDetails.map((variant) => ({
+                            dataSource={paginatedData.map((variant) => ({
                                 ...variant,
                                 key: variant.id,
                             }))}
                             rowKey="id"
-                            pagination={false}
-                            // pagination={{
-                            //     current: currentPage,
-                            //     pageSize: pageSize,
-                            //     total: productDetails.length,
-                            //     onChange: handlePageChange,
-                            //     showSizeChanger: true,
-                            //     pageSizeOptions: ["5","10", "20", "50", "100"],
-                            // }}
+                            pagination={false} // Đã sử dụng Pagination bên ngoài
                             style={{backgroundColor: "#fafafa"}}
                         />
+
                     ) : (
                         <Empty
                             description="Không có dữ liệu chi tiết sản phẩm."

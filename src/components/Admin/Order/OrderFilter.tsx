@@ -16,7 +16,6 @@ import {
 } from "antd";
 import {ORDER_CHANEL} from "@/constants/OrderChanel";
 import {ORDER_STATUS} from "@/constants/OrderStatus";
-import {PAYMENT_METHOD} from "@/constants/PaymentMethod";
 import ExtraShowTotalElementFilter from "@/components/Filter/ExtraShowTotalElementFilter";
 import {ParamFilterOrder} from "@/components/Admin/Order/hooks/useFilterOrder";
 import {MoreOutlined} from "@ant-design/icons";
@@ -123,17 +122,6 @@ const OrderFilter: React.FC<IProps> = (props) => {
                 ...prevValue,
                 page: 1,
                 orderChannel: value ? value : undefined
-            }
-        });
-    };
-
-    const onChangePaymentMethodFilter = (e: RadioChangeEvent) => {
-        const {value} = e.target;
-        setFilterParam((prevValue) => {
-            return {
-                ...prevValue,
-                page: 1,
-                paymentMethod: value ? value : undefined
             }
         });
     };
@@ -258,31 +246,6 @@ const OrderFilter: React.FC<IProps> = (props) => {
                             <Col key={key} span={24} style={{marginBottom: 10}}>
                                 <Radio value={key}>
                                     {ORDER_CHANEL[key as keyof typeof ORDER_CHANEL].description}
-                                </Radio>
-                            </Col>
-                        ))}
-                    </Row>
-                </Radio.Group>
-            ),
-        },
-        {
-            key: "payment_method",
-            label: <Title level={5} style={{marginBottom: 0}}>{collapseFilterPanel.payment_method}</Title>,
-            style: panelStyle,
-            children: (
-                <Radio.Group
-                    onChange={onChangePaymentMethodFilter}
-                    value={filterParam?.paymentMethod}
-                    style={{marginLeft: 10}}
-                >
-                    <Row>
-                        <Col key={"ALL"} span={24} style={{marginBottom: 10}}>
-                            <Radio value={undefined}>Tất cả</Radio>
-                        </Col>
-                        {Object.keys(PAYMENT_METHOD).map((key) => (
-                            <Col key={key} span={24} style={{marginBottom: 10}}>
-                                <Radio value={key}>
-                                    {PAYMENT_METHOD[key as keyof typeof PAYMENT_METHOD]}
                                 </Radio>
                             </Col>
                         ))}

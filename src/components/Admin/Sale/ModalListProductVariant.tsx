@@ -1,8 +1,8 @@
-import React, {memo, useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
+import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {
-    Card,
+    Card, Col,
     Modal,
-    Pagination,
+    Pagination, Row,
     Select,
     SelectProps,
     Space,
@@ -20,7 +20,6 @@ import useFilterProductVariant, {
 import useOptionColor from "@/components/Admin/Color/hooks/useOptionColor";
 import useOptionSize from "@/components/Admin/Size/hooks/useOptionSize";
 import ColorButton from "@/components/Button/ColorButton";
-import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
 import type {DraggableData, DraggableEvent} from 'react-draggable';
 import Draggable from 'react-draggable';
 
@@ -71,11 +70,11 @@ interface IProps {
     product?: IProduct;
     isOpenModalListProductVariant: boolean;
     setOpenModalListProductVariant: (value: boolean) => void;
+    handleAddOrderItemCart: (productVariantSelected: IProductVariant[]) => void;
 }
 
 const ModalListProductVariant: React.FC<IProps> = (props) => {
-    const handleSale = useContext(HandleSale);
-    const {product, isOpenModalListProductVariant, setOpenModalListProductVariant} = props;
+    const {product, isOpenModalListProductVariant, setOpenModalListProductVariant, handleAddOrderItemCart} = props;
 
     const draggleRef = useRef<HTMLDivElement>(null);
     const [disabled, setDisabled] = useState(true);
@@ -153,14 +152,14 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
 
     const handleOkAndClose = async () => {
         if (selectedRows && selectedRows.length > 0) {
-            handleSale?.handleAddOrderItemCart(selectedRows);
+            handleAddOrderItemCart(selectedRows);
             handleCloseModal();
         }
     }
 
     const handleOkAndContinue = async () => {
         if (selectedRows && selectedRows.length > 0) {
-            handleSale?.handleAddOrderItemCart(selectedRows);
+            handleAddOrderItemCart(selectedRows);
         }
     }
 
@@ -246,43 +245,46 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
         >
             <Space direction="vertical" style={{width: "100%"}}>
                 <Card size="small">
-                    <Space direction="vertical" style={{width: "50%"}}>
-                        <Select
-                            showSearch
-                            allowClear
-                            mode="multiple"
-                            maxTagCount={3}
-                            style={{width: '100%'}}
-                            value={filterParam.colorIds}
-                            placeholder={isLoadingDataOptionColor ? "Đang tải..." : "Lọc theo màu sắc"}
-                            onChange={handleSelectedColorsChange}
-                            options={dataOptionColor}
-                            tagRender={memoizedTagRender}
-                            optionRender={(option) => (
-                                <div className="flex align-middle">
-                                    <Tag className="custom-tag" color={option.data.code}/> {option.data.label}
-                                </div>
-                            )}
-                            filterOption={(input, option) =>
-                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                            }
-                        />
-
-                        <Select
-                            showSearch
-                            allowClear
-                            mode="multiple"
-                            maxTagCount={6}
-                            style={{width: '100%'}}
-                            value={filterParam.sizeIds}
-                            placeholder={isLoadingDataOptionSize ? "Đang tải..." : "Lọc theo kích thước"}
-                            onChange={handleSelectedSizesChange}
-                            options={dataOptionSize}
-                            filterOption={(input, option) =>
-                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                            }
-                        />
-                    </Space>
+                    <Row gutter={[8, 8]} wrap>
+                        <Col span={12}>
+                            <Select
+                                showSearch
+                                allowClear
+                                mode="multiple"
+                                maxTagCount={3}
+                                style={{width: '100%'}}
+                                value={filterParam.colorIds}
+                                placeholder={isLoadingDataOptionColor ? "Đang tải..." : "Lọc theo màu sắc"}
+                                onChange={handleSelectedColorsChange}
+                                options={dataOptionColor}
+                                tagRender={memoizedTagRender}
+                                optionRender={(option) => (
+                                    <div className="flex align-middle">
+                                        <Tag className="custom-tag" color={option.data.code}/> {option.data.label}
+                                    </div>
+                                )}
+                                filterOption={(input, option) =>
+                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                }
+                            />
+                        </Col>
+                        <Col span={12}>
+                            <Select
+                                showSearch
+                                allowClear
+                                mode="multiple"
+                                maxTagCount={6}
+                                style={{width: '100%'}}
+                                value={filterParam.sizeIds}
+                                placeholder={isLoadingDataOptionSize ? "Đang tải..." : "Lọc theo kích thước"}
+                                onChange={handleSelectedSizesChange}
+                                options={dataOptionSize}
+                                filterOption={(input, option) =>
+                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                }
+                            />
+                        </Col>
+                    </Row>
                 </Card>
                 <Card title="Danh sách sản phẩm"
                       size="small"
