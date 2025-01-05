@@ -5,8 +5,6 @@ export const URL_API_INVOICE = {
   previewPdf: "/invoice/preview", 
 };
 
-
-
 // Xuất file PDF của hóa đơn
 export const generateInvoicePdf = async (data: any) => {
     const response = await httpInstance.post('/invoice/generate', data, {

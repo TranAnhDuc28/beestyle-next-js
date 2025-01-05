@@ -55,11 +55,11 @@ export const calculateInvoiceDiscount = (voucher: IVoucher | undefined, totalAmo
 
 /**
  * tính toán phí free ship theo ngưỡng tổng tiền hóa đơn được chỉ định
- * @param totalAmount
+ * @param originalAmount
  * @param shippingAddress
  */
-export const calculateShippingFee = async (totalAmount: number, shippingAddress: IAddress | undefined): Promise<number> => {
-    if (totalAmount === 0 || totalAmount > FREE_SHIPPING_THRESHOLD || !shippingAddress) return 0;
+export const calculateShippingFee = async (originalAmount: number | undefined, shippingAddress: IAddress | undefined): Promise<number> => {
+    if (!originalAmount || originalAmount === 0 || Number(originalAmount) >= FREE_SHIPPING_THRESHOLD || !shippingAddress) return 0;
 
     const paramCalculateFee: Record<string, any> = {
         pick_province: shippingAddress?.city,
@@ -71,7 +71,7 @@ export const calculateShippingFee = async (totalAmount: number, shippingAddress:
         ward: shippingAddress?.commune,
         address: shippingAddress?.addressName,
         weight: 300,
-        value: totalAmount,
+        value: originalAmount,
         transport: "road",
     };
 

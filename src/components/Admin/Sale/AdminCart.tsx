@@ -23,9 +23,7 @@ const AdminCart: React.FC = () => {
     const {handleUpdateQuantityInStockProductVariant} = useProductVariant();
 
     const {orderItems, error, isLoading, mutateOrderItems} =
-        handleGetOrderItemsByOrderId(
-            handleSale?.orderActiveTabKey && Number(handleSale.orderActiveTabKey) ? handleSale.orderActiveTabKey : undefined
-        );
+        handleGetOrderItemsByOrderId(Number(handleSale?.orderActiveTabKey));
 
     useEffect(() => {
         if (!isLoading && orderItems) {
@@ -37,6 +35,8 @@ const AdminCart: React.FC = () => {
                 initialQuantityMap.set(item.id, item.quantity);
             });
             setInitialQuantities(initialQuantityMap);
+
+            // tính toán tổng tiền hàng và só lượng trong giỏ
             handleSale?.setTotalQuantityCart(calculateCartTotalQuantity(orderItems));
             handleSale?.setTotalAmountCart(calculateCartTotalAmount(orderItems));
         }
@@ -63,24 +63,21 @@ const AdminCart: React.FC = () => {
                 newValue = 100;
             }
         }
-        // console.log("new quantity value: ", newValue)
 
         const oldValue = initialQuantities.get(orderItemId) || 1;
-        // console.log('old quantity value', oldValue)
 
         if (newValue !== oldValue) {
             // Tính toán số lượng thay đổi
             let quantityChange = newValue - oldValue;
-            // console.log('quantity change', quantityChange)
 
             // Cập nhật số lượng sản phẩm trong kho
             let action: string;
             if (quantityChange > 0) {
-                // console.log("quantity stock minus", quantityChange)
+
                 action = STOCK_ACTION.MINUS_STOCK; // Giảm số lượng kho khi tăng số lượng trong giỏ
             } else {
                 quantityChange = -quantityChange;
-                // console.log("quantity stock plus", quantityChange)
+
                 action = STOCK_ACTION.PLUS_STOCK; // Tăng số lượng kho khi giảm số lượng trong giỏ
             }
 
@@ -151,21 +148,25 @@ const AdminCart: React.FC = () => {
     const handleDeleteOrderItemCart = async (id: number, productId: number) => {
         handleSale?.setDataCart((prevCart) => prevCart.filter((item) => item.id !== id));
 
-        // delete order item
-        await handleDeleteOrderItem(id);
+        try {
+            // delete order item
+            await handleDeleteOrderItem(id);
 
-        // refresh list product variant by product id
-        await mutate(key =>
-                typeof key === 'string' && key.startsWith(`${URL_API_PRODUCT_VARIANT.filter(productId.toString())}`),
-            undefined,
-            {revalidate: true}
-        );
+            // refresh list product variant by product id
+            await mutate(key =>
+                    typeof key === 'string' && key.startsWith(`${URL_API_PRODUCT_VARIANT.filter(productId.toString())}`),
+                undefined,
+                {revalidate: true}
+            );
 
-        // refresh list data cart by order id
-        await mutateOrderItems();
+            // refresh list data cart by order id
+            await mutateOrderItems();
+        } catch (err: any) {
+            console.log(err.message);
+        }
     };
 
-    const columns: TableProps<IOrderItem>['columns'] = useMemo(() => [
+    const columns: TableProps<IOrderItem>['columns'] = [
         {
             title: '#', key: '#', align: "center", width: 40,
             render: (value, record, index) => <Text strong>{index + 1}</Text>,
@@ -244,7 +245,7 @@ const AdminCart: React.FC = () => {
                     </Tooltip>
                 ),
         },
-    ], [handleSale?.dataCart]);
+    ];
 
     return (
         <Table<IOrderItem>
