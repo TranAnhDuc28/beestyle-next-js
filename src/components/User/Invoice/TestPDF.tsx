@@ -77,13 +77,13 @@ import {
 } from "@/services/InvoiceService";
 
 const InvoiceComponent = () => {
-  const [invoiceId, setInvoiceId] = useState<number>(44); // ID của hóa đơn
+  const [invoiceId, setInvoiceId] = useState<number>(49); // ID của hóa đơn
   const [invoiceDetails, setInvoiceDetails] = useState<any>(null); // Lưu trữ thông tin hóa đơn
   const [pdfUrl, setPdfUrl] = useState<string | null>(null); // URL PDF
 
   // Hàm gọi API để tải PDF
   const handleDownloadPdf = () => {
-    downloadInvoicePdf(44);
+    downloadInvoicePdf(49);
   };
 
   useEffect(() => {
@@ -106,7 +106,7 @@ const InvoiceComponent = () => {
   const handlePreviewAndPrint = async () => {
     try {
       console.log("Đang gửi yêu cầu xem trước PDF...");
-      const base64Pdf = await previewInvoicePdf(44);
+      const base64Pdf = await previewInvoicePdf(49);
 
       if (base64Pdf) {
         // Kiểm tra Base64 và thêm prefix nếu thiếu
@@ -142,7 +142,7 @@ const InvoiceComponent = () => {
       console.error("Lỗi khi tạo xem trước PDF:", error);
     }
 
-    
+
   };
 
   return (
