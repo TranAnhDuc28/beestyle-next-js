@@ -6,7 +6,7 @@ export const URL_API_INVOICE = {
   previewPdf: "/preview",
 };
 
-<<<<<<<<< Temporary merge branch 1
+
 
 // Hàm để tải file PDF của hóa đơn
 export const downloadInvoicePdf = async (invoiceId) => {
