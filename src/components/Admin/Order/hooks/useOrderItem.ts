@@ -11,7 +11,7 @@ import useSWR from "swr";
 const useOrderItem = () => {
     const {showNotification, showMessage} = useAppNotifications();
 
-    const handleGetOrderItemsByOrderId = (orderId: string | undefined) => {
+    const handleGetOrderItemsByOrderId = (orderId: number | undefined) => {
         const {data, error, isLoading, mutate: mutateOrderItems} =
             useSWR(orderId ? URL_API_ORDER_ITEM.get(orderId) : null,
             getOrderItemsByOrderId,
