@@ -69,7 +69,7 @@ const SalesStatistics: React.FC = () => {
             const orderDate = new Date(item.period);
             const currentMonth = new Date().getMonth();
             if (orderDate.getMonth() === currentMonth) {
-                return acc + item.totalOderSuccess + item.totalOderFailed; // Tổng cả hóa đơn thành công và thất bại
+                return acc + item.totalOderSuccess; // Tổng cả hóa đơn thành công và thất bại
             }
             return acc;
         }, 0);
@@ -85,7 +85,7 @@ const SalesStatistics: React.FC = () => {
                 orderDate.getMonth() === today.getMonth() &&
                 orderDate.getFullYear() === today.getFullYear()
             ) {
-                return acc + item.totalOderSuccess + item.totalOderFailed; // Tổng cả hóa đơn thành công và thất bại
+                return acc + item.totalOderSuccess ; // Tổng cả hóa đơn thành công và thất bại
             }
             return acc;
         }, 0);
