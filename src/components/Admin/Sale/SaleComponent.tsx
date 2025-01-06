@@ -15,6 +15,10 @@ import useOrderItem from "@/components/Admin/Order/hooks/useOrderItem";
 import {URL_API_PRODUCT_VARIANT} from "@/services/ProductVariantService";
 import {URL_API_ORDER_ITEM} from "@/services/OrderItemService";
 import {calculateCartTotalAmount, calculateCartTotalQuantity} from "@/utils/AppUtil";
+import {PAYMENT_METHOD} from "@/constants/PaymentMethod";
+import {ORDER_TYPE} from "@/constants/OrderType";
+import {ORDER_CHANEL} from "@/constants/OrderChanel";
+import {ORDER_STATUS} from "@/constants/OrderStatus";
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 type PositionType = 'left' | 'right';
@@ -31,11 +35,14 @@ const OperationsSlot: Record<PositionType, React.ReactNode> = {
 
 const defaultOrderCreateOrUpdate: IOrderCreateOrUpdate = {
     shippingFee: 0,
+    originalAmount: 0,
+    discountAmount: 0,
     totalAmount: 0,
-    paymentMethod: "CASH_ON_DELIVERY",
-    orderType: "IN_STORE_PURCHASE",
-    orderChannel: "OFFLINE",
-    orderStatus: "PENDING",
+    amountPaid: 0,
+    paymentMethod: PAYMENT_METHOD.CASH.key,
+    orderType: ORDER_TYPE.IN_STORE_PURCHASE.key,
+    orderChannel: ORDER_CHANEL.OFFLINE.key,
+    orderStatus: ORDER_STATUS.PENDING.key,
 };
 
 interface HandleCartContextType {
@@ -62,7 +69,6 @@ const SaleComponent: React.FC = () => {
             getOrders,
             {
                 revalidateIfStale: false,
-                revalidateOnFocus: false,
                 revalidateOnReconnect: false
             }
         );
@@ -135,7 +141,9 @@ const SaleComponent: React.FC = () => {
         }
     }, [data?.data]);
 
-    // xử lý thêm sản phẩm vào giỏ
+    /**
+     * xử lý thêm sản phẩm vào giỏ
+     */
     const handleAddOrderItemCart = async (productVariantSelected: IProductVariant[]) => {
         // khởi tạo mảng giá trị rỗng để lưu trữ item sản phẩm trong giỏ
         let newOrderItemsCreateOrUpdate: ICreateOrUpdateOrderItem[] = [];
@@ -206,8 +214,6 @@ const SaleComponent: React.FC = () => {
                 if (response) {
                     productVariantSelected.forEach((selectedProduct) => {
                         const orderItemId = response[selectedProduct.id];
-                        // console.log(orderItemId)
-                        // console.log(orderItemId && !cartMap.has(selectedProduct.id))
                         if (orderItemId && !cartMap.has(selectedProduct.id)) {
                             cartMap.set(selectedProduct.id, {
                                 id: orderItemId,
@@ -241,7 +247,7 @@ const SaleComponent: React.FC = () => {
             // console.log("new cart", Array.from(cartMap.values()))
             setDataCart([...Array.from(cartMap.values())]);
 
-            await mutate((key: any) => typeof key === 'string' && key.startsWith(`${URL_API_ORDER_ITEM.get(orderActiveTabKey)}`),
+            await mutate((key: any) => typeof key === 'string' && key.startsWith(`${URL_API_ORDER_ITEM.get(Number(orderActiveTabKey))}`),
                 undefined,
                 {revalidate: true}
             );

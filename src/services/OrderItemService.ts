@@ -2,7 +2,7 @@ import httpInstance from "@/utils/HttpInstance";
 import {ICreateOrUpdateOrderItem} from "@/types/IOrderItem";
 
 export const URL_API_ORDER_ITEM = {
-    get: (orderId: string) => `/admin/order/${orderId}/order-items`,
+    get: (orderId: number) => `/admin/order/${orderId}/order-items`,
     create: `/admin/order-item/create`,
     creates: `/admin/order-item/creates`,
     update: (orderItemId?: string) => `/admin/order-item/${orderItemId}`,

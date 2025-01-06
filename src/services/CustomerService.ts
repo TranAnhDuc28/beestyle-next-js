@@ -8,7 +8,7 @@ export const URL_API_CUSTOMER = {
   delete:'/admin/customer/delete',
 }
 
-export const getCustomer = async (url:string) => {
+export const getCustomers = async (url:string) => {
   const response = await httpInstance.get(url)
   return response.data
 }

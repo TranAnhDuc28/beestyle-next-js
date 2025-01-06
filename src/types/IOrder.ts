@@ -58,7 +58,10 @@ export interface IOrderCreateOrUpdate {
     shippingAddressId?: number;
     shippingAddress?: IAddress;
     shippingFee?: number;
+    originalAmount?: number;
+    discountAmount?: number;
     totalAmount?: number;
+    amountPaid?:number;
     paymentDate?: Date;
     paymentMethod?: string;
     isPrepaid?: boolean;

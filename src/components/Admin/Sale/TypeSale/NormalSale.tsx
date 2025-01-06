@@ -1,9 +1,9 @@
 "use client"
 import {
-    AutoComplete, AutoCompleteProps, Button, Col, Flex, Layout,
-    Pagination, PaginationProps, Row, Space, theme, Tooltip, Typography
+    AutoComplete, AutoCompleteProps, Button, Col, Empty, Flex, Image, Layout,
+    Pagination, PaginationProps, Row, Skeleton, Space, theme, Tooltip, Typography
 } from "antd";
-import React, {memo, useCallback, useContext, useEffect, useRef, useState} from "react";
+import React, {memo, useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
 import CheckoutComponent from "@/components/Admin/Sale/CheckoutComponent";
 import {
     FilterOutlined,
@@ -23,9 +23,13 @@ import ProductCardView from "@/components/Admin/Sale/TypeDisplayProductListSale/
 import ProductListView from "@/components/Admin/Sale/TypeDisplayProductListSale/ProductListView";
 import SettingViewProductList from "@/components/Admin/Sale/TypeDisplayProductListSale/SettingViewProductList";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
+import {useDebounce} from "use-debounce";
+import useCustomer from "@/components/Admin/Customer/hooks/useCustomer";
+import {IOrderCreateOrUpdate} from "@/types/IOrder";
+
 
 const {Content} = Layout;
-const {Text} = Typography;
+const {Text, Title} = Typography;
 
 export const defaultFilterParam: ParamFilterProduct = {
     page: 1,
@@ -38,12 +42,19 @@ export const defaultFilterParam: ParamFilterProduct = {
     maxPrice: undefined,
 };
 
+const transformOptions = (data: ICustomer[]) => {
+    return data.map((customer: ICustomer) => ({
+        value: customer.id.toString(),
+        label: (<Text>{`${customer.fullName} - ${customer.phoneNumber}`}</Text>),
+        customer: customer
+    }));
+}
+
 interface IProps {
 
 }
 
 const NormalSale: React.FC<IProps> = (props) => {
-
     const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
     const nodeListViewModeRef = useRef(null); // ref List view hiển thị
     const elementWrapperProductListRef = useRef<HTMLDivElement>(null); // ref element bọc List view
@@ -60,26 +71,123 @@ const NormalSale: React.FC<IProps> = (props) => {
     const [filterParam, setFilterParam] = useState<ParamFilterProduct>({...defaultFilterParam});
     const {dataFilterProduct, isLoading} = useFilterProduct(filterParam);
 
-    const onChangePaginationProductList: PaginationProps['onChange'] = (page, pageSize) => {
+    // giá trị tìm kiếm khách hàng
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [debounceSearchValue] = useDebounce(searchTerm, 500);
+
+    const {handleGetCustomers} = useCustomer();
+    const {dataCustomers, isLoading: isLoadingDataOptionCustomers} = handleGetCustomers(searchTerm);
+
+    /**
+     * xử lý giá trị tìm kiếm trong input search
+     */
+    const handleSearch = (value: string) => {
+        setSearchTerm(value);
+        if (value?.trim().length === 0) {
+            setOptions([]);
+        }
+    };
+
+    /**
+     * xử lý chọn khách hàng từ AutoComplete
+     */
+    const handleSelect = (value: string) => {
+        const selectedCustomer: ICustomer = dataCustomers?.find((customer: any) => customer.id.toString() === value);
+        if (selectedCustomer) {
+            handleSale?.setOrderCreateOrUpdate((prevState: IOrderCreateOrUpdate) => {
+                return {
+                    ...prevState,
+                    customerId: Number(value)
+                }
+            })
+            setSearchTerm(`${selectedCustomer.fullName} - ${selectedCustomer.phoneNumber}`)
+        } else {
+            setSearchTerm("");
+            setOptions([]);
+        }
+    }
+
+    /**
+     * xử lý khi loại bỏ khách hàng đã chọn cho hóa đơn
+     */
+    const handleClearAutoCompleteSearchCustomer = () => {
+        handleSale?.setOrderCreateOrUpdate((prevState: IOrderCreateOrUpdate) => {
+            return {
+                ...prevState,
+                customerId: undefined
+            }
+        })
+        setSearchTerm("");
+        setOptions([]);
+    }
+
+    /**
+     * chuyển đổi list customer thành options cho AutoComplete
+     */
+    const transformedOptions = useMemo(() => {
+        return transformOptions(dataCustomers);
+    }, [dataCustomers]);
+
+    useEffect(() => {
+        // kiểm tra 2 mảng có giống nhau không
+        if (transformedOptions?.length !== options?.length) {
+            setOptions(transformedOptions);
+            return;
+        }
+
+        const optionsChanged = transformedOptions.some((newOption, index) => {
+            return newOption.value !== options?.[index]?.value;
+        });
+        if (optionsChanged) setOptions(transformedOptions);
+
+    }, [debounceSearchValue, dataCustomers]);
+
+    /**
+     * chuyển trang của sản phẩm
+     * @param page
+     * @param pageSize
+     */
+    const onChangePaginationProductList: PaginationProps['onChange'] = (page: number, pageSize: number) => {
         setFilterParam((prevValue) => ({...prevValue, page: page, size: pageSize}));
     }
 
+    /**
+     * show drawer checkout hoặc filter list product theo drawerType
+     */
     const showDrawer = useCallback((drawerType: "checkout" | "filter", isOpen: boolean) => {
-        setOpenDrawer((prevDrawer) => ({...prevDrawer, [drawerType]: isOpen}));
+        setOpenDrawer((prevDrawer) => {
+            return {
+                ...prevDrawer,
+                [drawerType]: isOpen
+            }
+        });
     }, []);
 
+    /**
+     * close drawer checkout hoặc filter list product theo drawerType
+     */
     const onClose = useCallback((drawerType: "checkout" | "filter", isOpen: boolean) => {
-        setOpenDrawer((prevDrawer) => ({...prevDrawer, [drawerType]: isOpen}));
+        setOpenDrawer((prevDrawer) => {
+            return {
+                ...prevDrawer,
+                [drawerType]: isOpen
+            }
+        });
     }, []);
 
+    /**
+     * refresh list product
+     */
     const refreshDataProductList = useCallback(async () => {
-        await mutate(key =>
-                typeof key === 'string' && key.startsWith(`${URL_API_PRODUCT.filter}`),
+        await mutate(key => typeof key === 'string' && key.startsWith(`${URL_API_PRODUCT.filter}`),
             undefined,
             {revalidate: true}
         )
     }, []);
 
+    /**
+     * scroll về đầu list khi chuyển chế độ hiển thị của list product
+     */
     const scrollToTop = () => {
         if (elementWrapperProductListRef.current) {
             elementWrapperProductListRef.current.scrollTo({
@@ -89,6 +197,9 @@ const NormalSale: React.FC<IProps> = (props) => {
         }
     };
 
+    /**
+     * scroll về đầu list product khi chuyển trang
+     */
     useEffect(() => {
         scrollToTop();
     }, [filterParam.page]);
@@ -147,11 +258,22 @@ const NormalSale: React.FC<IProps> = (props) => {
                     <Space direction="vertical" size="middle" style={{display: 'flex'}}>
                         <div style={{display: 'flex', flexWrap: 'wrap', gap: 8}}>
                             <div style={{flex: 1, display: 'flex', gap: 5, width: "100%"}}>
-                                <AutoComplete allowClear suffixIcon={<SearchOutlined/>} style={{width: "100%"}}
-                                              options={options}
-                                    // onSearch={}
-                                              placeholder="Tìm khách hàng"
+                                <AutoComplete
+                                    allowClear
+                                    onClear={handleClearAutoCompleteSearchCustomer}
+                                    placeholder="Tìm khách hàng"
+                                    suffixIcon={<SearchOutlined/>}
+                                    options={options}
+                                    onSearch={handleSearch}
+                                    onSelect={handleSelect}
+                                    value={searchTerm}
+                                    style={{width: "100%", marginRight: 20}}
+                                    notFoundContent={
+                                        isLoading ? <Skeleton/> : (searchTerm && options?.length === 0) ?
+                                            <Empty description="Không có kết quả tìm kiếm"/> : null
+                                    }
                                 />
+
                                 <Button icon={<PlusOutlined/>} type="text" shape="circle"/>
                             </div>
                             <Space direction="horizontal">
@@ -193,9 +315,17 @@ const NormalSale: React.FC<IProps> = (props) => {
                                                 <ProductListView
                                                     dataSource={dataFilterProduct?.items}
                                                     nodeRef={nodeListViewModeRef}
-                                                    responsiveImage={{xs: 24, sm: 24, md: 12, lg: 12, xl:8, xxl: 3}}
-                                                    responsiveContent={{xs: 24, sm: 24, md: 12, lg: 12, xl: 16, xxl: 21}}
-                                                    handleAddOrderItemCart={handleSale?.handleAddOrderItemCart ?? (() => {})}
+                                                    responsiveImage={{xs: 24, sm: 24, md: 12, lg: 12, xl: 8, xxl: 3}}
+                                                    responsiveContent={{
+                                                        xs: 24,
+                                                        sm: 24,
+                                                        md: 12,
+                                                        lg: 12,
+                                                        xl: 16,
+                                                        xxl: 21
+                                                    }}
+                                                    handleAddOrderItemCart={handleSale?.handleAddOrderItemCart ?? (() => {
+                                                    })}
                                                 />
                                             </CSSTransition>
                                         ) : (
@@ -209,7 +339,8 @@ const NormalSale: React.FC<IProps> = (props) => {
                                                     dataSource={dataFilterProduct?.items}
                                                     nodeRef={nodeListViewModeRef}
                                                     grid={{gutter: 8, xs: 1, sm: 1, md: 2, lg: 3, xl: 3, xxl: 4}}
-                                                    handleAddOrderItemCart={handleSale?.handleAddOrderItemCart ?? (() => {})}
+                                                    handleAddOrderItemCart={handleSale?.handleAddOrderItemCart ?? (() => {
+                                                    })}
                                                 />
                                             </CSSTransition>
                                         )}
@@ -241,6 +372,7 @@ const NormalSale: React.FC<IProps> = (props) => {
             </Flex>
 
             <CheckoutComponent
+                customerTitleDrawer={searchTerm}
                 open={openDrawer.checkout}
                 onClose={onClose}
             />
