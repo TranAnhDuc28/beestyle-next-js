@@ -119,7 +119,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                                     src={image.imageUrl}
                                     alt={product.productName}
                                     preview={false}
-                                    loading='lazy'
+                                    loading="lazy"
                                 />
                             </div>
                         ))}

@@ -131,8 +131,8 @@ export const checkShoppingCartData = async () => {
                         updatedItem.size = matchingItemFromBE.sizeName;
                     }
 
-                    if (updatedItem.discounted_price !== item.discounted_price) {
-                        updatedItem.total_price = item.quantity * updatedItem.discounted_price;
+                    if (matchingItemFromBE.discountPrice !== item.discounted_price) {
+                        updatedItem.total_price = matchingItemFromBE.totalPrice;
                     }
                     return updatedItem;
                 } else {

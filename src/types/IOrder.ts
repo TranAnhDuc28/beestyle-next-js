@@ -51,9 +51,12 @@ export interface IOrderCreateOrUpdate {
     id?: number;
     orderTrackingNumber?: string;
     customerId?: number;
-    voucherId?: string
+    voucherId?: number;
+    receiverName?: string;
     phoneNumber?: string;
+    email?: string;
     shippingAddressId?: number;
+    shippingAddress?: IAddress;
     shippingFee?: number;
     totalAmount?: number;
     paymentDate?: Date;

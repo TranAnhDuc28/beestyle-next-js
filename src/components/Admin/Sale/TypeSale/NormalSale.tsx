@@ -130,7 +130,7 @@ const NormalSale: React.FC<IProps> = (props) => {
                                 </Text>
                             </Flex>
                             <Text style={{fontSize: 20}} strong>
-                                {`${handleSale?.orderCreateOrUpdate.totalAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                                {`${handleSale?.totalAmountCart}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                             </Text>
                         </Flex>
                     </Content>

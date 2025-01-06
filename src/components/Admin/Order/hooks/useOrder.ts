@@ -15,6 +15,7 @@ const useOrder = () => {
            orderId ? URL_API_ORDER.getOrderDetail(orderId) : null,
             getOrders,
             {
+                revalidateIfStale: true,
                 revalidateOnReconnect: false,
                 revalidateOnFocus: false
             }

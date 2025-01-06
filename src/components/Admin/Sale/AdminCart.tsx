@@ -38,12 +38,7 @@ const AdminCart: React.FC = () => {
             });
             setInitialQuantities(initialQuantityMap);
             handleSale?.setTotalQuantityCart(calculateCartTotalQuantity(orderItems));
-            handleSale?.setOrderCreateOrUpdate((prevValue) => {
-                return {
-                    ...prevValue,
-                    totalAmount: calculateCartTotalAmount(orderItems)
-                }
-            });
+            handleSale?.setTotalAmountCart(calculateCartTotalAmount(orderItems));
         }
     }, [orderItems]);
 

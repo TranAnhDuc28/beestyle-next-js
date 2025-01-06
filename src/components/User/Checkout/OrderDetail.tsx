@@ -1,9 +1,11 @@
 import { Button, Form, FormInstance } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 import { CART_KEY } from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { RiDiscountPercentLine } from "react-icons/ri";
 import DiscountCodeModal from "../Discount/DiscountCodeModal";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 interface IProps {
     handleSubmit: (payment: any) => Promise<void>;
@@ -29,30 +31,78 @@ const OrderDetail = (props: IProps) => {
         // selectedWardCode,
         // detailAddress,
     } = props;
+    const router = useRouter();
+    const { showModal } = useAppNotifications();
     const { showNotification } = useAppNotifications();
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const openModal = () => setIsModalVisible(true);
     const closeModal = () => setIsModalVisible(false);
 
-    const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    const [cartItems, setCartItems] = useState(() => {
+        try {
+            const storedCartItems = localStorage.getItem(CART_KEY);
+            return storedCartItems ? JSON.parse(storedCartItems) : [];
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    });
+
+    useEffect(() => {
+        const handleStorageChange = () => {
+            try {
+                const storedCartItems = localStorage.getItem(CART_KEY);
+                setCartItems(storedCartItems ? JSON.parse(storedCartItems) : []);
+            } catch (error) {
+                console.error(error);
+                setCartItems([]);
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
 
     const productTotal = cartItems.reduce((total: number, item: any) => total + item.total_price, 0);
     const totalAmount = productTotal >= 500000 ? productTotal : productTotal + shippingFee;
     const savings = 0;
 
     const onButtonClick = async () => {
-        if (!selectedPayment) {
+        if (cartItems.length === 0) {
+            router.push('/cart');
+            return;
+        } else if (!selectedPayment) {
             showNotification("error", { message: "Vui lòng chọn phương thức thanh toán!" });
             return;
-        }
+        } else {
+            try {
+                await props.userForm.validateFields();
+                await props.addressForm.validateFields();
 
-        const data = {
-            shippingFee,
-            totalAmount,
-            selectedPayment
+                showModal('confirm', {
+                    title: 'Xác nhận đặt hàng',
+                    content: 'Bạn có muốn xác nhận đơn hàng này?',
+                    icon: (<QuestionCircleOutlined style={{ color: 'blue' }} />),
+                    centered: true,
+                    okText: 'Xác nhận',
+                    cancelText: 'Huỷ bỏ',
+                    onOk: async () => {
+                        const data = {
+                            shippingFee,
+                            totalAmount,
+                            selectedPayment
+                        }
+                        await handleSubmit({ ...data });
+                    }
+                });
+            } catch (errorInfo) {
+                console.log('Failed:', errorInfo);
+            }
         }
-        await handleSubmit({ ...data });
     };
 
     return (

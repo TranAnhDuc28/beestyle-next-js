@@ -41,6 +41,8 @@ const defaultOrderCreateOrUpdate: IOrderCreateOrUpdate = {
 interface HandleCartContextType {
     totalQuantityCart: number;
     setTotalQuantityCart: React.Dispatch<React.SetStateAction<number>>;
+    totalAmountCart: number;
+    setTotalAmountCart: React.Dispatch<React.SetStateAction<number>>;
     orderCreateOrUpdate: IOrderCreateOrUpdate;
     setOrderCreateOrUpdate: React.Dispatch<React.SetStateAction<IOrderCreateOrUpdate>>;
     orderActiveTabKey: string;
@@ -69,6 +71,7 @@ const SaleComponent: React.FC = () => {
     const {handleCreateOrderItems} = useOrderItem();
     const [orderCreateOrUpdate, setOrderCreateOrUpdate] = useState<IOrderCreateOrUpdate>(defaultOrderCreateOrUpdate);
     const [totalQuantityCart, setTotalQuantityCart] = useState<number>(0);
+    const [totalAmountCart, setTotalAmountCart] = useState<number>(0);
     const [dataCart, setDataCart] = useState<IOrderItem[]>([]);
     const [orderActiveTabKey, setOrderActiveTabKey] = useState<string>('');
     const [itemTabs, setItemTabs] = useState<TabsProps['items']>([]);
@@ -99,12 +102,12 @@ const SaleComponent: React.FC = () => {
                 if (newTabsItems.length > 0 && orderActiveTabKey !== newTabsItems[0].key) {
                     setOrderActiveTabKey(newTabsItems[0].key);
                     setTotalQuantityCart(calculateCartTotalQuantity(dataCart));
+                    setTotalQuantityCart(calculateCartTotalAmount(dataCart));
                     setOrderCreateOrUpdate((prevValue) => {
                         return {
                             ...prevValue,
                             id: Number(newTabsItems[0].key),
-                            orderTrackingNumber: newTabsItems[0].label,
-                            totalAmount: calculateCartTotalAmount(dataCart)
+                            orderTrackingNumber: newTabsItems[0].label
                         }
                     });
                 }
@@ -120,12 +123,12 @@ const SaleComponent: React.FC = () => {
             if (newTabsItems.length > 0 && newTabsItems[0].key !== orderActiveTabKey) {
                 setOrderActiveTabKey(newTabsItems[0].key);
                 setTotalQuantityCart(calculateCartTotalQuantity(dataCart));
+                setTotalQuantityCart(calculateCartTotalAmount(dataCart));
                 setOrderCreateOrUpdate((prevValue) => {
                     return {
                         ...prevValue,
                         id: Number(newTabsItems[0].key),
                         orderTrackingNumber: newTabsItems[0].label,
-                        totalAmount: calculateCartTotalAmount(dataCart)
                     }
                 });
             }
@@ -328,6 +331,8 @@ const SaleComponent: React.FC = () => {
                 value={{
                     totalQuantityCart,
                     setTotalQuantityCart,
+                    totalAmountCart,
+                    setTotalAmountCart,
                     orderCreateOrUpdate,
                     setOrderCreateOrUpdate,
                     orderActiveTabKey,

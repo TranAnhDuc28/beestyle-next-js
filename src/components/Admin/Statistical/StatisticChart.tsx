@@ -3,157 +3,90 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Button } from 'antd';
 import StatisticalDateFilter from './StatisticalDateFilter';
 
-const dataHoaDon = [
-    {
-        name: 'Page A',
-        hoadon: 40,
-        hoadonhuy: 5,
-    },
-    {
-        name: 'Page B',
-        hoadon: 30,
-        hoadonhuy: 3,
-    },
-    {
-        name: 'Page C',
-        hoadon: 20,
-        hoadonhuy: 2,
-    },
-    {
-        name: 'Page D',
-        hoadon: 27,
-        hoadonhuy: 4,
-    },
-    {
-        name: 'Page E',
-        hoadon: 18,
-        hoadonhuy: 1,
-    },
-    {
-        name: 'Page F',
-        hoadon: 23,
-        hoadonhuy: 3,
-    },
-    {
-        name: 'Page G',
-        hoadon: 34,
-        hoadonhuy: 6,
-    },
-];
-
-const dataDoanhThu = [
-    {
-        name: 'Page A',
-        doanhthu: 1200000,
-    },
-    {
-        name: 'Page B',
-        doanhthu: 900000,
-    },
-    {
-        name: 'Page C',
-        doanhthu: 600000,
-    },
-    {
-        name: 'Page D',
-        doanhthu: 810000,
-    },
-    {
-        name: 'Page E',
-        doanhthu: 540000,
-    },
-    {
-        name: 'Page F',
-        doanhthu: 690000,
-    },
-    {
-        name: 'Page G',
-        doanhthu: 1020000,
-    },
-];
-
-const dataSanPham = [
-    {
-        name: 'Sản phẩm X',
-        soluong: 55,
-    },
-    {
-        name: 'Sản phẩm Y',
-        soluong: 42,
-    },
-    {
-        name: 'Sản phẩm Z',
-        soluong: 31,
-    },
-    {
-        name: 'Sản phẩm A',
-        soluong: 28,
-    },
-    {
-        name: 'Sản phẩm B',
-        soluong: 35,
-    },
-];
+interface IProps {
+    data: any
+    dataOrderStatus: any
+}
 
 //Hoá đơn
-const InvoiceChart = () => (
+const InvoiceChart = ({ data }: any) => (
     <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={dataHoaDon}>
+        <BarChart
+            data={data?.items || []}
+            layout="horizontal"
+            margin={{ top: 5, right: 0, left: 30, bottom: 5 }}
+        >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
+            <XAxis dataKey="period" />
+            <YAxis type="number" allowDecimals={false} />
             <Tooltip />
             <Legend />
-            <Bar dataKey="hoadon" fill="#4096FF" name="Hoá đơn" barSize={15} />
-            <Bar dataKey="hoadonhuy" fill="#FF0000" name="Hoá đơn hủy" barSize={15} />
+            <Bar dataKey="totalOderSuccess" fill="#4096FF" name="Hoá đơn" barSize={30} />
+            <Bar dataKey="totalOderFailed" fill="#FF0000" name="Hoá đơn hủy" barSize={30} />
         </BarChart>
     </ResponsiveContainer>
 );
 
 //Doanh thu
-const RevenueChart = () => (
+const RevenueChart = ({ data }: any) => (
     <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={dataDoanhThu} layout="horizontal" margin={{ top: 5, right: 0, left: 30, bottom: 5 }}>
+        <BarChart
+            data={data?.items || []}
+            layout="horizontal"
+            margin={{ top: 5, right: 0, left: 30, bottom: 5 }}
+        >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
+            <XAxis dataKey="period" />
             <YAxis
                 type="number"
                 tickFormatter={(value) => value.toLocaleString()}
-                tick={{ fontSize: 14, width: 500 }}
+                tick={{ fontSize: 14, width: 250 }}
             />
+            <Tooltip />
             <Legend />
-            <Bar dataKey="doanhthu" fill="#4096FF" name="Doanh thu" barSize={15} />
+            <Bar dataKey="revenue" fill="#4096FF" name="Doanh thu" barSize={30} />
         </BarChart>
     </ResponsiveContainer>
 );
 
 //Sản phẩm
-const ProductChart = () => (
+const ProductChart = ({ data }: any) => (
     <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={dataSanPham}>
+        <BarChart
+            data={data?.items || []}
+            layout="horizontal"
+            margin={{ top: 5, right: 0, left: 30, bottom: 5 }}
+        >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
+            <XAxis dataKey="period" />
+            <YAxis type="number" allowDecimals={false} />
             <Tooltip />
             <Legend />
-            <Bar dataKey="soluong" fill="#4096FF" name="Số lượng" barSize={15} />
+            <Bar dataKey="quantity" fill="#4096FF" name="Số lượng" barSize={30} />
         </BarChart>
     </ResponsiveContainer>
 );
 
-const StatisticChart = () => {
+const StatisticChart = (props: IProps) => {
+    const { data, dataOrderStatus } = props;
+    console.log(data);
+
     const [currentPage, setCurrentPage] = useState(1);
+    const handleFilterChange = (value: string | { from: string; to: string } | null, type: 'day' | 'month' | 'year' | 'range') => {
+        console.log("Filter changed:", value, type);
+        // Xử lý thay đổi bộ lọc tại đây
+    };
 
     const renderChart = () => {
         switch (currentPage) {
             case 1:
-                return <InvoiceChart />;
+                return <InvoiceChart data={dataOrderStatus} />;
             case 2:
-                return <RevenueChart />;
+                return <RevenueChart data={data} />;
             case 3:
-                return <ProductChart />;
+                return <ProductChart data={data} />;
             default:
-                return <InvoiceChart />;
+                return <InvoiceChart data={data} />;
         }
     };
 
@@ -171,7 +104,7 @@ const StatisticChart = () => {
                         Thống kê Sản phẩm
                     </Button>
                 </div>
-                <StatisticalDateFilter />
+                <StatisticalDateFilter onFilterChange={handleFilterChange} />
             </div>
             <div className="w-full h-[460px] float-start">
                 {renderChart()}

@@ -1,5 +1,5 @@
 "use client";
-import React, {memo} from 'react';
+import React, {memo, useState} from 'react';
 import {Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, Col, Radio, Space} from 'antd';
 import {createVoucher} from '@/services/VoucherService';
 import {EuroOutlined, PercentageOutlined} from '@ant-design/icons';
@@ -19,6 +19,27 @@ const CreateVoucher = (props: IProps) => {
     const {showNotification} = useAppNotifications();
     const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
     const [form] = Form.useForm();
+    const [isCash, setIsCash] = useState(false);
+
+    const handleValuesChange = (changedValues: any, allValues: any) => {
+        if (changedValues.discountType) {
+            setIsCash(changedValues.discountType === "CASH");
+
+            if (changedValues.discountType === "CASH" && allValues.discountValue) {
+                // Tự động gán giá trị giảm giá sang giảm giá tối đa
+                form.setFieldsValue({ maxDiscount: allValues.discountValue });
+            }
+            if (changedValues.discountType === "PERCENTAGE") {
+                // Đặt lại giá trị giảm tối đa về null (hoặc giá trị mặc định) khi chọn phần trăm
+                form.setFieldsValue({ maxDiscount: null });
+            }
+        }
+
+        if (changedValues.discountValue && allValues.discountType === "CASH") {
+            // Cập nhật giảm giá tối đa khi giá trị giảm thay đổi và kiểu là tiền mặt
+            form.setFieldsValue({ maxDiscount: changedValues.discountValue });
+        }
+    };
 
     const handleCloseCreateModal = () => {
         form.resetFields();
@@ -69,6 +90,7 @@ const CreateVoucher = (props: IProps) => {
                     name="createVoucher"
                     layout="vertical"
                     onFinish={onFinish}
+                    onValuesChange={handleValuesChange}
                 >
                     <Row gutter={16}>
 
@@ -104,18 +126,18 @@ const CreateVoucher = (props: IProps) => {
                                         name="discountValue"
                                         noStyle
                                         rules={[
-                                            {required: true, message: "Giá trị giảm là bắt buộc!"},
-                                            ({getFieldValue}) => ({
+                                            { required: true, message: "Giá trị giảm là bắt buộc!" },
+                                            ({ getFieldValue }) => ({
                                                 validator(_, value) {
-                                                    if (getFieldValue("discountType") === "PERCENTAGE" && (value < 0 || value > 100)) {
-                                                        return Promise.reject(new Error("Giá trị giảm không hợp lệ!"));
+                                                    if (getFieldValue("discountType") === "PERCENTAGE" && value > 100) {
+                                                        return Promise.reject(new Error("Giá trị giảm không được vượt quá 100%"));
                                                     }
                                                     return Promise.resolve();
                                                 },
                                             }),
                                         ]}
                                     >
-                                        <InputNumber style={{width: '70%'}} placeholder="Giá trị giảm"/>
+                                        <InputNumber style={{width: '65%'}} placeholder="Giá trị giảm"/>
                                     </Form.Item>
                                     <Form.Item
                                         name="discountType"
@@ -123,18 +145,13 @@ const CreateVoucher = (props: IProps) => {
                                         rules={[{required: true, message: "Kiểu giảm là bắt buộc!"}]}
                                     >
                                         <Select
-                                            style={{width: '30%'}}
+                                            style={{width: '35%'}}
                                             placeholder="Chọn kiểu"
                                             suffixIcon={null}
-                                            // onChange={(value) => {
-                                            //     if (value === "CASH") {
-                                            //         form.setFieldsValue({ maxDiscount: null });
-                                            //     }
-                                            // }}
                                         >
                                             {Object.keys(DISCOUNT_TYPE).map((key) => (
                                                 <Option key={key} value={key}>
-                                                    {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE]}
+                                                    {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE].description}
                                                 </Option>
                                             ))}
                                         </Select>
@@ -153,9 +170,8 @@ const CreateVoucher = (props: IProps) => {
                                         message: "Vui lòng nhập giảm giá tối đa!",
                                     }
                                 ]}
-                                // disabled={form.getFieldValue("discountType") !== "CASH"}
                             >
-                                <InputNumber style={{width: '100%'}}/>
+                                <InputNumber style={{ width: '100%' }} readOnly={isCash} />
                             </Form.Item>
                         </Col>
                     </Row>

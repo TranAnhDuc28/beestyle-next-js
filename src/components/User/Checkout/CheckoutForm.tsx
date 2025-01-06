@@ -24,11 +24,11 @@ interface IProps {
     selectedPayment: string;
     onPaymentChange: (value: string) => void;
     selectedProvinceCode: string | null;
-    onProvinceChange: (code: string, name: string | null) => void; // Updated
+    onProvinceChange: (code: string, name: string | null) => void;
     selectedDistrictCode: string | null;
-    onDistrictChange: (code: string | null, name: string | null) => void; // Updated
+    onDistrictChange: (code: string | null, name: string | null) => void;
     selectedWardCode: string | null;
-    onWardChange: (code: string | null, name: string | null) => void; // Updated
+    onWardChange: (code: string | null, name: string | null) => void;
     selectedProvinceName: string | null;
     onProvinceNameChange: (name: string | null) => void;
     selectedDistrictName: string | null;

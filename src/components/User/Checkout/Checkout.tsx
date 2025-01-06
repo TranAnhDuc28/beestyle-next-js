@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 import CheckoutForm from "./CheckoutForm";
 import OrderDetail from "./OrderDetail";
 import { Form } from "antd";
@@ -13,6 +14,7 @@ import { ORDER_STATUS } from "@/constants/OrderStatus";
 import { PAYMENT_METHOD } from "@/constants/PaymentMethod";
 
 const Checkout = () => {
+    const router = useRouter();
     const [addressForm] = Form.useForm();
     const [userForm] = Form.useForm();
 
@@ -47,10 +49,10 @@ const Checkout = () => {
     const handleWardNameChange = (name: string | null) => setSelectedWardName(name);
     const handleDetailAddressChange = (address: string | null) => setDetailAddress(address);
 
-    const processVNPayPayment = async (payment: any) => {
+    const processVNPayPayment = async (payment: any, combinedData: any) => {
         const ipAddress = "127.0.0.1";
         try {
-            const response = await createVNPayPayment(orderId, payment.totalAmount, ipAddress);
+            const response = await createVNPayPayment(orderId, combinedData, ipAddress);
 
             if (response && response.paymentUrl) {
                 window.location.href = response.paymentUrl;
@@ -87,7 +89,7 @@ const Checkout = () => {
                 orderChanel: ORDER_CHANEL.ONLINE.key,
                 orderType: ORDER_TYPE.DELIVERY.key,
                 orderStatus: ORDER_STATUS.AWAITING_CONFIRMATION.key,
-                isPrepaid: false,
+                isPrepaid: selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key,
                 shippingAddress: {
                     cityCode: selectedProvinceCode,
                     city: selectedProvinceName,
@@ -103,7 +105,7 @@ const Checkout = () => {
             if (selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key) {
                 console.log(JSON.stringify(combinedData, null, 2));
             } else if (selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key) {
-                await processVNPayPayment(payment);
+                await processVNPayPayment(payment, combinedData);
             } else if (selectedPayment === "TEST") {
                 console.warn("Tính năng đang phát triển");
             } else {
@@ -116,8 +118,11 @@ const Checkout = () => {
 
 
     useEffect(() => {
+        if (cartItems.length === 0) {
+            router.push('/cart');
+        }
         checkShoppingCartData();
-    }, [])
+    }, [cartItems, router]);
 
     const breadcrumbItems = [
         { title: 'Trang chủ', path: '/' },
@@ -127,49 +132,55 @@ const Checkout = () => {
 
     return (
         <>
-            <BreadcrumbSection items={breadcrumbItems} />
-            <section className="shop checkout section">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-8 col-12">
-                            <CheckoutForm
-                                addressForm={addressForm}
-                                userForm={userForm}
-                                onShippingCostChange={handleShippingCostChange}
-                                selectedPayment={selectedPayment}
-                                onPaymentChange={handlePaymentChange}
-                                selectedProvinceCode={selectedProvinceCode}
-                                onProvinceChange={handleProvinceChange}
-                                selectedDistrictCode={selectedDistrictCode}
-                                onDistrictChange={handleDistrictChange}
-                                selectedWardCode={selectedWardCode}
-                                onWardChange={handleWardChange}
-                                selectedProvinceName={selectedProvinceName}
-                                onProvinceNameChange={handleProvinceNameChange}
-                                selectedDistrictName={selectedDistrictName}
-                                onDistrictNameChange={handleDistrictNameChange}
-                                selectedWardName={selectedWardName}
-                                onWardNameChange={handleWardNameChange}
-                                detailAddress={detailAddress}
-                                onDetailAddressChange={handleDetailAddressChange}
-                            />
+            {cartItems && cartItems.length > 0 ? (
+                <>
+                    <BreadcrumbSection items={breadcrumbItems} />
+                    <section className="shop checkout section">
+                        <div className="container">
+                            <div className="row">
+                                <div className="col-lg-8 col-12">
+                                    <CheckoutForm
+                                        addressForm={addressForm}
+                                        userForm={userForm}
+                                        onShippingCostChange={handleShippingCostChange}
+                                        selectedPayment={selectedPayment}
+                                        onPaymentChange={handlePaymentChange}
+                                        selectedProvinceCode={selectedProvinceCode}
+                                        onProvinceChange={handleProvinceChange}
+                                        selectedDistrictCode={selectedDistrictCode}
+                                        onDistrictChange={handleDistrictChange}
+                                        selectedWardCode={selectedWardCode}
+                                        onWardChange={handleWardChange}
+                                        selectedProvinceName={selectedProvinceName}
+                                        onProvinceNameChange={handleProvinceNameChange}
+                                        selectedDistrictName={selectedDistrictName}
+                                        onDistrictNameChange={handleDistrictNameChange}
+                                        selectedWardName={selectedWardName}
+                                        onWardNameChange={handleWardNameChange}
+                                        detailAddress={detailAddress}
+                                        onDetailAddressChange={handleDetailAddressChange}
+                                    />
+                                </div>
+                                <div className="col-lg-4 col-12">
+                                    <OrderDetail
+                                        handleSubmit={handleSubmit}
+                                        shippingFee={shippingFee}
+                                        selectedPayment={selectedPayment}
+                                        userForm={userForm}
+                                        addressForm={addressForm}
+                                        selectedProvinceName={selectedProvinceName}
+                                        selectedDistrictName={selectedDistrictName}
+                                        selectedWardCode={selectedWardCode}
+                                        detailAddress={detailAddress}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        <div className="col-lg-4 col-12">
-                            <OrderDetail
-                                handleSubmit={handleSubmit}
-                                shippingFee={shippingFee}
-                                selectedPayment={selectedPayment}
-                                userForm={userForm}
-                                addressForm={addressForm}
-                                selectedProvinceName={selectedProvinceName}
-                                selectedDistrictName={selectedDistrictName}
-                                selectedWardCode={selectedWardCode}
-                                detailAddress={detailAddress}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </section>
+                    </section>
+                </>
+            ) : (
+                <div className="w-full h-[750px]"></div>
+            )}
         </>
     );
 };
