@@ -32,7 +32,7 @@ const OrderedProductDetails: React.FC<IProps> = (props) => {
     const {handleUpdateQuantityInStockProductVariant} = useProductVariant();
 
     const {orderItems, error, isLoading, mutateOrderItems} =
-        handleGetOrderItemsByOrderId(orderId && Number(orderId) ? `${orderId}` : undefined);
+        handleGetOrderItemsByOrderId(orderId && Number(orderId) ? Number(orderId) : undefined);
 
     const inputRefs = useRef<Map<number, HTMLInputElement>>(new Map());
 
@@ -324,30 +324,30 @@ const OrderedProductDetails: React.FC<IProps> = (props) => {
             render: (_, record) => {
                 return (
                     // nếu hóa đơn tron trạng thái chờ xác nhận mới cho sửa
-                    orderDetail?.orderType === ORDER_TYPE.DELIVERY.key &&
-                    orderDetail?.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key ?
-                        (
-                            <InputNumber<number>
-                                className="custom-input"
-                                key={record.id}
-                                ref={(el) => {
-                                    if (el) {
-                                        inputRefs.current.set(record.id, el);
-                                    } else {
-                                        inputRefs.current.delete(record.id);
-                                    }
-                                }}
-                                min={1}
-                                value={record.quantity}
-                                formatter={(value) => `${value}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
-                                parser={(value) => value?.replace(PARSER_NUMBER_WITH_COMMAS_TO_NUMBER, '') as unknown as number}
-                                onChange={(value) => onChangeQuantity(record.id, record.productVariantId, value)}
-                                onBlur={(e) => onBlurQuantity(e, record.id, record.productVariantId, record.productId)}
-                                onPressEnter={() => handlePressEnter(record.id)}
-                                style={{textAlignLast: "center", width: "100%"}}
-                            />
-                        )
-                        :
+                    // orderDetail?.orderType === ORDER_TYPE.DELIVERY.key &&
+                    // orderDetail?.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key ?
+                    //     (
+                    //         <InputNumber<number>
+                    //             className="custom-input"
+                    //             key={record.id}
+                    //             ref={(el) => {
+                    //                 if (el) {
+                    //                     inputRefs.current.set(record.id, el);
+                    //                 } else {
+                    //                     inputRefs.current.delete(record.id);
+                    //                 }
+                    //             }}
+                    //             min={1}
+                    //             value={record.quantity}
+                    //             formatter={(value) => `${value}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                    //             parser={(value) => value?.replace(PARSER_NUMBER_WITH_COMMAS_TO_NUMBER, '') as unknown as number}
+                    //             onChange={(value) => onChangeQuantity(record.id, record.productVariantId, value)}
+                    //             onBlur={(e) => onBlurQuantity(e, record.id, record.productVariantId, record.productId)}
+                    //             onPressEnter={() => handlePressEnter(record.id)}
+                    //             style={{textAlignLast: "center", width: "100%"}}
+                    //         />
+                    //     )
+                    //     :
                         record.quantity
                 )
             }

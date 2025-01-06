@@ -20,7 +20,7 @@ export const createOrder = async (data: IOrderCreateOrUpdate) => {
     return response.data;
 }
 
-export const updateOrder = async (data: IOrder, id: number) => {
+export const updateOrder = async (data: IOrderCreateOrUpdate, id: number) => {
     const response = await httpInstance.post(URL_API_ORDER.update(id), data);
     return response.data;
 }
