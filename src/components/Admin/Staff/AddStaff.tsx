@@ -1,19 +1,19 @@
 "use client";
 import { DatePicker, Form, Input, Modal, Select } from "antd";
 import React, { memo } from "react";
-import moment from "moment";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { createStaff } from "@/services/StaffService";
 import { usePhoneValidation } from "@/hooks/usePhoneNumberValidation";
 import { useEmailValidation } from "@/hooks/useEmailValidation";
-const { Option } = Select;
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 interface IProps {
   isCreateModalOpen: boolean;
   setIsCreateModalOpen: (value: boolean) => void;
   mutate: any;
 }
-
+dayjs.extend(utc);
 const AddStaff = (props: IProps) => {
   const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
   const { showNotification } = useAppNotifications();
@@ -26,13 +26,19 @@ const AddStaff = (props: IProps) => {
     setIsCreateModalOpen(false);
   };
 
-  const handleSubmit = async (value: IStaff) => {
+  const handleSubmit = async (value: any) => {
     console.log(value);
 
     try {
-      const result = await createStaff(value);
+      const data = {
+        ...value,
+        dateOfBirth: value.dateOfBirth
+          ? value.dateOfBirth.format("YYYY-MM-DD")
+          : null
+      };
+      const result = await createStaff(data);
       mutate();
-      console.log(value);
+      console.log(data);
 
       if (result.data) {
         handleCancelModal();
@@ -97,15 +103,15 @@ const AddStaff = (props: IProps) => {
           <Form.Item
             label="Email"
             name="email"
-            rules={[{ validator: (_, value) => validateEmail(value) }]}
+            rules={[{ validator: (_, value) => validateEmail(value),required: true}]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item
-            label="Sdt"
+            label="Số điện thoại"
             name="phoneNumber"
-            rules={[{ validator: (_, value) => validatePhoneNumber(value) }]}
+            rules={[{ validator: (_, value) => validatePhoneNumber(value),required: true}]}
           >
             <Input />
           </Form.Item>
@@ -116,7 +122,6 @@ const AddStaff = (props: IProps) => {
             // rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
           >
             <DatePicker
-              showTime
               format="YYYY-MM-DD"
               style={{ width: "100%" }}
             />

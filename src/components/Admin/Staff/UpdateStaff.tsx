@@ -3,9 +3,9 @@ import { STATUS } from "@/constants/Status";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { updateStaff } from "@/services/StaffService";
 import { DatePicker, Form, Input, Modal, Select } from "antd";
-import moment from "moment";
+import dayjs from "dayjs";
 import { memo, useEffect } from "react";
-const { Option } = Select;
+import utc from "dayjs/plugin/utc";
 
 interface IProps {
   isUpdateModalOpen: boolean;
@@ -15,6 +15,7 @@ interface IProps {
   setDataUpdate: any;
 }
 
+dayjs.extend(utc);
 const UpdateStaff = (props: IProps) => {
   const { showNotification } = useAppNotifications();
   const {
@@ -39,9 +40,9 @@ const UpdateStaff = (props: IProps) => {
         username: dataUpdate.username,
         email: dataUpdate.email,
         fullName: dataUpdate.fullName,
-        dateOfBirth: dataUpdate.dateOfBirth
-          ? moment(dataUpdate.dateOfBirth).local()
-          : null, // Hiển thị ngày theo múi giờ hiện tại
+        dateOfBirth: dayjs(dataUpdate.dateOfBirth).isValid()
+          ? dayjs.utc(dataUpdate.dateOfBirth)
+          : null,
         gender: dataUpdate.gender,
         phoneNumber: dataUpdate.phoneNumber,
         password: dataUpdate.password,
@@ -53,14 +54,18 @@ const UpdateStaff = (props: IProps) => {
     // Cập nhật lại form khi param thay đổi
   }, [dataUpdate]);
 
-  const onFinish = async (value: IStaff) => {
+  const onFinish = async (value: any) => {
     console.log(value);
     try {
       if (dataUpdate) {
         const data = {
           ...value,
+          dateOfBirth: value.dateOfBirth
+            ? value.dateOfBirth.format("YYYY-MM-DD")
+            : null,
           id: dataUpdate.id,
         };
+        console.log(data);
         const result = await updateStaff(data);
         mutate();
         if (result.data) {
@@ -145,7 +150,11 @@ const UpdateStaff = (props: IProps) => {
           name="dateOfBirth"
           // rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
         >
-          <DatePicker format={"YYYY-MM-DD"} style={{ width: "100%" }} />
+          <DatePicker
+            allowClear={false}
+            format={"YYYY-MM-DD"}
+            style={{ width: "100%" }}
+          />
         </Form.Item>
 
         <Form.Item

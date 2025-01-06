@@ -1,12 +1,14 @@
 "use client";
 import { Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { createCustomer } from "@/services/CustomerService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { createAddress } from "@/services/AddressService";
 import useAddress from "../Address/hook/useAddress";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import { usePhoneValidation } from "@/hooks/usePhoneNumberValidation";
+import utc from "dayjs/plugin/utc";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
@@ -15,6 +17,7 @@ interface IProps {
   setIsCreateModalOpen: (value: boolean) => void;
   mutate: any;
 }
+dayjs.extend(utc);
 
 const AddCustomer = (props: IProps) => {
   const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
@@ -109,11 +112,17 @@ const AddCustomer = (props: IProps) => {
   );
 
   const handleSubmit = async (values: any) => {
+    const data = {
+      ...values,
+      dateOfBirth: values.dateOfBirth
+        ? values.dateOfBirth.format("YYYY-MM-DD")
+        : null
+    };
     try {
-      const result = await createCustomer(values);
-      console.log(values.addressDetail);
+      const result = await createCustomer(data);
+      console.log(data.addressDetail);
 
-      setSelectedAddressDetail(values.addressDetail);
+      setSelectedAddressDetail(data.addressDetail);
       console.log(selectedAddressDetail);
 
       if (result.data) {
