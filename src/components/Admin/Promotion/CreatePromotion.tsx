@@ -351,6 +351,9 @@ const CreatePromotion = (props: IProps) => {
                             name="createPromotion"
                             layout="vertical"
                             onFinish={onFinish}
+                            // onFinish={(values) => {
+                            //     console.log("Form Values:", values);
+                            // }}
                         >
                             <Form.Item name="promotionName" label="Tên chương trình"
                                        rules={[{required: true, message: 'Vui lòng nhập tên chương trình'}]}>
@@ -425,7 +428,7 @@ const CreatePromotion = (props: IProps) => {
                                 />
                             </Form.Item>
 
-                            <Form.Item name="description" label="Mô tả">
+                            <Form.Item name="description" label="Mô tả" initialValue="">
                                 <Input.TextArea rows={3} placeholder="Nhập mô tả"/>
                             </Form.Item>
                         </Form>
