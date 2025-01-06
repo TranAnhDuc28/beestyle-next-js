@@ -1,41 +1,108 @@
-import { Button, Form, Radio } from "antd";
-import React, { useState } from "react";
+import { Button, Form, FormInstance } from "antd";
+import React, { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 import { CART_KEY } from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { RiDiscountPercentLine } from "react-icons/ri";
 import DiscountCodeModal from "../Discount/DiscountCodeModal";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 interface IProps {
     handleSubmit: (payment: any) => Promise<void>;
-    shippingCost: number;
+    shippingFee: number;
+    selectedPayment: string;
+    userForm: FormInstance;
+    addressForm: FormInstance;
+    selectedProvinceName: string | null;
+    selectedDistrictName: string | null;
+    selectedWardCode: string | null;
+    detailAddress: string | null;
 }
 
 const OrderDetail = (props: IProps) => {
-    const { handleSubmit, shippingCost } = props;
+    const {
+        handleSubmit,
+        shippingFee,
+        selectedPayment,
+        // userForm,
+        // addressForm,
+        // selectedProvinceName,
+        // selectedDistrictName,
+        // selectedWardCode,
+        // detailAddress,
+    } = props;
+    const router = useRouter();
+    const { showModal } = useAppNotifications();
     const { showNotification } = useAppNotifications();
-    const [selectedPayment, setSelectedPayment] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const openModal = () => setIsModalVisible(true);
     const closeModal = () => setIsModalVisible(false);
 
-    const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    const [cartItems, setCartItems] = useState(() => {
+        try {
+            const storedCartItems = localStorage.getItem(CART_KEY);
+            return storedCartItems ? JSON.parse(storedCartItems) : [];
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    });
 
-    const productTotal = cartItems.reduce((total: any, item: any) => total + item.total_price, 0);
-    const totalAmount = productTotal >= 500000 ? productTotal : productTotal + shippingCost;
+    useEffect(() => {
+        const handleStorageChange = () => {
+            try {
+                const storedCartItems = localStorage.getItem(CART_KEY);
+                setCartItems(storedCartItems ? JSON.parse(storedCartItems) : []);
+            } catch (error) {
+                console.error(error);
+                setCartItems([]);
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
+
+    const productTotal = cartItems.reduce((total: number, item: any) => total + item.total_price, 0);
+    const totalAmount = productTotal >= 500000 ? productTotal : productTotal + shippingFee;
     const savings = 0;
 
-    const handlePaymentChange = (e: any) => {
-        setSelectedPayment(e.target.value);
-        if (e.target.value === 'COD') console.log(cartItems);
-    };
-
     const onButtonClick = async () => {
-        if (!selectedPayment) {
+        if (cartItems.length === 0) {
+            router.push('/cart');
+            return;
+        } else if (!selectedPayment) {
             showNotification("error", { message: "Vui lòng chọn phương thức thanh toán!" });
             return;
+        } else {
+            try {
+                await props.userForm.validateFields();
+                await props.addressForm.validateFields();
+
+                showModal('confirm', {
+                    title: 'Xác nhận đặt hàng',
+                    content: 'Bạn có muốn xác nhận đơn hàng này?',
+                    icon: (<QuestionCircleOutlined style={{ color: 'blue' }} />),
+                    centered: true,
+                    okText: 'Xác nhận',
+                    cancelText: 'Huỷ bỏ',
+                    onOk: async () => {
+                        const data = {
+                            shippingFee,
+                            totalAmount,
+                            selectedPayment
+                        }
+                        await handleSubmit({ ...data });
+                    }
+                });
+            } catch (errorInfo) {
+                console.log('Failed:', errorInfo);
+            }
         }
-        await handleSubmit({ selectedPayment, totalAmount, shippingCost });
     };
 
     return (
@@ -52,11 +119,11 @@ const OrderDetail = (props: IProps) => {
                     </div>
                     <div className="flex justify-between">
                         <span>Vận chuyển</span>
-                        <span>{shippingCost.toLocaleString()} đ</span>
+                        <span>{shippingFee.toLocaleString()} đ</span>
                     </div>
                     <div className="flex justify-between text-red-500">
                         <span>Giảm giá vận chuyển</span>
-                        <span>{productTotal >= 500000 ? `- ${shippingCost.toLocaleString()} đ` : '0 đ'}</span>
+                        <span>{productTotal >= 500000 ? `- ${shippingFee.toLocaleString()} đ` : '0 đ'}</span>
                     </div>
                     <div className="flex justify-between text-lg font-semibold">
                         <span>Tổng thanh toán</span>
@@ -80,11 +147,7 @@ const OrderDetail = (props: IProps) => {
                 </div>
 
                 <div className="mt-6">
-                    <h3 className="mb-3">Phương thức thanh toán</h3>
-                    <Radio.Group onChange={handlePaymentChange} value={selectedPayment} className="flex flex-col gap-2">
-                        <Radio value="COD">Thanh toán khi nhận hàng (COD)</Radio>
-                        <Radio value="VNPay">Cổng thanh toán VNPay</Radio>
-                    </Radio.Group>
+                    <h3 className="mb-3">:::</h3>
                 </div>
 
                 <div className="mt-6 text-center">

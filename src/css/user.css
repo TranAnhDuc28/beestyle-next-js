@@ -299,7 +299,8 @@
 }
 
 .product-card {
-    height: 100%;
+    height: 550px;
+    max-height: 550px;
     background-color: #fff;
     border: 0;
     position: relative;
@@ -381,7 +382,10 @@
 }
 
 .product-price {
-    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
 }
 
 .old-price {

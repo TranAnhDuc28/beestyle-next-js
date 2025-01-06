@@ -7,10 +7,10 @@ import SizeGuide from './SizeGuide';
 import { LuPencilRuler } from 'react-icons/lu';
 
 interface SizePickerProps {
-    productId: string;
-    colorCode: string;
-    selectedSize: string | undefined;
-    onSizeSelect: (size: string | null) => void;
+    productId: number | undefined;
+    colorCode: string | null;
+    selectedSize: string | null;
+    onSizeSelect: (size: string) => void;
 }
 
 const SizePicker: React.FC<SizePickerProps> = ({
@@ -21,15 +21,18 @@ const SizePicker: React.FC<SizePickerProps> = ({
 }) => {
     const pathName = usePathname();
     const [visible, setVisible] = useState(false);
-    const { data: sizes } = useProductSizes(productId, colorCode);
+    const { data: sizes, isLoading: isLoadingSizes } = useProductSizes(productId, colorCode);
+    const [selectInitialSize, setSelectInitialSize] = useState(false);
 
     useEffect(() => {
-        if (sizes && sizes.length > 0 && colorCode && !selectedSize) {
+        if (colorCode && !selectedSize && sizes && sizes.length > 0 && !isLoadingSizes) {
             onSizeSelect(sizes[0].id);
+            setSelectInitialSize(true);
         } else if (!colorCode || (sizes && sizes.length === 0)) {
-            onSizeSelect(null)
+            onSizeSelect(null);
+            setSelectInitialSize(true);
         }
-    }, [colorCode, sizes, selectedSize, onSizeSelect]);
+    }, [colorCode, sizes, selectedSize, onSizeSelect, isLoadingSizes]);
 
     const handleSizeClick = (size: string) => {
         onSizeSelect(size);
@@ -59,7 +62,11 @@ const SizePicker: React.FC<SizePickerProps> = ({
                     margin: '0',
                 }}
             >
-                {sizes?.map((size: ProductSize) => (
+                {isLoadingSizes && <p>Đang tải kích thước...</p>}
+
+                {!isLoadingSizes && (!sizes || sizes.length === 0) && <p>Không có kích thước</p>}
+
+                {!isLoadingSizes && sizes && sizes.map((size: ProductSize) => (
                     <li key={size.id} style={{ marginRight: '10px' }}>
                         <Link
                             href="#"

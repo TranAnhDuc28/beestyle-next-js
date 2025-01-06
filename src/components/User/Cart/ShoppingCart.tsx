@@ -62,7 +62,7 @@ const ShoppingCart = () => {
                     </div>
                 </>
             ) : (
-                <div className='flex flex-col items-center my-4'>
+                <div className='flex flex-col items-center my-5'>
                     <Title level={2} className="font-bold mt-4">Giỏ hàng</Title>
                     <Paragraph className='fs-6'>Không có sản phẩm trong giỏ hàng.</Paragraph>
                     <Image

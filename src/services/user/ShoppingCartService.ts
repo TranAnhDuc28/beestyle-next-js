@@ -1,5 +1,22 @@
 export const CART_KEY = 'shopping_cart';
 
+export interface ICartItem {
+    shopping_cart_id: number;
+    product_variant_id: string;
+    product_id: string;
+    product_name: string;
+    sku: string;
+    color: string;
+    size: string;
+    product_quantity: number;
+    quantity: number;
+    sale_price: number;
+    discounted_price: number;
+    total_price: number;
+    description: string;
+    image?: object[];
+}
+
 const getCart = () => {
     if (typeof window !== 'undefined') {
         const cart = localStorage.getItem(CART_KEY);
@@ -12,10 +29,10 @@ const saveCart = (cart: any[]) => {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
 };
 
-export const addToCart = (product: any, quantity: any, images: any) => {
+export const addToCart = (product: any, quantity: number) => {
     const cart = getCart();
 
-    const existingIndex = cart.findIndex((item: any) =>
+    const existingIndex = cart.findIndex((item: ICartItem) =>
         item.product_id === product.productId &&
         item.color === product.colorName &&
         item.size === product.sizeName
@@ -39,7 +56,7 @@ export const addToCart = (product: any, quantity: any, images: any) => {
             discounted_price: product.discountPrice,
             total_price: quantity * product.discountPrice,
             description: product.description,
-            images: images
+            image: product.images.find((image: { isDefault: boolean; }) => image.isDefault)
         };
         cart.push(newItem);
     }
@@ -59,8 +76,14 @@ export const checkShoppingCartData = async () => {
     const cartItems = getCart();
 
     if (cartItems && cartItems.length > 0) {
-        const cartDataToCheck = cartItems.map((item: { product_variant_id: string; }) => ({
+        const cartDataToCheck = cartItems.map((
+            item: {
+                product_variant_id: string;
+                quantity: number;
+            }
+        ) => ({
             id: item.product_variant_id,
+            quantity: item.quantity
         }));
 
         try {
@@ -73,27 +96,17 @@ export const checkShoppingCartData = async () => {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                throw new Error(`Lỗi HTTP! Trạng thái: ${response.status}`);
             }
 
             const updatedCartDataFromBE = await response.json();
 
-            const updatedCartItems = cartItems.map((item:
-                {
-                    product_variant_id: string;
-                    sale_price: number | bigint;
-                    discounted_price: number | bigint;
-                    product_quantity: number;
-                    product_name: string;
-                    color: string;
-                    size: string;
-                    quantity: number;
-                }) => {
+            const updatedCartItems = cartItems.map((item: ICartItem) => {
                 const matchingItemFromBE = updatedCartDataFromBE.find((beItem: { id: string; }) =>
                     beItem.id === item.product_variant_id
                 );
                 if (matchingItemFromBE) {
-                    const updatedItem: any = { ...item };
+                    const updatedItem: ICartItem = { ...item };
                     if (matchingItemFromBE.salePrice !== item.sale_price) {
                         updatedItem.sale_price = matchingItemFromBE.salePrice;
                     }
@@ -118,10 +131,8 @@ export const checkShoppingCartData = async () => {
                         updatedItem.size = matchingItemFromBE.sizeName;
                     }
 
-                    if (updatedItem.discounted_price !== item.discounted_price) {
-                        updatedItem.total_price = item.quantity * updatedItem.discounted_price;
-                    } else if (updatedItem.sale_price !== item.sale_price && !updatedItem.discounted_price) {
-                        updatedItem.total_price = item.quantity * updatedItem.sale_price;
+                    if (matchingItemFromBE.discountPrice !== item.discounted_price) {
+                        updatedItem.total_price = matchingItemFromBE.totalPrice;
                     }
                     return updatedItem;
                 } else {

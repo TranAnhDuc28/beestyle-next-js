@@ -5,7 +5,7 @@ import FashionNews from "@/components/User/News/FashionNews";
 
 export const metadata: Metadata = {
     title: "Tin thời trang",
-    description: "news",
+    description: "news"
 };
 
 export default function Home() {
