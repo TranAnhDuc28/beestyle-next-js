@@ -55,6 +55,25 @@ const useOrder = () => {
         }
     }
 
+    const handleCreateOrderOnline =  async (value: IOrderCreateOrUpdate) => {
+        setLoading(true);
+        try {
+            const result = await createOrder(value);
+            return result.data;
+        } catch (error: any) {
+            const errorMessage = error?.response?.data?.message;
+            if (errorMessage && typeof errorMessage === 'object') {
+                Object.entries(errorMessage).forEach(([field, message]) => {
+                    showNotification("error", {message: String(message)});
+                });
+            } else {
+                showNotification("error", {message: error?.message, description: errorMessage});
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const handleUpdateOrder =  async (value: IOrder, id: number) => {
         try {
             const result = await updateOrder(value, id);
