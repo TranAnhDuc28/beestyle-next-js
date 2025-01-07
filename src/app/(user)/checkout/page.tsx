@@ -5,7 +5,7 @@ import Checkout from "@/components/User/Checkout/Checkout";
 
 export const metadata: Metadata = {
     title: "Thanh toán",
-    description: "checkout",
+    description: "checkout"
 };
 
 export default function CheckoutPage() {

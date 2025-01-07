@@ -71,7 +71,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             {cartItems && cartItems.length ? cartItems.map((
                 item: {
                     product_id: string;
-                    images: { imageUrl: string | StaticImport; }[];
+                    image: { imageUrl: string | StaticImport; };
                     product_name: string;
                     color: string;
                     size: string;
@@ -89,7 +89,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         <Image
                             width={100}
                             height={100}
-                            src={item.images ? item.images[0].imageUrl : ''}
+                            src={item.image ? item.image.imageUrl : ''}
                             alt={item.product_name}
                             className={styles.itemImage}
                         />

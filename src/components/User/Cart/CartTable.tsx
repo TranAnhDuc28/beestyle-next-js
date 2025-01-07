@@ -75,7 +75,7 @@ const CartTable = ({ cartItems, updateCartItems }: { cartItems: any; updateCartI
                 {cartItems.map((item: {
                     shopping_cart_id: string;
                     product_id: string;
-                    images: { imageUrl: string }[];
+                    image: { imageUrl: string };
                     product_name: string;
                     discounted_price: number;
                     sale_price: number;
@@ -97,7 +97,7 @@ const CartTable = ({ cartItems, updateCartItems }: { cartItems: any; updateCartI
                                 <Image
                                     width={160}
                                     height={"auto"}
-                                    src={item.images[0].imageUrl}
+                                    src={item.image ? item.image.imageUrl : ''}
                                     alt={item.product_name}
                                     className="rounded-lg"
                                     preview={false}
@@ -108,7 +108,7 @@ const CartTable = ({ cartItems, updateCartItems }: { cartItems: any; updateCartI
                                     <Link
                                         href={`/product/${item.product_id}/variant`}
                                         passHref
-                                        className="hover:!text-orange-400"
+                                        className="text-black hover:!text-orange-400"
                                     >
                                         {item.product_name}
                                     </Link>

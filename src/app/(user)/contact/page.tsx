@@ -5,7 +5,7 @@ import Contact from "@/components/User/Contact/Contact";
 
 export const metadata: Metadata = {
     title: "Liên hệ",
-    description: "contact",
+    description: "contact"
 };
 
 export default function ContactPage() {

@@ -5,7 +5,7 @@ import {Suspense} from "react";
 
 export const metadata: Metadata = {
     title: "Sản phẩm",
-    description: "product",
+    description: "product"
 };
 
 export default function Category() {
