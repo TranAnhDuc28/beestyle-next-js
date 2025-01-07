@@ -5,7 +5,7 @@ import UserProfile from "@/components/User/UserInfo/UserProfile";
 
 export const metadata: Metadata = {
     title: "Thông tin tài khoản",
-    description: "user-profile",
+    description: "user-profile"
 };
 
 export default function UserProfilePage() {

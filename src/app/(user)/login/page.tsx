@@ -3,7 +3,7 @@ import {Metadata} from "next";
 
 export const metadata: Metadata = {
     title: "Đăng nhập",
-    description: "login",
+    description: "login"
 };
 
 export default function LoginPage() {

@@ -1,52 +1,53 @@
 'use client';
 
 import Link from "next/link";
-import { Card, Tooltip, Image, Badge } from 'antd';
+import { Card, Tooltip, Image, Badge, Typography } from 'antd';
 import Slider from "react-slick";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import React, { useState } from "react";
 import ProductQuickLookupModal from "@/components/User/ProductCommonUser/ProductQuickLookupModal";
 import { useSellingProducts } from "@/services/user/ProductHomeService";
-import { TiEye, TiArrowLeft, TiArrowRight } from 'react-icons/ti';
+import { TiEye } from 'react-icons/ti';
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
-const CustomPrevArrow = ({ onClick }) => (
+const CustomPrevArrow = ({ onClick }: any) => (
     <div
-        className="custom-arrow prev-arrow hover:!bg-orange-300"
+        className="custom-arrow prev-arrow hover:!bg-black/80"
         onClick={onClick}
         style={{
             position: "absolute",
-            left: "-20px",
+            left: "-15px",
             top: "40%",
             transform: "translateY(-50%)",
-            backgroundColor: "#FFA500",
+            backgroundColor: "#6B6E6C",
             padding: "5px",
             borderRadius: "50%",
             cursor: "pointer",
             zIndex: 2,
         }}
     >
-        <TiArrowLeft size={25} color="white" />
+        <LeftOutlined style={{ fontSize: 20, padding: 5, color: 'white' }} />
     </div>
 );
 
 const CustomNextArrow = ({ onClick }) => (
     <div
-        className="custom-arrow next-arrow hover:!bg-orange-300"
+        className="custom-arrow next-arrow hover:!bg-black/80"
         onClick={onClick}
         style={{
             position: "absolute",
-            right: "-20px",
+            right: "-15px",
             top: "40%",
             transform: "translateY(-50%)",
-            backgroundColor: "#FFA500",
+            backgroundColor: "#6B6E6C",
             padding: "5px",
             borderRadius: "50%",
             cursor: "pointer",
             zIndex: 2,
         }}
     >
-        <TiArrowRight size={25} color="white" />
+        <RightOutlined style={{ fontSize: 20, padding: 5, color: 'white' }} />
     </div>
 );
 
@@ -54,6 +55,7 @@ function MostPopularProduct() {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [isHovered, setIsHovered] = useState(false);
 
     const { products } = useSellingProducts();
 
@@ -65,8 +67,9 @@ function MostPopularProduct() {
         slidesToScroll: 1,
         autoplay: true,
         autoplaySpeed: 5000,
-        prevArrow: <CustomPrevArrow onClick={undefined} />,
-        nextArrow: <CustomNextArrow onClick={undefined} />
+        arrows: (isHovered && isHovered),
+        prevArrow: (isHovered && (<CustomPrevArrow onClick={undefined} />)),
+        nextArrow: (isHovered && (<CustomNextArrow onClick={undefined} />))
     };
 
     const handleOpenModal = (product: any) => {
@@ -83,7 +86,11 @@ function MostPopularProduct() {
         <>
             {products && Array.isArray(products) && products.length > 0 ? (
                 <>
-                    <div className="product-area most-popular section pb-0">
+                    <div
+                        className="product-area most-popular section pb-4"
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                    >
                         <div className="container">
                             <div className="row">
                                 <div className="col-12">
@@ -97,8 +104,15 @@ function MostPopularProduct() {
                                     <Slider {...settings}>
                                         {products.map((product) => (
                                             <div key={product.id}>
-                                                <Card className="product-card">
-                                                    <Badge.Ribbon text={`${product.discountValue}%`} color="red">
+                                                <Card
+                                                    className="product-card flex flex-col justify-between"
+                                                    styles={{ body: { padding: '0 8px' } }}
+                                                >
+                                                    <Badge.Ribbon
+                                                        text={`${product.discountValue}%`}
+                                                        className={product.discountValue > 0 ? '' : 'd-none'}
+                                                        color="red"
+                                                    >
                                                         <div className="product-image-wrapper">
                                                             <Image
                                                                 preview={{
@@ -119,32 +133,43 @@ function MostPopularProduct() {
                                                                             </Tooltip>
                                                                         </div>
                                                                     ),
-                                                                    maskClassName:
-                                                                        'flex items-center justify-center bg-black bg-opacity-50',
+                                                                    maskClassName: 'flex items-center justify-center bg-black bg-opacity-50',
                                                                     visible: false,
                                                                 }}
-                                                                src={product.imageUrl}
-                                                                alt={product.productName}
                                                                 loading="lazy"
-                                                                style={{ width: "100%", height: "auto", objectFit: "cover", aspectRatio: "3/4" }}
+                                                                src={product.images.find((image: { isDefault: boolean; }) => image.isDefault)?.imageUrl}
+                                                                alt={`${product.name}`}
+                                                                style={{ width: "100vh", height: "410px", objectFit: "cover" }}
+                                                                className="default-img"
                                                             />
-                                                            {product?.label && (
-                                                                <span className="product-label">{product.productName}</span>
-                                                            )}
                                                         </div>
                                                         <div className="product-content">
-                                                            <h3>
-                                                                <Link
-                                                                    href={`/product/${product.id}/variant`}
-                                                                    className="product-title fs-6 fw-semibold"
+                                                            <Link
+                                                                href={`/product/${product.id}/variant`}
+                                                                className="no-underline"
+                                                                passHref
+                                                            >
+                                                                <Typography.Paragraph
+                                                                    style={{ minHeight: 45, fontSize: 16, margin: 0 }}
+                                                                    ellipsis={{ rows: 2 }}
+                                                                    className="h-12 fw-semibold mt-4"
                                                                 >
                                                                     {product.productName}
-                                                                </Link>
-                                                            </h3>
+                                                                </Typography.Paragraph>
+                                                            </Link>
                                                             <div className="product-price">
-                                                                <span className="old-price">{product.minSalePrice.toLocaleString()} đ</span>
                                                                 <span
-                                                                    className="current-price ml-2">{product.minDiscountedPrice.toLocaleString()} đ</span>
+                                                                    className={product.minSalePrice > product.minDiscountedPrice
+                                                                        ? 'old-price' : 'd-none'
+                                                                    }
+                                                                >
+                                                                    {product.minSalePrice.toLocaleString()} đ
+                                                                </span>
+                                                                <span
+                                                                    className="current-price ml-2"
+                                                                >
+                                                                    {product.minDiscountedPrice.toLocaleString()} đ
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     </Badge.Ribbon>
@@ -156,11 +181,13 @@ function MostPopularProduct() {
                             </div>
                         </div>
                     </div>
-                    <ProductQuickLookupModal
-                        visible={isModalVisible}
-                        onClose={handleCloseModal}
-                        product={selectedProduct}
-                    />
+                    {isModalVisible && (
+                        <ProductQuickLookupModal
+                            visible={isModalVisible}
+                            onClose={handleCloseModal}
+                            product={selectedProduct}
+                        />
+                    )}
                 </>
             ) : (<div className="p-4"></div>)}
         </>

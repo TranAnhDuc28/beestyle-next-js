@@ -12,11 +12,11 @@ const getBrightness = (hexColor: string) => {
 };
 
 const ColorPickers = (props: any) => {
-    const { data: colors } = useProductColors(props.productId);
+    const { data: colors, isLoading: isLoadingColors } = useProductColors(props.productId);
     const [selectedColorName, setSelectedColorName] = useState<string | null>(null);
 
     useEffect(() => {
-        if (colors && colors.length > 0) {
+        if (colors && colors.length > 0 && !isLoadingColors) {
             const defaultColor = colors[0].colorCode;
             const colorDefault: any = colors.find((color) => color.colorCode === defaultColor);
 
@@ -25,7 +25,7 @@ const ColorPickers = (props: any) => {
                 setSelectedColorName(colorDefault?.colorName || null);
             }
         }
-    }, [colors, props]);
+    }, [props.productId, colors, props, isLoadingColors]);
 
     const handleColorClick = (color: string, colorName: string) => {
         setSelectedColorName(colorName);
@@ -47,7 +47,9 @@ const ColorPickers = (props: any) => {
                 )}
             </div>
             <div className="flex flex-wrap mt-2">
-                {colors?.map((color: any, index: any) => {
+                {isLoadingColors && <p>Đang tải màu sắc...</p>}
+
+                {!isLoadingColors && colors?.map((color: any, index: any) => {
                     const isSelected = props.selectedColor === color.colorCode;
                     const brightness = getBrightness(color.colorCode);
                     const checkColor = brightness > 128 ? 'black' : 'white';

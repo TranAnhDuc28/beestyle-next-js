@@ -8,12 +8,17 @@
     padding: 12px !important;
 }
 
-.input-checkout:hover {
-    border: 1px solid #F7941D !important;
+.input-checkout:hover,
+.input-checkout:focus,
+.ant-input-prefix .anticon svg {
+    border-color: #F7941D !important;
+    box-shadow: none;
+    color: #F7941D;
 }
 
-.input-checkout:focus {
-    border: 1px solid #F7941D !important;
+.input-checkout:not(:focus) {
+    border-color: #d9d9d9;
+    box-shadow: none;
 }
 
 .shipping-method {
@@ -89,7 +94,8 @@
 
 .ant-btn:hover {
     color: #fff !important;
-    background-color: #F7941D !important; /* Darker blue on hover */
+    background-color: #F7941D !important;
+    /* Darker blue on hover */
 }
 
 .delivery-method {
@@ -102,9 +108,14 @@
     font-weight: bold;
     color: #333;
 }
-.delivery-radio-group{
-    display: flex;
+
+.delivery-radio-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 3fr));
+    gap: 15px;
+    margin-top: 20px;
 }
+
 .delivery-radio-group .ant-radio-button-wrapper {
     display: flex;
     align-items: center;
@@ -119,9 +130,13 @@
 }
 
 .delivery-option.selected {
-    background-color: #e6f7ff;
-    border-color: #1890ff;
-    color: #1890ff;
+    border-color: #F7941D !important;
+    color: #F7941D;
+}
+
+.delivery-option:hover,
+.delivery-option.selected:hover {
+    color: #F7941D;
 }
 
 .delivery-option .anticon {

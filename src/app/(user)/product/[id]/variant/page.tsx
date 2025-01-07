@@ -4,7 +4,7 @@ import {Metadata} from "next";
 
 export const metadata: Metadata = {
     title: "Sản phẩm",
-    description: "product",
+    description: "product"
 };
 
 export default function ProductDetail() {

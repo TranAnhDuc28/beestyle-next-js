@@ -1,8 +1,8 @@
 import httpInstance from "@/utils/HttpInstance";
 
 export const URL_API_VNPAY = {
-  createPayment: "/payment/create-payment", // Tạo liên kết thanh toán
-  verifyPayment: "/payment/verify-payment", // Xác minh kết quả thanh toán
+    createPayment: "/payment/create-payment", // Tạo liên kết thanh toán
+    verifyPayment: "/payment/verify-payment", // Xác minh kết quả thanh toán
 };
 
 /**
@@ -16,24 +16,24 @@ export const URL_API_VNPAY = {
 // Hàm createVNPayPayment đã được cập nhật ở phía trước
 
 export const createVNPayPayment = async (
-  orderId: string,
-  amount: number,
-  ipAddress: string,
-  bankCode?: string
+    orderId: string,
+    combinedData: any,
+    ipAddress: string,
+    bankCode?: string,
 ) => {
-  try {
-    const response = await httpInstance.post("/payment/create-payment", {
-      orderId,
-      amount,
-      ipAddress,
-      bankCode,
-    });
-    console.log("Dữ liệu trả về từ backend:", response.data);
-    return response.data; // Kiểm tra dữ liệu trả về có chính xác không
-  } catch (error) {
-    console.error("Lỗi khi tạo thanh toán VNPay:", error);
-    throw error; // Ném lỗi ra để xử lý ở tầng gọi
-  }
+    try {
+        const response = await httpInstance.post("/payment/create-payment", {
+            orderId,
+            combinedData,
+            ipAddress,
+            bankCode,
+        });
+        console.log("Dữ liệu trả về từ backend:", response.data);
+        return response.data; // Kiểm tra dữ liệu trả về có chính xác không
+    } catch (error) {
+        console.error("Lỗi khi tạo thanh toán VNPay:", error);
+        throw error; // Ném lỗi ra để xử lý ở tầng gọi
+    }
 };
 
 
@@ -43,13 +43,13 @@ export const createVNPayPayment = async (
  * @returns Trạng thái giao dịch và thông tin chi tiết
  */
 export const verifyVNPayPayment = async (queryParams: Record<string, string>) => {
-  try {
-    const response = await httpInstance.get(URL_API_VNPAY.verifyPayment, {
-      params: queryParams,
-    });
-    return response.data; // Trả về kết quả xác minh giao dịch
-  } catch (error) {
-    console.error("Lỗi khi xác minh thanh toán VNPay:", error);
-    throw error; // Ném lỗi ra để xử lý ở tầng gọi
-  }
+    try {
+        const response = await httpInstance.get(URL_API_VNPAY.verifyPayment, {
+            params: queryParams,
+        });
+        return response.data; // Trả về kết quả xác minh giao dịch
+    } catch (error) {
+        console.error("Lỗi khi xác minh thanh toán VNPay:", error);
+        throw error; // Ném lỗi ra để xử lý ở tầng gọi
+    }
 };
