@@ -59,11 +59,11 @@ export const URL_API_PRODUCT_COLOR = (productId: string): string => {
     return `/product/${productId}/variant/color`;
 };
 
-export const URL_API_PRODUCT_SIZE = (productId: string, colorCode: string): string => {
+export const URL_API_PRODUCT_SIZE = (productId: number, colorCode: string): string => {
     return `/product/${productId}/variant/size?c=${encodeURIComponent(colorCode)}`;
 };
 
-export const handleFetchProduct = (productId: string, color?: string, size?: string): string => {
+export const handleFetchProduct = (productId: number, color?: string, size?: string): string => {
     let url = `/product/${productId}/variant`;
 
     if (color || size) {
@@ -78,7 +78,7 @@ export const handleFetchProduct = (productId: string, color?: string, size?: str
 };
 
 export const getProduct = async (
-    productId: string,
+    productId: number,
     color?: string,
     size?: string
 ): Promise<ProductVariant> => {
@@ -93,7 +93,7 @@ export const getColorSingleProduct = async (productId: string): Promise<ProductC
     return response.data.data;
 };
 
-export const getSizeSingleProduct = async (productId: string, colorCode: string): Promise<ProductSize[]> => {
+export const getSizeSingleProduct = async (productId: number, colorCode: string): Promise<ProductSize[]> => {
     const url = URL_API_PRODUCT_SIZE(productId, colorCode);
     const response = await httpInstance.get<ApiResponse<ProductSize[]>>(url);
     return response.data.data;
@@ -105,7 +105,7 @@ const configSwr = {
     revalidateOnReconnect: false,
 }
 
-export const useProduct = (productId: string, color?: string, size?: string) => {
+export const useProduct = (productId: number, color?: string, size?: string) => {
     return useSWR(
         productId ? handleFetchProduct(productId, color, size) : null,
         () => getProduct(productId, color, size),
@@ -121,7 +121,7 @@ export const useProductColors = (productId: string) => {
     );
 };
 
-export const useProductSizes = (productId: string, colorCode: string) => {
+export const useProductSizes = (productId: number, colorCode: string) => {
     return useSWR(
         productId && colorCode ? URL_API_PRODUCT_SIZE(productId, colorCode) : null,
         () => getSizeSingleProduct(productId, colorCode),

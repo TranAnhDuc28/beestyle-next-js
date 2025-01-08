@@ -4,6 +4,7 @@ import {Metadata} from "next";
 import VariantComponent from "@/components/Admin/Product/Variant/VariantComponent";
 import {useParams} from "next/navigation";
 
+
 export const metadata: Metadata = {
     title: "Sản phẩm",
     description: "ShopProductGridComponent variant service",

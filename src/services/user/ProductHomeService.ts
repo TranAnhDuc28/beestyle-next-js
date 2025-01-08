@@ -1,5 +1,5 @@
 import httpInstance from "@/utils/HttpInstance";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 
 export const URL_API_PRODUCT_AREA = 'product';
 export const URL_API_PRODUCT_SELLER = 'product/seller';
@@ -17,23 +17,22 @@ const configSwr = {
     revalidateOnReconnect: false,
 }
 
-export const handleFetch = async (param: string, event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    await mutate(URL_API_PRODUCT_AREA, fetcher(param));
-};
-
 export const findProduct = async (url: string) => {
     const response = await httpInstance.get(url);
     return response.data;
 };
 
-export const useProducts = () => {
-    const { data: products, error, isLoading } = useSWR(
-        URL_API_PRODUCT_AREA,
-        fetcher,
-        { ...configSwr }
+export const useProducts = (param?: string) => {
+    const apiUrl = URL_API_PRODUCT_AREA;
+    const fetchUrl = param ? `${apiUrl}?q=${param}` : apiUrl;
+
+    const { data, error, isLoading, mutate } = useSWR(
+        param !== undefined ? [apiUrl, param] : null,
+        () => fetcher(fetchUrl),
+        configSwr
     );
-    return { products, error, isLoading };
+
+    return { products: data, error, isLoading, mutate };
 };
 
 export const useSellingProducts = () => {

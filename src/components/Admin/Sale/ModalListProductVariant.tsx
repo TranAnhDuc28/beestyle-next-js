@@ -70,7 +70,7 @@ interface IProps {
     product?: IProduct;
     isOpenModalListProductVariant: boolean;
     setOpenModalListProductVariant: (value: boolean) => void;
-    handleAddOrderItemCart: (productVariantSelected: IProductVariant[]) => void;
+    handleAddOrderItemCart?: (productVariantSelected: IProductVariant[]) => void;
 }
 
 const ModalListProductVariant: React.FC<IProps> = (props) => {
@@ -152,14 +152,18 @@ const ModalListProductVariant: React.FC<IProps> = (props) => {
 
     const handleOkAndClose = async () => {
         if (selectedRows && selectedRows.length > 0) {
-            handleAddOrderItemCart(selectedRows);
+            if (handleAddOrderItemCart) {
+                handleAddOrderItemCart(selectedRows);
+            }
             handleCloseModal();
         }
     }
 
     const handleOkAndContinue = async () => {
         if (selectedRows && selectedRows.length > 0) {
-            handleAddOrderItemCart(selectedRows);
+            if (handleAddOrderItemCart) {
+                handleAddOrderItemCart(selectedRows);
+            }
         }
     }
 

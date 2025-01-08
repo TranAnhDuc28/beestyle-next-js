@@ -1,6 +1,6 @@
 "use client";
 import { DatePicker, Form, Input, Modal, Select } from "antd";
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { createStaff } from "@/services/StaffService";
 import { usePhoneValidation } from "@/hooks/usePhoneNumberValidation";
@@ -20,6 +20,7 @@ const AddStaff = (props: IProps) => {
   const { validatePhoneNumber } = usePhoneValidation();
   const {validateEmail} = useEmailValidation();
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false); // Thêm trạng thái loading
 
   const handleCancelModal = () => {
     form.resetFields();
@@ -28,6 +29,7 @@ const AddStaff = (props: IProps) => {
 
   const handleSubmit = async (value: any) => {
     console.log(value);
+    setLoading(true);
 
     try {
       const data = {
@@ -52,10 +54,13 @@ const AddStaff = (props: IProps) => {
         });
       } else {
         showNotification("error", {
-          message: error?.message,
+          message: "Thêm nhân viên thất bại",
           description: errorMessage,
         });
       }
+    }
+    finally{
+      setLoading(false);
     }
   };
   return (
@@ -68,7 +73,7 @@ const AddStaff = (props: IProps) => {
         style={{ top: 20 }}
         open={isCreateModalOpen}
         onCancel={() => handleCancelModal()}
-        okButtonProps={{ style: { background: "#00b96b" } }}
+        okButtonProps={{ style: { background: "#00b96b" },loading }}
       >
         <Form
           form={form}

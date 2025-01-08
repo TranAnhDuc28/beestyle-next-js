@@ -6,6 +6,8 @@ import { DatePicker, Form, Input, Modal, Select } from "antd";
 import dayjs from "dayjs";
 import { memo, useEffect } from "react";
 import utc from "dayjs/plugin/utc";
+import { usePhoneValidation } from "@/hooks/usePhoneNumberValidation";
+import { useEmailValidation } from "@/hooks/useEmailValidation";
 
 interface IProps {
   isUpdateModalOpen: boolean;
@@ -18,6 +20,8 @@ interface IProps {
 dayjs.extend(utc);
 const UpdateStaff = (props: IProps) => {
   const { showNotification } = useAppNotifications();
+  const { validatePhoneNumber } = usePhoneValidation();
+  const { validateEmail } = useEmailValidation();
   const {
     isUpdateModalOpen,
     setIsUpdateModalOpen,
@@ -81,7 +85,7 @@ const UpdateStaff = (props: IProps) => {
         });
       } else {
         showNotification("error", {
-          message: error?.message,
+          message: "Cập nhật nhân viên thất bại",
           description: errorMessage,
         });
       }
@@ -132,15 +136,22 @@ const UpdateStaff = (props: IProps) => {
         <Form.Item
           label="Email"
           name="email"
-          rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+          rules={[
+            { validator: (_, value) => validateEmail(value), required: true },
+          ]}
         >
           <Input />
         </Form.Item>
 
         <Form.Item
-          label="Sdt"
+          label="Số điện thoại"
           name="phoneNumber"
-          rules={[{ required: true, message: "Vui lòng nhập sdt!" }]}
+          rules={[
+            {
+              validator: (_, value) => validatePhoneNumber(value),
+              required: true,
+            },
+          ]}
         >
           <Input />
         </Form.Item>

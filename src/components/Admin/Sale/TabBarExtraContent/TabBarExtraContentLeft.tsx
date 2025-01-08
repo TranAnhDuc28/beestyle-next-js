@@ -1,11 +1,12 @@
 "use client"
-import React, {memo, useCallback, useEffect, useMemo, useState} from "react";
-import {AutoComplete, AutoCompleteProps, Avatar, Empty, Flex, Modal, Skeleton, Typography} from "antd";
+import React, {memo, useCallback, useContext, useEffect, useMemo, useState} from "react";
+import {AutoComplete, AutoCompleteProps, Avatar, Empty, Flex, Image, Modal, Skeleton, Typography} from "antd";
 import {SearchOutlined} from "@ant-design/icons";
 import {useDebounce} from "use-debounce";
 import useSearchProduct from "@/components/Admin/Product/hooks/useSearchProduct";
 import {IProduct} from "@/types/IProduct";
 import ModalListProductVariant from "@/components/Admin/Sale/ModalListProductVariant";
+import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
 
 const {Text, Title} = Typography;
 
@@ -14,7 +15,13 @@ const transformOptions = (data: IProduct[]) => {
         value: product.id.toString(),
         label: (
             <Flex align="center">
-                <Avatar src="/BuiQuangLan.png" shape="square"  style={{borderRadius: 5, width: 70, height: 70}}/>
+                <Image
+                    src={product.imageUrl}
+                    alt={product.imageUrl}
+                    preview={false}
+                    fallback="/no-img.png"
+                    style={{width: 70, height: "100%"}}
+                />
                 <Flex align="start" justify="space-between" style={{padding: '10px 0px', width: "100%"}}>
                     <div className="ml-5">
                         <Text strong>{product.productName}</Text> <br/>
@@ -32,19 +39,20 @@ const transformOptions = (data: IProduct[]) => {
 
 const TabBarExtraContentLeft: React.FC = () => {
     const [isOpenModalListProductVariant, setOpenModalListProductVariant] = useState(false);
+    const handleSale = useContext(HandleSale);
     const [productSelected, setProductSelected] = useState<IProduct | undefined>(undefined);
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const [debounceSearchValue] = useDebounce(searchTerm, 500);
+    const [debounceSearchValue] = useDebounce(searchTerm, 1000);
 
     const {dataOptionSearchProduct, isLoading} = useSearchProduct(debounceSearchValue);
 
-    const handleSearch = useCallback((value: string) => {
+    const handleSearch = (value: string) => {
         setSearchTerm(value);
         if (value?.trim().length === 0) setOptions([]);
-    }, []);
+    };
 
-    const handleSelect = useCallback((value: string) => {
+    const handleSelect = (value: string) => {
         const selectedProduct = dataOptionSearchProduct?.find((product: any) => product.id.toString() === value);
         if (selectedProduct) {
             setProductSelected(selectedProduct);
@@ -52,7 +60,7 @@ const TabBarExtraContentLeft: React.FC = () => {
         }
         setSearchTerm("");
         setOptions([]);
-    }, [dataOptionSearchProduct]);
+    };
 
     const transformedOptions = useMemo(() => transformOptions(dataOptionSearchProduct), [dataOptionSearchProduct]);
 
@@ -93,6 +101,7 @@ const TabBarExtraContentLeft: React.FC = () => {
                 product={productSelected}
                 isOpenModalListProductVariant={isOpenModalListProductVariant}
                 setOpenModalListProductVariant={setOpenModalListProductVariant}
+                handleAddOrderItemCart={handleSale?.handleAddOrderItemCart ?? handleSale?.handleAddOrderItemCart}
             />
         </>
     )

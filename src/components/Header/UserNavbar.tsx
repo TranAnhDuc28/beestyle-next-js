@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import styles from "./css/navbar.module.css";
 import { LuShoppingBag } from "react-icons/lu";
 import CartDrawer from "@/components/User/Cart/CartDrawer";
-import { CART_KEY } from "@/services/user/ShoppingCartService";
+import { CART_KEY, checkShoppingCartData } from "@/services/user/ShoppingCartService";
 import SearchDrawer from "../User/Home/Search/SearchDrawer";
 
 const { Header } = Layout;
@@ -42,8 +42,13 @@ const Navbar: React.FC = () => {
     }, []);
 
     const handleCartOpen = () => {
-        if (pathname.includes('/cart') || pathname.includes('/checkout')) setIsCartOpen(false);
-        else setIsCartOpen(true);
+        if (pathname.includes('/cart') || pathname.includes('/checkout') || pathname.includes('/vnpay')) {
+            setIsCartOpen(false);
+        }
+        else {
+            checkShoppingCartData();
+            setIsCartOpen(true);
+        }
     }
 
     const handleSearchOpen = () => setSearchOpen(true);

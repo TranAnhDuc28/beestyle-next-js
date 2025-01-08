@@ -1,54 +1,46 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Button } from 'antd';
 import StatisticalDateFilter from './StatisticalDateFilter';
 
-
-
-interface IProps{
+interface IProps {
     data: any
     dataOrderStatus: any
-}   
-        
-
-const CustomYAxisTick = (props: any) => {
-    
-    const { x, y, payload} = props;
-
-    return (
-        <g transform={`translate(${x},${y})`}>
-            <text x={0} y={0} dy={0} textAnchor="end" fill="#666">
-                {payload.value.toLocaleString('vi-VN')}
-                <tspan x={8} dy={0}></tspan>
-            </text>
-        </g>
-    );
-};
+}
 
 //Hoá đơn
-const InvoiceChart = ({data} : any) => (
+const InvoiceChart = ({ data }: any) => (
     <ResponsiveContainer width="100%" height="100%">
-    <BarChart data={data?.items || []}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="period" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="totalOderSuccess" fill="#4096FF" name="Hoá đơn" barSize={30} />
-        <Bar dataKey="totalOderFailed" fill="#FF0000" name="Hoá đơn hủy" barSize={30} />
-    </BarChart>
-</ResponsiveContainer>
+        <BarChart
+            data={data?.items || []}
+            layout="horizontal"
+            margin={{ top: 5, right: 0, left: 30, bottom: 5 }}
+        >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="period" />
+            <YAxis type="number" allowDecimals={false} />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="totalOderSuccess" fill="#4096FF" name="Hoá đơn" barSize={30} />
+            <Bar dataKey="totalOderFailed" fill="#FF0000" name="Hoá đơn hủy" barSize={30} />
+        </BarChart>
+    </ResponsiveContainer>
 );
 
 //Doanh thu
-const RevenueChart = ({data} : any) => (
+const RevenueChart = ({ data }: any) => (
     <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data?.items || []}>
+        <BarChart
+            data={data?.items || []}
+            layout="horizontal"
+            margin={{ top: 5, right: 0, left: 30, bottom: 5 }}
+        >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="period" />
             <YAxis
-                tickFormatter={(value) => value}
-                tick={<CustomYAxisTick />}
+                type="number"
+                tickFormatter={(value) => value.toLocaleString()}
+                tick={{ fontSize: 14, width: 250 }}
             />
             <Tooltip />
             <Legend />
@@ -58,12 +50,16 @@ const RevenueChart = ({data} : any) => (
 );
 
 //Sản phẩm
-const ProductChart = ({data} : any) => (
+const ProductChart = ({ data }: any) => (
     <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data?.items || []}>
+        <BarChart
+            data={data?.items || []}
+            layout="horizontal"
+            margin={{ top: 5, right: 0, left: 30, bottom: 5 }}
+        >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="period" />
-            <YAxis />
+            <YAxis type="number" allowDecimals={false} />
             <Tooltip />
             <Legend />
             <Bar dataKey="quantity" fill="#4096FF" name="Số lượng" barSize={30} />
@@ -71,10 +67,10 @@ const ProductChart = ({data} : any) => (
     </ResponsiveContainer>
 );
 
-const StatisticChart = (props:IProps) => {
-    const {data,dataOrderStatus} = props;
+const StatisticChart = (props: IProps) => {
+    const { data, dataOrderStatus } = props;
     console.log(data);
-    
+
     const [currentPage, setCurrentPage] = useState(1);
     const handleFilterChange = (value: string | { from: string; to: string } | null, type: 'day' | 'month' | 'year' | 'range') => {
         console.log("Filter changed:", value, type);
@@ -88,7 +84,7 @@ const StatisticChart = (props:IProps) => {
             case 2:
                 return <RevenueChart data={data} />;
             case 3:
-                return <ProductChart data={data}/>;
+                return <ProductChart data={data} />;
             default:
                 return <InvoiceChart data={data} />;
         }
@@ -108,7 +104,7 @@ const StatisticChart = (props:IProps) => {
                         Thống kê Sản phẩm
                     </Button>
                 </div>
-                <StatisticalDateFilter onFilterChange={handleFilterChange}  />
+                <StatisticalDateFilter onFilterChange={handleFilterChange} />
             </div>
             <div className="w-full h-[460px] float-start">
                 {renderChart()}
@@ -118,10 +114,3 @@ const StatisticChart = (props:IProps) => {
 };
 
 export default StatisticChart;
-
-
-
-
-
-
-
