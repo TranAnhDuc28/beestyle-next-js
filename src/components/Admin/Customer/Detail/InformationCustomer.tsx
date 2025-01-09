@@ -16,6 +16,8 @@ import React, { useEffect, useState } from "react";
 import { updateCustomer } from "@/services/CustomerService";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { usePhoneValidation } from "@/hooks/usePhoneNumberValidation";
+import { useEmailValidation } from "@/hooks/useEmailValidation";
 
 interface IProps {
   customer: ICustomer;
@@ -30,6 +32,8 @@ const InformationCustomer = (props: IProps) => {
 
   const { showNotification } = useAppNotifications();
   const [form] = Form.useForm();
+  const { validatePhoneNumber } = usePhoneValidation();
+  const { validateEmail } = useEmailValidation();
   const [isEditing, setIsEditing] = useState(false); // Quản lý trạng thái chỉnh sửa
 
   const onFinish = async (value: any) => {
@@ -62,7 +66,7 @@ const InformationCustomer = (props: IProps) => {
         });
       } else {
         showNotification("error", {
-          message: error?.message,
+          message: "Cập nhật khách hàng thất bại",
           description: errorMessage,
         });
       }
@@ -113,11 +117,25 @@ const InformationCustomer = (props: IProps) => {
         <Form.Item
           label="Sdt"
           name="phoneNumber"
-          rules={[{ required: true, message: "Vui lòng nhập sdt!" }]}
+          rules={[
+            {
+              validator: (_, value) => validatePhoneNumber(value),
+              required: true,
+            },
+          ]}
         >
           <Input disabled={!isEditing} />
         </Form.Item>
-        <Form.Item label="Email" name="email">
+        <Form.Item
+          label="Email"
+          name="email"
+          rules={[
+            {
+              validator: (_, value) => validateEmail(value),
+              required: true,
+            },
+          ]}
+        >
           <Input disabled={!isEditing} />
         </Form.Item>
         <Row gutter={[10, 20]} justify="space-between">
