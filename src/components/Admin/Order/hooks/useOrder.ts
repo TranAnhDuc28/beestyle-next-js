@@ -1,6 +1,6 @@
 import useAppNotifications from "@/hooks/useAppNotifications";
-import {IOrder, IOrderCreateOrUpdate, IOrderDetail} from "@/types/IOrder";
-import {createOrder, getOrders, updateOrder, URL_API_ORDER} from "@/services/OrderService";
+import {IOrder, IOrderCreateOrUpdate, IOrderDetail, IOrderOnlineCreateOrUpdate} from "@/types/IOrder";
+import {createOrder, createOrderOnline, getOrders, updateOrder, URL_API_ORDER} from "@/services/OrderService";
 import {useState} from "react";
 import useSWR from "swr";
 
@@ -55,10 +55,10 @@ const useOrder = () => {
         }
     }
 
-    const handleCreateOrderOnline =  async (value: IOrderCreateOrUpdate) => {
+    const handleCreateOrderOnline =  async (value: IOrderOnlineCreateOrUpdate) => {
         setLoading(true);
         try {
-            const result = await createOrder(value);
+            const result = await createOrderOnline(value);
             return result.data;
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
@@ -77,7 +77,7 @@ const useOrder = () => {
     const handleUpdateOrder =  async (value: IOrder, id: number) => {
         try {
             const result = await updateOrder(value, id);
-            // await mutate(`${URL_API_ORDER.get}/sale/order-pending`);
+            // await mutate(`${URL_API_ORDER.get}/admin-counter-sale/order-pending`);
             if (result.data) showNotification("success", {message: result.message});
             return result.data;
         } catch (error: any) {
@@ -93,6 +93,6 @@ const useOrder = () => {
         }
     }
 
-    return {loading, handleCreateOrder, handleUpdateOrder, handleGetOrderService: handleGetOrderDetail};
+    return {loading, handleCreateOrder, handleCreateOrderOnline, handleUpdateOrder, handleGetOrderService: handleGetOrderDetail};
 }
 export default useOrder;

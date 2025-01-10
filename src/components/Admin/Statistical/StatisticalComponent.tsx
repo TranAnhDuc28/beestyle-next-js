@@ -20,7 +20,10 @@ const StatisticalComponent = () => {
         `${URL_API_STATISTICAL.getRevenue}${params.size !== 0 ? `?${params.toString()}` : ""
         }`,
         getRevenues,
-        { revalidateOnFocus: false, revalidateOnReconnect: false }
+        {
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false
+        }
     );
     useEffect(() => {
         if (revuneError) {
@@ -36,7 +39,10 @@ const StatisticalComponent = () => {
         `${URL_API_STATISTICAL.getOrderStatus}${params.size !== 0 ? `?${params.toString()}` : ""
         }`,
         getOrderStatus,
-        { revalidateOnFocus: false, revalidateOnReconnect: false }
+        {
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false
+        }
     );
     useEffect(() => {
         if (error) {
@@ -48,8 +54,6 @@ const StatisticalComponent = () => {
         }
     }, [error]);
 
-    console.log(revuneData);
-    console.log(data);
     let resultRevune: any;
     let result: any;
     if (!revuneLoading && revuneData) {

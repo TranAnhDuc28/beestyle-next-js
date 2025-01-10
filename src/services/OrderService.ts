@@ -1,12 +1,12 @@
 import httpInstance from "@/utils/HttpInstance";
-import {IOrder, IOrderCreateOrUpdate} from "@/types/IOrder";
+import {IOrder, IOrderCreateOrUpdate, IOrderOnlineCreateOrUpdate} from "@/types/IOrder";
 
 export const URL_API_ORDER = {
     getOrderPending: '/admin/order/order-pending',
     getOrderDetail: (id: number) => `/admin/order/${id}`,
     filter: '/admin/order',
     create: '/admin/order/create',
-    createOrderOnline: '/admin/order/create-order-online',
+    checkout: '/checkout',
     update: (id: number) => `/admin/order/update/${id}`,
     updateOrderStatus: (id: number) => `/admin/order/${id}/update-status`
 };
@@ -21,8 +21,8 @@ export const createOrder = async (data: IOrderCreateOrUpdate) => {
     return response.data;
 }
 
-export const createOrderOnline = async (data: IOrderCreateOrUpdate) => {
-    const response = await httpInstance.post(URL_API_ORDER.createOrderOnline, data);
+export const createOrderOnline = async (data: IOrderOnlineCreateOrUpdate) => {
+    const response = await httpInstance.post(URL_API_ORDER.checkout, data);
     return response.data;
 }
 
