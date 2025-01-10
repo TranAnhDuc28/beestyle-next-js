@@ -126,13 +126,13 @@ const UpdateStaff = (props: IProps) => {
         >
           <Input />
         </Form.Item>
-        <Form.Item
+        {/* <Form.Item
           label="Password"
           name="password"
           rules={[{ required: true, message: "Vui lòng nhập password!" }]}
         >
           <Input.Password />
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item
           label="Email"
           name="email"
