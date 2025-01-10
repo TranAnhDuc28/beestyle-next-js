@@ -1,7 +1,7 @@
 import React, {memo, useEffect, useRef, useState} from "react";
-import {Button, Card, Col, Flex, InputNumber, Row, Table, TableProps, Tag, Tooltip, Typography} from "antd";
+import {Button, Col, Flex, Row, Table, TableProps, Tag, Tooltip, Typography} from "antd";
 import {ICreateOrUpdateOrderItem, IOrderItem} from "@/types/IOrderItem";
-import {FORMAT_NUMBER_WITH_COMMAS, PARSER_NUMBER_WITH_COMMAS_TO_NUMBER} from "@/constants/AppConstants";
+import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 import {DeleteOutlined} from "@ant-design/icons";
 import useOrderItem from "@/components/Admin/Order/hooks/useOrderItem";
 import useProductVariant from "@/components/Admin/Product/Variant/hooks/useProductVariant";
