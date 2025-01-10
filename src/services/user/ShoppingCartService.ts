@@ -1,6 +1,7 @@
 export const CART_KEY = 'shopping_cart';
 
 export interface ICartItem {
+    length: number;
     shopping_cart_id: number;
     product_variant_id: string;
     product_id: string;
@@ -71,6 +72,11 @@ export const removeItemFromCart = (shoppingCartId: string) => {
     localStorage.setItem(CART_KEY, JSON.stringify(updatedCart));
     window.dispatchEvent(new Event('cartUpdated'));
 };
+
+export const removeAllCartItems = () => {
+    localStorage.removeItem(CART_KEY);
+    window.dispatchEvent(new Event('cartUpdated'));
+}
 
 export const checkShoppingCartData = async () => {
     const cartItems = getCart();

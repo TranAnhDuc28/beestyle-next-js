@@ -1,6 +1,6 @@
 import useAppNotifications from "@/hooks/useAppNotifications";
-import {IOrder, IOrderCreateOrUpdate, IOrderDetail} from "@/types/IOrder";
-import {createOrder, getOrders, updateOrder, URL_API_ORDER} from "@/services/OrderService";
+import {IOrder, IOrderCreateOrUpdate, IOrderDetail, IOrderOnlineCreateOrUpdate} from "@/types/IOrder";
+import {createOrder, createOrderOnline, getOrders, updateOrder, URL_API_ORDER} from "@/services/OrderService";
 import {useState} from "react";
 import useSWR from "swr";
 
@@ -55,6 +55,25 @@ const useOrder = () => {
         }
     }
 
+    const handleCreateOrderOnline =  async (value: IOrderOnlineCreateOrUpdate) => {
+        setLoading(true);
+        try {
+            const result = await createOrderOnline(value);
+            return result.data;
+        } catch (error: any) {
+            const errorMessage = error?.response?.data?.message;
+            if (errorMessage && typeof errorMessage === 'object') {
+                Object.entries(errorMessage).forEach(([field, message]) => {
+                    showNotification("error", {message: String(message)});
+                });
+            } else {
+                showNotification("error", {message: error?.message, description: errorMessage});
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const handleUpdateOrder =  async (value: IOrder, id: number) => {
         try {
             const result = await updateOrder(value, id);
@@ -74,6 +93,6 @@ const useOrder = () => {
         }
     }
 
-    return {loading, handleCreateOrder, handleUpdateOrder, handleGetOrderService: handleGetOrderDetail};
+    return {loading, handleCreateOrder, handleUpdateOrder, handleGetOrderService: handleGetOrderDetail, handleCreateOrderOnline};
 }
 export default useOrder;
