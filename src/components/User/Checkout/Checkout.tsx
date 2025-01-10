@@ -76,6 +76,7 @@ const Checkout = () => {
         try {
             const userData = await userForm.validateFields(); // Dữ liệu từ form thông tin khách hàng
             const shippingFee = await payment.shippingFee; // Phí ship
+            const voucherId = await payment.voucherId;
             const selectedPayment = await payment.selectedPayment; // Phương thức thanh toán
             const originalAmount = await payment.originalAmount; // Tổng tiền sản phẩm trong giỏ hàng (Chưa tính phí ship và voucher)
             const discountAmount = await payment.discountAmount; // Số tiền được giảm giá bởi voucher
@@ -99,6 +100,7 @@ const Checkout = () => {
                 discountAmount,
                 shippingFee,
                 totalAmount,
+                voucherId,
                 paymentMethod: selectedPayment,
                 orderChannel: ORDER_CHANEL.ONLINE.key,
                 orderType: ORDER_TYPE.DELIVERY.key,

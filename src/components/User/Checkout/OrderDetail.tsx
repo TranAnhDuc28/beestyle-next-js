@@ -56,6 +56,7 @@ const OrderDetail = (props: IProps) => {
     const originalAmount = calculateUserCartTotalAmount(cartItems); // Tính tổng giá của toàn bộ sản phẩm trong giỏ
     const discountAmount = calculateInvoiceDiscount(appliedVoucher, originalAmount); // Số tiền được giảm giá bởi voucher
     const totalAmount = calculateUserCartTotalAmountWithVoucherAndShippingFee(originalAmount, discountAmount, shippingFee); // Tính tổng giá của toàn bộ sản phẩm trong giỏ (Đã tính phí ship + voucher)
+    const voucherId = appliedVoucher?.id;
 
     const onButtonClick = async () => {
         if (!selectedPayment) {
@@ -78,7 +79,8 @@ const OrderDetail = (props: IProps) => {
                         discountAmount,
                         totalAmount,
                         shippingFee,
-                        selectedPayment
+                        selectedPayment,
+                        voucherId
                     }
 
                     // Confirm thanh toán (Modal confirm chỉ áp dụng đối với COD)

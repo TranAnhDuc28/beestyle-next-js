@@ -22,6 +22,10 @@ const VNPayConfirmPage: React.FC = () => {
                     const pendingOrderData = JSON.parse(combinedDataString);
                     try {
                         const result = await handleCreateOrderOnline(pendingOrderData);
+                        if (result.success === false) {
+                            throw new Error(result.message);
+                        }
+
                         localStorage.removeItem('pendingOrderData');
                         removeAllCartItems(); // Xoá data Cart
 
