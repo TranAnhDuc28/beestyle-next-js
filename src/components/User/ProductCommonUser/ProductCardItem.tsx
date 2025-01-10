@@ -37,6 +37,7 @@ const ProductCardItem: React.FC<IProps> = (props) => {
             <Badge.Ribbon
                 text="Test"
                 color="red"
+                className="d-none"
             >
                 <Card
                     hoverable

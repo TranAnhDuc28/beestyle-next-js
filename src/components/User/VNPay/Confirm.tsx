@@ -4,14 +4,13 @@ import React, { useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import useOrder from '@/components/Admin/Order/hooks/useOrder';
 import UserLoader from '@/components/Loader/UserLoader';
-import { CART_KEY, removeAllCartItems } from '@/services/user/ShoppingCartService';
+import { removeAllCartItems } from '@/services/user/ShoppingCartService';
 
 const VNPayConfirmPage: React.FC = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { handleCreateOrderOnline } = useOrder();
     const paymentStatus = searchParams.get('vnp_ResponseCode');
-    const trackingNumber = searchParams.get('vnp_TxnRef');
     const hasCalledApi = useRef(false);
 
     useEffect(() => {
@@ -22,9 +21,11 @@ const VNPayConfirmPage: React.FC = () => {
                 if (combinedDataString) {
                     const pendingOrderData = JSON.parse(combinedDataString);
                     try {
-                        await handleCreateOrderOnline(pendingOrderData);
+                        const result = await handleCreateOrderOnline(pendingOrderData);
                         localStorage.removeItem('pendingOrderData');
                         removeAllCartItems(); // Xoá data Cart
+
+                        const trackingNumber = result.orderTrackingNumber;
                         router.push(`/order/success?tracking_number=${trackingNumber}`);
                     } catch (error) {
                         console.error("Lỗi khi tạo đơn hàng sau thanh toán:", error);
@@ -41,7 +42,7 @@ const VNPayConfirmPage: React.FC = () => {
         } else if (paymentStatus && paymentStatus !== '00') {
             router.push('/order/error');
         }
-    }, [paymentStatus, trackingNumber, router, handleCreateOrderOnline]);
+    }, [paymentStatus, router, handleCreateOrderOnline]);
 
 
     return (

@@ -9,6 +9,7 @@ import { QuestionCircleOutlined } from "@ant-design/icons";
 import { PAYMENT_METHOD } from "@/constants/PaymentMethod";
 import { IVoucherUser } from "@/types/IVoucher";
 import { MdOutlineDiscount } from "react-icons/md";
+import { calculateInvoiceDiscount, calculateUserCartTotalAmount, calculateUserCartTotalAmountWithVoucherAndShippingFee } from "@/utils/AppUtil";
 
 interface IProps {
     handleSubmit: (payment: any) => Promise<void>;
@@ -52,9 +53,9 @@ const OrderDetail = (props: IProps) => {
         };
     }, []);
 
-    const productTotal = cartItems.reduce((total: number, item) => total + item.total_price, 0); // Tính tổng giá của toàn bộ sản phẩm trong giỏ (Chưa tính phí ship)
-    const totalAmount = productTotal >= 500000 ? productTotal : productTotal + shippingFee; // Tính tổng giá của toàn bộ sản phẩm trong giỏ (Đã tính phí ship + voucher)
-    const savings = 0; // Số tiền được giảm giá bởi voucher
+    const originalAmount = calculateUserCartTotalAmount(cartItems); // Tính tổng giá của toàn bộ sản phẩm trong giỏ
+    const discountAmount = calculateInvoiceDiscount(appliedVoucher, originalAmount); // Số tiền được giảm giá bởi voucher
+    const totalAmount = calculateUserCartTotalAmountWithVoucherAndShippingFee(originalAmount, discountAmount, shippingFee); // Tính tổng giá của toàn bộ sản phẩm trong giỏ (Đã tính phí ship + voucher)
 
     const onButtonClick = async () => {
         if (!selectedPayment) {
@@ -73,8 +74,10 @@ const OrderDetail = (props: IProps) => {
                     await addressForm.validateFields();
 
                     const data = {
-                        shippingFee,
+                        originalAmount,
+                        discountAmount,
                         totalAmount,
+                        shippingFee,
                         selectedPayment
                     }
 
@@ -114,23 +117,28 @@ const OrderDetail = (props: IProps) => {
                 <div className="space-y-2 text-sm pb-2 border-b">
                     <div className="flex justify-between">
                         <span>Tổng giá trị sản phẩm</span>
-                        <span>{productTotal.toLocaleString()} đ</span>
+                        <span>{originalAmount.toLocaleString()} đ</span>
                     </div>
                     <div className="flex justify-between">
-                        <span>Vận chuyển</span>
+                        <span>Phí vận chuyển</span>
                         <span>{shippingFee.toLocaleString()} đ</span>
                     </div>
                     <div className="flex justify-between text-red-500">
                         <span>Giảm giá vận chuyển</span>
-                        <span>{productTotal >= 500000 ? `- ${shippingFee.toLocaleString()} đ` : '0 đ'}</span>
+                        <span>
+                            {originalAmount >= 500000 && shippingFee > 0 ? "-" + shippingFee.toLocaleString() : "0"} đ
+                        </span>
+                    </div>
+                    <div className="flex justify-between text-red-500">
+                        <span>Giảm giá voucher</span>
+                        <span>
+                            {discountAmount > 0 ? "-" + discountAmount.toLocaleString() : "0"} đ
+                        </span>
                     </div>
                     <div className="flex justify-between text-lg font-semibold">
                         <span>Tổng thanh toán</span>
                         <span>{totalAmount.toLocaleString()} đ</span>
                     </div>
-                    <p className="text-red-500 text-xs mt-2">
-                        Bạn đã tiết kiệm được {savings.toLocaleString()} đ
-                    </p>
                     <div className="bg-blue-50 p-1 rounded-lg mb-4 mt-4 flex justify-between items-center">
                         <p className="font-medium mt-3 ms-3 flex items-center">
                             <RiDiscountPercentLine size={20} className="me-1" /> Mã giảm giá
