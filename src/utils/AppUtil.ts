@@ -26,18 +26,18 @@ export const calculateCartTotalQuantity = (dataCart: IOrderItem[]): number => {
 /**
  * tính tiền giảm giá dựa trên tổng giá trị đơn hàng
  * @param voucher
- * @param totalAmount
+ * @param originalAmount
  */
-export const calculateInvoiceDiscount = (voucher: IVoucher | undefined, totalAmount: number | undefined): number => {
+export const calculateInvoiceDiscount = (voucher: IVoucher | undefined, originalAmount: number | undefined): number => {
     // nếu không áp dụng voucher trả về 0
-    if (!voucher || !totalAmount) return 0;
+    if (!voucher || !originalAmount) return 0;
 
     let discountAmount: number = 0;
 
     // Nếu áp dụng voucher giảm giá theo giá trị %
     if (voucher.discountType === DISCOUNT_TYPE.PERCENTAGE.key) {
         // tính tiền giảm dự trên tổng tiền hàng
-        discountAmount = totalAmount * (voucher.discountValue / 100);
+        discountAmount = originalAmount * (voucher.discountValue / 100);
 
         // Nếu giá trị giảm lớn hơn giới hạn giảm giá, trả về giới hạn giảm giá
         if (discountAmount > voucher.maxDiscount) {

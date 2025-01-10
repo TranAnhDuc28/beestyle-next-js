@@ -1,11 +1,14 @@
-import { Button, Form, FormInstance } from "antd";
+import { Button, Card, Form, FormInstance } from "antd";
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import { CART_KEY } from "@/services/user/ShoppingCartService";
+import { ICartItem } from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { RiDiscountPercentLine } from "react-icons/ri";
 import DiscountCodeModal from "../Discount/DiscountCodeModal";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import { PAYMENT_METHOD } from "@/constants/PaymentMethod";
+import { IVoucherUser } from "@/types/IVoucher";
+import { MdOutlineDiscount } from "react-icons/md";
 
 interface IProps {
     handleSubmit: (payment: any) => Promise<void>;
@@ -13,10 +16,7 @@ interface IProps {
     selectedPayment: string;
     userForm: FormInstance;
     addressForm: FormInstance;
-    selectedProvinceName: string | null;
-    selectedDistrictName: string | null;
-    selectedWardCode: string | null;
-    detailAddress: string | null;
+    cartsProp: ICartItem[];
 }
 
 const OrderDetail = (props: IProps) => {
@@ -24,83 +24,82 @@ const OrderDetail = (props: IProps) => {
         handleSubmit,
         shippingFee,
         selectedPayment,
-        // userForm,
-        // addressForm,
-        // selectedProvinceName,
-        // selectedDistrictName,
-        // selectedWardCode,
-        // detailAddress,
+        userForm,
+        addressForm,
+        cartsProp,
     } = props;
     const router = useRouter();
     const { showModal } = useAppNotifications();
     const { showNotification } = useAppNotifications();
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [cartItems, setCartItems] = useState(cartsProp);
+    const [appliedVoucher, setAppliedVoucher] = useState<IVoucherUser | null>(null);
 
     const openModal = () => setIsModalVisible(true);
     const closeModal = () => setIsModalVisible(false);
 
-    const [cartItems, setCartItems] = useState(() => {
-        try {
-            const storedCartItems = localStorage.getItem(CART_KEY);
-            return storedCartItems ? JSON.parse(storedCartItems) : [];
-        } catch (error) {
-            console.error(error);
-            return [];
-        }
-    });
-
+    // Kiểm tra giỏ hàng rỗng khi render component
     useEffect(() => {
         const handleStorageChange = () => {
-            try {
-                const storedCartItems = localStorage.getItem(CART_KEY);
-                setCartItems(storedCartItems ? JSON.parse(storedCartItems) : []);
-            } catch (error) {
-                console.error(error);
-                setCartItems([]);
-            }
+            const updatedCart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+            setCartItems(updatedCart);
         };
 
-        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener("storage", handleStorageChange);
 
         return () => {
-            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener("storage", handleStorageChange);
         };
     }, []);
 
-    const productTotal = cartItems.reduce((total: number, item: any) => total + item.total_price, 0);
-    const totalAmount = productTotal >= 500000 ? productTotal : productTotal + shippingFee;
-    const savings = 0;
+    const productTotal = cartItems.reduce((total: number, item) => total + item.total_price, 0); // Tính tổng giá của toàn bộ sản phẩm trong giỏ (Chưa tính phí ship)
+    const totalAmount = productTotal >= 500000 ? productTotal : productTotal + shippingFee; // Tính tổng giá của toàn bộ sản phẩm trong giỏ (Đã tính phí ship + voucher)
+    const savings = 0; // Số tiền được giảm giá bởi voucher
 
     const onButtonClick = async () => {
-        if (cartItems.length === 0) {
-            router.push('/cart');
-            return;
-        } else if (!selectedPayment) {
+        if (!selectedPayment) {
+            // Check xem có method thanh toán nào được chọn chưa
             showNotification("error", { message: "Vui lòng chọn phương thức thanh toán!" });
             return;
         } else {
-            try {
-                await props.userForm.validateFields();
-                await props.addressForm.validateFields();
+            // Check giỏ hàng rỗng khi click thanh toán
+            if (cartItems.length === 0) {
+                router.push('/cart');
+                return;
+            } else {
+                try {
+                    // Validate form
+                    await userForm.validateFields();
+                    await addressForm.validateFields();
 
-                showModal('confirm', {
-                    title: 'Xác nhận đặt hàng',
-                    content: 'Bạn có muốn xác nhận đơn hàng này?',
-                    icon: (<QuestionCircleOutlined style={{ color: 'blue' }} />),
-                    centered: true,
-                    okText: 'Xác nhận',
-                    cancelText: 'Huỷ bỏ',
-                    onOk: async () => {
-                        const data = {
-                            shippingFee,
-                            totalAmount,
-                            selectedPayment
-                        }
-                        await handleSubmit({ ...data });
+                    const data = {
+                        shippingFee,
+                        totalAmount,
+                        selectedPayment
                     }
-                });
-            } catch (errorInfo) {
-                console.log('Failed:', errorInfo);
+
+                    // Confirm thanh toán (Modal confirm chỉ áp dụng đối với COD)
+                    if (selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key) {
+                        showModal('confirm', {
+                            title: 'Xác nhận đặt hàng',
+                            content: 'Bạn có muốn xác nhận đơn hàng này?',
+                            icon: (<QuestionCircleOutlined style={{ color: 'blue' }} />),
+                            centered: true,
+                            okText: 'Xác nhận',
+                            cancelText: 'Huỷ bỏ',
+                            onOk: async () => {
+                                await handleSubmit({ ...data });
+                            }
+                        });
+                    } else if (selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key) {
+                        await handleSubmit({ ...data });
+                    } else {
+                        console.warn("Phương thức thanh toán không tồn tại!");
+                    }
+                } catch (errorInfo) {
+                    // Xử lý lỗi nếu quá trình confirm thanh toán có vấn đề
+                    console.error('Đã xảy ra lỗi khi đặt hàng:', errorInfo);
+                }
             }
         }
     };
@@ -144,10 +143,51 @@ const OrderDetail = (props: IProps) => {
                             Chọn mã {">"}
                         </Button>
                     </div>
+
+                    {/* Hiển thị voucher được chọn */}
+                    {appliedVoucher && (
+                        <Card
+                            key={appliedVoucher.id}
+                            className={"relative rounded-md overflow-hidden flex flex-col mb-3"}
+                            style={{ border: '1px solid #f0f0f0' }}
+                            styles={{ body: { padding: 10 } }}
+                        >
+                            <div className="absolute top-0 left-0 w-2 bg-yellow-400 h-full"></div>
+
+                            <div className="flex items-center">
+                                <MdOutlineDiscount size={40} className="mx-3" />
+                                <div
+                                    className="absolute ms-1 top-0 left-20 h-full"
+                                    style={{
+                                        borderRight: '1px dashed #DADADA'
+                                    }}
+                                ></div>
+                                <div className="ms-4">
+                                    <div className="font-bold text-base text-black truncate">{appliedVoucher.voucherCode}</div>
+                                    <div className="text-sm font-semibold text-black mb-1">
+                                        {appliedVoucher.voucherName}
+                                    </div>
+                                    <div className="text-xs text-gray-600 truncate">
+                                        {appliedVoucher.discountType === 'PERCENTAGE' ?
+                                            `Giảm giá ${appliedVoucher.discountValue}% (tối đa ${appliedVoucher.maxDiscount.toLocaleString()}đ)` :
+                                            appliedVoucher.discountType === 'CASH' ? `Giảm giá ${appliedVoucher.discountValue.toLocaleString()}đ` : ''
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                className="absolute top-2 right-2 bg-black text-white px-2 rounded-md border-none"
+                                onClick={() => setAppliedVoucher(null)}
+                            >
+                                X
+                            </button>
+                        </Card>
+                    )}
                 </div>
 
                 <div className="mt-6">
-                    <h3 className="mb-3">:::</h3>
+                    <h3 className="mb-3"></h3>
                 </div>
 
                 <div className="mt-6 text-center">
@@ -163,10 +203,18 @@ const OrderDetail = (props: IProps) => {
                     </Form.Item>
                 </div>
             </div>
-            <DiscountCodeModal
-                isVisible={isModalVisible}
-                onClose={closeModal}
-            />
+
+            {/* Voucher modal */}
+            {isModalVisible && (
+                <DiscountCodeModal
+                    isVisible={isModalVisible}
+                    onClose={closeModal}
+                    onApply={(voucher) => {
+                        setAppliedVoucher(voucher);
+                        closeModal();
+                    }}
+                />
+            )}
         </>
     );
 };
