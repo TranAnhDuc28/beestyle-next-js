@@ -1,12 +1,15 @@
 "use client";
 import { Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { createCustomer } from "@/services/CustomerService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { createAddress } from "@/services/AddressService";
 import useAddress from "../Address/hook/useAddress";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import { usePhoneValidation } from "@/hooks/usePhoneNumberValidation";
+import utc from "dayjs/plugin/utc";
+import dayjs from "dayjs";
+import { useEmailValidation } from "@/hooks/useEmailValidation";
 
 const { Option } = Select;
 
@@ -15,11 +18,14 @@ interface IProps {
   setIsCreateModalOpen: (value: boolean) => void;
   mutate: any;
 }
+dayjs.extend(utc);
 
 const AddCustomer = (props: IProps) => {
   const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
   const { showNotification } = useAppNotifications();
   const { validatePhoneNumber } = usePhoneValidation();
+  const { validateEmail } = useEmailValidation();
+  const [loading, setLoading] = useState(false); // Thêm trạng thái loading
 
   const [selectedProvinceCode, setSelectedProvinceCode] = useState<
     string | null
@@ -109,11 +115,18 @@ const AddCustomer = (props: IProps) => {
   );
 
   const handleSubmit = async (values: any) => {
+    const data = {
+      ...values,
+      dateOfBirth: values.dateOfBirth
+        ? values.dateOfBirth.format("YYYY-MM-DD")
+        : null,
+    };
+    setLoading(true);
     try {
-      const result = await createCustomer(values);
-      console.log(values.addressDetail);
+      const result = await createCustomer(data);
+      console.log(data.addressDetail);
 
-      setSelectedAddressDetail(values.addressDetail);
+      setSelectedAddressDetail(data.addressDetail);
       console.log(selectedAddressDetail);
 
       if (result.data) {
@@ -148,7 +161,7 @@ const AddCustomer = (props: IProps) => {
             });
           } else {
             showNotification("error", {
-              message: error?.message,
+              message: "Thêm khách hàng thất bại",
               description: errorMessage,
             });
           }
@@ -167,10 +180,12 @@ const AddCustomer = (props: IProps) => {
         });
       } else {
         showNotification("error", {
-          message: error?.message,
+          message: "Thêm khách hàng thất bại",
           description: errorMessage,
         });
       }
+    } finally {
+      setLoading(false);
     }
   };
   const handleCancelModal = () => {
@@ -192,7 +207,7 @@ const AddCustomer = (props: IProps) => {
         style={{ top: 20 }}
         open={isCreateModalOpen}
         onCancel={handleCancelModal}
-        okButtonProps={{ style: { background: "#00b96b" } }}
+        okButtonProps={{ style: { background: "#00b96b" }, loading }}
       >
         <Form
           form={form}
@@ -220,7 +235,7 @@ const AddCustomer = (props: IProps) => {
                 label="Số điện thoại"
                 name="phoneNumber"
                 rules={[
-                  { validator: (_, value) => validatePhoneNumber(value) },
+                  { validator: (_, value) => validatePhoneNumber(value), required: true},
                 ]}
               >
                 <Input placeholder="Nhập số điện thoại" />
@@ -231,13 +246,26 @@ const AddCustomer = (props: IProps) => {
           <Row gutter={[16, 16]}>
             {/* Email và Ngày sinh */}
             <Col xs={24} md={12}>
-              <Form.Item label="Email" name="email">
+              <Form.Item
+                label="Email"
+                name="email"
+                rules={[
+                  {
+                    validator: (_, value) => validateEmail(value),
+                    required: true,
+                  },
+                ]}
+              >
                 <Input placeholder="Nhập email" />
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>
               <Form.Item label="Ngày sinh" name="dateOfBirth">
-                <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} placeholder="Chọn ngày sinh" />
+                <DatePicker
+                  format="YYYY-MM-DD"
+                  style={{ width: "100%" }}
+                  placeholder="Chọn ngày sinh"
+                />
               </Form.Item>
             </Col>
           </Row>

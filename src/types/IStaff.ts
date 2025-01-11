@@ -4,7 +4,7 @@ interface IStaff {
     username: string,
     fullName: string,
     password: string,
-    dateOfBirth: string,
+    dateOfBirth?: Date ,
     gender: string,
     phoneNumber: string,
     email: string,
