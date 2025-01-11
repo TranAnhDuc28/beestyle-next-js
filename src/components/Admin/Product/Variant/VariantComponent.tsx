@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import React, {useEffect, useState} from "react";
 import HeaderVariant from "@/components/Admin/Product/Variant/HeaderVariant";
 import {Col, Flex, Layout, TableColumnsType, Tag, Tooltip, Typography} from "antd";

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 function Variant({ params }: { params: { id: string }}) {
-    const {id} = useParams()
+    const {id} = useParams();
     return (
         <Suspense fallback={<AdminLoader/>}>
             <VariantComponent productId={productId}/>

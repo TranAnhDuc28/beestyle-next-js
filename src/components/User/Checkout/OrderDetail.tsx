@@ -1,7 +1,7 @@
 import { Button, Card, Form, FormInstance } from "antd";
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import { ICartItem } from "@/services/user/ShoppingCartService";
+import { checkShoppingCartData, ICartItem } from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { RiDiscountPercentLine } from "react-icons/ri";
 import DiscountCodeModal from "../Discount/DiscountCodeModal";
@@ -59,6 +59,7 @@ const OrderDetail = (props: IProps) => {
     const voucherId = appliedVoucher?.id;
 
     const onButtonClick = async () => {
+        checkShoppingCartData();
         if (!selectedPayment) {
             // Check xem có method thanh toán nào được chọn chưa
             showNotification("error", { message: "Vui lòng chọn phương thức thanh toán!" });
