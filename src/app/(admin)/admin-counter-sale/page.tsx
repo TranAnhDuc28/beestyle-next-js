@@ -5,7 +5,7 @@ import SaleComponent from "@/components/Admin/Sale/SaleComponent";
 
 export const metadata: Metadata = {
     title: "Bán hàng",
-    description: "Point of sale",
+    description: "Point of admin-counter-sale",
 };
 
 const PointOfSale = () => {

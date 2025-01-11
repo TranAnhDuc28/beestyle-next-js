@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import ShoppingCart from "@/components/User/Cart/ShoppingCart";
 import {Metadata} from "next";
+import UserLoader from "@/components/Loader/UserLoader";
 
 export const metadata: Metadata = {
     title: "Giỏ hàng",
@@ -9,9 +10,9 @@ export const metadata: Metadata = {
 
 const CartPage = () => {
     return (
-        <div>
+        <Suspense fallback={<UserLoader/>}>
             <ShoppingCart/>
-        </div>
+        </Suspense>
     );
 };
 

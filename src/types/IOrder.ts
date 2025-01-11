@@ -1,5 +1,6 @@
 import {IVoucher} from "@/types/IVoucher";
 import {IAddress} from "@/types/IAddress";
+import {ICreateOrUpdateOrderItem} from "@/types/IOrderItem";
 
 export interface IOrder {
     id: number;
@@ -69,4 +70,28 @@ export interface IOrderCreateOrUpdate {
     orderType?: string;
     orderStatus?: string;
     note?: string;
+}
+
+export interface IOrderOnlineCreateOrUpdate {
+    id?: number;
+    customerId?: number;
+    voucherId?: number;
+    receiverName?: string;
+    phoneNumber?: string;
+    email?: string;
+    shippingAddressId?: number;
+    shippingAddress?: string;
+    shippingFee?: number;
+    originalAmount?: number;
+    discountAmount?: number;
+    totalAmount?: number;
+    amountPaid?:number;
+    paymentDate?: Date;
+    paymentMethod?: string;
+    isPrepaid?: boolean;
+    orderChannel?: string;
+    orderType?: string;
+    orderStatus?: string;
+    note?: string;
+    orderItems: ICreateOrUpdateOrderItem[];
 }

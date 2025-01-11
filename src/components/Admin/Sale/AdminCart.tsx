@@ -10,7 +10,7 @@ import useAppNotifications from "@/hooks/useAppNotifications";
 import {URL_API_PRODUCT_VARIANT} from "@/services/ProductVariantService";
 import useProductVariant from "@/components/Admin/Product/Variant/hooks/useProductVariant";
 import {STOCK_ACTION} from "@/constants/StockAction";
-import {calculateCartTotalAmount, calculateCartTotalQuantity} from "@/utils/AppUtil";
+import {calculateCartOriginAmount, calculateCartTotalQuantity} from "@/utils/AppUtil";
 
 const {Text} = Typography;
 
@@ -38,7 +38,7 @@ const AdminCart: React.FC = () => {
 
             // tính toán tổng tiền hàng và só lượng trong giỏ
             handleSale?.setTotalQuantityCart(calculateCartTotalQuantity(orderItems));
-            handleSale?.setTotalAmountCart(calculateCartTotalAmount(orderItems));
+            handleSale?.setTotalAmountCart(calculateCartOriginAmount(orderItems));
         }
     }, [orderItems]);
 

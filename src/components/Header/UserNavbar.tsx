@@ -1,18 +1,18 @@
-/* eslint-disable @next/next/no-img-element */
-import React, { memo, useEffect, useMemo, useState } from "react";
+import React, {memo, useEffect, useMemo, useState} from "react";
 import Link from "next/link";
-import { Layout, Menu, Badge, Button, Flex, Typography, Tooltip } from "antd";
-import { SearchOutlined, UserOutlined } from "@ant-design/icons";
-import type { MenuProps } from "antd";
-import { usePathname } from "next/navigation";
+import {Layout, Menu, Badge, Button, Flex, Typography, Tooltip} from "antd";
+import {SearchOutlined, UserOutlined} from "@ant-design/icons";
+import type {MenuProps} from "antd";
+import {usePathname} from "next/navigation";
 import styles from "./css/navbar.module.css";
-import { LuShoppingBag } from "react-icons/lu";
+import {LuShoppingBag} from "react-icons/lu";
 import CartDrawer from "@/components/User/Cart/CartDrawer";
-import { CART_KEY, checkShoppingCartData } from "@/services/user/ShoppingCartService";
+import {CART_KEY, checkShoppingCartData} from "@/services/user/ShoppingCartService";
 import SearchDrawer from "../User/Home/Search/SearchDrawer";
+import {useAuthentication} from "@/components/Context/AuthenticationProvider";
 
-const { Header } = Layout;
-const { Text } = Typography;
+const {Header} = Layout;
+const {Text} = Typography;
 
 const Navbar: React.FC = () => {
     const [cartCount, setCartCount] = useState<number>(0);
@@ -20,6 +20,7 @@ const Navbar: React.FC = () => {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isSearchOpen, setSearchOpen] = useState(false);
     const pathname = usePathname();
+    const auth = useAuthentication();
 
     const fetchCartItems = () => {
         const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
@@ -41,12 +42,11 @@ const Navbar: React.FC = () => {
         };
     }, []);
 
-    const handleCartOpen = () => {
+    const handleCartOpen = async () => {
         if (pathname.includes('/cart') || pathname.includes('/checkout') || pathname.includes('/vnpay')) {
             setIsCartOpen(false);
-        }
-        else {
-            checkShoppingCartData();
+        } else {
+            await checkShoppingCartData();
             setIsCartOpen(true);
         }
     }
@@ -58,7 +58,7 @@ const Navbar: React.FC = () => {
             key: "category",
             label: (
                 <Link href={"/home"} className="link-no-decoration">
-                    <Text style={{ fontSize: 18 }} strong></Text>
+                    <Text style={{fontSize: 18}} strong></Text>
                 </Link>
             )
         },
@@ -66,7 +66,7 @@ const Navbar: React.FC = () => {
             key: "home",
             label: (
                 <Link href={"/"} className="link-no-decoration">
-                    <Text style={{ fontSize: 18 }} strong>Trang chủ</Text>
+                    <Text style={{fontSize: 18}} strong>Trang chủ</Text>
                 </Link>
             )
         },
@@ -74,7 +74,7 @@ const Navbar: React.FC = () => {
             key: "product",
             label: (
                 <Link href={"/product"} className="link-no-decoration">
-                    <Text style={{ fontSize: 18 }} strong>Sản phẩm</Text>
+                    <Text style={{fontSize: 18}} strong>Sản phẩm</Text>
                 </Link>
             )
         },
@@ -82,7 +82,7 @@ const Navbar: React.FC = () => {
             key: "news",
             label: (
                 <Link href={"/news"} className="link-no-decoration">
-                    <Text style={{ fontSize: 18 }} strong>Tin thời trang</Text>
+                    <Text style={{fontSize: 18}} strong>Tin thời trang</Text>
                 </Link>
             )
         },
@@ -90,7 +90,7 @@ const Navbar: React.FC = () => {
             key: "contact",
             label: (
                 <Link href={"/contact"} className="link-no-decoration">
-                    <Text style={{ fontSize: 18 }} strong>Liên hệ</Text>
+                    <Text style={{fontSize: 18}} strong>Liên hệ</Text>
                 </Link>
             )
         },
@@ -98,7 +98,7 @@ const Navbar: React.FC = () => {
             key: "order-lookup",
             label: (
                 <Link href={"/order-lookup"} className="link-no-decoration">
-                    <Text style={{ fontSize: 18 }} strong>Tra cứu đơn hàng</Text>
+                    <Text style={{fontSize: 18}} strong>Tra cứu đơn hàng</Text>
                 </Link>
             )
         },
@@ -125,7 +125,7 @@ const Navbar: React.FC = () => {
                 <div className={styles.iconButton}>
                     <Tooltip
                         title={
-                            <span style={{ fontSize: 12, padding: 0 }}>
+                            <span style={{fontSize: 12, padding: 0}}>
                                 Tìm kiếm
                             </span>
                         }
@@ -133,7 +133,7 @@ const Navbar: React.FC = () => {
                     >
                         <Button
                             type="text"
-                            icon={<SearchOutlined style={{ fontSize: 20 }} />}
+                            icon={<SearchOutlined style={{fontSize: 20}}/>}
                             onClick={handleSearchOpen}
                         />
                     </Tooltip>
@@ -141,24 +141,24 @@ const Navbar: React.FC = () => {
                 <div className={styles.iconButton}>
                     <Tooltip
                         title={
-                            <span style={{ fontSize: 12, padding: 0 }}>
+                            <span style={{fontSize: 12, padding: 0}}>
                                 Tài khoản
                             </span>
                         }
                         color="#F7941D"
                     >
-                        <Link href={'/user-profile'} passHref>
+                        <Link href={auth?.authentication ? '/user-profile' : '/account'} passHref>
                             <Button
                                 type="text"
-                                icon={<UserOutlined style={{ fontSize: 20 }} />}
+                                icon={<UserOutlined style={{fontSize: 20}}/>}
                             />
                         </Link>
                     </Tooltip>
                 </div>
-                <div className={styles.iconButton} style={{ marginTop: 5 }}>
+                <div className={styles.iconButton} style={{marginTop: 5}}>
                     <Tooltip
                         title={
-                            <span style={{ fontSize: 12, padding: 0 }}>
+                            <span style={{fontSize: 12, padding: 0}}>
                                 Giỏ hàng
                             </span>
                         }
@@ -167,16 +167,16 @@ const Navbar: React.FC = () => {
                         <Badge
                             count={cartCount}
                             size="default"
-                            style={{ backgroundColor: "#F7941D" }}
+                            style={{backgroundColor: "#F7941D"}}
                         >
                             <Button
                                 type="text"
-                                icon={<LuShoppingBag style={{ fontSize: 20 }} onClick={handleCartOpen} />}
+                                icon={<LuShoppingBag style={{fontSize: 20}} onClick={handleCartOpen}/>}
                             />
                         </Badge>
                     </Tooltip>
-                    <CartDrawer open={isCartOpen} onClose={() => setIsCartOpen(false)} />
-                    <SearchDrawer open={isSearchOpen} onClose={() => setSearchOpen(false)} />
+                    <CartDrawer open={isCartOpen} onClose={() => setIsCartOpen(false)}/>
+                    <SearchDrawer open={isSearchOpen} onClose={() => setSearchOpen(false)}/>
                 </div>
             </Flex>
         </Header>
