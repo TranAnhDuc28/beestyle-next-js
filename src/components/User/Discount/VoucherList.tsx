@@ -46,6 +46,10 @@ const VoucherList: React.FC<VoucherListProps> = ({ vouchers, onApply }) => {
                                         }
                                     </div>
 
+                                    <div className="text-xs text-gray-600 truncate mt-1">
+                                        Cho đơn từ: {voucher.minOrderValue.toLocaleString()}đ
+                                    </div>
+
                                     <div className="mt-1 text-xs text-gray-500">
                                         <span className={voucher.status === 'EXPIRED' && 'text-red-500' || ''}>
                                             HSD: {

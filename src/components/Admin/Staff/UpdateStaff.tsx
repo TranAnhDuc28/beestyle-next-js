@@ -3,9 +3,11 @@ import { STATUS } from "@/constants/Status";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { updateStaff } from "@/services/StaffService";
 import { DatePicker, Form, Input, Modal, Select } from "antd";
-import moment from "moment";
+import dayjs from "dayjs";
 import { memo, useEffect } from "react";
-const { Option } = Select;
+import utc from "dayjs/plugin/utc";
+import { usePhoneValidation } from "@/hooks/usePhoneNumberValidation";
+import { useEmailValidation } from "@/hooks/useEmailValidation";
 
 interface IProps {
   isUpdateModalOpen: boolean;
@@ -15,8 +17,11 @@ interface IProps {
   setDataUpdate: any;
 }
 
+dayjs.extend(utc);
 const UpdateStaff = (props: IProps) => {
   const { showNotification } = useAppNotifications();
+  const { validatePhoneNumber } = usePhoneValidation();
+  const { validateEmail } = useEmailValidation();
   const {
     isUpdateModalOpen,
     setIsUpdateModalOpen,
@@ -39,9 +44,9 @@ const UpdateStaff = (props: IProps) => {
         username: dataUpdate.username,
         email: dataUpdate.email,
         fullName: dataUpdate.fullName,
-        dateOfBirth: dataUpdate.dateOfBirth
-          ? moment(dataUpdate.dateOfBirth).local()
-          : null, // Hiển thị ngày theo múi giờ hiện tại
+        dateOfBirth: dayjs(dataUpdate.dateOfBirth).isValid()
+          ? dayjs.utc(dataUpdate.dateOfBirth)
+          : null,
         gender: dataUpdate.gender,
         phoneNumber: dataUpdate.phoneNumber,
         password: dataUpdate.password,
@@ -53,14 +58,18 @@ const UpdateStaff = (props: IProps) => {
     // Cập nhật lại form khi param thay đổi
   }, [dataUpdate]);
 
-  const onFinish = async (value: IStaff) => {
+  const onFinish = async (value: any) => {
     console.log(value);
     try {
       if (dataUpdate) {
         const data = {
           ...value,
+          dateOfBirth: value.dateOfBirth
+            ? value.dateOfBirth.format("YYYY-MM-DD")
+            : null,
           id: dataUpdate.id,
         };
+        console.log(data);
         const result = await updateStaff(data);
         mutate();
         if (result.data) {
@@ -76,7 +85,7 @@ const UpdateStaff = (props: IProps) => {
         });
       } else {
         showNotification("error", {
-          message: error?.message,
+          message: "Cập nhật nhân viên thất bại",
           description: errorMessage,
         });
       }
@@ -117,25 +126,32 @@ const UpdateStaff = (props: IProps) => {
         >
           <Input />
         </Form.Item>
-        <Form.Item
+        {/* <Form.Item
           label="Password"
           name="password"
           rules={[{ required: true, message: "Vui lòng nhập password!" }]}
         >
           <Input.Password />
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item
           label="Email"
           name="email"
-          rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+          rules={[
+            { validator: (_, value) => validateEmail(value), required: true },
+          ]}
         >
           <Input />
         </Form.Item>
 
         <Form.Item
-          label="Sdt"
+          label="Số điện thoại"
           name="phoneNumber"
-          rules={[{ required: true, message: "Vui lòng nhập sdt!" }]}
+          rules={[
+            {
+              validator: (_, value) => validatePhoneNumber(value),
+              required: true,
+            },
+          ]}
         >
           <Input />
         </Form.Item>
@@ -145,7 +161,11 @@ const UpdateStaff = (props: IProps) => {
           name="dateOfBirth"
           // rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
         >
-          <DatePicker format={"YYYY-MM-DD"} style={{ width: "100%" }} />
+          <DatePicker
+            allowClear={false}
+            format={"YYYY-MM-DD"}
+            style={{ width: "100%" }}
+          />
         </Form.Item>
 
         <Form.Item

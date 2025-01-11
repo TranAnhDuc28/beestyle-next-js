@@ -170,7 +170,7 @@ const ProductDescription: React.FC<ProductDescriptionProps> = ({
                             href="#"
                             onClick={(e) => {
                                 e.preventDefault();
-                                addToCart(product, quantity, product?.images as ProductImage[]);
+                                addToCart(product, quantity);
                             }}
                             className="btn"
                             style={{ margin: '0 0 0 20px', padding: '0 151px' }}
@@ -183,7 +183,7 @@ const ProductDescription: React.FC<ProductDescriptionProps> = ({
                     <Link
                         href={"/cart"}
                         onClick={() => {
-                            addToCart(product, quantity, product?.images as ProductImage[]);
+                            addToCart(product, quantity);
                         }}
                         className="btn"
                         style={{ width: '635px' }}

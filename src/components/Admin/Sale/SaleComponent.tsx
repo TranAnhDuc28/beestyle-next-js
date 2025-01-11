@@ -14,7 +14,7 @@ import useOrder from "@/components/Admin/Order/hooks/useOrder";
 import useOrderItem from "@/components/Admin/Order/hooks/useOrderItem";
 import {URL_API_PRODUCT_VARIANT} from "@/services/ProductVariantService";
 import {URL_API_ORDER_ITEM} from "@/services/OrderItemService";
-import {calculateCartTotalAmount, calculateCartTotalQuantity} from "@/utils/AppUtil";
+import {calculateCartOriginAmount, calculateCartTotalQuantity} from "@/utils/AppUtil";
 import {PAYMENT_METHOD} from "@/constants/PaymentMethod";
 import {ORDER_TYPE} from "@/constants/OrderType";
 import {ORDER_CHANEL} from "@/constants/OrderChanel";
@@ -108,7 +108,7 @@ const SaleComponent: React.FC = () => {
                 if (newTabsItems.length > 0 && orderActiveTabKey !== newTabsItems[0].key) {
                     setOrderActiveTabKey(newTabsItems[0].key);
                     setTotalQuantityCart(calculateCartTotalQuantity(dataCart));
-                    setTotalQuantityCart(calculateCartTotalAmount(dataCart));
+                    setTotalQuantityCart(calculateCartOriginAmount(dataCart));
                     setOrderCreateOrUpdate((prevValue) => {
                         return {
                             ...prevValue,
@@ -129,7 +129,7 @@ const SaleComponent: React.FC = () => {
             if (newTabsItems.length > 0 && newTabsItems[0].key !== orderActiveTabKey) {
                 setOrderActiveTabKey(newTabsItems[0].key);
                 setTotalQuantityCart(calculateCartTotalQuantity(dataCart));
-                setTotalQuantityCart(calculateCartTotalAmount(dataCart));
+                setTotalQuantityCart(calculateCartOriginAmount(dataCart));
                 setOrderCreateOrUpdate((prevValue) => {
                     return {
                         ...prevValue,
@@ -272,7 +272,7 @@ const SaleComponent: React.FC = () => {
                 ...prevValue,
                 id: Number(newActiveKey),
                 orderTrackingNumber: orderTrackingNumber,
-                totalAmount: calculateCartTotalAmount(dataCart)
+                totalAmount: calculateCartOriginAmount(dataCart)
             }
         });
     };

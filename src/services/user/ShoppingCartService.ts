@@ -1,3 +1,5 @@
+import { ProductVariant } from "./SingleProductService";
+
 export const CART_KEY = 'shopping_cart';
 
 export interface ICartItem {
@@ -26,44 +28,46 @@ const getCart = () => {
     return [];
 };
 
-const saveCart = (cart: any[]) => {
+const saveCart = (cart: ICartItem[]) => {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
 };
 
-export const addToCart = (product: any, quantity: number) => {
+export const addToCart = (product: ProductVariant, quantity: number) => {
     const cart = getCart();
+    console.log(quantity);
 
-    const existingIndex = cart.findIndex((item: ICartItem) =>
-        item.product_id === product.productId &&
-        item.color === product.colorName &&
-        item.size === product.sizeName
-    );
+    if (product && quantity) {
+        const existingIndex = cart.findIndex((item: ICartItem) =>
+            item.product_id === product.productId &&
+            item.color === product.colorName &&
+            item.size === product.sizeName
+        );
 
-    if (existingIndex !== -1) {
-        cart[existingIndex].quantity += quantity;
-        cart[existingIndex].total_price = cart[existingIndex].quantity * cart[existingIndex].discounted_price;
-    } else {
-        const newItem = {
-            shopping_cart_id: Date.now(),
-            product_variant_id: product.id,
-            product_id: product.productId,
-            product_name: product.productName,
-            sku: product.sku,
-            color: product.colorName,
-            size: product.sizeName,
-            product_quantity: product.quantityInStock,
-            quantity: quantity,
-            sale_price: product.salePrice,
-            discounted_price: product.discountPrice,
-            total_price: quantity * product.discountPrice,
-            description: product.description,
-            image: product.images.find((image: { isDefault: boolean; }) => image.isDefault)
-        };
-        cart.push(newItem);
+        if (existingIndex !== -1) {
+            cart[existingIndex].quantity += quantity;
+            cart[existingIndex].total_price = cart[existingIndex].quantity * cart[existingIndex].discounted_price;
+        } else {
+            const newItem = {
+                shopping_cart_id: Date.now(),
+                product_variant_id: product.id,
+                product_id: product.productId,
+                product_name: product.productName,
+                sku: product.sku,
+                color: product.colorName,
+                size: product.sizeName,
+                product_quantity: product.quantityInStock,
+                quantity: quantity,
+                sale_price: product.salePrice,
+                discounted_price: product.discountPrice,
+                total_price: quantity * product.discountPrice,
+                image: product.images.find((image: { isDefault: boolean; }) => image.isDefault)
+            };
+            cart.push(newItem);
+        }
+        saveCart(cart);
+
+        window.dispatchEvent(new Event('cartUpdated'));
     }
-    saveCart(cart);
-
-    window.dispatchEvent(new Event('cartUpdated'));
 };
 
 export const removeItemFromCart = (shoppingCartId: string) => {
@@ -140,13 +144,28 @@ export const checkShoppingCartData = async () => {
                     if (matchingItemFromBE.discountPrice !== item.discounted_price) {
                         updatedItem.total_price = matchingItemFromBE.totalPrice;
                     }
+
+                    console.log(updatedItem);
+
+                    if (matchingItemFromBE.imageUrl !== item.image) {
+                        updatedItem.image = {
+                            id: null,
+                            imageUrl: matchingItemFromBE.imageUrl,
+                            isDefault: true
+                        };
+                    }
                     return updatedItem;
                 } else {
-                    console.warn(`Không tìm thấy Product Variant với ID: ${item.product_variant_id}.`);
+                    console.warn("Không tìm thấy sản phẩm");
+                    return null;
                 }
-            });
+            }).filter((item: unknown) => item !== null);
 
-            saveCart(updatedCartItems);
+            if (updatedCartItems && updatedCartItems.length > 0) {
+                saveCart(updatedCartItems);
+            } else {
+                localStorage.removeItem(CART_KEY); // Xóa key shopping_cart
+            }
             window.dispatchEvent(new Event('cartUpdated'));
         } catch (error) {
             console.error('Đã xảy ra lỗi trong quá trình đồng bộ dữ liệu', error);

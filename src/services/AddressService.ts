@@ -33,7 +33,7 @@ export const getAddressByCustomerId = async (key: any) => {
     return response.data
 }
 
-export const updateAddress = async (data: IAddress) => {
+export const updateAddress = async (data: any) => {
     const response = await httpInstance.put(`${URL_API_ADDRESS.update}/${data.id}`, data);
     return response.data;
 }

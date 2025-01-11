@@ -28,7 +28,7 @@ type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
     {key: 'tong-quan', label: <Link href={"/admin"}>Tổng quan</Link>, icon: <DashboardOutlined />,},
-    {key: 'ban-hang-tai-quay', label: <Link href={"/sale"}>Bán hàng tại quầy</Link>, icon: <ShoppingCartOutlined/>,},
+    {key: 'ban-hang-tai-quay', label: <Link href={"/admin-counter-sale"}>Bán hàng tại quầy</Link>, icon: <ShoppingCartOutlined/>,},
     {key: 'don-hang', label: <Link href={"/admin/order"}>Quản lý đơn hàng</Link>, icon: <ShoppingCartOutlined/>,},
     {
         key: 'quan-li-san-pham', label: 'Quản lý sản phẩm', icon: <ProductOutlined/>,
