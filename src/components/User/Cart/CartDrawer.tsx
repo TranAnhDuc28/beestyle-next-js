@@ -8,6 +8,8 @@ import { CART_KEY, removeItemFromCart } from "@/services/user/ShoppingCartServic
 import QuantityControl from "@/components/User/Cart/Properties/QuantityControl";
 import ProgressShipping from './Properties/ProgressShipping';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+import { FREE_SHIPPING_THRESHOLD } from '@/constants/AppConstants';
+import { calculateUserCartTotalAmount } from '@/utils/AppUtil';
 
 interface CartDrawerProps {
     open: boolean;
@@ -30,8 +32,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
         };
     }, []);
 
-    const condition = 500000;
-    const totalAmount = cartItems.reduce((total: number, item: { total_price: number; }) => total + item.total_price, 0);
+    const condition = FREE_SHIPPING_THRESHOLD;
+    const totalAmount = calculateUserCartTotalAmount(cartItems);
 
     const handleQuantityChange = (index: number, newQuantity: number) => {
         const newCartItems = [...cartItems];

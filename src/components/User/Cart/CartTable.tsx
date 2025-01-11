@@ -3,13 +3,13 @@ import { Button, Card, Image, Typography } from "antd";
 import QuantityControl from "@/components/User/Cart/Properties/QuantityControl";
 import { CloseOutlined, FireOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import ProgressShipping from "./Properties/ProgressShipping";
-import { removeItemFromCart } from "@/services/user/ShoppingCartService";
+import { ICartItem, removeItemFromCart } from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import Link from "next/link";
 
 const { Title, Text } = Typography;
 
-const CartTable = ({ cartItems, updateCartItems }: { cartItems: any; updateCartItems: any }) => {
+const CartTable = ({ cartItems, updateCartItems }: { cartItems: ICartItem[]; updateCartItems: ICartItem[] }) => {
     const condition = 500000;
     const totalAmount = cartItems.reduce((total: number, item: { total_price: number; }) => total + item.total_price, 0);
     const promotionPrice = cartItems.reduce((total: number, item: { sale_price: number; discounted_price: number; quantity: number; }) => total + (item.sale_price - item.discounted_price) * item.quantity, 0);
@@ -72,17 +72,7 @@ const CartTable = ({ cartItems, updateCartItems }: { cartItems: any; updateCartI
             </div>
 
             <div style={{ maxHeight: '515px', overflowY: 'auto' }}>
-                {cartItems.map((item: {
-                    shopping_cart_id: string;
-                    product_id: string;
-                    image: { imageUrl: string };
-                    product_name: string;
-                    discounted_price: number;
-                    sale_price: number;
-                    color: string;
-                    size: string;
-                    quantity: number; quantityInStock: number;
-                }, index: number) => (
+                {cartItems.map((item: ICartItem, index: number) => (
                     <div key={index.toString()}>
                         <div className="float-end">
                             <Button
