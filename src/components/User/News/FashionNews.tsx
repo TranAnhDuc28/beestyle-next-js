@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { Card, Row, Col, Button } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
 import MoreFashionNews from './MoreFashionNews';
+import BreadcrumbSection from '@/components/Breadcrumb/BreadCrumb';
 
 const { Meta } = Card;
 const initialNewsData = [
@@ -73,56 +74,64 @@ const FashionNews = () => {
         setShowSecondSection(false);
     };
 
+    const breadcrumbItems = [
+        { title: 'Trang chủ', path: '/' },
+        { title: 'Tin thời trang' },
+    ];
+
     return (
-        <div className="container mx-auto p-4">
-            <div className='py-5'>
-                <Image
-                    src={"/img_news/news-banner.webp"}
-                    alt='IMG' unoptimized
-                    width={1280} height={555}
-                />
-            </div>
-            <h1 className="text-2xl font-bold mb-4 text-center">CHUYỂN ĐỘNG TRAO YÊU THƯƠNG</h1>
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-medium">Mới nhất</h2>
-                {newsData.length > 4 && (
-                    <Button type="link" className="text-blue-500" onClick={showMore ? handleShowMore : handleCollapse}>
-                        {showMore ? "Xem thêm →" : "Thu gọn ←"}
-                    </Button>
-                )}
-            </div>
-            <Row gutter={[16, 16]}>
-                {newsData.slice(0, 4).map((news) => (
-                    <Col key={news.id} xs={24} sm={12} md={6}>
-                        <Link
-                            href={`/news/${news.id}/blog`}
-                            className='link-no-decoration'
-                            passHref
-                        >
-                            <Card
-                                hoverable
-                                cover={
-                                    <Image
-                                        src={news.imageUrl}
-                                        alt={news.title}
-                                        width={320} height={280}
-                                        unoptimized
-                                    />
-                                }
-                                className="h-full flex flex-col transition-opacity duration-700 ease-in-out"
+        <>
+            <BreadcrumbSection items={breadcrumbItems} />
+            <div className="container mx-auto p-4">
+                <div className='py-5'>
+                    <Image
+                        src={"/img_news/news-banner.webp"}
+                        alt='IMG' unoptimized
+                        width={1280} height={555}
+                    />
+                </div>
+                <h1 className="text-2xl font-bold mb-4 text-center">CHUYỂN ĐỘNG TRAO YÊU THƯƠNG</h1>
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-lg font-medium">Mới nhất</h2>
+                    {newsData.length > 4 && (
+                        <Button type="link" className="text-blue-500" onClick={showMore ? handleShowMore : handleCollapse}>
+                            {showMore ? "Xem thêm →" : "Thu gọn ←"}
+                        </Button>
+                    )}
+                </div>
+                <Row gutter={[16, 16]}>
+                    {newsData.slice(0, 4).map((news) => (
+                        <Col key={news.id} xs={24} sm={12} md={6}>
+                            <Link
+                                href={`/news/${news.id}/blog`}
+                                className='link-no-decoration'
+                                passHref
                             >
-                                <Meta title={news.title} className="flex-grow mb-2" />
-                                <div className="mt-auto">
-                                    <p className="text-gray-500">CHUYỂN ĐỘNG TRAO YÊU THƯƠNG | {news.date}</p>
-                                </div>
-                            </Card>
-                        </Link>
-                    </Col>
-                ))}
-            </Row>
-            {showSecondSection && (<MoreFashionNews newsData={newsData} />)}
-        </div>
+                                <Card
+                                    hoverable
+                                    cover={
+                                        <Image
+                                            src={news.imageUrl}
+                                            alt={news.title}
+                                            width={320} height={280}
+                                            unoptimized
+                                        />
+                                    }
+                                    className="h-full flex flex-col transition-opacity duration-700 ease-in-out"
+                                >
+                                    <Meta title={news.title} className="flex-grow mb-2" />
+                                    <div className="mt-auto">
+                                        <p className="text-gray-500">CHUYỂN ĐỘNG TRAO YÊU THƯƠNG | {news.date}</p>
+                                    </div>
+                                </Card>
+                            </Link>
+                        </Col>
+                    ))}
+                </Row>
+                {showSecondSection && (<MoreFashionNews newsData={newsData} />)}
+            </div>
+        </>
     );
 };
 
-export default FashionNews;
+export default memo(FashionNews);

@@ -1,8 +1,10 @@
+import { IOrderOnlineCreateOrUpdate } from "@/types/IOrder";
 import httpInstance from "@/utils/HttpInstance";
 
 export const URL_API_VNPAY = {
     createPayment: "/payment/create-payment", // Tạo liên kết thanh toán
     verifyPayment: "/payment/verify-payment", // Xác minh kết quả thanh toán
+    paymentSuccess: "/payment/success", // Hoàn tất thanh toán VNPay
 };
 
 /**
@@ -17,14 +19,14 @@ export const URL_API_VNPAY = {
 
 export const createVNPayPayment = async (
     orderId: string,
-    combinedData: any,
+    amount: number,
     ipAddress: string,
     bankCode?: string,
 ) => {
     try {
-        const response = await httpInstance.post("/payment/create-payment", {
+        const response = await httpInstance.post(URL_API_VNPAY.createPayment, {
             orderId,
-            combinedData,
+            amount,
             ipAddress,
             bankCode,
         });

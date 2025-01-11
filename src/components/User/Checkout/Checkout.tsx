@@ -6,17 +6,23 @@ import CheckoutForm from "./CheckoutForm";
 import OrderDetail from "./OrderDetail";
 import { Form } from "antd";
 import { createVNPayPayment } from "@/services/VNPayService";
-import { CART_KEY, checkShoppingCartData, ICartItem } from "@/services/user/ShoppingCartService";
+import { CART_KEY, checkShoppingCartData, ICartItem, removeAllCartItems } from "@/services/user/ShoppingCartService";
 import BreadcrumbSection from "@/components/Breadcrumb/BreadCrumb";
 import { ORDER_CHANEL } from "@/constants/OrderChanel";
 import { ORDER_TYPE } from "@/constants/OrderType";
 import { ORDER_STATUS } from "@/constants/OrderStatus";
 import { PAYMENT_METHOD } from "@/constants/PaymentMethod";
+import { IOrderOnlineCreateOrUpdate } from "@/types/IOrder";
+import { ICreateOrUpdateOrderItem } from "@/types/IOrderItem";
+import useOrder from "@/components/Admin/Order/hooks/useOrder";
+import { calculateCartTotalAmount, calculateUserCartTotalAmount } from "@/utils/AppUtil";
+import UserLoader from "@/components/Loader/UserLoader";
 
 const Checkout = () => {
     const router = useRouter();
     const [addressForm] = Form.useForm();
     const [userForm] = Form.useForm();
+    const { handleCreateOrderOnline } = useOrder();
 
     const [orderId] = useState("");
     const [cartItems] = useState(JSON.parse(localStorage.getItem(CART_KEY) || '[]'));
@@ -49,10 +55,11 @@ const Checkout = () => {
     const handleWardNameChange = (name: string | null) => setSelectedWardName(name);
     const handleDetailAddressChange = (address: string | null) => setDetailAddress(address);
 
-    const processVNPayPayment = async (payment: any, combinedData: any) => {
+    // Xử lý tạo thanh toán VNPay
+    const processVNPayPayment = async (payment: any) => {
         const ipAddress = "127.0.0.1";
         try {
-            const response = await createVNPayPayment(orderId, combinedData, ipAddress);
+            const response = await createVNPayPayment(orderId, payment.totalAmount, ipAddress);
 
             if (response && response.paymentUrl) {
                 window.location.href = response.paymentUrl;
@@ -64,13 +71,18 @@ const Checkout = () => {
         }
     };
 
+    // Xử lý đơn hàng và gửi request tói server
     const handleSubmit = async (payment: any) => {
         try {
-            const userData = await userForm.validateFields();
-            const totalAmount = await payment.totalAmount;
-            const shippingFee = await payment.shippingFee;
-            const selectedPayment = await payment.selectedPayment;
-            const cartFiltereds: ICartItem[] = cartItems && cartItems.length > 0 ? (cartItems.map((item: ICartItem) => {
+            const userData = await userForm.validateFields(); // Dữ liệu từ form thông tin khách hàng
+            const shippingFee = await payment.shippingFee; // Phí ship
+            const voucherId = await payment.voucherId;
+            const selectedPayment = await payment.selectedPayment; // Phương thức thanh toán
+            const originalAmount = await payment.originalAmount; // Tổng tiền sản phẩm trong giỏ hàng (Chưa tính phí ship và voucher)
+            const discountAmount = await payment.discountAmount; // Số tiền được giảm giá bởi voucher
+            const totalAmount = await payment.totalAmount // Tổng tiền sản phẩm trong giỏ hàng (Đã tính toán bao gồm phí ship & voucher);
+            // Map dữ liệu Order Item
+            const cartFiltereds: ICreateOrUpdateOrderItem[] = cartItems && cartItems.length > 0 ? (cartItems.map((item: ICartItem) => {
                 return {
                     productVariantId: item.product_variant_id,
                     quantity: item.quantity,
@@ -79,18 +91,22 @@ const Checkout = () => {
                 };
             })) : [];
 
-            const combinedData = {
+            // Map dữ liệu Order + Order Item
+            const pendingOrderData: IOrderOnlineCreateOrUpdate = {
                 receiverName: userData.customerName,
                 phoneNumber: userData.phone,
                 email: userData.email,
-                shippingFee: shippingFee,
-                totalAmount: totalAmount,
+                originalAmount,
+                discountAmount,
+                shippingFee,
+                totalAmount,
+                voucherId,
                 paymentMethod: selectedPayment,
-                orderChanel: ORDER_CHANEL.ONLINE.key,
+                orderChannel: ORDER_CHANEL.ONLINE.key,
                 orderType: ORDER_TYPE.DELIVERY.key,
                 orderStatus: ORDER_STATUS.AWAITING_CONFIRMATION.key,
                 isPrepaid: selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key,
-                shippingAddress: {
+                shippingAddress: JSON.stringify({
                     cityCode: selectedProvinceCode,
                     city: selectedProvinceName,
                     districtCode: selectedDistrictCode,
@@ -98,25 +114,44 @@ const Checkout = () => {
                     communeCode: selectedWardCode,
                     commune: selectedWardName,
                     addressName: detailAddress
-                },
+                }),
                 orderItems: cartFiltereds
             };
 
             if (selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key) {
-                console.log(JSON.stringify(combinedData, null, 2));
+                // Xử lý đặt hàng với method COD
+                await handleCreateOrderOnline(pendingOrderData)
+                    .then((orderData) => {
+                        // Xử lý kết quả thành công và chuyển hướng
+                        if (orderData) {
+                            const trackingNumber: string = orderData.orderTrackingNumber;
+                            removeAllCartItems(); // Xoá data Cart
+                            router.push('/order/success?tracking_number=' + trackingNumber);
+                        }
+
+                    })
+                    .catch(() => {
+                        // Xử lý chuyển hướng nếu có lỗi xảy ra
+                        router.push('/order/error');
+                    });
             } else if (selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key) {
-                await processVNPayPayment(payment, combinedData);
+                // Xử lý đặt hàng với method VNPay
+                localStorage.setItem('pendingOrderData', JSON.stringify(pendingOrderData));
+                await processVNPayPayment(payment);
             } else if (selectedPayment === "TEST") {
+                // Xử lý đặt hàng với method nhận tại cửa hàng (Test)
                 console.warn("Tính năng đang phát triển");
             } else {
+                // Validate method
                 console.error("Phương thức thanh toán không tồn tại!");
             }
         } catch (error) {
+            // Lỗi xảy ra trong quá trình xử lý thanh toán
             console.warn("Xác thực không thành công:", error);
         }
     };
 
-
+    // Validate giỏ hàng nếu có thay đổi từ phía server
     useEffect(() => {
         if (cartItems.length === 0) {
             router.push('/cart');
@@ -168,10 +203,7 @@ const Checkout = () => {
                                         selectedPayment={selectedPayment}
                                         userForm={userForm}
                                         addressForm={addressForm}
-                                        selectedProvinceName={selectedProvinceName}
-                                        selectedDistrictName={selectedDistrictName}
-                                        selectedWardCode={selectedWardCode}
-                                        detailAddress={detailAddress}
+                                        cartsProp={cartItems}
                                     />
                                 </div>
                             </div>
@@ -179,7 +211,9 @@ const Checkout = () => {
                     </section>
                 </>
             ) : (
-                <div className="w-full h-[750px]"></div>
+                <div>
+                    <UserLoader />
+                </div>
             )}
         </>
     );

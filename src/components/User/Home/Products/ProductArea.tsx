@@ -31,7 +31,8 @@ function ProductArea() {
         event.preventDefault();
         if (
             typeof param === 'string' && param.includes('0') ||
-            param.includes('1') || param.includes('2')
+            param.includes('1') || param.includes('2') ||
+            param.includes('3') || param.includes('4')
         ) {
             setQuery(param);
         }
@@ -78,15 +79,17 @@ function ProductArea() {
                                                     <Link
                                                         href="#"
                                                         className={`nav-link w-[85px] ${query === '2' ? 'active' : ''}`}
+                                                        onClick={(e) => handleSetParams('2', e)}
                                                         role="tab"
                                                     >
-                                                        Trẻ em
+                                                        Unisex
                                                     </Link>
                                                 </li>
                                                 <li className="nav-item">
                                                     <Link
                                                         href="#"
                                                         className={`nav-link w-[85px] px-1 ${query === '3' ? 'active' : ''}`}
+                                                        onClick={(e) => handleSetParams('3', e)}
                                                         role="tab"
                                                     >
                                                         Phổ biến
@@ -96,6 +99,7 @@ function ProductArea() {
                                                     <Link
                                                         href="#"
                                                         className={`nav-link w-[85px] ${query === '4' ? 'active' : ''}`}
+                                                        onClick={(e) => handleSetParams('4', e)}
                                                         role="tab"
                                                     >
                                                         Ưu đãi
