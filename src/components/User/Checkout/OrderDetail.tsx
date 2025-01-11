@@ -39,11 +39,7 @@ const OrderDetail = (props: IProps) => {
     const openModal = () => setIsModalVisible(true);
     const closeModal = () => setIsModalVisible(false);
 
-<<<<<<< HEAD
-    const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
-    console.log(cartItems);
-    
-=======
+
     const [cartItems, setCartItems] = useState(() => {
         try {
             const storedCartItems = localStorage.getItem(CART_KEY);
@@ -53,7 +49,6 @@ const OrderDetail = (props: IProps) => {
             return [];
         }
     });
->>>>>>> 3b20034535dcfe5ae9bed97fe43934f0eec2ac90
 
     useEffect(() => {
         const handleStorageChange = () => {
