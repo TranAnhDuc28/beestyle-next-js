@@ -1,5 +1,5 @@
-import React, {createContext, useContext, useState} from "react";
-import {IAuthResponse} from "@/types/IAuth";
+import React, { createContext, useContext, useState } from "react";
+import { IAuthResponse } from "@/types/IAuth";
 
 interface AuthContextType {
     authentication: IAuthResponse | null;
@@ -10,7 +10,7 @@ interface AuthContextType {
 
 const AuthenticationContext = createContext<AuthContextType | null>(null);
 
-const AuthenticationProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
+const AuthenticationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [authentication, setAuthentication] = useState<IAuthResponse | null>(() => {
         const savedAuth = localStorage.getItem("authentication");
         return savedAuth ? JSON.parse(savedAuth) : null;
@@ -27,7 +27,7 @@ const AuthenticationProvider: React.FC<{ children: React.ReactNode }> = ({childr
     };
 
     return (
-        <AuthenticationContext.Provider value={{authentication, login, logout}}>
+        <AuthenticationContext.Provider value={{ authentication, login, logout }}>
             {children}
         </AuthenticationContext.Provider>
     );

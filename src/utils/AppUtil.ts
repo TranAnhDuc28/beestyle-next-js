@@ -1,9 +1,10 @@
-import {IOrderItem} from "@/types/IOrderItem";
-import {IAddress} from "@/types/IAddress";
-import {IVoucher} from "@/types/IVoucher";
-import {DISCOUNT_TYPE} from "@/constants/DiscountType";
-import {FREE_SHIPPING_THRESHOLD} from "@/constants/AppConstants";
-import {ghtkCalculateShippingFee} from "@/services/GhtkCalculateShippingFee";
+import { IOrderItem } from "@/types/IOrderItem";
+import { IAddress } from "@/types/IAddress";
+import { IVoucher, IVoucherUser } from "@/types/IVoucher";
+import { DISCOUNT_TYPE } from "@/constants/DiscountType";
+import { FREE_SHIPPING_THRESHOLD } from "@/constants/AppConstants";
+import { ghtkCalculateShippingFee } from "@/services/GhtkCalculateShippingFee";
+import { ICartItem } from "@/services/user/ShoppingCartService";
 
 
 /**
@@ -14,6 +15,13 @@ export const calculateCartOriginAmount = (dataCart: IOrderItem[]): number => {
     return dataCart.reduce((total, item) => total + (item.salePrice ?? 0) * item.quantity, 0);
 };
 
+/**
+ * tính tổng tiền hàng trong giỏ User-client
+ * @param dataCart
+ */
+export const calculateUserCartTotalAmount = (dataCart: ICartItem[]): number => {
+    return dataCart.reduce((total, item) => total + (item.sale_price ?? 0) * item.quantity, 0);
+};
 
 /**
  * tính số lượng sản phẩm trong giỏ
@@ -23,21 +31,33 @@ export const calculateCartTotalQuantity = (dataCart: IOrderItem[]): number => {
     return dataCart.reduce((total, item) => total + item.quantity, 0);
 };
 
+export const calculateUserCartTotalAmountWithVoucherAndShippingFee = (
+    originalAmount: number,
+    discountAmount: number,
+    shippingFee: number
+) => {
+    const amount = originalAmount >= FREE_SHIPPING_THRESHOLD ? originalAmount - discountAmount :
+        (originalAmount - discountAmount) + shippingFee;
+    return amount;
+}
+
 /**
  * tính tiền giảm giá dựa trên tổng giá trị đơn hàng
  * @param voucher
- * @param originAmount
+ * @param originalAmount
  */
-export const calculateInvoiceDiscount = (voucher: IVoucher | undefined, originAmount: number | undefined): number => {
+export const calculateInvoiceDiscount = (
+    voucher: IVoucher | IVoucherUser | null | undefined,
+    originalAmount: number | undefined): number => {
     // nếu không áp dụng voucher trả về 0
-    if (!voucher || !originAmount) return 0;
+    if (!voucher || !originalAmount) return 0;
 
     let discountAmount: number = 0;
 
     // Nếu áp dụng voucher giảm giá theo giá trị %
     if (voucher.discountType === DISCOUNT_TYPE.PERCENTAGE.key) {
         // tính tiền giảm dự trên tổng tiền hàng
-        discountAmount = originAmount * (voucher.discountValue / 100);
+        discountAmount = originalAmount * (voucher.discountValue / 100);
 
         // Nếu giá trị giảm lớn hơn giới hạn giảm giá, trả về giới hạn giảm giá
         if (discountAmount > voucher.maxDiscount) {
@@ -104,7 +124,7 @@ export const calculateFinalAmount = (originAmount: number | undefined, discountA
 export const formatAddress = (address: IAddress | undefined): string | undefined => {
     if (!address) return undefined;
 
-    const {addressName, commune, district, city} = address;
+    const { addressName, commune, district, city } = address;
 
     // Tạo một mảng chứa các phần của địa chỉ, chỉ thêm những phần không rỗng hoặc không undefined
     const addressParts = [addressName, commune, district, city]

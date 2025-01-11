@@ -35,5 +35,3 @@ export const updateOrderStatus = async (id: number) => {
     const response = await httpInstance.patch(URL_API_ORDER.updateOrderStatus(id));
     return response.data;
 }
-
-
