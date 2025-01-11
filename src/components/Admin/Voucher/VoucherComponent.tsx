@@ -25,7 +25,6 @@ import dayjs from "dayjs";
 import {DISCOUNT_STATUS} from "../../../constants/DiscountStastus";
 
 const { Content } = Layout;
-const { Title } = Typography;
 
 const VoucherComponent = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);

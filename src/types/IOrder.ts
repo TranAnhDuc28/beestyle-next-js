@@ -1,6 +1,10 @@
-import {IVoucher} from "@/types/IVoucher";
-import {IAddress} from "@/types/IAddress";
+import { IVoucher } from "@/types/IVoucher";
+import { IAddress } from "@/types/IAddress";
+<<<<<<< HEAD
+import { ICreateOrUpdateOrderItem } from "./IOrderItem";
+=======
 import {ICreateOrUpdateOrderItem} from "@/types/IOrderItem";
+>>>>>>> c77c82d238b8e344296c238559a8ef633d7526cf
 
 export interface IOrder {
     id: number;
@@ -62,7 +66,7 @@ export interface IOrderCreateOrUpdate {
     originalAmount?: number;
     discountAmount?: number;
     totalAmount?: number;
-    amountPaid?:number;
+    amountPaid?: number;
     paymentDate?: Date;
     paymentMethod?: string;
     isPrepaid?: boolean;
@@ -85,7 +89,7 @@ export interface IOrderOnlineCreateOrUpdate {
     originalAmount?: number;
     discountAmount?: number;
     totalAmount?: number;
-    amountPaid?:number;
+    amountPaid?: number;
     paymentDate?: Date;
     paymentMethod?: string;
     isPrepaid?: boolean;
