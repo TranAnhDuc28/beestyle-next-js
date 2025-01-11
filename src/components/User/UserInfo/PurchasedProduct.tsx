@@ -1,41 +1,45 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, Table } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import Title from 'antd/es/typography/Title';
+import { getProductSalesByUser, URL_API_CUSTOMER } from '@/services/CustomerService';
+import useSWR from 'swr';
+import useAppNotifications from '@/hooks/useAppNotifications';
 
-const PurchasedProduct = () => {
-    const dataSource = [
+interface IProps {
+    idCustomer: any;
+  }
+const PurchasedProduct = (props:IProps) => {
+    const { idCustomer } = props;
+    const { showNotification } = useAppNotifications();
+    
+    const { data, error, mutate } = useSWR(
+        `${URL_API_CUSTOMER.productSalesByUserMapping}/${idCustomer}`,
+        getProductSalesByUser,
         {
-            key: '1',
-            productName: 'Áo thun nam cổ tròn',
-            quantity: 2,
-            price: 150000,
-            paymentFee: 5000,
-        },
-        {
-            key: '2',
-            productName: 'Quần jean nữ ống loe',
-            quantity: 1,
-            price: 320000,
-            paymentFee: 0,
-        },
-        {
-            key: '3',
-            productName: 'Giày thể thao unisex',
-            quantity: 3,
-            price: 450000,
-            paymentFee: 10000,
-        },
-        {
-            key: '4',
-            productName: 'Mũ lưỡi trai',
-            quantity: 5,
-            price: 75000,
-            paymentFee: 2000,
-        },
-    ];
+          revalidateOnFocus: false,
+          revalidateOnReconnect: false,
+        }
+      );
 
-    const columns = [
+      const result = data?.data?.items?.map((item: any, index: number) => ({
+        ...item,
+        key:  index + 1, // Đảm bảo mỗi mục có key duy nhất
+    })) || [];
+       useEffect(() => {
+         if (error) {
+           showNotification("error", {
+             message: error?.message,
+             description:
+               error?.response?.data?.message || "Error fetching addresses",
+           });
+         }
+       }, [error]);
+    //    console.log(result);
+       
+      
+
+    const columns:any = [
         {
             title: 'STT',
             dataIndex: 'key',
@@ -47,12 +51,12 @@ const PurchasedProduct = () => {
             title: 'Tên sản phẩm',
             dataIndex: 'productName',
             key: 'productName',
-            render: (text, record) => (
+            render: (text:any, record:any) => (
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <img
-                        src={`https://via.placeholder.com/50x50?text=${text.substring(0, 2)}`}
+                        src={record.imageProduct ||`https://via.placeholder.com/50x50?text=${text.substring(0, 2)}`}
                         alt={text}
-                        style={{ width: 50, height: 50, marginRight: 10 }}
+                        style={{ width: 70, height: 70, marginRight: 10 }}
                     />
                     <span>{text}</span>
                 </div>
@@ -60,33 +64,33 @@ const PurchasedProduct = () => {
         },
         {
             title: 'Số lượng',
-            dataIndex: 'quantity',
-            key: 'quantity',
+            dataIndex: 'totalQuantity',
+            key: 'totalQuantity',
             align: 'center',
             width: 100,
         },
         {
             title: 'Giá bán',
-            dataIndex: 'price',
-            key: 'price',
+            dataIndex: 'salePrice',
+            key: 'salePrice',
             align: 'right',
             width: 150,
-            render: (text) => `${text.toLocaleString()} đ`,
+            render: (text:any) => `${text.toLocaleString()} đ`,
         },
-        {
-            title: 'Phí thanh toán',
-            dataIndex: 'paymentFee',
-            key: 'paymentFee',
-            align: 'right',
-            width: 150,
-            render: (text) => `${text.toLocaleString()} đ`,
-        },
+        // {
+        //     title: 'Phí thanh toán',
+        //     dataIndex: 'paymentFee',
+        //     key: 'paymentFee',
+        //     align: 'right',
+        //     width: 150,
+        //     render: (text:any) => `${text.toLocaleString()} đ`,
+        // },
         {
             title: '',
             key: 'action',
             align: 'center',
             width: 100,
-            render: (_, record) => (
+            render: (_, record:any) => (
                 <Button
                     type="default"
                     // onClick={() => handleView(record)}
@@ -100,11 +104,11 @@ const PurchasedProduct = () => {
 
     return (
         <>
-            {dataSource && dataSource.length > 0 ? (
+            {result && result.length > 0 ? (
                 <div>
                     <Title level={4} className="font-semibold mt-5">Sản phẩm đã mua</Title>
                     <Table
-                        dataSource={dataSource}
+                        dataSource={result}
                         columns={columns}
                         pagination={{
                             pageSize: 5,

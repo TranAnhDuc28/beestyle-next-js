@@ -3,6 +3,7 @@ import AdminLoader from "@/components/Loader/AdminLoader";
 import { Metadata } from "next";
 import VariantComponent from "@/components/Admin/Product/Variant/VariantComponent";
 
+
 export const metadata: Metadata = {
     title: "Sản phẩm",
     description: "ShopProductGridComponent variant service",

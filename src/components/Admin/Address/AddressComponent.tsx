@@ -64,7 +64,8 @@ const AddressComponent = () => {
         }
     }
     const addresses = data?.data?.items || [];
-
+    console.log(addresses);
+    
     useEffect(() => {
         if (error) {
             showNotification("error", {

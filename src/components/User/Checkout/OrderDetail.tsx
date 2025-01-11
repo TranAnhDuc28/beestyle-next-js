@@ -39,6 +39,7 @@ const OrderDetail = (props: IProps) => {
     const openModal = () => setIsModalVisible(true);
     const closeModal = () => setIsModalVisible(false);
 
+
     // Kiểm tra giỏ hàng rỗng khi render component
     useEffect(() => {
         const handleStorageChange = () => {
