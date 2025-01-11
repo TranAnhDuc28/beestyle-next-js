@@ -20,7 +20,10 @@ export const calculateCartOriginAmount = (dataCart: IOrderItem[]): number => {
  * @param dataCart
  */
 export const calculateUserCartTotalAmount = (dataCart: ICartItem[]): number => {
-    return dataCart.reduce((total, item) => total + (item.sale_price ?? 0) * item.quantity, 0);
+    if (dataCart && dataCart.length > 0) {
+        return dataCart.reduce((total, item) => total + (item?.sale_price ?? 0) * item?.quantity, 0);
+    }
+    return 0;
 };
 
 /**
