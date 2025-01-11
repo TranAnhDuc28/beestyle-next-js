@@ -7,11 +7,16 @@ export const URL_API_CUSTOMER = {
   update:'/admin/customer/update',
   delete:'/admin/customer/delete',
   register:'/admin/customer/register',
-  changePassword:'/admin/customer/changePassword'
+  changePassword:'/admin/customer/changePassword',
+  productSalesByUserMapping:'/admin/customer/productSalesByUser'
 }
 
 export const getCustomers = async (url:string) => {
   const response = await httpInstance.get(url)
+  return response.data
+}
+export const getProductSalesByUser = async (url:string) => {
+  const response = await httpInstance.get(url);
   return response.data
 }
 
