@@ -11,7 +11,7 @@ import { ICartItem } from "@/services/user/ShoppingCartService";
  * tính tổng tiền hàng trong giỏ
  * @param dataCart
  */
-export const calculateCartTotalAmount = (dataCart: IOrderItem[]): number => {
+export const calculateCartOriginAmount = (dataCart: IOrderItem[]): number => {
     return dataCart.reduce((total, item) => total + (item.salePrice ?? 0) * item.quantity, 0);
 };
 
@@ -110,9 +110,9 @@ export const calculateShippingFee = async (originalAmount: number | undefined, s
  * @param discountAmount
  * @param shippingFee
  */
-export const calculateFinalAmount = (totalAmount: number | undefined, discountAmount: number, shippingFee: number): number => {
-    if (!totalAmount) return 0;
-    const finalTotalAmount = Math.max(totalAmount - discountAmount + shippingFee);
+export const calculateFinalAmount = (originAmount: number | undefined, discountAmount: number, shippingFee: number): number => {
+    if (!originAmount) return 0;
+    const finalTotalAmount = Math.max(originAmount - discountAmount + shippingFee);
     return finalTotalAmount;
 };
 

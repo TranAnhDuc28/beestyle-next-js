@@ -30,7 +30,7 @@
     border-color: #1677ff;
 }
 
-/* animation view sale product list view sử dụng với thư viện react-transition-group*/
+/* animation view admin-counter-sale product list view sử dụng với thư viện react-transition-group*/
 .fade-enter {
     opacity: 0;
     transform: scale(0.9);

@@ -29,16 +29,13 @@ const ProductCardItem: React.FC<IProps> = (props) => {
         setIsOpenModal(false);
         setSelectedProduct(null);
     };
-    console.log(product);
-
 
     return (
         <>
-            <Badge.Ribbon
-                text="Test"
-                color="red"
-                className="d-none"
-            >
+            {/*<Badge.Ribbon*/}
+            {/*    text="Test"*/}
+            {/*    color="red"*/}
+            {/*>*/}
                 <Card
                     hoverable
                     styles={{ body: { padding: 0, overflow: 'hidden' } }}
@@ -114,7 +111,7 @@ const ProductCardItem: React.FC<IProps> = (props) => {
                         </Text>
                     </div>
                 </Card>
-            </Badge.Ribbon>
+            {/*</Badge.Ribbon>*/}
 
             {isOpenModal && (
                 <ProductQuickLookupModal

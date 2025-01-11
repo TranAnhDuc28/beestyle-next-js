@@ -4,7 +4,7 @@ import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 import {IOrderItem} from "@/types/IOrderItem";
 import {IOrderDetail} from "@/types/IOrder";
 import {
-    calculateCartTotalAmount, calculateCartTotalQuantity, calculateFinalAmount,
+    calculateCartOriginAmount, calculateCartTotalQuantity, calculateFinalAmount,
     calculateInvoiceDiscount, calculateShippingFee
 } from "@/utils/AppUtil";
 import {ORDER_TYPE} from "@/constants/OrderType";
@@ -39,7 +39,7 @@ const CheckoutInfoCard: React.FC<IProps> = (props) => {
         const totalQuantity: number = calculateCartTotalQuantity(dataCart);
 
         // tính tổng tiền hàng trong giỏ
-        const originalAmount: number = calculateCartTotalAmount(dataCart);
+        const originalAmount: number = calculateCartOriginAmount(dataCart);
 
         // tính tiền giảm giá cho đơn hàng khi áp dụng voucher
         const discountAmount: number = calculateInvoiceDiscount(orderDetail?.voucherInfo, originalAmount);
