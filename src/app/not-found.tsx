@@ -10,7 +10,7 @@ import {usePathname} from "next/navigation";
 
 const {Title, Paragraph} = Typography;
 
-function NotFound() {
+const NotFound: React.FC = () => {
     const pathname = usePathname(); // Lấy đường dẫn hiện tại.
     const isPathname = pathname.startsWith("/admin-counter-sale") || pathname.startsWith("/admin");
 

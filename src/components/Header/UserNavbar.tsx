@@ -1,4 +1,4 @@
-import React, {memo, useEffect, useMemo, useState} from "react";
+import React, {memo, useContext, useEffect, useMemo, useState} from "react";
 import Link from "next/link";
 import {Layout, Menu, Badge, Button, Flex, Typography, Tooltip} from "antd";
 import {SearchOutlined, UserOutlined} from "@ant-design/icons";
@@ -15,12 +15,12 @@ const {Header} = Layout;
 const {Text} = Typography;
 
 const Navbar: React.FC = () => {
+    const authentication = useAuthentication();
     const [cartCount, setCartCount] = useState<number>(0);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isSearchOpen, setSearchOpen] = useState(false);
     const pathname = usePathname();
-    const auth = useAuthentication();
 
     const fetchCartItems = () => {
         const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
@@ -147,7 +147,7 @@ const Navbar: React.FC = () => {
                         }
                         color="#F7941D"
                     >
-                        <Link href={auth?.authentication ? '/user-profile' : '/account'} passHref>
+                        <Link href={authentication?.authentication ? '/user-profile' : '/account'} passHref>
                             <Button
                                 type="text"
                                 icon={<UserOutlined style={{fontSize: 20}}/>}
