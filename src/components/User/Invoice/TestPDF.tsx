@@ -104,6 +104,7 @@
 
 import React, { useImperativeHandle, forwardRef, useState, useEffect } from "react";
 import { downloadInvoicePdf, previewInvoicePdf } from "@/services/InvoiceService";
+import { getSendThankMail } from "@/services/MailService";
 
 interface InvoiceComponentProps {
   id: number | null;
@@ -130,6 +131,15 @@ const InvoiceComponent = forwardRef(({ id }: InvoiceComponentProps, ref) => {
         const blob = new Blob([byteArray], { type: "application/pdf" });
         const pdfBlobUrl = URL.createObjectURL(blob);
         setPdfUrl(pdfBlobUrl);
+
+        const fileName = `Invoice_${id || "Unknown"}.pdf`;
+        const pdfFile = new File([blob], fileName, { type: "application/pdf" });
+        const dataMail = {
+          id: id,
+          files: pdfFile}
+          console.log(dataMail);
+          const mail = await getSendThankMail(dataMail);
+          console.log('Mail sent successfully: ',mail);
       } else {
         console.error("Không thể tạo xem trước PDF.");
       }
