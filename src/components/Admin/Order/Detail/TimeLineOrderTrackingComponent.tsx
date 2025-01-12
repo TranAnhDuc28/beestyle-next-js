@@ -1,11 +1,13 @@
 import React, {memo, useEffect, useState} from "react";
-import {Button, Divider, StepProps, Steps} from "antd";
+import {Button, Divider, Form, Input, Modal, StepProps, Steps} from "antd";
 import {CheckOutlined, CloseCircleOutlined, DropboxOutlined, LoadingOutlined} from "@ant-design/icons";
 import {LiaBoxSolid} from "react-icons/lia";
 import {FaShippingFast} from "react-icons/fa";
 import {IOrderDetail} from "@/types/IOrder";
 import {ORDER_TYPE} from "@/constants/OrderType";
 import {ORDER_STATUS} from "@/constants/OrderStatus";
+import useAppNotifications from "@/hooks/useAppNotifications";
+import useOrder from "@/components/Admin/Order/hooks/useOrder";
 
 interface IProps {
     orderDetail: IOrderDetail
@@ -28,6 +30,8 @@ const getOrderDeliverySaleStep = (orderStatus: string | undefined): number => {
             return 4; // Hoàn thành giao hàng
         case ORDER_STATUS.CANCELLED.key:
             return -1; // Đã hủy
+        case ORDER_STATUS.RETURNED.key:
+            return -2; // Đã trả hàng
         default:
             return 0; // Đặt hàng
     }
@@ -58,7 +62,12 @@ const getStepStatus = (stepKey: number, current: number) => {
 
 const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
     const {orderDetail} = props;
+    const {showModal} = useAppNotifications();
+    const [form] = Form.useForm();
+    const {handleUpdateOrderStatusDelivery} = useOrder();
     const [current, setCurrent] = useState<number>(0);
+    const [isOpenReasonModal, setIsOpenReasonModal] = useState(false);
+    const [actionType, setActionType] = useState<'cancel' | 'return' | null>(null);
 
     useEffect(() => {
         // dựa vào loại hóa đơn để hiển thị time line theo dõi trạng thái hóa đơn
@@ -72,8 +81,29 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
         setCurrent(current + 1);
     };
 
-    const prev = () => {
-        // setCurrent(current - 1);
+    const showReasonModal = (type: 'cancel' | 'return') => {
+        setActionType(type);
+        setIsOpenReasonModal(true);
+    };
+
+    const handleSubmitReasonCancelledAndReturned = async () => {
+        form.submit();
+        if (actionType === 'cancel') {
+
+        } else if (actionType === 'return') {
+            console.log(`Trả hàng với lý do: `);
+        }
+        setIsOpenReasonModal(false);
+    };
+
+    const handleCancel = () => {
+        setIsOpenReasonModal(false);
+        form.resetFields();
+    };
+
+    // xử lý qua các trạng thái đơn hàng
+    const handleConfirmStepOrderStatus = async (id: number, value: {status: string, note: string | undefined}) => {
+        await handleUpdateOrderStatusDelivery(id, value);
     };
 
     // time line cho giao hàng
@@ -120,7 +150,8 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
     ];
 
     return (
-        <div>
+        <>
+
             <Steps
                 current={current}
                 items={
@@ -150,13 +181,36 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
 
                     {/* Hủy đơn hàng trong trước khi hoàn thành thanh toán */}
                     {current > 0 && current < itemTrackingOrderDeliverySaleSteps.length - 1 && (
-                        <Button style={{margin: '0 8px'}} onClick={() => prev()}>
+                        <Button style={{margin: '0 8px'}} onClick={handleSubmitReasonCancelledAndReturned}>
                             Hủy
                         </Button>
                     )}
                 </div>
             }
-        </div>
+
+
+            <Modal cancelText="Hủy" okText="Xác nhận lý do"
+                title={actionType === 'cancel' ? 'Lý do hủy đơn hàng' : 'Lý do trả hàng'}
+                open={isOpenReasonModal}
+                onOk={handleSubmitReasonCancelledAndReturned}
+            >
+                <Form
+                    form={form}
+                    name="reason"
+                >
+                    <Form.Item
+                        label="Ghi chú"
+                        name="note"
+                        rules={[{ required: true, message: 'Please input!' }]}
+                    >
+                        <Input.TextArea
+                            placeholder="Nhập lý do..."
+                            rows={4}
+                        />
+                    </Form.Item>
+                </Form>
+            </Modal>
+        </>
     );
 }
 export default memo(TimeLineOrderTrackingComponent);

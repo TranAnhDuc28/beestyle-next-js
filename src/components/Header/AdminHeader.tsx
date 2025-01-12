@@ -15,12 +15,12 @@ const headerStyle: React.CSSProperties = {
     padding: 0
 }
 
-interface HeaderBarProps {
+interface IProps {
     collapsed: boolean;
     onToggle: () => void;
 }
 
-const AdminHeader: React.FC<HeaderBarProps> = ({collapsed, onToggle}) => {
+const AdminHeader: React.FC<IProps> = ({collapsed, onToggle}) => {
     return (
         <Header style={headerStyle} >
             <Button

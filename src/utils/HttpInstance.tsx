@@ -42,25 +42,8 @@ httpInstance.interceptors.response.use(function (response) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     if (error.response) {
-        const {showNotification} = useAppNotifications();
-        const { status } = error.response;
-        // If 401, remove token and redirect to admin-account
-        if (status === 401) {
-            showNotification("error", {
-                message: "Hết phiên đăng nhập",
-                description: "Vui lòng đăng nhập lại"
-            });
-            if (typeof window !== "undefined") {
-                localStorage.removeItem("auth");
-                window.location.href = "/admin-account"; // Ensure this matches your app's route
-            }
-        } else if (status === 403) {
-            showNotification("error", {message: "Không có quyền truy cập"});
-            return;
-        }
-        else if(status === 400) {
-            showNotification("error", {message: error.response.data.message});
-        }
+        // const {showNotification} = useAppNotifications();
+        return Promise.reject(error);
     }
 }
 );

@@ -47,6 +47,12 @@ export const ORDER_STATUS = {
         description: "Đã hủy",
         color_tag: "#f50"
     },
+    RETURNED: {
+        id: 7,
+        key: "RETURNED",
+        description: "Đã trả hàng",
+        color_tag: "#f50"
+    },
     // RETURN_REQUESTED: "Yêu cầu trả hàng",
     // RETURNED: "Đã trả hàng",
     // REFUNDED: "Đã hoàn tiền"
