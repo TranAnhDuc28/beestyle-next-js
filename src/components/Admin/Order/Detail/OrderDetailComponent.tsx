@@ -49,7 +49,7 @@ const OrderDetailComponent: React.FC<IProps> = (props) => {
             <Title level={4} style={{margin: '20px 10px 10px 10px'}}>
                 Mã đơn hàng
                 <Text type="secondary" style={{marginInlineStart: 10, fontSize: 20}}>
-                    HD123456789
+                    {orderDetail?.orderTrackingNumber}
                 </Text>
             </Title>
             <Content

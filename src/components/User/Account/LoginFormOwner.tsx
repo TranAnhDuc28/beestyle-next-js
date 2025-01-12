@@ -6,24 +6,25 @@ import useAppNotifications from "@/hooks/useAppNotifications";
 import {IAuthResponse, ISignIn} from "@/types/IAuth";
 import {signIn} from "@/services/AuthService";
 import {useRouter} from "next/navigation";
+import React, {useContext} from "react";
 import {useAuthentication} from "@/components/Context/AuthenticationProvider";
+
 
 const {Text} = Typography;
 
-const auth = useAuthentication();
 
-const LoginFormOwner = () => {
+const LoginFormOwner: React.FC = () => {
     const {showNotification} = useAppNotifications();
+    const authentication = useAuthentication();
     const router = useRouter();
     const [form] = Form.useForm();
 
     const onFinish = async (value: ISignIn) => {
-        console.log(value)
         try {
             const result: IAuthResponse = await signIn(value);
 
             if (result) {
-                auth?.login(result);
+                authentication?.login(result);
                 form.resetFields();
                 router.push("/");
             }
@@ -42,6 +43,7 @@ const LoginFormOwner = () => {
     return (
         <Flex justify="center" align="center">
             <Form
+                form={form}
                 name="login"
                 initialValues={{remember: true}}
                 onFinish={onFinish}
