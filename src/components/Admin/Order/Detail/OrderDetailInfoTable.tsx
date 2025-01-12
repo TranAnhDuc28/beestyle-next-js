@@ -93,7 +93,7 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
         },
         {
             key: 'paymentDate', label: 'Ngày thanh toán', span: {xs: 3, sm: 3, md: 1, lg: 1, xl: 1, xxl: 1},
-            children: orderDetail?.paymentDate ? dayjs(orderDetail?.paymentDate).format('DD-MM-YYYY HH:mm:ss') : '',
+            children: orderDetail?.paymentDate ? dayjs(orderDetail.paymentDate).format('DD-MM-YYYY HH:mm:ss') : '',
         },
         {
             key: 'shippingFee', label: 'Phí vận chuyển', span: {xs: 3, sm: 3, md: 1.5, lg: 1.5, xl: 1.5, xxl: 1.5},

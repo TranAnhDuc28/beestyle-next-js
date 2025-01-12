@@ -1,15 +1,15 @@
-import React from "react";
+import React, {memo} from "react";
 import {MdEmail, MdLocalPhone, MdLogin} from 'react-icons/md';
 import {AiOutlineUser} from "react-icons/ai";
 import Link from "next/link";
 import {Divider, Flex, Typography} from "antd";
 import {useAuthentication} from "@/components/Context/AuthenticationProvider";
 
+
 const {Text} = Typography;
 
-export default function TopBar() {
-    const auth = useAuthentication();
-
+const TopBar:React.FC = () => {
+    const authentication = useAuthentication();
 
     return (
         <>
@@ -32,15 +32,15 @@ export default function TopBar() {
                             <AiOutlineUser size={18} style={{color: '#F7941D', marginInlineEnd: 7}}/>
                             <Link href="#" style={{textDecoration: 'none'}}>
                                 <Text className="text-white">
-                                    {auth?.authentication ? auth.authentication.user.fullName : "Guest"}
+                                    {authentication?.authentication ? authentication.authentication.user.fullName : "Guest"}
                                 </Text>
                             </Link>
                         </Flex>
                         {
-                            auth?.authentication ? (
+                            authentication?.authentication ? (
                                 <>
                                     <Divider style={{borderColor: '#ffffff'}} type="vertical"/>
-                                    <Flex align="center" style={{cursor: "pointer"}} onClick={auth?.logout}>
+                                    <Flex align="center" style={{cursor: "pointer"}} onClick={authentication?.logout}>
                                         <MdLogin size={18} style={{color: '#F7941D', marginInlineEnd: 7}}/>
                                         <Text className="text-white">Đăng xuất</Text>
                                     </Flex>
@@ -55,3 +55,4 @@ export default function TopBar() {
         </>
     )
 };
+export default memo(TopBar);

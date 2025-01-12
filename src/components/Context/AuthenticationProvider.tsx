@@ -7,7 +7,6 @@ interface AuthContextType {
     logout: () => void;
 }
 
-
 const AuthenticationContext = createContext<AuthContextType | null>(null);
 
 const AuthenticationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

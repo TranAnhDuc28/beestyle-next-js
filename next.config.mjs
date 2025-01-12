@@ -12,7 +12,7 @@ const nextConfig = {
                 hostname: 'm.yodycdn.com'
             }
         ]
-    }
+    },
 };
 
 export default nextConfig;
