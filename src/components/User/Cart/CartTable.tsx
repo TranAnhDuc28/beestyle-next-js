@@ -6,13 +6,17 @@ import ProgressShipping from "./Properties/ProgressShipping";
 import { ICartItem, removeItemFromCart } from "@/services/user/ShoppingCartService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import Link from "next/link";
+import { FREE_SHIPPING_THRESHOLD } from "@/constants/AppConstants";
 
 const { Title, Text } = Typography;
 
-const CartTable = ({ cartItems, updateCartItems }: { cartItems: ICartItem[]; updateCartItems: ICartItem[] }) => {
-    const condition = 500000;
+const CartTable = ({ cartItems, updateCartItems }: {
+    cartItems: ICartItem[];
+    updateCartItems: (newCartItems: ICartItem[]) => void
+}) => {
+    const condition = FREE_SHIPPING_THRESHOLD;
     const totalAmount = cartItems.reduce((total: number, item: { total_price: number; }) => total + item.total_price, 0);
-    const promotionPrice = cartItems.reduce((total: number, item: { sale_price: number; discounted_price: number; quantity: number; }) => total + (item.sale_price - item.discounted_price) * item.quantity, 0);
+    const promotionPrice = 0; // cartItems.reduce((total: number, item: { sale_price: number; discounted_price: number; quantity: number; }) => total + (item.sale_price - item.discounted_price) * item.quantity, 0);
     const { showNotification, showModal } = useAppNotifications();
 
     const handleQuantityChange = (index: number, operation: 'increment' | 'decrement') => {
@@ -44,8 +48,7 @@ const CartTable = ({ cartItems, updateCartItems }: { cartItems: ICartItem[]; upd
                 showNotification('success', {
                     message: (<span className="fw-semibold fs-6">Đã gỡ sản phẩm khỏi giỏ hảng</span>),
                     placement: 'topRight',
-                    duration: 3,
-                    rtl: true,
+                    duration: 3
                 })
             }
         })
@@ -123,7 +126,7 @@ const CartTable = ({ cartItems, updateCartItems }: { cartItems: ICartItem[]; upd
                                     <div className="justify-self-end">
                                         <QuantityControl
                                             quantity={item.quantity}
-                                            quantityInStock={item.quantityInStock}
+                                            quantityInStock={item.product_quantity}
                                             onIncrement={() => handleQuantityChange(index, 'increment')}
                                             onDecrement={() => handleQuantityChange(index, 'decrement')}
                                         />
@@ -137,5 +140,4 @@ const CartTable = ({ cartItems, updateCartItems }: { cartItems: ICartItem[]; upd
         </Card>
     );
 }
-
 export default CartTable;

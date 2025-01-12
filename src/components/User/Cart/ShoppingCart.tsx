@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import CartTable from "@/components/User/Cart/CartTable";
 import TotalAmount from "@/components/User/Cart/OrderSummary";
-import { CART_KEY, checkShoppingCartData } from "@/services/user/ShoppingCartService";
+import { CART_KEY, checkShoppingCartData, ICartItem } from "@/services/user/ShoppingCartService";
 import { Typography } from 'antd';
 import BreadcrumbSection from '@/components/Breadcrumb/BreadCrumb';
 import Image from 'next/image';
@@ -13,7 +13,15 @@ const { Title, Paragraph } = Typography;
 
 const ShoppingCart = () => {
 
-    const [cartItems, setCartItems] = useState(JSON.parse(localStorage.getItem(CART_KEY) || '[]'));
+    const [cartItems, setCartItems] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+        } catch (error) {
+            localStorage.removeItem(CART_KEY);
+            console.error("Sai định dạng dữ liệu trong giỏ hàng:", error);
+            return [];
+        }
+    });
 
     useEffect(() => {
         checkShoppingCartData();
@@ -27,7 +35,7 @@ const ShoppingCart = () => {
         };
     }, []);
 
-    const updateCartItems = (newCartItems: any) => {
+    const updateCartItems = (newCartItems: ICartItem[]) => {
         setCartItems(newCartItems);
         localStorage.setItem(CART_KEY, JSON.stringify(newCartItems));
         window.dispatchEvent(new Event('cartUpdated'));

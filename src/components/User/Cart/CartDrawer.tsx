@@ -4,10 +4,9 @@ import { CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import styles from './css/cartdrawer.module.css';
 import Image from "next/image";
-import { CART_KEY, removeItemFromCart } from "@/services/user/ShoppingCartService";
+import { CART_KEY, ICartItem, removeItemFromCart } from "@/services/user/ShoppingCartService";
 import QuantityControl from "@/components/User/Cart/Properties/QuantityControl";
 import ProgressShipping from './Properties/ProgressShipping';
-import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { FREE_SHIPPING_THRESHOLD } from '@/constants/AppConstants';
 import { calculateUserCartTotalAmount } from '@/utils/AppUtil';
 
@@ -18,7 +17,13 @@ interface CartDrawerProps {
 
 export default function CartDrawer({ open, onClose }: CartDrawerProps) {
     const [cartItems, setCartItems] = useState(() => {
-        return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+        try {
+            return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+        } catch (error) {
+            localStorage.removeItem(CART_KEY);
+            console.error("Sai định dạng dữ liệu trong giỏ hàng:", error);
+            return [];
+        }
     });
 
     useEffect(() => {
@@ -71,18 +76,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             }}
         >
             {cartItems && cartItems.length ? cartItems.map((
-                item: {
-                    product_id: string;
-                    image: { imageUrl: string | StaticImport; };
-                    product_name: string;
-                    color: string;
-                    size: string;
-                    quantity: number;
-                    product_quantity: number;
-                    shopping_cart_id: string;
-                    discounted_price: { toLocaleString: () => string | number | bigint };
-                    sale_price: { toLocaleString: () => string | number | bigint };
-                }, index: number) => (
+                item: ICartItem, index: number) => (
                 <div className={styles.cartItem} key={index}>
                     <Link
                         href={`/product/${item.product_id}/variant`}

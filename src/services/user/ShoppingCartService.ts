@@ -3,8 +3,7 @@ import { ProductVariant } from "./SingleProductService";
 export const CART_KEY = 'shopping_cart';
 
 export interface ICartItem {
-    length: number;
-    shopping_cart_id: number;
+    shopping_cart_id: string;
     product_variant_id: string;
     product_id: string;
     product_name: string;
@@ -17,7 +16,11 @@ export interface ICartItem {
     discounted_price: number;
     total_price: number;
     description: string;
-    image?: object[];
+    image?: {
+        id: string;
+        imageUrl: string;
+        isDefault: boolean;
+    };
 }
 
 const getCart = () => {
@@ -34,44 +37,46 @@ const saveCart = (cart: ICartItem[]) => {
 
 export const addToCart = (product: ProductVariant, quantity: number) => {
     const cart = getCart();
-    console.log(quantity);
 
-    if (product && quantity) {
-        const existingIndex = cart.findIndex((item: ICartItem) =>
-            item.product_id === product.productId &&
-            item.color === product.colorName &&
-            item.size === product.sizeName
-        );
+    try {
+        if (product && quantity) {
+            const existingIndex = cart.findIndex((item: ICartItem) =>
+                item.product_id === product.productId &&
+                item.color === product.colorName &&
+                item.size === product.sizeName
+            );
 
-        if (existingIndex !== -1) {
-            cart[existingIndex].quantity += quantity;
-            cart[existingIndex].total_price = cart[existingIndex].quantity * cart[existingIndex].discounted_price;
-        } else {
-            const newItem = {
-                shopping_cart_id: Date.now(),
-                product_variant_id: product.id,
-                product_id: product.productId,
-                product_name: product.productName,
-                sku: product.sku,
-                color: product.colorName,
-                size: product.sizeName,
-                product_quantity: product.quantityInStock,
-                quantity: quantity,
-                sale_price: product.salePrice,
-                discounted_price: product.discountPrice,
-                total_price: quantity * product.discountPrice,
-                image: product.images.find((image: { isDefault: boolean; }) => image.isDefault)
-            };
-            cart.push(newItem);
+            if (existingIndex !== -1) {
+                cart[existingIndex].quantity += quantity;
+                cart[existingIndex].total_price = cart[existingIndex].quantity * cart[existingIndex].discounted_price;
+            } else {
+                const newItem = {
+                    shopping_cart_id: Date.now(),
+                    product_variant_id: product.id,
+                    product_id: product.productId,
+                    product_name: product.productName,
+                    sku: product.sku,
+                    color: product.colorName,
+                    size: product.sizeName,
+                    product_quantity: product.quantityInStock,
+                    quantity: quantity,
+                    sale_price: product.salePrice,
+                    discounted_price: product.discountPrice,
+                    total_price: quantity * product.discountPrice,
+                    image: product.images.find((image: { isDefault: boolean; }) => image.isDefault)
+                };
+                cart.push(newItem);
+            }
+            saveCart(cart);
+            window.dispatchEvent(new Event('cartUpdated'));
         }
-        saveCart(cart);
-
-        window.dispatchEvent(new Event('cartUpdated'));
+    } catch (error) {
+        console.error("Đã xảy ra lỗi khi thêm mới sản phẩm vào giỏ:", error);
     }
 };
 
 export const removeItemFromCart = (shoppingCartId: string) => {
-    const cartItems = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    const cartItems = getCart();
     const updatedCart = cartItems.filter((item: { shopping_cart_id: string; }) => item.shopping_cart_id !== shoppingCartId);
     localStorage.setItem(CART_KEY, JSON.stringify(updatedCart));
     window.dispatchEvent(new Event('cartUpdated'));
@@ -145,14 +150,25 @@ export const checkShoppingCartData = async () => {
                         updatedItem.total_price = matchingItemFromBE.totalPrice;
                     }
 
-                    console.log(updatedItem);
+                    if (matchingItemFromBE.productId !== item.product_id) {
+                        updatedItem.product_id = matchingItemFromBE.productId;
+                    }
+
+                    if (matchingItemFromBE.quantityInStock < item.quantity) {
+                        updatedItem.quantity = 1;
+                    }
+
+                    if (matchingItemFromBE.sku !== item.sku) {
+                        updatedItem.sku = matchingItemFromBE.sku;
+                    }
 
                     if (matchingItemFromBE.imageUrl !== item.image) {
                         updatedItem.image = {
-                            id: null,
+                            id: '',
                             imageUrl: matchingItemFromBE.imageUrl,
                             isDefault: true
                         };
+
                     }
                     return updatedItem;
                 } else {
@@ -164,7 +180,7 @@ export const checkShoppingCartData = async () => {
             if (updatedCartItems && updatedCartItems.length > 0) {
                 saveCart(updatedCartItems);
             } else {
-                localStorage.removeItem(CART_KEY); // Xóa key shopping_cart
+                localStorage.removeItem(CART_KEY);
             }
             window.dispatchEvent(new Event('cartUpdated'));
         } catch (error) {

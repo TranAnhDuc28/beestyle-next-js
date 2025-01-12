@@ -93,7 +93,7 @@ export const calculateShippingFee = async (originalAmount: number | undefined, s
         district: shippingAddress?.district,
         ward: shippingAddress?.commune,
         address: shippingAddress?.addressName,
-        weight: 300,
+        weight: 100,
         value: originalAmount,
         transport: "road",
     };

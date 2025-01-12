@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from "next/link";
 import { Button, Flex, InputNumber, Rate, Tag } from 'antd';
-import { ProductVariant, ProductImage } from "@/services/user/SingleProductService";
+import { ProductVariant } from "@/services/user/SingleProductService";
 import ColorPickers from "@/components/User/ShopSingle/Properties/ColorPickers";
 import SizePickers from "@/components/User/ShopSingle/Properties/SizePickers";
 import { addToCart } from "@/services/user/ShoppingCartService";
