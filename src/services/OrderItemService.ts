@@ -5,6 +5,7 @@ export const URL_API_ORDER_ITEM = {
     get: (orderId: number) => `/admin/order/${orderId}/order-items`,
     create: `/admin/order-item/create`,
     creates: `/admin/order-item/creates`,
+    create_delivery_sale: `admin/order-item/creates/delivery-sale`,
     update: (orderItemId?: string) => `/admin/order-item/${orderItemId}`,
     patchQuantity: `/admin/order-item/update-quantity`,
     delete: (orderItemId: string) => `/admin/order-item/${orderItemId}/delete`,

@@ -77,6 +77,31 @@ const useOrderItem = () => {
         }
     }
 
+    const handleCreateOrderItemsDeliverySale =  async (orderId: number, value: ICreateOrUpdateOrderItem[]) => {
+        const paramString = new URLSearchParams();
+
+        if (!orderId || isNaN(orderId)) {
+            throw new Error("ID hóa đơn không hợp lệ, Vui lòng chọn hóa đơn thêm sản phẩm.");
+        }
+
+        paramString.append("orderId", orderId.toString());
+
+        try {
+            const result = await createOrderItems(`${URL_API_ORDER_ITEM.create_delivery_sale}?${paramString}`, value);
+            return result.data;
+        } catch (error: any) {
+            const errorMessage = error?.response?.data?.message;
+            if (errorMessage && typeof errorMessage === 'object') {
+                Object.entries(errorMessage).forEach(([field, message]) => {
+                    showNotification("error", {message: String(message)});
+                });
+            } else {
+                showNotification("error", {message: error?.message, description: errorMessage});
+            }
+            throw new Error(error);
+        }
+    }
+
     const handleUpdateOrderItem =  async (value: ICreateOrUpdateOrderItem) => {
         try {
             const result = await updateOrderItem(value);
@@ -129,6 +154,6 @@ const useOrderItem = () => {
     }
 
     return {handleGetOrderItemsByOrderId, handleCreateOrderItem, handleCreateOrderItems, handleUpdateOrderItem,
-        handleUpdateQuantityOrderItem, handleDeleteOrderItem};
+        handleUpdateQuantityOrderItem, handleDeleteOrderItem, handleCreateOrderItemsDeliverySale};
 }
 export default useOrderItem;

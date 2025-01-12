@@ -31,7 +31,7 @@ export const updateOrder = async (data: IOrderCreateOrUpdate, id: number) => {
     return response.data;
 }
 
-export const updateOrderStatus = async (id: number) => {
-    const response = await httpInstance.patch(URL_API_ORDER.updateOrderStatus(id));
+export const updateOrderStatus = async (id: number, data: { status: string, note: string | undefined}) => {
+    const response = await httpInstance.post(URL_API_ORDER.updateOrderStatus(id), data);
     return response.data;
 }

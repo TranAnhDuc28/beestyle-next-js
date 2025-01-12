@@ -49,8 +49,8 @@ interface IProps {
 
 const CheckoutComponent: React.FC<IProps> = (props) => {
     const {open, onClose, customerTitleDrawer} = props;
-    const {showNotification, showModal} = useAppNotifications();
     const handleSale = useContext(HandleSale);
+    const {showNotification, showModal} = useAppNotifications();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalQROpen, setIsModalQROpen] = useState(false);

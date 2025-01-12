@@ -16,6 +16,7 @@ import {ORDER_STATUS} from "@/constants/OrderStatus";
 import AddProductToOrderModal from "@/components/Admin/Order/Detail/ModalAddProductToOrder";
 import {IProductVariant} from "@/types/IProductVariant";
 import CheckoutInfoCard from "@/components/Admin/Order/Detail/CheckoutInfoCard";
+import {isEqual} from "lodash";
 
 const {Text} = Typography;
 
@@ -28,7 +29,8 @@ const OrderedProductDetails: React.FC<IProps> = (props) => {
     const {id: orderId} = useParams();
     const {orderDetail} = props;
 
-    const {handleGetOrderItemsByOrderId, handleUpdateQuantityOrderItem, handleDeleteOrderItem, handleCreateOrderItems} = useOrderItem();
+    const {handleGetOrderItemsByOrderId, handleUpdateQuantityOrderItem, handleDeleteOrderItem,
+        handleCreateOrderItems, handleCreateOrderItemsDeliverySale} = useOrderItem();
     const {handleUpdateQuantityInStockProductVariant} = useProductVariant();
 
     const {orderItems, error, isLoading, mutateOrderItems} =
@@ -42,7 +44,9 @@ const OrderedProductDetails: React.FC<IProps> = (props) => {
 
 
     useEffect(() => {
-        setDataCart(orderItems);
+        if (orderItems && !isEqual(orderItems, dataCart)) {
+            setDataCart(orderItems);
+        }
     }, [orderItems]);
 
     /**
@@ -251,7 +255,7 @@ const OrderedProductDetails: React.FC<IProps> = (props) => {
         // thêm sản phẩm vào giỏ đối với các sản phẩm mới chưa có trong giỏ
         try {
             if (newOrderItemsCreateOrUpdate.length > 0) {
-                let response = await handleCreateOrderItems(Number(orderId), newOrderItemsCreateOrUpdate)
+                let response = await handleCreateOrderItemsDeliverySale(Number(orderId), newOrderItemsCreateOrUpdate)
                 if (response) {
                     productVariantSelected.forEach((selectedProduct) => {
                         const orderItemId = response[selectedProduct.id];

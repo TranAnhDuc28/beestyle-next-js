@@ -6,14 +6,13 @@ import {IAuthResponse, ISignIn} from "@/types/IAuth";
 import {signIn} from "@/services/AuthService";
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
 import Link from "next/link";
-import React from "react";
-import {useAuthentication} from "@/components/Context/AuthenticationProvider";
+import React, {useContext} from "react";
 
 const {Text} = Typography;
 
 const AuthenticationAdminComponent: React.FC = () => {
     const {showNotification} = useAppNotifications();
-    const authenticationAdmin = useAuthentication();
+    // const authenticationAdmin = useContext(AuthenticationContext);
     const router = useRouter();
     const [form] = Form.useForm();
 
@@ -22,7 +21,7 @@ const AuthenticationAdminComponent: React.FC = () => {
             const result: IAuthResponse = await signIn(value);
 
             if (result) {
-                authenticationAdmin?.login(result);
+                // authenticationAdmin?.login(result);
                 form.resetFields();
                 router.push("/admin");
             }

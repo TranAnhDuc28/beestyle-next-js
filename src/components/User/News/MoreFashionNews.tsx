@@ -2,8 +2,20 @@ import { Card, Col, Row } from "antd";
 import Meta from "antd/es/card/Meta";
 import Link from "next/link";
 import Image from 'next/image';
+import React from "react";
 
-const MoreFashionNews: React.FC = (props) => {
+interface IProps {
+    newsData: Array<{
+        id: number;
+        title: string;
+        imageUrl: string;
+        date: string;
+    }>;
+}
+
+const MoreFashionNews: React.FC<IProps> = (props) => {
+    const {newsData} = props;
+
     return (
         <>
             <h1 className="text-2xl font-bold mt-5 mb-4 text-center">THỜI TRANG THẾ GIỚI</h1>

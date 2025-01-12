@@ -15,9 +15,9 @@ import {calculateCartOriginAmount, calculateCartTotalQuantity} from "@/utils/App
 const {Text} = Typography;
 
 const AdminCart: React.FC = () => {
+    const handleSale = useContext(HandleSale);
     const {showMessage} = useAppNotifications();
     const inputRefs = useRef<Map<number, HTMLInputElement>>(new Map());
-    const handleSale = useContext(HandleSale);
     const [initialQuantities, setInitialQuantities] = useState<Map<number, number>>(new Map());
     const {handleGetOrderItemsByOrderId, handleUpdateQuantityOrderItem, handleDeleteOrderItem} = useOrderItem();
     const {handleUpdateQuantityInStockProductVariant} = useProductVariant();
