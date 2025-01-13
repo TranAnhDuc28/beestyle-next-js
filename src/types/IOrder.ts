@@ -1,16 +1,15 @@
 import { IVoucher } from "@/types/IVoucher";
 import { IAddress } from "@/types/IAddress";
-<<<<<<< HEAD
-import { ICreateOrUpdateOrderItem } from "./IOrderItem";
-=======
 import {ICreateOrUpdateOrderItem} from "@/types/IOrderItem";
->>>>>>> c77c82d238b8e344296c238559a8ef633d7526cf
+
 
 export interface IOrder {
     id: number;
     orderTrackingNumber: string;
     customerId?: number;
     customerName?: string;
+    phoneNumberCustomer?: string;
+    receiverName?: string;
     phoneNumber?: string;
     shippingFee?: number;
     totalAmount?: number;
@@ -36,6 +35,7 @@ export interface IOrderDetail {
     voucherInfo?: IVoucher;
     shippingAddressId?: number;
     shippingAddress?: IAddress;
+    receiverName?: string;
     phoneNumber?: string;
     shippingFee?: number;
     totalAmount?: number;

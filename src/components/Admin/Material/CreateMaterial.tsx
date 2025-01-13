@@ -5,6 +5,7 @@ import {IMaterial} from '@/types/IMaterial';
 import {createMaterial, URL_API_MATERIAL} from '@/services/MaterialService';
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {mutate} from "swr";
+import {URL_API_SIZE} from "@/services/SizeService";
 
 interface IProps {
     isCreateModalOpen: boolean;
@@ -40,7 +41,11 @@ const CreateMaterial = (props: IProps) => {
                 handleCloseCreateModal();
                 showNotification("success", {message: result.message});
             }
-            if (isLoadingSelectMaterial) await mutate(URL_API_MATERIAL.option);
+            await mutate(
+                (key: any) => typeof key === 'string' && key.startsWith(URL_API_SIZE.option),
+                undefined,
+                {revalidate: true}
+            );
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {

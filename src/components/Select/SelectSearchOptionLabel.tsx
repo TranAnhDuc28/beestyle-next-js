@@ -1,19 +1,23 @@
 import {Select} from "antd";
 import React, {CSSProperties, memo} from "react";
+import {SizeType} from "antd/es/config-provider/SizeContext";
+
 
 interface IProps {
+    size?: SizeType;
     placeholder?: string;
     value?: any;
     data?: any[];
     error?: [];
     isLoading?: boolean;
-    onChange?: (value: any) => void;
+    onChange?: (value: any, option: any) => void;
     style?: CSSProperties
     onClear?: () => void;
 }
 
 const SelectSearchOptionLabel = (props: IProps) => {
     const {
+        size,
         placeholder,
         style,
         value,
@@ -26,6 +30,7 @@ const SelectSearchOptionLabel = (props: IProps) => {
 
     return (
         <Select
+            size={size}
             style={style}
             showSearch
             value={value}

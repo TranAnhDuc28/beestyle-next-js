@@ -1,8 +1,8 @@
 import React, {memo, useEffect, useRef, useState} from "react";
-import {Button, Col, Flex, Row, Table, TableProps, Tag, Tooltip, Typography} from "antd";
+import {Button, Col, Flex, Popconfirm, Row, Table, TableProps, Tag, Tooltip, Typography} from "antd";
 import {ICreateOrUpdateOrderItem, IOrderItem} from "@/types/IOrderItem";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
-import {DeleteOutlined} from "@ant-design/icons";
+import {DeleteOutlined, QuestionCircleOutlined} from "@ant-design/icons";
 import useOrderItem from "@/components/Admin/Order/hooks/useOrderItem";
 import useProductVariant from "@/components/Admin/Product/Variant/hooks/useProductVariant";
 import {STOCK_ACTION} from "@/constants/StockAction";
@@ -29,8 +29,10 @@ const OrderedProductDetails: React.FC<IProps> = (props) => {
     const {id: orderId} = useParams();
     const {orderDetail} = props;
 
-    const {handleGetOrderItemsByOrderId, handleUpdateQuantityOrderItem, handleDeleteOrderItem,
-        handleCreateOrderItems, handleCreateOrderItemsDeliverySale} = useOrderItem();
+    const {
+        handleGetOrderItemsByOrderId, handleUpdateQuantityOrderItem, handleDeleteOrderItem,
+        handleCreateOrderItems, handleCreateOrderItemsDeliverySale
+    } = useOrderItem();
     const {handleUpdateQuantityInStockProductVariant} = useProductVariant();
 
     const {orderItems, error, isLoading, mutateOrderItems} =
@@ -352,7 +354,7 @@ const OrderedProductDetails: React.FC<IProps> = (props) => {
                     //         />
                     //     )
                     //     :
-                        record.quantity
+                    record.quantity
                 )
             }
         },
@@ -382,12 +384,18 @@ const OrderedProductDetails: React.FC<IProps> = (props) => {
                 title: 'Hành động', key: 'action', align: "center", width: 70,
                 render: (_, record) => (
                     <Tooltip title="Xóa sản phẩm">
-                        <Button
-                            type="text"
-                            shape="circle"
-                            icon={<DeleteOutlined/>}
-                            onClick={() => handleDeleteOrderItemCart(record.id, record.productId)}
-                        />
+                        <Popconfirm
+                            title="Xóa sản phẩm"
+                            description="Xác nhận xóa sản phẩm khỏi giỏ?"
+                            icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
+                            onConfirm={() => handleDeleteOrderItemCart(record.id, record.productId)}
+                        >
+                            <Button
+                                type="text"
+                                shape="circle"
+                                icon={<DeleteOutlined/>}
+                            />
+                        </Popconfirm>
                     </Tooltip>
                 ),
             });
@@ -408,7 +416,7 @@ const OrderedProductDetails: React.FC<IProps> = (props) => {
                             orderDetail?.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key &&
                             (
                                 <Button type="primary" style={{marginBottom: 10}}
-                                    onClick={() => setOpenAddProductToOrderModal(true)}
+                                        onClick={() => setOpenAddProductToOrderModal(true)}
                                 >
                                     Thêm sản phẩm
                                 </Button>
