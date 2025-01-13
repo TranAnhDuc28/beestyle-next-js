@@ -137,7 +137,7 @@ const CreateAddressModal = (props: IProps) => {
                 });
             } else {
                 showNotification("error", {
-                    message: error?.message,
+                    message: "Thêm địa chỉ thất bại",
                     description: errorMessage,
                 });
             }

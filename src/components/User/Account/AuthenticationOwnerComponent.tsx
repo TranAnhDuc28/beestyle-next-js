@@ -11,6 +11,11 @@ const {Content} = Layout;
 const AuthenticationOwnerComponent = () => {
     const [tabAuthKey, setTabAuthKey] = useState<string>('login');
 
+    const handleRegisterSuccess = () => {
+        // Chuyển tab sang "Đăng nhập" khi đăng ký thành công
+        setTabAuthKey('login');
+    };
+
     const items: TabsProps['items'] = [
         {
             key: 'login',
@@ -39,7 +44,7 @@ const AuthenticationOwnerComponent = () => {
                 </Text>
 
             ),
-            children: <RegisterForm/>,
+            children: <RegisterForm handleRegisterSuccess={handleRegisterSuccess}/>,
         },
     ];
 

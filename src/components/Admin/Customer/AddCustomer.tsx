@@ -251,9 +251,9 @@ const AddCustomer = (props: IProps) => {
                 name="email"
                 rules={[
                   {
-                    validator: (_, value) => validateEmail(value),
-                    required: true,
-                  },
+                    pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+                    message: 'Email không đúng định dạng!',
+                },
                 ]}
               >
                 <Input placeholder="Nhập email" />

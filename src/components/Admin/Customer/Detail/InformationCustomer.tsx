@@ -74,13 +74,15 @@ const InformationCustomer = (props: IProps) => {
   };
 
   useEffect(() => {
+    console.log(customer);
+    
     if (customer) {
       form.setFieldsValue({
         id: customer.id,
         fullName: customer.fullName,
-        dateOfBirth: dayjs(customer.dateOfBirth).isValid()
+        dateOfBirth: customer.dateOfBirth
           ? dayjs.utc(customer.dateOfBirth)
-          : null,
+          : "",
         gender: customer.gender,
         phoneNumber: customer.phoneNumber,
         status: customer.status,
@@ -131,9 +133,9 @@ const InformationCustomer = (props: IProps) => {
           name="email"
           rules={[
             {
-              validator: (_, value) => validateEmail(value),
-              required: true,
-            },
+              pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+              message: 'Email không đúng định dạng!',
+          },
           ]}
         >
           <Input disabled={!isEditing} />
@@ -150,6 +152,7 @@ const InformationCustomer = (props: IProps) => {
                 style={{ width: "100%" }}
                 allowClear={false} // Ngăn xóa giá trị ngày
                 disabled={!isEditing}
+                placeholder="Chọn ngày"
               />
             </Form.Item>
           </Col>

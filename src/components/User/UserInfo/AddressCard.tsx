@@ -23,11 +23,10 @@ import useAddress from "@/components/Admin/Address/hook/useAddress";
 
 interface IProps {
   idCustomer: any;
-  phoneNumber: string;
 }
 
 const AddressCard = (props: IProps) => {
-  const { idCustomer, phoneNumber } = props;
+  const { idCustomer } = props;
   const [form] = Form.useForm();
   const [formUpdate] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
@@ -357,7 +356,7 @@ const AddressCard = (props: IProps) => {
                 className="flex justify-between font-bold"
                 style={{ backgroundColor: "#D9EDF7", padding: "9px 10px" }}
               >
-                {address.addressName}
+                {`#${index+1}`}
                 {address.isDefault ? " (Địa chỉ mặc định)" : ""}
                 <div className="space-x-4">
                   <EditOutlined
@@ -486,7 +485,6 @@ const AddressCard = (props: IProps) => {
               {(!isEditing || editingAddressIndex !== index) && (
                 <div className="p-4" style={{ backgroundColor: "#FBFBFB" }}>
                   <p>Địa chỉ: {formatAddress(address)}</p>
-                  <p>Số điện thoại: {phoneNumber}</p>
                 </div>
               )}
             </div>
