@@ -13,6 +13,7 @@ import { ghtkCalculateShippingFee } from "@/services/GhtkCalculateShippingFee";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import { AiOutlineHome } from "react-icons/ai";
 import { RiStore2Line } from "react-icons/ri";
+import { PAYMENT_METHOD } from "@/constants/PaymentMethod";
 
 interface IProps {
     addressForm: FormInstance;
@@ -73,7 +74,7 @@ const CheckoutForm = (props: IProps) => {
     const handlePaymentChange = (e: any) => {
         const value = e.target.value;
         onPaymentChange(value);
-        if (value === 'CASH_AND_BANK_TRANSFER' || value === "BANK_TRANSFER") {
+        if (value === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key || value === PAYMENT_METHOD.BANK_TRANSFER.key) {
             addressForm.setFieldsValue({ district: undefined, ward: undefined });
         }
     };
@@ -166,9 +167,10 @@ const CheckoutForm = (props: IProps) => {
     };
 
     return (
-        <div className={styles["checkout-form"]}>
-            <h3 className={styles["heading"]}>Thông tin người nhận</h3>
-            <Form layout="horizontal" className={styles["form"]} form={userForm} action="#">
+        <Form layout="horizontal" className={styles["form"]} form={userForm} action="#">
+            <div className={styles["checkout-form"]}>
+                <h3 className={styles["heading"]}>Thông tin người nhận</h3>
+
                 <Form.Item
                     name="customerName"
                     rules={[{ required: true, message: "Vui lòng nhập tên khách hàng!" }]}
@@ -182,7 +184,13 @@ const CheckoutForm = (props: IProps) => {
 
                 <Form.Item
                     name="phone"
-                    rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
+                    rules={[
+                        { required: true, message: "Vui lòng nhập số điện thoại!" },
+                        {
+                            pattern: /^0\d{9}$/,
+                            message: "Số điện thoại không đúng định dạng!",
+                        },
+                    ]}
                 >
                     <Input
                         placeholder="Số điện thoại"
@@ -198,72 +206,70 @@ const CheckoutForm = (props: IProps) => {
                         className={styles["input-checkout"]}
                     />
                 </Form.Item>
-            </Form>
 
-            <div className={`${styles["delivery-method"]} my-4`}>
-                <h3 className={styles["heading"]}>Hình thức thanh toán</h3>
-                <Radio.Group
-                    onChange={handlePaymentChange}
-                    value={selectedPayment}
-                    className={styles["delivery-radio-group"]}
-                >
-                    <div>
-                        <Radio.Button
-                            value="CASH_AND_BANK_TRANSFER"
-                            className={`${styles["delivery-option"]} ${selectedPayment === "CASH_AND_BANK_TRANSFER" ? styles["selected"] : ""
-                                }`}
-                            style={{ padding: '25px 5px', width: '190px' }}
-                        >
-                            <div
-                                className="flex flex-col items-center justify-between text-center"
-                                style={{ marginTop: -15 }}
+                <div className={`${styles["delivery-method"]} my-4`}>
+                    <h3 className={styles["heading"]}>Hình thức thanh toán</h3>
+                    <Radio.Group
+                        onChange={handlePaymentChange}
+                        value={selectedPayment}
+                        className={styles["delivery-radio-group"]}
+                    >
+                        <div>
+                            <Radio.Button
+                                value="CASH_AND_BANK_TRANSFER"
+                                className={`${styles["delivery-option"]} ${selectedPayment === "CASH_AND_BANK_TRANSFER" ? styles["selected"] : ""
+                                    }`}
+                                style={{ padding: '25px 5px', width: '190px' }}
                             >
-                                <AiOutlineHome size={15} />
-                                <span style={{ fontSize: 12, lineHeight: '20px' }}>Thanh toán khi nhận hàng (COD)</span>
-                            </div>
-                        </Radio.Button>
-                    </div>
+                                <div
+                                    className="flex flex-col items-center justify-between text-center"
+                                    style={{ marginTop: -15 }}
+                                >
+                                    <AiOutlineHome size={15} />
+                                    <span style={{ fontSize: 12, lineHeight: '20px' }}>Thanh toán khi nhận hàng (COD)</span>
+                                </div>
+                            </Radio.Button>
+                        </div>
 
-                    <div>
-                        <Radio.Button
-                            value="BANK_TRANSFER"
-                            className={`${styles["delivery-option"]} ${selectedPayment === "BANK_TRANSFER" ? styles["selected"] : ""
-                                }`}
-                            style={{ padding: '25px 0', width: '190px' }}
-                        >
-                            <div
-                                className="flex flex-col items-center justify-center"
-                                style={{ marginTop: -15 }}
+                        <div>
+                            <Radio.Button
+                                value="BANK_TRANSFER"
+                                className={`${styles["delivery-option"]} ${selectedPayment === "BANK_TRANSFER" ? styles["selected"] : ""
+                                    }`}
+                                style={{ padding: '25px 0', width: '190px' }}
                             >
-                                <TbCreditCardPay size={15} />
-                                <span style={{ fontSize: 12, lineHeight: '20px' }}>Thanh toán qua VNPay</span>
-                            </div>
-                        </Radio.Button>
-                    </div>
+                                <div
+                                    className="flex flex-col items-center justify-center"
+                                    style={{ marginTop: -15 }}
+                                >
+                                    <TbCreditCardPay size={15} />
+                                    <span style={{ fontSize: 12, lineHeight: '20px' }}>Thanh toán qua VNPay</span>
+                                </div>
+                            </Radio.Button>
+                        </div>
 
-                    <div>
-                        <Radio.Button
-                            value="TEST"
-                            className={`${styles["delivery-option"]} ${selectedPayment === "TEST" ? styles["selected"] : ""
-                                }`}
-                            style={{ padding: '25px 0', width: '190px' }}
-                        >
-                            <div
-                                className="flex flex-col items-center justify-center"
-                                style={{ marginTop: -15 }}
+                        <div>
+                            <Radio.Button
+                                value="TEST"
+                                className={`${styles["delivery-option"]} ${selectedPayment === "TEST" ? styles["selected"] : ""
+                                    }`}
+                                style={{ padding: '25px 0', width: '190px' }}
                             >
-                                <RiStore2Line size={15} />
-                                <span style={{ fontSize: 12, lineHeight: '20px' }}>Nhận tại cửa hàng</span>
-                            </div>
-                        </Radio.Button>
-                    </div>
-                </Radio.Group>
-            </div>
+                                <div
+                                    className="flex flex-col items-center justify-center"
+                                    style={{ marginTop: -15 }}
+                                >
+                                    <RiStore2Line size={15} />
+                                    <span style={{ fontSize: 12, lineHeight: '20px' }}>Nhận tại cửa hàng</span>
+                                </div>
+                            </Radio.Button>
+                        </div>
+                    </Radio.Group>
+                </div>
 
-            {selectedPayment === "CASH_AND_BANK_TRANSFER" || selectedPayment === "BANK_TRANSFER" ? (
-                <>
-                    <h3 className={styles["heading"] + " my-4"}>Địa chỉ nhận hàng</h3>
-                    <Form layout="horizontal" className={styles["form"]} form={addressForm} action="#">
+                {selectedPayment === "CASH_AND_BANK_TRANSFER" || selectedPayment === "BANK_TRANSFER" ? (
+                    <>
+                        <h3 className={styles["heading"] + " my-4"}>Địa chỉ nhận hàng</h3>
                         <Row gutter={16} className="mb-3">
                             <Col span={8}>
                                 <Form.Item
@@ -281,7 +287,7 @@ const CheckoutForm = (props: IProps) => {
                                         placeholder="Tỉnh / Thành phố"
                                         data={provincesData?.dataOptionProvinces}
                                         isLoading={provincesData?.isLoading}
-                                        onChange={(value, option) => onChangeSelectedProvince(value, option?.label || '')} // Updated
+                                        onChange={(value: string, option: { label: any; }) => onChangeSelectedProvince(value, option?.label || '')} // Updated
                                     />
                                 </Form.Item>
                             </Col>
@@ -296,7 +302,7 @@ const CheckoutForm = (props: IProps) => {
                                         style={{ width: "100%", height: "48px" }}
                                         data={districtsData?.dataOptionDistricts}
                                         isLoading={districtsData?.isLoading}
-                                        onChange={(value, option) => onChangeSelectedDistrict(value, option?.label || '')} // Updated
+                                        onChange={(value: string, option: { label: any; }) => onChangeSelectedDistrict(value, option?.label || '')} // Updated
                                     />
                                 </Form.Item>
                             </Col>
@@ -311,13 +317,17 @@ const CheckoutForm = (props: IProps) => {
                                         style={{ width: "100%", height: "48px" }}
                                         data={wardsData?.dataOptionWards}
                                         isLoading={wardsData?.isLoading}
-                                        onChange={(value, option) => onChangeSelectedWard(value, option?.label || '')} // Updated
+                                        onChange={(value: string, option: { label: any; }) => onChangeSelectedWard(value, option?.label || '')} // Updated
                                     />
                                 </Form.Item>
                             </Col>
                         </Row>
 
-                        <Form.Item name="addressDetail" style={{ marginTop: -10 }}>
+                        <Form.Item
+                            name="addressDetail"
+                            style={{ marginTop: -10 }}
+                            rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
+                        >
                             <TextArea
                                 onChange={(e) => handleDetailAddressChange(e.target.value)}
                                 placeholder="Nhập địa chỉ chi tiết"
@@ -327,18 +337,18 @@ const CheckoutForm = (props: IProps) => {
                                 maxLength={250}
                             />
                         </Form.Item>
-                    </Form>
-                </>
-            ) : (
-                <Alert
-                    message="Thử nghiệm"
-                    description="Tính năng này đang trong giai đoạn thử nghiệm, có thể hoạt động chưa ổn định."
-                    type="warning"
-                    className="mt-7"
-                    showIcon
-                />
-            )}
-        </div>
+                    </>
+                ) : (
+                    <Alert
+                        message="Thử nghiệm"
+                        description="Tính năng này đang trong giai đoạn thử nghiệm, có thể hoạt động chưa ổn định."
+                        type="warning"
+                        className="mt-7"
+                        showIcon
+                    />
+                )}
+            </div>
+        </Form>
     );
 };
 

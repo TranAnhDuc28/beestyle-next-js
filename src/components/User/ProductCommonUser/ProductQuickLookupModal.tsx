@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Carousel, Tag, InputNumber, Image } from 'antd';
+import { Modal, Button, Carousel, Tag, InputNumber, Image, message } from 'antd';
 import { useProduct } from '@/services/user/SingleProductService';
 import ColorPickers from '@/components/User/ShopSingle/Properties/ColorPickers';
 import SizePickers from '@/components/User/ShopSingle/Properties/SizePickers';
@@ -55,7 +55,18 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
     };
 
     const handleAddToCart = (product: any, quantity: number) => {
-        if (selectedColor && selectedSize) addToCart(product, quantity);
+        if (selectedColor && selectedSize && product) {
+            if (quantity >= 1 && quantity <= productData?.quantityInStock) {
+                addToCart(product, quantity);
+            } else {
+                message.warning(
+                    {
+                        content: `Sản phẩm ${productData?.productName} đã hết hàng!`,
+                        duration: 5,
+                    }
+                );
+            }
+        }
         else return;
     }
 
@@ -221,7 +232,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                                     className="!bg-gray-200 hover:!bg-gray-300 !text-black !font-bold relative z-10
                                                !border-none !rounded-none !w-10 !h-10 flex items-center justify-center"
                                     icon={<PlusOutlined />}
-                                    disabled={quantity >= product?.quantity}
+                                    disabled={quantity >= productData?.quantityInStock}
                                 />
                             </div>
                         </div>

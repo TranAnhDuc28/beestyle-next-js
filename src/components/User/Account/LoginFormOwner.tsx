@@ -6,7 +6,7 @@ import useAppNotifications from "@/hooks/useAppNotifications";
 import {IAuthResponse, ISignIn} from "@/types/IAuth";
 import {signIn} from "@/services/AuthService";
 import {useRouter} from "next/navigation";
-import React, {useContext} from "react";
+import React from "react";
 import {useAuthentication} from "@/components/Context/AuthenticationProvider";
 
 

@@ -74,7 +74,6 @@ const OrderDetail = (props: IProps) => {
                 try {
                     // Validate form
                     await userForm.validateFields();
-                    await addressForm.validateFields();
 
                     const data = {
                         originalAmount,

@@ -71,6 +71,9 @@ const Checkout = () => {
         }
     };
 
+    console.log(JSON.stringify(cartItems, null, 2));
+
+
     // Xử lý đơn hàng và gửi request tói server
     const handleSubmit = async (payment: any) => {
         try {

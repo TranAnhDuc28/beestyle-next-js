@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import Link from "next/link";
-import { Button, Flex, InputNumber, Rate, Tag } from 'antd';
+import { Button, Flex, InputNumber, message, Rate, Tag } from 'antd';
 import { ProductVariant } from "@/services/user/SingleProductService";
 import ColorPickers from "@/components/User/ShopSingle/Properties/ColorPickers";
 import SizePickers from "@/components/User/ShopSingle/Properties/SizePickers";
 import { addToCart } from "@/services/user/ShoppingCartService";
 import { EyeOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import InfoSection from "@/components/User/ShopSingle/Properties/InfoSession";
+import { useRouter } from 'next/navigation';
 
 interface ProductDescriptionProps {
     product: ProductVariant | undefined;
@@ -26,6 +27,7 @@ const ProductDescription: React.FC<ProductDescriptionProps> = ({
     onSizeSelect
 }) => {
     const [quantity, setQuantity] = useState(1);
+    const router = useRouter();
 
     const handleDecrement = () => {
         setQuantity(prevQuantity => Math.max(prevQuantity - 1, 1));
@@ -34,6 +36,26 @@ const ProductDescription: React.FC<ProductDescriptionProps> = ({
     const handleIncrement = () => {
         setQuantity(prevQuantity => Math.min(prevQuantity + 1, 1000));
     };
+
+    const handleAddToCart = (product: any, quantity: number, redirect: boolean) => {
+        if (selectedColor && selectedSize && product) {
+            if (quantity >= 1 && quantity <= product?.quantityInStock) {
+                if (redirect) {
+                    addToCart(product, quantity);
+                    router.push('/cart');
+                }
+                else addToCart(product, quantity);
+            } else {
+                message.warning(
+                    {
+                        content: `Sản phẩm ${product?.productName} đã hết hàng!`,
+                        duration: 5,
+                    }
+                );
+            }
+        }
+        else return;
+    }
 
     return (
         <div className="product-des">
@@ -170,7 +192,7 @@ const ProductDescription: React.FC<ProductDescriptionProps> = ({
                             href="#"
                             onClick={(e) => {
                                 e.preventDefault();
-                                addToCart(product, quantity);
+                                handleAddToCart(product, quantity, false);
                             }}
                             className="btn"
                             style={{ margin: '0 0 0 20px', padding: '0 151px' }}
@@ -181,9 +203,10 @@ const ProductDescription: React.FC<ProductDescriptionProps> = ({
                 </Flex>
                 <div className="add-to-cart">
                     <Link
-                        href={"/cart"}
-                        onClick={() => {
-                            addToCart(product, quantity);
+                        href="#"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handleAddToCart(product, quantity, true);
                         }}
                         className="btn"
                         style={{ width: '635px' }}
