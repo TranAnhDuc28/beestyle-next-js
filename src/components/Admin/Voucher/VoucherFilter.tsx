@@ -1,5 +1,4 @@
 import {Checkbox, Col, Collapse, Radio, RadioChangeEvent, Row, Space, Typography} from "antd";
-import {STATUS} from "@/constants/Status";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {memo, useEffect, useState} from "react";
 import {DISCOUNT_TYPE} from "../../../constants/DiscountType";
@@ -90,7 +89,7 @@ const VoucherFilter = (props: IProps) => {
                                           { Object.keys(DISCOUNT_TYPE).map((key) => (
                                               <Col key={key} span={24} style={{marginBottom: 10}}>
                                                   <Radio value={key} style={{marginLeft: 10}}>
-                                                      {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE]}
+                                                      {DISCOUNT_TYPE[key as keyof typeof DISCOUNT_TYPE].description}
                                                   </Radio>
                                               </Col>
                                           ))}
