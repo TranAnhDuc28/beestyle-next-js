@@ -47,16 +47,13 @@ const CheckoutInfoCard: React.FC<IProps> = (props) => {
             } catch (error: any) {
                 showNotification("error", {message: error.message});
             }
+        } else {
+            shippingFee = orderDetail?.shippingFee ?? 0;
         }
 
         // tính tổng giá trị khách hàng cần trả
-        let finalTotalAmount: number;
-        if (orderDetail?.orderStatus === ORDER_STATUS.PAID.key ||
-            orderDetail?.orderStatus === ORDER_STATUS.DELIVERED.key) {
-            finalTotalAmount = orderDetail?.totalAmount ?? 0;
-        } else {
-            finalTotalAmount = calculateFinalAmount(originalAmount, discountAmount, shippingFee);
-        }
+        const finalTotalAmount: number = calculateFinalAmount(originalAmount, discountAmount, shippingFee);
+
 
         // tính tiền khách cần trả
         const amountDue: number = finalTotalAmount;
@@ -80,7 +77,7 @@ const CheckoutInfoCard: React.FC<IProps> = (props) => {
             await updatePaymentInfo();
         };
         runUpdatePaymentInfo();
-    }, [dataCart, orderDetail]);
+    }, [dataCart, orderDetail, orderDetailContext?.paymentInfo.shippingFee]);
 
     return (
         <Card title="Thông tin thanh toán" style={{width: "100%"}}>

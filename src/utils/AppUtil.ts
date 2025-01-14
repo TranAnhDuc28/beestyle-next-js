@@ -85,13 +85,12 @@ export const calculateShippingFee = async (originalAmount: number | undefined, s
     if (!originalAmount || originalAmount === 0 || Number(originalAmount) >= FREE_SHIPPING_THRESHOLD || !shippingAddress) return 0;
 
     const paramCalculateFee: Record<string, any> = {
-        pick_province: shippingAddress?.city,
-        pick_district: shippingAddress?.district,
+        pick_province: "Hà Nội",
+        pick_district: "Huyện Hoài Đức",
         province: shippingAddress?.city,
         district: shippingAddress?.district,
         weight: 100,
         value: originalAmount,
-        deliver_option: "xteam",
         transport: "road",
     };
 
