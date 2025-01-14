@@ -11,3 +11,11 @@ interface ICustomer{
     createdAt?: Date,
     updatedAt?: Date,
 }
+
+interface IRegister{
+    fullName:string,
+    phoneNumber:string,
+    email:string,
+    password:string,
+    passwordComfirm:string
+}

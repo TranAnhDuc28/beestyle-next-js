@@ -141,9 +141,7 @@ const AddCustomer = (props: IProps) => {
           communeCode: Number(selectedWardCode), // Cần lấy từ API nếu có
           commune: selectedWardName, // Tên xã
           isDefault: false,
-          customer: {
-            id: customer.id, // Thay đổi bằng ID thực tế
-          },
+          customerId : customer.id
         };
 
         console.log(address);
@@ -251,9 +249,9 @@ const AddCustomer = (props: IProps) => {
                 name="email"
                 rules={[
                   {
-                    validator: (_, value) => validateEmail(value),
-                    required: true,
-                  },
+                    pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+                    message: 'Email không đúng định dạng!',
+                },
                 ]}
               >
                 <Input placeholder="Nhập email" />

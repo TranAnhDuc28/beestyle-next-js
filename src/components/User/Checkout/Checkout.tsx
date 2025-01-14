@@ -228,6 +228,7 @@ const Checkout: React.FC = () => {
                     .then((orderData) => {
                         // Xử lý kết quả thành công và chuyển hướng
                         if (orderData) {
+                            
                             const trackingNumber: string = orderData.orderTrackingNumber;
                             // Xoá data Cart
                             if (getAccountInfo()) {

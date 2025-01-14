@@ -35,7 +35,7 @@ export const createCustomer = async (data: ICustomer) => {
 
 
 // Đăng kí tạo tài khoản người dùng
-export const registerCustomer = async (data: ICustomer) => {
+export const registerCustomer = async (data: IRegister) => {
   const response = await httpInstance.post(URL_API_CUSTOMER.register,data)
   return response.data
 }
