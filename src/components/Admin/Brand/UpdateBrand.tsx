@@ -5,6 +5,7 @@ import {IBrand} from "@/types/IBrand";
 import {updateBrand, URL_API_BRAND} from "@/services/BrandService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {mutate} from "swr"
+import {URL_API_COLOR} from "@/services/ColorService";
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -48,7 +49,11 @@ const UpdateBrand = (props: IProps) => {
                     handleCloseUpdateModal();
                     showNotification("success", {message: result.message});
                 }
-                await mutate(URL_API_BRAND.option, undefined, {revalidate: true});
+                await mutate(
+                    (key: any) => typeof key === 'string' && key.startsWith(URL_API_BRAND.option),
+                    undefined,
+                    {revalidate: true}
+                );
             }
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;

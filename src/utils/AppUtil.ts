@@ -87,14 +87,11 @@ export const calculateShippingFee = async (originalAmount: number | undefined, s
     const paramCalculateFee: Record<string, any> = {
         pick_province: shippingAddress?.city,
         pick_district: shippingAddress?.district,
-        pick_ward: shippingAddress?.commune,
-        pick_street: shippingAddress?.addressName,
         province: shippingAddress?.city,
         district: shippingAddress?.district,
-        ward: shippingAddress?.commune,
-        address: shippingAddress?.addressName,
-        weight: 300,
+        weight: 100,
         value: originalAmount,
+        deliver_option: "xteam",
         transport: "road",
     };
 

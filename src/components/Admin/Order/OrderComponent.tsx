@@ -57,16 +57,20 @@ const OrderComponent: React.FC = () => {
     const columns: TableColumnsType<IOrder> = [
         {title: 'Mã đơn hàng', dataIndex: 'orderTrackingNumber', key: 'orderTrackingNumber'},
         {
-            title: 'Khách hàng', dataIndex: 'customerName', key: 'customerName',
-            render: (_, record) => {
+            title: 'Khách hàng', dataIndex: "receiverName", key: "receiverName",
+            render: (value, record) => {
                 return (
-                    record.customerId
-                        ? <Link href={`/admin/customers/${record.customerId}`}>{record.customerName}</Link>
-                        : "Khách lẻ"
+                    value ? value
+                        : record?.customerId ? record.customerName : "Khách lẻ"
                 );
             }
         },
-        {title: 'Số điện thoại', dataIndex: 'phoneNumber', key: 'phoneNumber'},
+        {
+            title: 'Số điện thoại', dataIndex: 'phoneNumber', key: 'phoneNumber',
+            render: (value, record) => {
+                return value ? value : record?.phoneNumberCustomer ? record.phoneNumberCustomer : "";
+            }
+        },
         {
             title: 'Kênh bán hàng', dataIndex: 'orderChannel', key: 'orderChannel', align: 'center',
             render(value: keyof typeof ORDER_CHANEL, record) {

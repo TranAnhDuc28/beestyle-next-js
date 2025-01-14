@@ -52,7 +52,9 @@ const UpdateColor = (props: IProps) => {
                     showNotification("success", {message: result.message});
                 }
 
-                await mutate((key: any) => typeof key === 'string' && key.startsWith(URL_API_COLOR.option), undefined,
+                await mutate(
+                    (key: any) => typeof key === 'string' && key.startsWith(URL_API_COLOR.option),
+                    undefined,
                     {revalidate: true}
                 );
             }

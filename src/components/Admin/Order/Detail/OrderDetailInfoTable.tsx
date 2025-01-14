@@ -10,8 +10,22 @@ import {PAYMENT_METHOD} from "@/constants/PaymentMethod";
 import UpdateShippingInfoModal from "@/components/Admin/Order/Detail/UpdateShippingInfoModal";
 import {formatAddress} from "@/utils/AppUtil";
 import {ORDER_CHANEL} from "@/constants/OrderChanel";
+import {PresetStatusColorType} from "antd/es/_util/colors";
+import {DISCOUNT_TYPE} from "@/constants/DiscountType";
 
 const {Text} = Typography;
+
+const getStatusBadge = (orderStatus: string | undefined): PresetStatusColorType => {
+    if (orderStatus === ORDER_STATUS.CANCELLED.key || orderStatus === ORDER_STATUS.RETURNED.key) {
+        return "error";
+    }
+
+    if (orderStatus === ORDER_STATUS.PAID.key || orderStatus === ORDER_STATUS.DELIVERED.key) {
+        return "success";
+    }
+
+    return "processing";
+}
 
 interface IProps {
     orderDetail: IOrderDetail
@@ -23,7 +37,7 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
 
     const showShippingInfoModal = () => {
         setIsShippingInfoModalOpen(true);
-    };;
+    };
 
     const itemDescriptions: DescriptionsProps['items'] = [
         {
@@ -31,8 +45,8 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
             children: orderDetail?.orderTrackingNumber
         },
         {
-            key: 'recipient', label: 'Người nhận', span: {xs: 3, sm: 3, md: 1, lg: 1, xl: 1, xxl: 1},
-            children: orderDetail?.customerInfo?.fullName
+            key: 'receiverName', label: 'Người nhận', span: {xs: 3, sm: 3, md: 1, lg: 1, xl: 1, xxl: 1},
+            children: orderDetail?.receiverName
         },
         {
             key: 'phoneNumber', label: 'Số điện thoại', span: {xs: 3, sm: 3, md: 1, lg: 1, xl: 1, xxl: 1},
@@ -101,7 +115,7 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
         },
         {
             key: 'totalAmount',
-            label: 'Tổng tiền đã thanh toán',
+            label: 'Tổng tiền thanh toán',
             span: {xs: 3, sm: 3, md: 1.5, lg: 1.5, xl: 1.5, xxl: 1.5},
             children: `${orderDetail?.totalAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')
         },
@@ -109,7 +123,7 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
             key: 'orderStatus', label: 'Trạng thái hóa đơn', span: {xs: 3, sm: 3, md: 3, lg: 3, xl: 3, xxl: 3},
             children: orderDetail?.orderStatus ? (
                 <Badge
-                    status="processing"
+                    status={getStatusBadge(orderDetail?.orderStatus)}
                     text={ORDER_STATUS[orderDetail?.orderStatus as keyof typeof ORDER_STATUS].description}
                 />
             ) : null,
@@ -120,9 +134,14 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
                 <>
                     {orderDetail?.voucherInfo?.voucherCode} - {orderDetail?.voucherInfo?.voucherName}
                     <br/>
-                    Loại giảm giá: {orderDetail?.voucherInfo?.discountType === "PERCENTAGE" ? "%" : "Tiền mặt"}
+                    Loại giảm giá: {
+                        orderDetail?.voucherInfo?.discountType === DISCOUNT_TYPE.PERCENTAGE.key
+                            ? DISCOUNT_TYPE.PERCENTAGE.description
+                            : DISCOUNT_TYPE.CASH.description
+                    }
                     <br/>
-                    Giá trị giảm: {`${orderDetail?.voucherInfo?.discountValue}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                    Giá trị
+                    giảm: {`${orderDetail?.voucherInfo?.discountValue}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                     <br/>
                     Giá trị tiền giảm tối
                     đa: {`${orderDetail?.voucherInfo?.maxDiscount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
@@ -151,7 +170,8 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
                                 <div>
                                     <Text>Họ và tên: {orderDetail?.customerInfo?.fullName}</Text><br/>
                                     <Text>
-                                        Ngày sinh: {dayjs(orderDetail?.customerInfo?.dateOfBirth).format('DD-MM-YYYY')}
+                                        Ngày
+                                        sinh: {dayjs(orderDetail?.customerInfo?.dateOfBirth).format('DD-MM-YYYY')}
                                     </Text><br/>
                                     <Text>Giới tính: {orderDetail?.customerInfo?.gender}</Text><br/>
                                     <Text>Số điện thoại: {orderDetail?.customerInfo?.phoneNumber}</Text><br/>
@@ -170,10 +190,6 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
             key: 'staffInfo', label: 'Nhân viên', span: {xs: 3, sm: 3, md: 1.5, lg: 1.5, xl: 1.5, xxl: 1.5},
             children: (
                 <>
-                    Mã nhân viên: NV001
-                    <br/>
-                    Họ và tên: {orderDetail?.createdBy}
-                    <br/>
                 </>
             ),
         },
@@ -181,17 +197,17 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
 
     return (
         <>
-            <Flex justify="flex-end">
-                {
-                    orderDetail?.orderType === ORDER_TYPE.DELIVERY.key &&
-                    orderDetail?.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key &&
-                    <Tooltip title="Cập nhật thông tin giao hàng" placement="topRight">
-                        <Button type="primary" style={{marginBottom: 10}} onClick={() => showShippingInfoModal()}>
-                            Cập nhật
-                        </Button>
-                    </Tooltip>
-                }
-            </Flex>
+            {/*<Flex justify="flex-end">*/}
+            {/*    {*/}
+            {/*        orderDetail?.orderType === ORDER_TYPE.DELIVERY.key &&*/}
+            {/*        orderDetail?.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key &&*/}
+            {/*        <Tooltip title="Cập nhật thông tin giao hàng" placement="topRight">*/}
+            {/*            <Button type="primary" style={{marginBottom: 10}} onClick={() => showShippingInfoModal()}>*/}
+            {/*                Cập nhật*/}
+            {/*            </Button>*/}
+            {/*        </Tooltip>*/}
+            {/*    }*/}
+            {/*</Flex>*/}
 
             <Descriptions
                 bordered

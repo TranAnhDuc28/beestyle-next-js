@@ -100,7 +100,12 @@ const useOrder = () => {
     }
 
 
-    const handleUpdateOrderStatusDelivery = async (id: number, value: { status: string, note: string | undefined }) => {
+    const handleUpdateOrderStatusDelivery = async (id: number, value: {
+        shippingFee?: number | undefined,
+        totalAmount?: number,
+        orderStatus: string,
+        note: string | undefined
+    }) => {
         setLoading(true);
         try {
             const result = await updateOrderStatus(id, value);
@@ -117,6 +122,7 @@ const useOrder = () => {
             } else {
                 showNotification("error", {message: error?.message, description: errorMessage});
             }
+            throw new Error(errorMessage)
         } finally {
             setLoading(false);
         }
