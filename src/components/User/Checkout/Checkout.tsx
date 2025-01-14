@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import OrderDetail from "./OrderDetail";
-import { Alert, Col, Form, Input, Radio, Row } from "antd";
+import { Alert, Button, Col, Form, Input, Radio, Row } from "antd";
 import { createVNPayPayment } from "@/services/VNPayService";
 import { checkShoppingCartData, deleteAllCartItems, ICartItem, removeAllCartItems, useShoppingCart } from "@/services/user/ShoppingCartService";
 import BreadcrumbSection from "@/components/Breadcrumb/BreadCrumb";
@@ -26,18 +26,53 @@ import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel
 import TextArea from "antd/es/input/TextArea";
 import useAddress from "@/components/Admin/Address/hook/useAddress";
 import { calculateShippingFee, getAccountInfo } from "@/utils/AppUtil";
+import { getAddressByCustomerId, URL_API_ADDRESS } from "@/services/AddressService";
+import useSWR from "swr";
+
+const dataTest = [
+    {
+        id: 1,
+        name: 'Anh Vũ',
+        address: 'Phuong Canh',
+        city: 'Thành phố Hà Nội, Nam Từ Liêm 10000',
+        country: 'Việt Nam',
+        phone: '931386154',
+        isDefault: 0,
+    },
+    {
+        id: 2,
+        name: 'Đức Anh Vũ',
+        address: '123',
+        city: 'Thành phố Hà Nội, Nam Từ Liêm 10000',
+        country: 'Việt Nam',
+        phone: '931386154',
+        isDefault: 1,
+    },
+];
 
 const Checkout: React.FC = () => {
     const router = useRouter();
+    const customerId = getAccountInfo().id;
     const [userForm] = Form.useForm();
     const { handleCreateOrderOnline } = useOrder();
-
     const [shippingAddress, setShippingAddress] = useState<IAddress | undefined>(undefined);
-
     const { handleGetProvinces, handleGetDistricts, handleGetWards } = useAddress();
     const provincesData = handleGetProvinces();
     const districtsData = handleGetDistricts(`${shippingAddress?.cityCode}`);
     const wardsData = handleGetWards(`${shippingAddress?.districtCode}`);
+    const [selectedAddress, setSelectedAddress] = useState<number>(0);
+    const { data: addressData, error: errorAddress, mutate } = useSWR(
+        `${URL_API_ADDRESS.get}?id=${customerId}`,
+        getAddressByCustomerId,
+        {
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+        }
+    );
+    const addresses = addressData?.data?.items || [];
+
+    console.log(addresses);
+
 
     const [orderId] = useState("");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -372,7 +407,7 @@ const Checkout: React.FC = () => {
                                                 </Radio.Group>
                                             </div>
 
-                                            {selectedPayment === "CASH_AND_BANK_TRANSFER" || selectedPayment === "BANK_TRANSFER" ? (
+                                            {selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key || selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key ? (
                                                 <>
                                                     <h3 className={styles["heading"] + " my-4"}>Địa chỉ nhận hàng</h3>
                                                     <Row gutter={16} className="mb-3">
@@ -466,6 +501,34 @@ const Checkout: React.FC = () => {
                                                     showIcon
                                                 />
                                             )}
+                                            <div>
+                                                {addresses && addresses.length > 0 ? (
+                                                    <Radio.Group
+                                                        onChange={(e) => setSelectedAddress(e.target.value)}
+                                                        value={selectedAddress}
+                                                        style={{ width: "100%" }}
+                                                    >
+                                                        {addresses.map((address: any) => (
+                                                            <div
+                                                                key={address.id}
+                                                                className="border-b pb-4 mb-4 flex justify-between items-center hover:bg-gray-50 transition-all cursor-pointer"
+                                                                onClick={() => setSelectedAddress(address.id)}
+                                                            >
+                                                                <div>
+                                                                    {/* <p className="font-bold">{address.receiverName}</p> */}
+                                                                    <p>
+                                                                        {address.addressName}, {address.commune}, {address.district}, {address.city}
+                                                                    </p>
+                                                                    <p>{address.phoneNumber}</p>
+                                                                </div>
+                                                                <Radio value={address.id} />
+                                                            </div>
+                                                        ))}
+                                                    </Radio.Group>
+                                                ) : (
+                                                    <div>Bạn chưa có địa chỉ nào.</div>
+                                                )}
+                                            </div>
                                         </Form>
                                     </div>
                                 </div>
