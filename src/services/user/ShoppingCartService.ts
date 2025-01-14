@@ -103,7 +103,6 @@ export const addToCart = async (product: ProductVariant, quantity: number, image
                 cartCode: "SC-" + Date.now(),
                 productVariantId: product.id,
                 salePrice: product.salePrice,
-                discountedPrice: 0,
                 quantity: quantity,
             }
         ];
@@ -194,7 +193,6 @@ export const fetchCartFromLocalToServer = async () => {
             cartCode: "SC-" + Date.now(),
             productVariantId: item.productVariantId,
             salePrice: item.salePrice,
-            discountedPrice: 0,
             quantity: item.quantity,
         }
     })

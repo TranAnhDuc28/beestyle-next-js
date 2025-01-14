@@ -14,8 +14,9 @@ const VoucherList: React.FC<VoucherListProps> = ({ vouchers, onApply }) => {
     const handleApplyVoucher = (voucher: IVoucherUser) => {
         if (getAccountInfo() && voucher) {
             onApply(voucher);
+            message.success("Đã áp dụng voucher " + voucher.voucherCode);
         } else {
-            message.error(`Voucher ${voucher?.voucherCode} không tồn tại`);
+            message.error(`Voucher ${voucher.voucherCode} không tồn tại`);
         }
     };
 

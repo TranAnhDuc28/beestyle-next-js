@@ -16,7 +16,6 @@ interface IProps {
     shippingFee: number;
     selectedPayment: string;
     userForm: FormInstance;
-    addressForm: FormInstance;
     cartsProp: ICartItem[];
 }
 
@@ -26,7 +25,6 @@ const OrderDetail = (props: IProps) => {
         shippingFee,
         selectedPayment,
         userForm,
-        addressForm,
         cartsProp,
     } = props;
     const router = useRouter();

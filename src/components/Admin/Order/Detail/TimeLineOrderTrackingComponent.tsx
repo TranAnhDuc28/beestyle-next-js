@@ -1,6 +1,11 @@
 import React, {memo, useEffect, useState} from "react";
-import {Button, Divider, Form, Input, Modal, StepProps, Steps} from "antd";
-import {CheckOutlined, CloseCircleOutlined, DropboxOutlined, LoadingOutlined} from "@ant-design/icons";
+import {Button, Divider, Form, Input, Modal, StepProps, Steps, Typography} from "antd";
+import {
+    CheckOutlined,
+    DropboxOutlined,
+    ExclamationCircleFilled,
+    LoadingOutlined
+} from "@ant-design/icons";
 import {LiaBoxSolid} from "react-icons/lia";
 import {FaShippingFast} from "react-icons/fa";
 import {IOrderDetail} from "@/types/IOrder";
@@ -8,9 +13,13 @@ import {ORDER_TYPE} from "@/constants/OrderType";
 import {ORDER_STATUS} from "@/constants/OrderStatus";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import useOrder from "@/components/Admin/Order/hooks/useOrder";
+import {useOrderDetailContext} from "@/components/Admin/Order/Detail/Context/OrderDetailProvider";
+
+const {Text} = Typography;
 
 interface IProps {
-    orderDetail: IOrderDetail
+    orderDetail: IOrderDetail,
+    mutate: any
 }
 
 /**
@@ -37,6 +46,20 @@ const getOrderDeliverySaleStep = (orderStatus: string | undefined): number => {
     }
 };
 
+const getUpdateNextValueOrderStatus = (currentStatus: string): string => {
+    // Map trạng thái và trạng thái tiếp theo
+    const statusFlow = {
+        [ORDER_STATUS.AWAITING_CONFIRMATION.key]: ORDER_STATUS.CONFIRMED.key, // Chờ xác nhận -> Đã xác nhận
+        [ORDER_STATUS.CONFIRMED.key]: ORDER_STATUS.AWAITING_SHIPMENT.key, // Đã xác nhận -> Chờ giao hàng
+        [ORDER_STATUS.AWAITING_SHIPMENT.key]: ORDER_STATUS.OUT_FOR_DELIVERY.key, // Chờ giao hàng -> Đang giao hàng
+        [ORDER_STATUS.OUT_FOR_DELIVERY.key]: ORDER_STATUS.DELIVERED.key, // Đang giao hàng -> Đã giao hàng
+    };
+
+    // Trả về trạng thái tiếp theo nếu tồn tại, nếu không giữ nguyên
+    return (statusFlow as { [key: string]: string })[currentStatus] || currentStatus;
+};
+
+
 /**
  * Đơn hàng bán trực tiếp
  * @param orderStatus truyền trạng thái đơn hàng
@@ -61,13 +84,15 @@ const getStepStatus = (stepKey: number, current: number) => {
 };
 
 const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
-    const {orderDetail} = props;
-    const {showModal} = useAppNotifications();
+    const {orderDetail, mutate} = props;
+    const {showModal, showNotification} = useAppNotifications();
+    const orderDetailContext = useOrderDetailContext();
     const [form] = Form.useForm();
     const {handleUpdateOrderStatusDelivery} = useOrder();
-    const [current, setCurrent] = useState<number>(0);
+    const [current, setCurrent] = useState<number>(getOrderDeliverySaleStep(orderDetail?.orderStatus));
     const [isOpenReasonModal, setIsOpenReasonModal] = useState(false);
     const [actionType, setActionType] = useState<'cancel' | 'return' | null>(null);
+    const [nextStatus, setNextStatus] = useState<string | null>(null);
 
     useEffect(() => {
         // dựa vào loại hóa đơn để hiển thị time line theo dõi trạng thái hóa đơn
@@ -77,34 +102,111 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
         setCurrent(step);
     }, [orderDetail?.orderStatus]);
 
-    const next = () => {
-        setCurrent(current + 1);
-    };
-
-    const showReasonModal = (type: 'cancel' | 'return') => {
+    /**
+     * show modal nhập lý do hủy và k nhận hàng
+     * @param type
+     */
+    const showModalCancelledOrReturned = (type: 'cancel' | 'return') => {
         setActionType(type);
         setIsOpenReasonModal(true);
     };
 
     const handleSubmitReasonCancelledAndReturned = async () => {
-        form.submit();
         if (actionType === 'cancel') {
-
+            await handleConfirmStepOrderStatus(orderDetail?.id, {
+                orderStatus: ORDER_STATUS.CANCELLED.key,
+                note: form.getFieldValue('note')
+            });
         } else if (actionType === 'return') {
-            console.log(`Trả hàng với lý do: `);
+            await handleConfirmStepOrderStatus(orderDetail?.id, {
+                orderStatus: ORDER_STATUS.RETURNED.key,
+                note: form.getFieldValue('note')
+            });
         }
         setIsOpenReasonModal(false);
+
+        // refresh order detail
+        await mutate();
     };
 
+    /**
+     * xử lý khi đóng form hủy hoặc không nhận hàng
+     */
     const handleCancel = () => {
         setIsOpenReasonModal(false);
         form.resetFields();
     };
 
-    // xử lý qua các trạng thái đơn hàng
-    const handleConfirmStepOrderStatus = async (id: number, value: {status: string, note: string | undefined}) => {
-        await handleUpdateOrderStatusDelivery(id, value);
+    /**
+     * xử lý qua các trạng thái đơn hàng
+     * @param id
+     * @param value
+     */
+    const handleConfirmStepOrderStatus = async (id: number, value: {
+        shippingFee?: number,
+        totalAmount?: number,
+        orderStatus: string,
+        note: string | undefined
+    }) => {
+        console.log(value)
+        try {
+            if (value.orderStatus === ORDER_STATUS.CONFIRMED.key) {
+                await handleUpdateOrderStatusDelivery(
+                    id, {
+                        ...value,
+                        shippingFee: orderDetailContext?.paymentInfo.shippingFee,
+                        totalAmount: orderDetailContext?.paymentInfo.finalTotalAmount,
+                    });
+            } else {
+                await handleUpdateOrderStatusDelivery(id, value);
+            }
+            await mutate();
+        } catch (error) {
+            showNotification("error", {
+                message: "Lỗi",
+                description: "Không thể cập nhật trạng thái đơn hàng.",
+            });
+        }
     };
+
+    /**
+     * comfirm xác nhận chuyển trạng thái
+     */
+    const modalConfirmChangeOrderStatus = () => {
+        return showModal("confirm", {
+            title: "Xác nhận thay đổi trạng thái đơn hàng ?",
+            icon: <ExclamationCircleFilled/>,
+            width: 500,
+            content: (
+                <div style={{margin: "20px 0px"}}>
+                    <Text strong>
+                        {orderDetail?.orderStatus
+                            ? getUpdateNextValueOrderStatus(orderDetail.orderStatus) || ""
+                            : ""
+                        }
+                    </Text>
+                </div>
+            ),
+            onOk() {
+                const nextStatus = orderDetail?.orderStatus ? getUpdateNextValueOrderStatus(orderDetail?.orderStatus) : "";
+
+                // Nếu trạng thái thay đổi, gửi yêu cầu cập nhật
+                if (nextStatus !== orderDetail?.orderStatus) {
+                    handleConfirmStepOrderStatus(orderDetail?.id, {
+                        orderStatus: nextStatus,
+                        note: undefined,
+                    });
+                } else {
+                    showNotification("info", {
+                        message: "Trạng thái hiện tại không thay đổi.",
+                    });
+                }
+            },
+            onCancel() {
+            },
+        });
+    };
+
 
     // time line cho giao hàng
     const itemTrackingOrderDeliverySaleSteps: StepProps[] = [
@@ -114,22 +216,22 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
             icon: <DropboxOutlined style={{fontSize: 35}}/>,
         },
         {
-            title: current >= 1 ? "Đã xác nhận" : "Chờ xác nhận",
+            title: current >= 1 ? ORDER_STATUS.CONFIRMED.description : ORDER_STATUS.AWAITING_CONFIRMATION.description,
             status: current >= 1 ? (current === 1 ? "process" : "finish") : "wait",
             icon: current < 1 ? <LoadingOutlined style={{fontSize: 35}}/> : <CheckOutlined style={{fontSize: 35}}/>
         },
         {
-            title: "Chờ giao hàng",
+            title: ORDER_STATUS.AWAITING_SHIPMENT.description,
             status: getStepStatus(2, current),
             icon: <LiaBoxSolid style={{fontSize: 35}}/>
         },
         {
-            title: "Đang giao hàng",
+            title: ORDER_STATUS.OUT_FOR_DELIVERY.description,
             status: getStepStatus(3, current),
             icon: <FaShippingFast style={{fontSize: 35}}/>
         },
         {
-            title: "Đã giao hàng",
+            title: ORDER_STATUS.DELIVERED.description,
             status: getStepStatus(4, current),
             icon: <CheckOutlined style={{fontSize: 35}}/>
         }
@@ -151,7 +253,6 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
 
     return (
         <>
-
             <Steps
                 current={current}
                 items={
@@ -167,7 +268,7 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
                     <Divider/>
                     {/* Xác nhận thay đổi trạng thái */}
                     {current < itemTrackingOrderDeliverySaleSteps.length - 1 && (
-                        <Button type="primary" onClick={() => next()}>
+                        <Button type="primary" onClick={modalConfirmChangeOrderStatus}>
                             Xác nhận
                         </Button>
                     )}
@@ -180,32 +281,56 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
                     )}
 
                     {/* Hủy đơn hàng trong trước khi hoàn thành thanh toán */}
-                    {current > 0 && current < itemTrackingOrderDeliverySaleSteps.length - 1 && (
-                        <Button style={{margin: '0 8px'}} onClick={handleSubmitReasonCancelledAndReturned}>
-                            Hủy
-                        </Button>
-                    )}
+                    {
+                        orderDetail?.orderStatus && orderDetail.orderStatus === ORDER_STATUS.OUT_FOR_DELIVERY.key
+                            ? (
+                                <Button style={{margin: '0 8px'}} onClick={() => showModalCancelledOrReturned("return")}>
+                                    Hủy giao hàng
+                                </Button>
+                            )
+                            : (
+                                <Button style={{margin: '0 8px'}} onClick={() => showModalCancelledOrReturned("cancel")}>
+                                    Hủy
+                                </Button>
+                            )
+                    }
                 </div>
             }
 
 
             <Modal cancelText="Hủy" okText="Xác nhận lý do"
-                title={actionType === 'cancel' ? 'Lý do hủy đơn hàng' : 'Lý do trả hàng'}
-                open={isOpenReasonModal}
-                onOk={handleSubmitReasonCancelledAndReturned}
+                   title={actionType === 'cancel' ? 'Lý do hủy đơn hàng' : 'Lý do trả hàng'}
+                   open={isOpenReasonModal}
+                   onOk={() => form.submit()}
+                   onCancel={handleCancel}
+                   width={700}
+                   styles={{
+                       body: {
+                           padding: "10px 0px",
+                           height: 195
+                       }
+                   }}
             >
                 <Form
                     form={form}
                     name="reason"
+                    onFinish={handleSubmitReasonCancelledAndReturned}
                 >
                     <Form.Item
+                        layout="vertical"
                         label="Ghi chú"
                         name="note"
-                        rules={[{ required: true, message: 'Please input!' }]}
+                        rules={[
+                            {
+                                required: true,
+                                message: `Vui lòng nhập lý do ${actionType === 'cancel' ? 'hủy đơn hàng' : 'trả hàng'}.`
+                            }
+                        ]}
                     >
                         <Input.TextArea
                             placeholder="Nhập lý do..."
-                            rows={4}
+                            rows={6}
+                            autoSize={{minRows: 6, maxRows: 6}}
                         />
                     </Form.Item>
                 </Form>

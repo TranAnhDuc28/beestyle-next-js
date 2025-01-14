@@ -1,20 +1,15 @@
 'use client';
 
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
-import { ProFormText, ProFormCaptcha, ProFormRadio, ProFormDatePicker } from '@ant-design/pro-components';
 import {Button, Flex, Form, Input, message, Typography} from 'antd';
-import { AiOutlineUser } from 'react-icons/ai';
-import { GiConfirmed } from "react-icons/gi";
-import { MdOutlineMailOutline } from 'react-icons/md';
 import Link from "next/link";
 
 const {Text} = Typography;
 
-const RegisterForm = () => {
+const RegisterFormOwner = () => {
     const onFinish = (values: any) => {
         console.log('Received values of form: ', values);
     };
-
 
     return (
 
@@ -150,4 +145,4 @@ const RegisterForm = () => {
     );
 };
 
-export default RegisterForm;
+export default RegisterFormOwner;

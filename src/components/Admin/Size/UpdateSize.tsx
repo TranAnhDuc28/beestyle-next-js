@@ -46,7 +46,11 @@ const UpdateSize = (props: IProps) => {
                     handleCloseUpdateModal();
                     showNotification("success", {message: result.message});
                 }
-                await mutate(URL_API_SIZE.option, undefined, {revalidate: true});
+                await mutate(
+                    (key: any) => typeof key === 'string' && key.startsWith(URL_API_SIZE.option),
+                    undefined,
+                    {revalidate: true}
+                );
             }
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;

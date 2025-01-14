@@ -48,7 +48,7 @@ export const ORDER_STATUS = {
         color_tag: "#f50"
     },
     RETURNED: {
-        id: 7,
+        id: 8,
         key: "RETURNED",
         description: "Đã trả hàng",
         color_tag: "#f50"

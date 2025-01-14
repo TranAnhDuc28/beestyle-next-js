@@ -31,7 +31,12 @@ export const updateOrder = async (data: IOrderCreateOrUpdate, id: number) => {
     return response.data;
 }
 
-export const updateOrderStatus = async (id: number, data: { status: string, note: string | undefined}) => {
+export const updateOrderStatus = async (id: number, data: {
+    shippingFee?: number | undefined,
+    totalAmount?: number,
+    orderStatus: string,
+    note: string | undefined
+}) => {
     const response = await httpInstance.post(URL_API_ORDER.updateOrderStatus(id), data);
     return response.data;
 }

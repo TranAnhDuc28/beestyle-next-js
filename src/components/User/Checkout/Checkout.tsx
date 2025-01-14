@@ -1,12 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import CheckoutForm from "./CheckoutForm";
 import OrderDetail from "./OrderDetail";
-import { Form } from "antd";
+import { Alert, Col, Form, Input, Radio, Row } from "antd";
 import { createVNPayPayment } from "@/services/VNPayService";
-import { CART_KEY, checkShoppingCartData, deleteAllCartItems, ICartItem, removeAllCartItems, useShoppingCart } from "@/services/user/ShoppingCartService";
+import { checkShoppingCartData, deleteAllCartItems, ICartItem, removeAllCartItems, useShoppingCart } from "@/services/user/ShoppingCartService";
 import BreadcrumbSection from "@/components/Breadcrumb/BreadCrumb";
 import { ORDER_CHANEL } from "@/constants/OrderChanel";
 import { ORDER_TYPE } from "@/constants/OrderType";
@@ -16,46 +16,85 @@ import { IOrderOnlineCreateOrUpdate } from "@/types/IOrder";
 import { ICreateOrUpdateOrderItem } from "@/types/IOrderItem";
 import useOrder from "@/components/Admin/Order/hooks/useOrder";
 import UserLoader from "@/components/Loader/UserLoader";
-import { getAccountInfo } from "@/utils/AppUtil";
+import { IAddress } from "@/types/IAddress";
+import styles from "@/components/User/Checkout/css/checkout.module.css";
+import { MailOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
+import { AiOutlineHome } from "react-icons/ai";
+import { TbCreditCardPay } from "react-icons/tb";
+import { RiStore2Line } from "react-icons/ri";
+import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
+import TextArea from "antd/es/input/TextArea";
+import useAddress from "@/components/Admin/Address/hook/useAddress";
+import { calculateShippingFee, getAccountInfo } from "@/utils/AppUtil";
 
-const Checkout = () => {
+const Checkout: React.FC = () => {
     const router = useRouter();
-    const [addressForm] = Form.useForm();
     const [userForm] = Form.useForm();
     const { handleCreateOrderOnline } = useOrder();
+
+    const [shippingAddress, setShippingAddress] = useState<IAddress | undefined>(undefined);
+
+    const { handleGetProvinces, handleGetDistricts, handleGetWards } = useAddress();
+    const provincesData = handleGetProvinces();
+    const districtsData = handleGetDistricts(`${shippingAddress?.cityCode}`);
+    const wardsData = handleGetWards(`${shippingAddress?.districtCode}`);
 
     const [orderId] = useState("");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { cartData, isLoading, error } = useShoppingCart();
     const [cartItems] = useState(cartData);
     const [shippingFee, setShippingFee] = useState(0);
-    const [selectedPayment, setSelectedPayment] = useState("CASH_AND_BANK_TRANSFER");
-    const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | null>(null);
-    const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | null>(null);
-    const [selectedWardCode, setSelectedWardsCode] = useState<string | null>(null);
-    const [selectedProvinceName, setSelectedProvinceName] = useState<string | null>(null);
-    const [selectedDistrictName, setSelectedDistrictName] = useState<string | null>(null);
-    const [selectedWardName, setSelectedWardName] = useState<string | null>(null);
-    const [detailAddress, setDetailAddress] = useState<string | null>(null);
+    const [selectedPayment, setSelectedPayment] = useState<string>(PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key);
 
-    const handleShippingCostChange = (newCost: number) => setShippingFee(newCost);
-    const handlePaymentChange = (value: string) => setSelectedPayment(value);
-    const handleProvinceChange = (code: string, name: string | null) => {
-        setSelectedProvinceCode(code);
-        setSelectedProvinceName(name);
+    const handlePaymentChange = (e: any) => {
+        const value = e.target.value;
+        setSelectedPayment(value);
+        if (value === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key || value === PAYMENT_METHOD.BANK_TRANSFER.key) {
+            userForm.setFieldsValue({ district: undefined, ward: undefined });
+        }
     };
-    const handleDistrictChange = (code: string, name: string | null) => {
-        setSelectedDistrictCode(code);
-        setSelectedDistrictName(name);
-    };
-    const handleWardChange = (code: string, name: string | null) => {
-        setSelectedWardsCode(code);
-        setSelectedWardName(name);
-    };
-    const handleProvinceNameChange = (name: string | null) => setSelectedProvinceName(name);
-    const handleDistrictNameChange = (name: string | null) => setSelectedDistrictName(name);
-    const handleWardNameChange = (name: string | null) => setSelectedWardName(name);
-    const handleDetailAddressChange = (address: string | null) => setDetailAddress(address);
+
+    const onChangeSelectedProvince = (provinceCode: string, province: any) => {
+        setShippingAddress((prevState) => ({
+            ...prevState,
+            cityCode: Number(provinceCode),
+            city: province?.label,
+            districtCode: undefined,
+            district: undefined,
+            communeCode: undefined,
+            commune: undefined
+        } as IAddress));
+
+        // Reset các trường district và ward trong form
+        userForm.setFieldsValue({
+            district: undefined,
+            ward: undefined,
+        });
+    }
+
+    const onChangeSelectedDistrict = async (districtCode: string, district: any) => {
+        setShippingAddress((prevState) => ({
+            ...prevState,
+            districtCode: Number(districtCode),
+            district: district?.label,
+            communeCode: undefined,
+            commune: undefined
+        } as IAddress));
+
+        // Reset các trường district và ward trong form
+        userForm.setFieldsValue({
+            ward: undefined,
+        });
+    }
+
+
+    const onChangeSelectedWard = (wardCode: string, ward: any) => {
+        setShippingAddress((prevState) => ({
+            ...prevState,
+            communeCode: Number(wardCode),
+            commune: ward?.label
+        } as IAddress));
+    }
 
     // Xử lý tạo thanh toán VNPay
     const processVNPayPayment = async (payment: any) => {
@@ -73,8 +112,32 @@ const Checkout = () => {
         }
     };
 
+    /**
+     * Tính phí vận chuyển
+     */
+    const fetchShippingFee = async () => {
+
+        if (shippingAddress?.city && shippingAddress?.district) {
+            try {
+                const shippingFee = await calculateShippingFee(499999, shippingAddress);
+                setShippingFee(shippingFee);
+            } catch (error) {
+                console.error("Error calculating shipping fee:", error);
+            }
+        }
+    };
+
+    useEffect(() => {
+        fetchShippingFee();
+        console.log(shippingFee)
+    }, [shippingAddress?.city, shippingAddress?.district]);
+
+    useEffect(() => {
+        console.log(shippingAddress)
+    }, [shippingAddress]);
+
     // Xử lý đơn hàng và gửi request tói server
-    const handleSubmit = async (payment: any) => {
+    const handleSubmitOrderOnline = async (payment: any) => {
         try {
             const userData = await userForm.validateFields(); // Dữ liệu từ form thông tin khách hàng
             const shippingFee = await payment.shippingFee; // Phí ship
@@ -83,6 +146,7 @@ const Checkout = () => {
             const originalAmount = await payment.originalAmount; // Tổng tiền sản phẩm trong giỏ hàng (Chưa tính phí ship và voucher)
             const discountAmount = await payment.discountAmount; // Số tiền được giảm giá bởi voucher
             const totalAmount = await payment.totalAmount // Tổng tiền sản phẩm trong giỏ hàng (Đã tính toán bao gồm phí ship & voucher);
+
             // Map dữ liệu Order Item
             const cartFiltereds: ICreateOrUpdateOrderItem[] = cartItems && cartItems.length > 0 ? (cartItems.map((item: ICartItem) => {
                 return {
@@ -98,25 +162,25 @@ const Checkout = () => {
             const pendingOrderData: IOrderOnlineCreateOrUpdate = {
                 receiverName: userData.customerName,
                 phoneNumber: userData.phone,
-                email,
-                originalAmount,
-                discountAmount,
-                shippingFee,
-                totalAmount,
-                voucherId,
+                email: email,
+                originalAmount: originalAmount,
+                discountAmount: discountAmount,
+                shippingFee: shippingFee,
+                totalAmount: totalAmount,
+                voucherId: voucherId,
                 paymentMethod: selectedPayment,
                 orderChannel: ORDER_CHANEL.ONLINE.key,
                 orderType: ORDER_TYPE.DELIVERY.key,
                 orderStatus: ORDER_STATUS.AWAITING_CONFIRMATION.key,
                 isPrepaid: selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key,
                 shippingAddress: JSON.stringify({
-                    cityCode: selectedProvinceCode,
-                    city: selectedProvinceName,
-                    districtCode: selectedDistrictCode,
-                    district: selectedDistrictName,
-                    communeCode: selectedWardCode,
-                    commune: selectedWardName,
-                    addressName: detailAddress
+                    addressName: userForm.getFieldValue("addressName"),
+                    cityCode: shippingAddress?.cityCode,
+                    city: shippingAddress?.city,
+                    districtCode: shippingAddress?.districtCode,
+                    district: shippingAddress?.district,
+                    communeCode: shippingAddress?.communeCode,
+                    commune: shippingAddress?.commune
                 }),
                 orderItems: cartFiltereds,
             };
@@ -183,35 +247,234 @@ const Checkout = () => {
                         <div className="container">
                             <div className="row">
                                 <div className="col-lg-8 col-12">
-                                    <CheckoutForm
-                                        addressForm={addressForm}
-                                        userForm={userForm}
-                                        onShippingCostChange={handleShippingCostChange}
-                                        selectedPayment={selectedPayment}
-                                        onPaymentChange={handlePaymentChange}
-                                        selectedProvinceCode={selectedProvinceCode}
-                                        onProvinceChange={handleProvinceChange}
-                                        selectedDistrictCode={selectedDistrictCode}
-                                        onDistrictChange={handleDistrictChange}
-                                        selectedWardCode={selectedWardCode}
-                                        onWardChange={handleWardChange}
-                                        selectedProvinceName={selectedProvinceName}
-                                        onProvinceNameChange={handleProvinceNameChange}
-                                        selectedDistrictName={selectedDistrictName}
-                                        onDistrictNameChange={handleDistrictNameChange}
-                                        selectedWardName={selectedWardName}
-                                        onWardNameChange={handleWardNameChange}
-                                        detailAddress={detailAddress}
-                                        onDetailAddressChange={handleDetailAddressChange}
-                                    />
+                                    <div className={styles["checkout-form"]}>
+                                        <h3 className={styles["heading"]}>Thông tin người nhận</h3>
+                                        <Form
+                                            layout="horizontal"
+                                            className={styles["form"]}
+                                            form={userForm} action="#"
+                                            initialValues={{
+                                                customerName: getAccountInfo()?.fullName || "",
+                                                phone: getAccountInfo()?.phoneNumber || "",
+                                            }}
+                                        >
+                                            <Form.Item
+                                                name="customerName"
+                                                rules={[
+                                                    {
+                                                        validator: (_, value) => {
+                                                            if (value && value.trim() !== "") {
+                                                                return Promise.resolve();
+                                                            }
+                                                            return Promise.reject(new Error("Vui lòng nhập tên khách hàng!"));
+                                                        },
+                                                    },
+                                                ]}
+                                            >
+                                                <Input
+                                                    placeholder="Tên khách hàng"
+                                                    prefix={<UserOutlined className="pr-2" />}
+                                                    className={styles["input-checkout"]}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                                name="phone"
+                                                rules={[
+                                                    { required: true, message: "Vui lòng nhập số điện thoại!" },
+                                                    {
+                                                        pattern: /^0\d{9}$/,
+                                                        message: "Số điện thoại không đúng định dạng!",
+                                                    },
+                                                ]}
+                                            >
+                                                <Input
+                                                    placeholder="Số điện thoại"
+                                                    prefix={<PhoneOutlined className="pr-2" />}
+                                                    className={styles["input-checkout"]}
+                                                />
+                                            </Form.Item>
+
+                                            {!getAccountInfo() && (
+                                                <Form.Item
+                                                    name="email"
+                                                    rules={[
+                                                        { required: true, message: "Vui lòng nhập địa chỉ email!" },
+                                                        {
+                                                            pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                                            message: "Email không đúng định dạng!",
+                                                        },
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Địa chỉ email"
+                                                        prefix={<MailOutlined className="pr-2" />}
+                                                        className={styles["input-checkout"]}
+                                                    />
+                                                </Form.Item>
+                                            )}
+
+                                            <div className={`${styles["delivery-method"]} my-4`}>
+                                                <h3 className={styles["heading"]}>Hình thức thanh toán</h3>
+                                                <Radio.Group
+                                                    onChange={handlePaymentChange}
+                                                    value={selectedPayment}
+                                                    className={styles["delivery-radio-group"]}
+                                                >
+                                                    <div>
+                                                        <Radio.Button
+                                                            value={PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key}
+                                                            className={`${styles["delivery-option"]} ${selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key ? styles["selected"] : ""}`}
+                                                            style={{ padding: '25px 5px', width: '190px' }}
+                                                        >
+                                                            <div
+                                                                className="flex flex-col items-center justify-between text-center"
+                                                                style={{ marginTop: -15 }}
+                                                            >
+                                                                <AiOutlineHome size={15} />
+                                                                <span style={{ fontSize: 12, lineHeight: '20px' }}>Thanh toán khi nhận hàng (COD)</span>
+                                                            </div>
+                                                        </Radio.Button>
+                                                    </div>
+
+                                                    <div>
+                                                        <Radio.Button
+                                                            value={PAYMENT_METHOD.BANK_TRANSFER.key}
+                                                            className={`${styles["delivery-option"]} ${selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key ? styles["selected"] : ""}`}
+                                                            style={{ padding: '25px 0', width: '190px' }}
+                                                        >
+                                                            <div
+                                                                className="flex flex-col items-center justify-center"
+                                                                style={{ marginTop: -15 }}
+                                                            >
+                                                                <TbCreditCardPay size={15} />
+                                                                <span style={{ fontSize: 12, lineHeight: '20px' }}>Thanh toán qua VNPay</span>
+                                                            </div>
+                                                        </Radio.Button>
+                                                    </div>
+
+                                                    <div>
+                                                        <Radio.Button
+                                                            value="TEST"
+                                                            className={`${styles["delivery-option"]} ${selectedPayment === "TEST" ? styles["selected"] : ""
+                                                                }`}
+                                                            style={{ padding: '25px 0', width: '190px' }}
+                                                        >
+                                                            <div
+                                                                className="flex flex-col items-center justify-center"
+                                                                style={{ marginTop: -15 }}
+                                                            >
+                                                                <RiStore2Line size={15} />
+                                                                <span style={{ fontSize: 12, lineHeight: '20px' }}>Nhận tại cửa hàng</span>
+                                                            </div>
+                                                        </Radio.Button>
+                                                    </div>
+                                                </Radio.Group>
+                                            </div>
+
+                                            {selectedPayment === "CASH_AND_BANK_TRANSFER" || selectedPayment === "BANK_TRANSFER" ? (
+                                                <>
+                                                    <h3 className={styles["heading"] + " my-4"}>Địa chỉ nhận hàng</h3>
+                                                    <Row gutter={16} className="mb-3">
+                                                        <Col span={8}>
+                                                            <Form.Item
+                                                                name="province"
+                                                                rules={[
+                                                                    {
+                                                                        required: true,
+                                                                        message: "Vui lòng chọn Tỉnh / Thành Phố!",
+                                                                    },
+                                                                ]}
+                                                            >
+                                                                <SelectSearchOptionLabel
+                                                                    value={shippingAddress?.cityCode}
+                                                                    placeholder="Tỉnh / Thành Phố"
+                                                                    style={{ width: "100%", height: "48px" }}
+                                                                    data={provincesData?.dataOptionProvinces}
+                                                                    isLoading={provincesData?.isLoading}
+                                                                    onChange={onChangeSelectedProvince}
+                                                                />
+                                                            </Form.Item>
+                                                        </Col>
+                                                        <Col span={8}>
+                                                            <Form.Item
+                                                                name="district"
+                                                                rules={[{
+                                                                    required: true,
+                                                                    message: "Vui lòng chọn Quận / Huyện!"
+                                                                }]}
+                                                            >
+                                                                <SelectSearchOptionLabel
+                                                                    value={shippingAddress?.districtCode}
+                                                                    placeholder="Quận / Huyện"
+                                                                    style={{ width: "100%", height: "48px" }}
+                                                                    data={districtsData?.dataOptionDistricts}
+                                                                    isLoading={districtsData?.isLoading}
+                                                                    onChange={onChangeSelectedDistrict}
+                                                                />
+                                                            </Form.Item>
+                                                        </Col>
+                                                        <Col span={8}>
+                                                            <Form.Item
+                                                                name="ward"
+                                                                rules={[{
+                                                                    required: true,
+                                                                    message: "Vui lòng chọn Phường/ Xã!"
+                                                                }]}
+                                                            >
+                                                                <SelectSearchOptionLabel
+                                                                    value={shippingAddress?.communeCode}
+                                                                    placeholder="Phường / Xã"
+                                                                    style={{ width: "100%", height: "48px" }}
+                                                                    data={wardsData?.dataOptionWards}
+                                                                    isLoading={wardsData?.isLoading}
+                                                                    onChange={onChangeSelectedWard}
+                                                                />
+                                                            </Form.Item>
+                                                        </Col>
+                                                    </Row>
+
+                                                    <Form.Item
+                                                        name="addressName"
+                                                        style={{ marginTop: -10 }}
+                                                        rules={[
+                                                            {
+                                                                validator: (_, value) => {
+                                                                    if (value && value.trim() !== "") {
+                                                                        return Promise.resolve();
+                                                                    }
+                                                                    return Promise.reject(new Error("Vui lòng nhập địa chỉ!"));
+                                                                },
+                                                            },
+                                                        ]}
+                                                    >
+                                                        <TextArea
+                                                            placeholder="Nhập địa chỉ chi tiết"
+                                                            className="p-2"
+                                                            rows={4}
+                                                            style={{ resize: 'none' }}
+                                                            maxLength={250}
+                                                        />
+                                                    </Form.Item>
+                                                </>
+                                            ) : (
+                                                <Alert
+                                                    message="Thử nghiệm"
+                                                    description="Tính năng này đang trong giai đoạn thử nghiệm, có thể hoạt động chưa ổn định."
+                                                    type="warning"
+                                                    className="mt-7"
+                                                    showIcon
+                                                />
+                                            )}
+                                        </Form>
+                                    </div>
                                 </div>
                                 <div className="col-lg-4 col-12">
                                     <OrderDetail
-                                        handleSubmit={handleSubmit}
+                                        handleSubmit={handleSubmitOrderOnline}
                                         shippingFee={shippingFee}
                                         selectedPayment={selectedPayment}
                                         userForm={userForm}
-                                        addressForm={addressForm}
                                         cartsProp={cartItems}
                                     />
                                 </div>
@@ -226,6 +489,6 @@ const Checkout = () => {
             )}
         </>
     );
-};
+}
 
 export default Checkout;

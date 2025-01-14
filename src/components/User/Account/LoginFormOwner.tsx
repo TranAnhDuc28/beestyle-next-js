@@ -10,9 +10,7 @@ import React from "react";
 import { useAuthentication } from "@/components/Context/AuthenticationProvider";
 import { fetchCartFromLocalToServer } from "@/services/user/ShoppingCartService";
 
-
 const { Text } = Typography;
-
 
 const LoginFormOwner: React.FC = () => {
     const { showNotification } = useAppNotifications();
