@@ -21,10 +21,7 @@ import {
   Select,
   Typography,
 } from "antd";
-// =======
-// import {LockOutlined, UserOutlined} from '@ant-design/icons';
-// import {Button, Flex, Form, Input, message, Typography} from 'antd';
-// >>>>>>> 99d84a9ee9ff4919a35a35da2dba7a17c3a553a9:src/components/User/Account/RegisterFormOwner.tsx
+
 import Link from "next/link";
 import { usePhoneValidation } from "@/hooks/usePhoneNumberValidation";
 import { useEmailValidation } from "@/hooks/useEmailValidation";
@@ -39,7 +36,7 @@ interface IProps {
 
 const { Text } = Typography;
 
-const RegisterForm = ({ handleRegisterSuccess }: IProps) => {
+const RegisterFormOwner = ({ handleRegisterSuccess }: IProps) => {
   const { validatePhoneNumber } = usePhoneValidation();
   const { validateEmail } = useEmailValidation();
   const { showNotification } = useAppNotifications();
@@ -77,14 +74,7 @@ const RegisterForm = ({ handleRegisterSuccess }: IProps) => {
     }
     console.log("Received values of form: ", values);
   };
-// =======
-// const RegisterFormOwner = () => {
-//     const onFinish = (values: any) => {
-//         console.log('Received values of form: ', values);
-//     };
 
-//     return (
-// >>>>>>> 99d84a9ee9ff4919a35a35da2dba7a17c3a553a9:src/components/User/Account/RegisterFormOwner.tsx
 
   return (
     <Flex justify="center" align="center">
@@ -246,4 +236,4 @@ const RegisterForm = ({ handleRegisterSuccess }: IProps) => {
   );
 };
 
-export default RegisterForm;
+export default RegisterFormOwner;
