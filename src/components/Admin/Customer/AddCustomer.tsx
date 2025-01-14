@@ -141,9 +141,7 @@ const AddCustomer = (props: IProps) => {
           communeCode: Number(selectedWardCode), // Cần lấy từ API nếu có
           commune: selectedWardName, // Tên xã
           isDefault: false,
-          customer: {
-            id: customer.id, // Thay đổi bằng ID thực tế
-          },
+          customerId : customer.id
         };
 
         console.log(address);

@@ -117,9 +117,7 @@ const CreateAddressModal = (props: IProps) => {
             communeCode: Number(selectedWardCode), // Cần lấy từ API nếu có
             commune: selectedWardName, // Tên xã
             isDefault: false,
-            customer: {
-                id: id, // Thay đổi bằng ID thực tế
-            },
+            customerId:id
         };
         console.log("Success:", address);
         try {
