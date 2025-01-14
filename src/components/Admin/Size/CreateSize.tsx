@@ -5,6 +5,7 @@ import {ISize} from "@/types/ISize";
 import {createSize, URL_API_SIZE} from "@/services/SizeService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {mutate} from "swr";
+import {URL_API_COLOR} from "@/services/ColorService";
 
 interface IProps {
     isCreateModalOpen: boolean;
@@ -32,7 +33,11 @@ const CreateSize = (props: IProps) => {
                 handleCloseCreateModal();
                 showNotification("success", {message: result.message});
             }
-            if (isLoadingSelectSize) await mutate(URL_API_SIZE.option);
+            await mutate(
+                (key: any) => typeof key === 'string' && key.startsWith(URL_API_SIZE.option),
+                undefined,
+                {revalidate: true}
+            );
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {

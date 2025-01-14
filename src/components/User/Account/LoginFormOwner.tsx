@@ -9,9 +9,7 @@ import {useRouter} from "next/navigation";
 import React from "react";
 import {useAuthentication} from "@/components/Context/AuthenticationProvider";
 
-
 const {Text} = Typography;
-
 
 const LoginFormOwner: React.FC = () => {
     const {showNotification} = useAppNotifications();

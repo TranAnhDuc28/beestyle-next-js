@@ -34,8 +34,8 @@ const AddressCard = (props: IProps) => {
   const [showNewAddressForm, setShowNewAddressForm] = useState(false);
   const [editingAddressIndex, setEditingAddressIndex] = useState(-1);
   const { showModal, showNotification } = useAppNotifications();
-  const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | null>(null);
-  const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | null>(null);
+  const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | undefined>("");
+  const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | undefined>("");
   const [selectedWardCode, setSelectedWardsCode] = useState<string | null>(null);
   const [selectedProvinceName, setSelectedProvinceName] = useState<string | null>(null);
   const [selectedDistrictName, setSelectedDistrictName] = useState<string | null>(null);
@@ -94,7 +94,7 @@ const AddressCard = (props: IProps) => {
       });
 
       setSelectedProvinceName(province?.label);
-      setSelectedDistrictCode(null);
+      setSelectedDistrictCode("");
       setSelectedWardsCode(null);
       setSelectedDistrictName(null);
       setSelectedWardName(null);
@@ -282,8 +282,8 @@ const AddressCard = (props: IProps) => {
   const handleClearAddress = () => {
     form.resetFields();
     formUpdate.resetFields();
-    setSelectedProvinceCode(null);
-    setSelectedDistrictCode(null);
+    setSelectedProvinceCode("");
+    setSelectedDistrictCode("");
     setSelectedWardsCode(null);
     setDetailAddress("")
   };

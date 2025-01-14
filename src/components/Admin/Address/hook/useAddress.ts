@@ -3,7 +3,18 @@ import useSWR from "swr";
 import axios from "axios";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {URL_API_ADDRESS} from "@/services/AddressService";
+import React from "react";
 
+// example
+// {
+//     "id": "89",
+//     "name": "An Giang",
+//     "name_en": "An Giang",
+//     "full_name": "Tỉnh An Giang",
+//     "full_name_en": "An Giang Province",
+//     "latitude": "10.5392057",
+//     "longitude": "105.2312822"
+// }
 const transformData = (data: any[]) => {
     return data.map((item) => ({
         key: item.id.toString() as React.Key,
@@ -35,6 +46,8 @@ const useAddress = () => {
     }
 
     const handleGetProvinces = () => {
+
+
         const {data, error, isLoading, mutate} =
             fetchApiAdress(URL_API_ADDRESS.provinces, 'provinces');
 
@@ -44,7 +57,7 @@ const useAddress = () => {
         return {dataProvinces, dataOptionProvinces, error, isLoading, mutate};
     }
 
-    const handleGetDistricts = (provinceCode: string | null) => {
+    const handleGetDistricts = (provinceCode: string | undefined) => {
         const {data, error, isLoading, mutate} =
             fetchApiAdress(provinceCode ? URL_API_ADDRESS.districts(provinceCode) : null, 'districts');
 
@@ -54,7 +67,7 @@ const useAddress = () => {
         return {dataDistricts, dataOptionDistricts, error, isLoading, mutate};
     }
 
-    const handleGetWards = (districtCode: string | null) => {
+    const handleGetWards = (districtCode: string | undefined) => {
         const {data, error, isLoading, mutate} =
             fetchApiAdress(districtCode ? URL_API_ADDRESS.wards(districtCode) : null, 'wards');
 

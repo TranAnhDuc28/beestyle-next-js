@@ -3,7 +3,8 @@
 import {Tabs, theme, TabsProps, Flex, Row, Col, Typography, Layout} from 'antd';
 import {useState} from 'react';
 import LoginFormOwner from "@/components/User/Account/LoginFormOwner";
-import RegisterForm from "@/components/User/Account/RegisterForm";
+import RegisterFormOwner from "@/components/User/Account/RegisterFormOwner";
+import RegisterForm from '@/components/User/Account/RegisterFormOwner';
 
 const {Text} = Typography;
 const {Content} = Layout;
@@ -44,7 +45,10 @@ const AuthenticationOwnerComponent = () => {
                 </Text>
 
             ),
+
             children: <RegisterForm handleRegisterSuccess={handleRegisterSuccess}/>,
+
+            // children: <RegisterFormOwner/>,
         },
     ];
 

@@ -85,22 +85,25 @@ export const calculateShippingFee = async (originalAmount: number | undefined, s
     if (!originalAmount || originalAmount === 0 || Number(originalAmount) >= FREE_SHIPPING_THRESHOLD || !shippingAddress) return 0;
 
     const paramCalculateFee: Record<string, any> = {
-        pick_province: shippingAddress?.city,
-        pick_district: shippingAddress?.district,
-        pick_ward: shippingAddress?.commune,
-        pick_street: shippingAddress?.addressName,
-        province: shippingAddress?.city,
-        district: shippingAddress?.district,
-        ward: shippingAddress?.commune,
-        address: shippingAddress?.addressName,
-        weight: 300,
-        value: originalAmount,
+        pick_province: "Hà Nội",
+        pick_district: "Huyện Hoài Đức",
+        // address: "123 Đường ABC",
+        weight: 100,
+        // value: 500000,
         transport: "road",
+        province: shippingAddress?.city,    
+        district: shippingAddress?.district,  
+        // // weight: 100,
+        value: originalAmount,
+        // // deliver_option: "xteam",
+        // transport: "road",
     };
 
     let response;
     try {
         response = await ghtkCalculateShippingFee(paramCalculateFee);
+        console.log(response);
+        
         return response.fee.fee;
     } catch (error) {
         throw new Error(response.message || "Không tính được phí vận chuyển");

@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import UserLoader from "@/components/Loader/UserLoader";
 import { Suspense } from "react";
-import OrderLookup from "@/components/User/OrderLookup/OrderLookup";
+import OrderTrackingComponent from "@/components/User/OrderTracking/OrderTrackingComponent";
 
 export const metadata: Metadata = {
     title: "Tra cứu đơn hàng",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function OrderLookupPage() {
     return (
         <Suspense fallback={<UserLoader />}>
-            <OrderLookup />
+            <OrderTrackingComponent />
         </Suspense>
     );
 };

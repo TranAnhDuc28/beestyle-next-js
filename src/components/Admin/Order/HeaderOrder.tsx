@@ -1,9 +1,8 @@
 "use client"
-import {Breadcrumb, Flex, GetProps, Input, Space, Typography} from "antd";
+import {Breadcrumb, Flex, GetProps, Input, Typography} from "antd";
 import Search from "antd/es/input/Search";
-import React, {FocusEventHandler, memo} from "react";
-import {HomeOutlined, PlusOutlined} from "@ant-design/icons";
-import ColorButton from "@/components/Button/ColorButton";
+import React, {memo} from "react";
+import {HomeOutlined} from "@ant-design/icons";
 import {ParamFilterOrder} from "@/components/Admin/Order/hooks/useFilterOrder";
 
 type SearchProps = GetProps<typeof Input.Search>;
@@ -51,17 +50,17 @@ const HeaderOrder: React.FC<IProps> = (props) => {
                                 style={{width: '100%'}}
                             />
                         </div>
-                        <div>
-                            <Space>
-                                <ColorButton
-                                    bgColor="#00b96b"
-                                    type="primary"
-                                    icon={<PlusOutlined/>}
-                                >
-                                    Tạo đơn hàng
-                                </ColorButton>
-                            </Space>
-                        </div>
+                        {/*<div>*/}
+                        {/*    <Space>*/}
+                        {/*        <ColorButton*/}
+                        {/*            bgColor="#00b96b"*/}
+                        {/*            type="primary"*/}
+                        {/*            icon={<PlusOutlined/>}*/}
+                        {/*        >*/}
+                        {/*            Tạo đơn hàng*/}
+                        {/*        </ColorButton>*/}
+                        {/*    </Space>*/}
+                        {/*</div>*/}
                     </Flex>
                 </div>
             </Flex>

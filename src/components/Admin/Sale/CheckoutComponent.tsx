@@ -6,7 +6,7 @@ import {
     Col,
     Divider,
     Drawer,
-    Flex, Input, InputNumber, Modal, Popover, QRCode, Radio, RadioChangeEvent, Row, Tag,
+    Flex, Image, Input, InputNumber, Modal, Popover, QRCode, Radio, RadioChangeEvent, Row, Tag,
     Typography
 } from "antd";
 import {CloseIcon} from "next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon";
@@ -608,7 +608,7 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
                                             handleSale.orderCreateOrUpdate.paymentMethod === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key) &&
                                         (
                                             <Col flex="none">
-                                                <QRCode type="svg" value="https://ant.design/" size={120}
+                                                <QRCode type="svg" value="/QR_thanh_toan.jpg" size={120}
                                                         onClick={showModalQR}
                                                         style={{marginRight: 8, cursor: "pointer"}}/>
                                             </Col>
@@ -638,9 +638,11 @@ const CheckoutComponent: React.FC<IProps> = (props) => {
             />
 
             {/* modal quét QR thanh toán */}
-            <Modal title="QR Thanh toán" open={isModalQROpen} onCancel={handleModalQRCancel} footer={null}>
+            <Modal title="QR Thanh toán" open={isModalQROpen} onCancel={handleModalQRCancel} footer={null}
+            style={{top: 50}}
+            >
                 <Flex justify="center" align="center" style={{margin: "20px 0px"}}>
-                    <QRCode type="svg" value="https://ant.design/" size={400}/>
+                    <Image src="/QR_thanh_toan.jpg" alt="/QR_thanh_toan.jpg" height={600} width={400} preview={false}/>
                 </Flex>
             </Modal>
 
