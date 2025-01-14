@@ -5,6 +5,7 @@ import {Form, Input, Modal, Select} from "antd";
 import {memo, useEffect} from "react";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {mutate} from "swr";
+import {URL_API_SIZE} from "@/services/SizeService";
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -46,7 +47,11 @@ const UpdateMaterial = (props: IProps) => {
                     handleCloseUpdateModal();
                     showNotification("success", {message: result.message});
                 }
-                await mutate(URL_API_MATERIAL.option, undefined, {revalidate: true});
+                await mutate(
+                    (key: any) => typeof key === 'string' && key.startsWith(URL_API_MATERIAL.option),
+                    undefined,
+                    {revalidate: true}
+                );
             }
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;

@@ -4,6 +4,7 @@ import {IBrand} from "@/types/IBrand";
 import {createBrand, URL_API_BRAND} from "@/services/BrandService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import {mutate} from "swr";
+import {URL_API_COLOR} from "@/services/ColorService";
 
 interface IProps {
     isCreateModalOpen: boolean;
@@ -38,8 +39,11 @@ const CreateBrand = (props: IProps) => {
                 handleCloseCreateModal();
                 showNotification("success", {message: result.message});
             }
-            if (isLoadingSelectBrand) await mutate(URL_API_BRAND.option);
-        } catch (error: any) {
+            await mutate(
+                (key: any) => typeof key === 'string' && key.startsWith(URL_API_BRAND.option),
+                undefined,
+                {revalidate: true}
+            );        } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {
                 Object.entries(errorMessage).forEach(([field, message]) => {

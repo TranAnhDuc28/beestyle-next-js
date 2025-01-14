@@ -5,6 +5,7 @@ import {createColor, URL_API_COLOR} from "@/services/ColorService";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import ColorPickerCustomize from "@/components/ColorPicker/ColorPickerCustomize";
 import {mutate} from "swr";
+import {URL_API_SIZE} from "@/services/SizeService";
 
 interface IProps {
     isCreateModalOpen: boolean;
@@ -32,7 +33,11 @@ const CreateColor = (props: IProps) => {
                 handleCloseCreateModal();
                 showNotification("success", {message: result.message});
             }
-            if (isLoadingSelectColor) await mutate(URL_API_COLOR.option);
+            await mutate(
+                (key: any) => typeof key === 'string' && key.startsWith(URL_API_COLOR.option),
+                undefined,
+                {revalidate: true}
+            );
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {
