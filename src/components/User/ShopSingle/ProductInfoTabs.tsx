@@ -14,12 +14,6 @@ const ProductInfoTabs: React.FC<IProductInfo> = ({ productDescription }) => {
                 </Typography>
             </div>
             <div className="tab-content" id="myTabContent">
-                {/* Test */}
-                <p>
-                    Áo sơ mi nam nữ của chúng tôi mang đến phong cách trẻ trung, hiện đại và phù hợp cho mọi hoàn cảnh.
-                    Được làm từ chất liệu vải cao cấp, sản phẩm không chỉ mang lại cảm giác thoáng mát, dễ chịu mà còn đảm bảo độ bền cao.
-                    Với thiết kế tối giản, tinh tế, áo dễ dàng phối cùng nhiều loại trang phục khác, tạo nên phong cách riêng cho bạn.
-                </p>
                 <p>{productDescription}</p>
             </div>
         </div>

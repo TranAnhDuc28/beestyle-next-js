@@ -4,12 +4,11 @@ import { CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import styles from './css/cartdrawer.module.css';
 import Image from "next/image";
-import { CART_KEY, removeItemFromCart } from "@/services/user/ShoppingCartService";
+import { CART_KEY, checkShoppingCartData, ICartItem, removeItemFromCart, updateCartQuantity, useShoppingCart } from "@/services/user/ShoppingCartService";
 import QuantityControl from "@/components/User/Cart/Properties/QuantityControl";
 import ProgressShipping from './Properties/ProgressShipping';
-import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { FREE_SHIPPING_THRESHOLD } from '@/constants/AppConstants';
-import { calculateUserCartTotalAmount } from '@/utils/AppUtil';
+import { calculateUserCartTotalAmount, getAccountInfo } from '@/utils/AppUtil';
 
 interface CartDrawerProps {
     open: boolean;
@@ -17,35 +16,43 @@ interface CartDrawerProps {
 }
 
 export default function CartDrawer({ open, onClose }: CartDrawerProps) {
-    const [cartItems, setCartItems] = useState(() => {
-        return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-    });
+    const { cartData, isLoading, error } = useShoppingCart();
+    const [cartItems, setCartItems] = useState(cartData);
 
     useEffect(() => {
-        const handleCartUpdate = () => {
-            setCartItems(JSON.parse(localStorage.getItem(CART_KEY) || '[]'));
-        };
-        window.addEventListener('cartUpdated', handleCartUpdate);
+        if (!getAccountInfo()) {
+            // checkShoppingCartData();
+            const handleCartUpdate = () => {
+                setCartItems(JSON.parse(localStorage.getItem(CART_KEY) || '[]'));
+            };
+            window.addEventListener('cartUpdated', handleCartUpdate);
 
-        return () => {
-            window.removeEventListener('cartUpdated', handleCartUpdate);
-        };
-    }, []);
+            return () => {
+                window.removeEventListener('cartUpdated', handleCartUpdate);
+            };
+        }
+        setCartItems(cartData);
+    }, [cartData]);
+
 
     const condition = FREE_SHIPPING_THRESHOLD;
     const totalAmount = calculateUserCartTotalAmount(cartItems);
 
     const handleQuantityChange = (index: number, newQuantity: number) => {
         const newCartItems = [...cartItems];
+        const cartId = newCartItems[index] && newCartItems[index].id;
         newCartItems[index].quantity = newQuantity;
-        newCartItems[index].total_price = newQuantity * newCartItems[index].discounted_price;
+        newCartItems[index].totalPrice = newQuantity * newCartItems[index].discountedPrice;
         setCartItems(newCartItems);
+        if (getAccountInfo()) {
+            updateCartQuantity({ id: cartId, quantity: newQuantity });
+        }
         localStorage.setItem(CART_KEY, JSON.stringify(newCartItems));
         window.dispatchEvent(new Event('cartUpdated'));
     };
 
-    const handleRemoveCartItem = (cartId: string) => {
-        removeItemFromCart(cartId);
+    const handleRemoveCartItem = (params: { id: number, cartCode: string }) => {
+        removeItemFromCart({ id: params.id, cartCode: params.cartCode });
     }
 
     return (
@@ -67,49 +74,39 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             width={500}
             closable={false}
             style={{
-                maxHeight: cartItems.length > 2 ? 'calc(100vh - 140px)' : ''
+                maxHeight: cartItems && cartItems.length > 2 ? 'calc(100vh - 140px)' : ''
             }}
         >
             {cartItems && cartItems.length ? cartItems.map((
-                item: {
-                    product_id: string;
-                    image: { imageUrl: string | StaticImport; };
-                    product_name: string;
-                    color: string;
-                    size: string;
-                    quantity: number;
-                    product_quantity: number;
-                    shopping_cart_id: string;
-                    discounted_price: { toLocaleString: () => string | number | bigint };
-                    sale_price: { toLocaleString: () => string | number | bigint };
-                }, index: number) => (
+                item: ICartItem, index: number) => (
                 <div className={styles.cartItem} key={index}>
                     <Link
-                        href={`/product/${item.product_id}/variant`}
+                        href={`/product/${item.productId}/variant`}
                         onClick={onClose}
+                        className='flex items-center'
                     >
                         <Image
                             width={100}
                             height={100}
-                            src={item.image ? item.image.imageUrl : ''}
-                            alt={item.product_name}
+                            src={item.imageUrl}
+                            alt={item.productName}
                             className={styles.itemImage}
                         />
                     </Link>
 
                     <div className={styles.itemInfo}>
                         <Link
-                            href={`/product/${item.product_id}/variant`}
+                            href={`/product/${item.productId}/variant`}
                             className="no-underline"
                             onClick={onClose}
                         >
-                            <span className={styles.itemTitle + ' text-black'}>{item.product_name}</span>
+                            <span className={styles.itemTitle + ' text-black'}>{item.productName}</span>
                         </Link>
-                        <p className={styles.itemVariant}>{item.color} / {item.size}</p>
+                        <p className={styles.itemVariant}>{item.colorName} / {item.sizeName}</p>
                         <div className={styles.quantityControl}>
                             <QuantityControl
                                 quantity={item.quantity}
-                                quantityInStock={item.product_quantity}
+                                quantityInStock={item.quantityInStock}
                                 onIncrement={() => handleQuantityChange(index, item.quantity + 1)}
                                 onDecrement={() => handleQuantityChange(index, Math.max(1, item.quantity - 1))}
                             />
@@ -124,7 +121,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                             placement="leftTop"
                             okText="Xoá"
                             cancelText="Không"
-                            onConfirm={() => handleRemoveCartItem(item.shopping_cart_id)}
+                            onConfirm={() => handleRemoveCartItem({ id: item.id, cartCode: item.cartCode })}
                         >
                             <Button
                                 type="text"
@@ -133,18 +130,16 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                             />
                         </Popconfirm>
                         <div className="d-flex flex-column align-items-center mt-4">
-                            <span className={item.sale_price > item.discounted_price
-                                ? styles.itemPrice : styles.itemPrice + ' mt-7'
-                            }
-                            >
-                                {item && item.discounted_price.toLocaleString()}₫</span>
-                            <span
-                                className={item.sale_price > item.discounted_price
-                                    ? styles.salePrice : 'd-none'
+                            <span className={styles.itemPrice + ' mt-7'}>
+                                {item && item.salePrice.toLocaleString()}₫
+                            </span>
+                            {/* <span
+                                className={item.salePrice > item.discountedPrice
+                                    ? 'd-none' : styles.salePrice
                                 }
                             >
-                                {item && item.sale_price.toLocaleString()}₫
-                            </span>
+                                {item && item.salePrice.toLocaleString()}₫
+                            </span> */}
                         </div>
                     </div>
                 </div>

@@ -9,14 +9,13 @@ import { QuestionCircleOutlined } from "@ant-design/icons";
 import { PAYMENT_METHOD } from "@/constants/PaymentMethod";
 import { IVoucherUser } from "@/types/IVoucher";
 import { MdOutlineDiscount } from "react-icons/md";
-import { calculateInvoiceDiscount, calculateUserCartTotalAmount, calculateUserCartTotalAmountWithVoucherAndShippingFee } from "@/utils/AppUtil";
+import { calculateInvoiceDiscount, calculateUserCartTotalAmount, calculateUserCartTotalAmountWithVoucherAndShippingFee, getAccountInfo } from "@/utils/AppUtil";
 
 interface IProps {
     handleSubmit: (payment: any) => Promise<void>;
     shippingFee: number;
     selectedPayment: string;
     userForm: FormInstance;
-    addressForm: FormInstance;
     cartsProp: ICartItem[];
 }
 
@@ -26,7 +25,6 @@ const OrderDetail = (props: IProps) => {
         shippingFee,
         selectedPayment,
         userForm,
-        addressForm,
         cartsProp,
     } = props;
     const router = useRouter();
@@ -60,7 +58,10 @@ const OrderDetail = (props: IProps) => {
     const voucherId = appliedVoucher?.id;
 
     const onButtonClick = async () => {
-        checkShoppingCartData();
+        if (!getAccountInfo()) {
+            await checkShoppingCartData();
+        }
+
         if (!selectedPayment) {
             // Check xem có method thanh toán nào được chọn chưa
             showNotification("error", { message: "Vui lòng chọn phương thức thanh toán!" });
@@ -74,7 +75,6 @@ const OrderDetail = (props: IProps) => {
                 try {
                     // Validate form
                     await userForm.validateFields();
-                    await addressForm.validateFields();
 
                     const data = {
                         originalAmount,
@@ -143,21 +143,23 @@ const OrderDetail = (props: IProps) => {
                         <span>Tổng thanh toán</span>
                         <span>{totalAmount.toLocaleString()} đ</span>
                     </div>
-                    <div className="bg-blue-50 p-1 rounded-lg mb-4 mt-4 flex justify-between items-center">
-                        <p className="font-medium mt-3 ms-3 flex items-center">
-                            <RiDiscountPercentLine size={20} className="me-1" /> Mã giảm giá
-                        </p>
-                        <Button
-                            type="link"
-                            className="text-blue-500"
-                            onClick={openModal}
-                        >
-                            Chọn mã {">"}
-                        </Button>
-                    </div>
+                    {getAccountInfo() && (
+                        <div className="bg-blue-50 p-1 rounded-lg mb-4 mt-4 flex justify-between items-center">
+                            <p className="font-medium mt-3 ms-3 flex items-center">
+                                <RiDiscountPercentLine size={20} className="me-1" /> Mã giảm giá
+                            </p>
+                            <Button
+                                type="link"
+                                className="text-blue-500"
+                                onClick={openModal}
+                            >
+                                Chọn mã {">"}
+                            </Button>
+                        </div>
+                    )}
 
                     {/* Hiển thị voucher được chọn */}
-                    {appliedVoucher && (
+                    {appliedVoucher && getAccountInfo() ? (
                         <Card
                             key={appliedVoucher.id}
                             className={"relative rounded-md overflow-hidden flex flex-col mb-3"}
@@ -195,7 +197,7 @@ const OrderDetail = (props: IProps) => {
                                 X
                             </button>
                         </Card>
-                    )}
+                    ) : ('')}
                 </div>
 
                 <div className="mt-6">

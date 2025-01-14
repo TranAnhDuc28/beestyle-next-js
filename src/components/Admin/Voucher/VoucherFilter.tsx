@@ -1,5 +1,4 @@
 import {Checkbox, Col, Collapse, Radio, RadioChangeEvent, Row, Space, Typography} from "antd";
-import {STATUS} from "@/constants/Status";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {memo, useEffect, useState} from "react";
 import {DISCOUNT_TYPE} from "../../../constants/DiscountType";

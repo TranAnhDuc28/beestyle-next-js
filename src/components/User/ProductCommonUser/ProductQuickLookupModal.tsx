@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Carousel, Tag, InputNumber, Image } from 'antd';
+import { Modal, Button, Carousel, Tag, InputNumber, Image, message } from 'antd';
 import { useProduct } from '@/services/user/SingleProductService';
 import ColorPickers from '@/components/User/ShopSingle/Properties/ColorPickers';
 import SizePickers from '@/components/User/ShopSingle/Properties/SizePickers';
@@ -54,8 +54,20 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
         setQuantity((prev) => Math.min(prev + 1, isNaN(maxQuantity) ? Infinity : maxQuantity));
     };
 
-    const handleAddToCart = (product: any, quantity: number) => {
-        if (selectedColor && selectedSize) addToCart(product, quantity);
+    const handleAddToCart = async (product: any, quantity: number) => {
+        if (selectedColor && selectedSize && product) {
+            const imageUrl = product.images.find((image: { isDefault: boolean; }) => image.isDefault).imageUrl;
+            if (quantity > 0 && product.quantityInStock > 0) {
+                await addToCart(product, quantity, imageUrl);
+            } else {
+                message.warning(
+                    {
+                        content: `Sản phẩm ${productData?.productName} đã hết hàng!`,
+                        duration: 5,
+                    }
+                );
+            }
+        }
         else return;
     }
 
@@ -221,7 +233,7 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
                                     className="!bg-gray-200 hover:!bg-gray-300 !text-black !font-bold relative z-10
                                                !border-none !rounded-none !w-10 !h-10 flex items-center justify-center"
                                     icon={<PlusOutlined />}
-                                    disabled={quantity >= product?.quantity}
+                                    disabled={quantity >= productData?.quantityInStock}
                                 />
                             </div>
                         </div>

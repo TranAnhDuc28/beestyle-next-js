@@ -1,47 +1,83 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, {useEffect, useState} from "react";
-import {useRouter} from 'next/navigation';
+import React, { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 import OrderDetail from "./OrderDetail";
-import {Alert, Col, Form, Input, Radio, Row} from "antd";
-import {createVNPayPayment} from "@/services/VNPayService";
-import {CART_KEY, checkShoppingCartData, ICartItem, removeAllCartItems} from "@/services/user/ShoppingCartService";
+import { Alert, Button, Col, Form, Input, Radio, Row } from "antd";
+import { createVNPayPayment } from "@/services/VNPayService";
+import { checkShoppingCartData, deleteAllCartItems, ICartItem, removeAllCartItems, useShoppingCart } from "@/services/user/ShoppingCartService";
 import BreadcrumbSection from "@/components/Breadcrumb/BreadCrumb";
-import {ORDER_CHANEL} from "@/constants/OrderChanel";
-import {ORDER_TYPE} from "@/constants/OrderType";
-import {ORDER_STATUS} from "@/constants/OrderStatus";
-import {PAYMENT_METHOD} from "@/constants/PaymentMethod";
-import {IOrderOnlineCreateOrUpdate} from "@/types/IOrder";
-import {ICreateOrUpdateOrderItem} from "@/types/IOrderItem";
+import { ORDER_CHANEL } from "@/constants/OrderChanel";
+import { ORDER_TYPE } from "@/constants/OrderType";
+import { ORDER_STATUS } from "@/constants/OrderStatus";
+import { PAYMENT_METHOD } from "@/constants/PaymentMethod";
+import { IOrderOnlineCreateOrUpdate } from "@/types/IOrder";
+import { ICreateOrUpdateOrderItem } from "@/types/IOrderItem";
 import useOrder from "@/components/Admin/Order/hooks/useOrder";
 import UserLoader from "@/components/Loader/UserLoader";
-import {IAddress} from "@/types/IAddress";
+import { IAddress } from "@/types/IAddress";
 import styles from "@/components/User/Checkout/css/checkout.module.css";
-import {MailOutlined, PhoneOutlined, UserOutlined} from "@ant-design/icons";
-import {AiOutlineHome} from "react-icons/ai";
-import {TbCreditCardPay} from "react-icons/tb";
-import {RiStore2Line} from "react-icons/ri";
+import { MailOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
+import { AiOutlineHome } from "react-icons/ai";
+import { TbCreditCardPay } from "react-icons/tb";
+import { RiStore2Line } from "react-icons/ri";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import TextArea from "antd/es/input/TextArea";
 import useAddress from "@/components/Admin/Address/hook/useAddress";
-import {ghtkCalculateShippingFee} from "@/services/GhtkCalculateShippingFee";
-import {calculateShippingFee} from "@/utils/AppUtil";
+import { calculateShippingFee, getAccountInfo } from "@/utils/AppUtil";
+import { getAddressByCustomerId, URL_API_ADDRESS } from "@/services/AddressService";
+import useSWR from "swr";
+
+const dataTest = [
+    {
+        id: 1,
+        name: 'Anh Vũ',
+        address: 'Phuong Canh',
+        city: 'Thành phố Hà Nội, Nam Từ Liêm 10000',
+        country: 'Việt Nam',
+        phone: '931386154',
+        isDefault: 0,
+    },
+    {
+        id: 2,
+        name: 'Đức Anh Vũ',
+        address: '123',
+        city: 'Thành phố Hà Nội, Nam Từ Liêm 10000',
+        country: 'Việt Nam',
+        phone: '931386154',
+        isDefault: 1,
+    },
+];
 
 const Checkout: React.FC = () => {
     const router = useRouter();
-    const [addressForm] = Form.useForm();
+    const customerId = getAccountInfo().id;
     const [userForm] = Form.useForm();
-    const {handleCreateOrderOnline} = useOrder();
-
+    const { handleCreateOrderOnline } = useOrder();
     const [shippingAddress, setShippingAddress] = useState<IAddress | undefined>(undefined);
-
-    const {handleGetProvinces, handleGetDistricts, handleGetWards} = useAddress();
+    const { handleGetProvinces, handleGetDistricts, handleGetWards } = useAddress();
     const provincesData = handleGetProvinces();
     const districtsData = handleGetDistricts(`${shippingAddress?.cityCode}`);
     const wardsData = handleGetWards(`${shippingAddress?.districtCode}`);
+    const [selectedAddress, setSelectedAddress] = useState<number>(0);
+    const { data: addressData, error: errorAddress, mutate } = useSWR(
+        `${URL_API_ADDRESS.get}?id=${customerId}`,
+        getAddressByCustomerId,
+        {
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+        }
+    );
+    const addresses = addressData?.data?.items || [];
+
+    console.log(addresses);
+
 
     const [orderId] = useState("");
-    const [cartItems] = useState(JSON.parse(localStorage.getItem(CART_KEY) || '[]'));
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { cartData, isLoading, error } = useShoppingCart();
+    const [cartItems] = useState(cartData);
     const [shippingFee, setShippingFee] = useState(0);
     const [selectedPayment, setSelectedPayment] = useState<string>(PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key);
 
@@ -49,7 +85,7 @@ const Checkout: React.FC = () => {
         const value = e.target.value;
         setSelectedPayment(value);
         if (value === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key || value === PAYMENT_METHOD.BANK_TRANSFER.key) {
-            addressForm.setFieldsValue({district: undefined, ward: undefined});
+            userForm.setFieldsValue({ district: undefined, ward: undefined });
         }
     };
 
@@ -65,7 +101,7 @@ const Checkout: React.FC = () => {
         } as IAddress));
 
         // Reset các trường district và ward trong form
-        addressForm.setFieldsValue({
+        userForm.setFieldsValue({
             district: undefined,
             ward: undefined,
         });
@@ -81,7 +117,7 @@ const Checkout: React.FC = () => {
         } as IAddress));
 
         // Reset các trường district và ward trong form
-        addressForm.setFieldsValue({
+        userForm.setFieldsValue({
             ward: undefined,
         });
     }
@@ -95,7 +131,7 @@ const Checkout: React.FC = () => {
         } as IAddress));
     }
 
-// Xử lý tạo thanh toán VNPay
+    // Xử lý tạo thanh toán VNPay
     const processVNPayPayment = async (payment: any) => {
         const ipAddress = "127.0.0.1";
         try {
@@ -149,18 +185,19 @@ const Checkout: React.FC = () => {
             // Map dữ liệu Order Item
             const cartFiltereds: ICreateOrUpdateOrderItem[] = cartItems && cartItems.length > 0 ? (cartItems.map((item: ICartItem) => {
                 return {
-                    productVariantId: item.product_variant_id,
+                    productVariantId: item.productVariantId,
                     quantity: item.quantity,
-                    salePrice: item.sale_price,
-                    discountedPrice: item.sale_price === item.discounted_price ? 0 : item.discounted_price,
+                    salePrice: item.salePrice,
+                    discountedPrice: 0,
                 };
             })) : [];
 
             // Map dữ liệu Order + Order Item
+            const email = getAccountInfo() ? getAccountInfo().email : userData.email;
             const pendingOrderData: IOrderOnlineCreateOrUpdate = {
                 receiverName: userData.customerName,
                 phoneNumber: userData.phone,
-                email: userData.email,
+                email: email,
                 originalAmount: originalAmount,
                 discountAmount: discountAmount,
                 shippingFee: shippingFee,
@@ -172,7 +209,7 @@ const Checkout: React.FC = () => {
                 orderStatus: ORDER_STATUS.AWAITING_CONFIRMATION.key,
                 isPrepaid: selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key,
                 shippingAddress: JSON.stringify({
-                    addressName: addressForm.getFieldValue("addressName"),
+                    addressName: userForm.getFieldValue("addressName"),
                     cityCode: shippingAddress?.cityCode,
                     city: shippingAddress?.city,
                     districtCode: shippingAddress?.districtCode,
@@ -180,8 +217,10 @@ const Checkout: React.FC = () => {
                     communeCode: shippingAddress?.communeCode,
                     commune: shippingAddress?.commune
                 }),
-                orderItems: cartFiltereds
+                orderItems: cartFiltereds,
             };
+
+            if (pendingOrderData.totalAmount < 0) return;
 
             if (selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key) {
                 // Xử lý đặt hàng với method COD
@@ -189,8 +228,14 @@ const Checkout: React.FC = () => {
                     .then((orderData) => {
                         // Xử lý kết quả thành công và chuyển hướng
                         if (orderData) {
+                            
                             const trackingNumber: string = orderData.orderTrackingNumber;
-                            removeAllCartItems(); // Xoá data Cart
+                            // Xoá data Cart
+                            if (getAccountInfo()) {
+                                deleteAllCartItems();
+                            } else {
+                                removeAllCartItems();
+                            }
                             router.push('/order/success?tracking_number=' + trackingNumber);
                         }
 
@@ -216,130 +261,156 @@ const Checkout: React.FC = () => {
         }
     };
 
-// Validate giỏ hàng nếu có thay đổi từ phía server
+    // Validate giỏ hàng nếu có thay đổi từ phía server
     useEffect(() => {
         if (cartItems.length === 0) {
             router.push('/cart');
         }
-        checkShoppingCartData();
     }, [cartItems, router]);
 
     const breadcrumbItems = [
-        {title: 'Trang chủ', path: '/'},
-        {title: 'Giỏ hàng', path: '/cart'},
-        {title: 'Thanh toán'},
+        { title: 'Trang chủ', path: '/' },
+        { title: 'Giỏ hàng', path: '/cart' },
+        { title: 'Thanh toán' },
     ];
 
     return (
         <>
             {cartItems && cartItems.length > 0 ? (
                 <>
-                    <BreadcrumbSection items={breadcrumbItems}/>
+                    <BreadcrumbSection items={breadcrumbItems} />
                     <section className="shop checkout section">
                         <div className="container">
                             <div className="row">
                                 <div className="col-lg-8 col-12">
                                     <div className={styles["checkout-form"]}>
                                         <h3 className={styles["heading"]}>Thông tin người nhận</h3>
-                                        <Form layout="horizontal" className={styles["form"]} form={userForm} action="#">
+                                        <Form
+                                            layout="horizontal"
+                                            className={styles["form"]}
+                                            form={userForm} action="#"
+                                            initialValues={{
+                                                customerName: getAccountInfo()?.fullName || "",
+                                                phone: getAccountInfo()?.phoneNumber || "",
+                                            }}
+                                        >
                                             <Form.Item
                                                 name="customerName"
-                                                rules={[{required: true, message: "Vui lòng nhập tên khách hàng!"}]}
+                                                rules={[
+                                                    {
+                                                        validator: (_, value) => {
+                                                            if (value && value.trim() !== "") {
+                                                                return Promise.resolve();
+                                                            }
+                                                            return Promise.reject(new Error("Vui lòng nhập tên khách hàng!"));
+                                                        },
+                                                    },
+                                                ]}
                                             >
                                                 <Input
                                                     placeholder="Tên khách hàng"
-                                                    prefix={<UserOutlined className="pr-2"/>}
+                                                    prefix={<UserOutlined className="pr-2" />}
                                                     className={styles["input-checkout"]}
                                                 />
                                             </Form.Item>
 
                                             <Form.Item
                                                 name="phone"
-                                                rules={[{required: true, message: "Vui lòng nhập số điện thoại!"}]}
+                                                rules={[
+                                                    { required: true, message: "Vui lòng nhập số điện thoại!" },
+                                                    {
+                                                        pattern: /^0\d{9}$/,
+                                                        message: "Số điện thoại không đúng định dạng!",
+                                                    },
+                                                ]}
                                             >
                                                 <Input
                                                     placeholder="Số điện thoại"
-                                                    prefix={<PhoneOutlined className="pr-2"/>}
+                                                    prefix={<PhoneOutlined className="pr-2" />}
                                                     className={styles["input-checkout"]}
                                                 />
                                             </Form.Item>
 
-                                            <Form.Item name="email">
-                                                <Input
-                                                    placeholder="Địa chỉ email (Không bắt buộc)"
-                                                    prefix={<MailOutlined className="pr-2"/>}
-                                                    className={styles["input-checkout"]}
-                                                />
-                                            </Form.Item>
-                                        </Form>
+                                            {!getAccountInfo() && (
+                                                <Form.Item
+                                                    name="email"
+                                                    rules={[
+                                                        { required: true, message: "Vui lòng nhập địa chỉ email!" },
+                                                        {
+                                                            pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                                            message: "Email không đúng định dạng!",
+                                                        },
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Địa chỉ email"
+                                                        prefix={<MailOutlined className="pr-2" />}
+                                                        className={styles["input-checkout"]}
+                                                    />
+                                                </Form.Item>
+                                            )}
 
-                                        <div className={`${styles["delivery-method"]} my-4`}>
-                                            <h3 className={styles["heading"]}>Hình thức thanh toán</h3>
-                                            <Radio.Group
-                                                onChange={handlePaymentChange}
-                                                value={selectedPayment}
-                                                className={styles["delivery-radio-group"]}
-                                            >
-                                                <div>
-                                                    <Radio.Button
-                                                        value={PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key}
-                                                        className={
-                                                            `${styles["delivery-option"]} 
-                                                        ${selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key ? styles["selected"] : ""}`
-                                                        }
-                                                        style={{padding: '25px 5px', width: '190px'}}
-                                                    >
-                                                        <div
-                                                            className="flex flex-col items-center justify-between text-center"
-                                                            style={{marginTop: -15}}
+                                            <div className={`${styles["delivery-method"]} my-4`}>
+                                                <h3 className={styles["heading"]}>Hình thức thanh toán</h3>
+                                                <Radio.Group
+                                                    onChange={handlePaymentChange}
+                                                    value={selectedPayment}
+                                                    className={styles["delivery-radio-group"]}
+                                                >
+                                                    <div>
+                                                        <Radio.Button
+                                                            value={PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key}
+                                                            className={`${styles["delivery-option"]} ${selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key ? styles["selected"] : ""}`}
+                                                            style={{ padding: '25px 5px', width: '190px' }}
                                                         >
-                                                            <AiOutlineHome size={15}/>
-                                                            <span style={{fontSize: 12, lineHeight: '20px'}}>Thanh toán khi nhận hàng (COD)</span>
-                                                        </div>
-                                                    </Radio.Button>
-                                                </div>
+                                                            <div
+                                                                className="flex flex-col items-center justify-between text-center"
+                                                                style={{ marginTop: -15 }}
+                                                            >
+                                                                <AiOutlineHome size={15} />
+                                                                <span style={{ fontSize: 12, lineHeight: '20px' }}>Thanh toán khi nhận hàng (COD)</span>
+                                                            </div>
+                                                        </Radio.Button>
+                                                    </div>
 
-                                                <div>
-                                                    <Radio.Button
-                                                        value="BANK_TRANSFER"
-                                                        className={`${styles["delivery-option"]} ${selectedPayment === "BANK_TRANSFER" ? styles["selected"] : ""
-                                                        }`}
-                                                        style={{padding: '25px 0', width: '190px'}}
-                                                    >
-                                                        <div
-                                                            className="flex flex-col items-center justify-center"
-                                                            style={{marginTop: -15}}
+                                                    <div>
+                                                        <Radio.Button
+                                                            value={PAYMENT_METHOD.BANK_TRANSFER.key}
+                                                            className={`${styles["delivery-option"]} ${selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key ? styles["selected"] : ""}`}
+                                                            style={{ padding: '25px 0', width: '190px' }}
                                                         >
-                                                            <TbCreditCardPay size={15}/>
-                                                            <span style={{fontSize: 12, lineHeight: '20px'}}>Thanh toán qua VNPay</span>
-                                                        </div>
-                                                    </Radio.Button>
-                                                </div>
+                                                            <div
+                                                                className="flex flex-col items-center justify-center"
+                                                                style={{ marginTop: -15 }}
+                                                            >
+                                                                <TbCreditCardPay size={15} />
+                                                                <span style={{ fontSize: 12, lineHeight: '20px' }}>Thanh toán qua VNPay</span>
+                                                            </div>
+                                                        </Radio.Button>
+                                                    </div>
 
-                                                <div>
-                                                    <Radio.Button
-                                                        value="TEST"
-                                                        className={`${styles["delivery-option"]} ${selectedPayment === "TEST" ? styles["selected"] : ""
-                                                        }`}
-                                                        style={{padding: '25px 0', width: '190px'}}
-                                                    >
-                                                        <div
-                                                            className="flex flex-col items-center justify-center"
-                                                            style={{marginTop: -15}}
+                                                    <div>
+                                                        <Radio.Button
+                                                            value="TEST"
+                                                            className={`${styles["delivery-option"]} ${selectedPayment === "TEST" ? styles["selected"] : ""
+                                                                }`}
+                                                            style={{ padding: '25px 0', width: '190px' }}
                                                         >
-                                                            <RiStore2Line size={15}/>
-                                                            <span style={{fontSize: 12, lineHeight: '20px'}}>Nhận tại cửa hàng</span>
-                                                        </div>
-                                                    </Radio.Button>
-                                                </div>
-                                            </Radio.Group>
-                                        </div>
+                                                            <div
+                                                                className="flex flex-col items-center justify-center"
+                                                                style={{ marginTop: -15 }}
+                                                            >
+                                                                <RiStore2Line size={15} />
+                                                                <span style={{ fontSize: 12, lineHeight: '20px' }}>Nhận tại cửa hàng</span>
+                                                            </div>
+                                                        </Radio.Button>
+                                                    </div>
+                                                </Radio.Group>
+                                            </div>
 
-                                        {selectedPayment === "CASH_AND_BANK_TRANSFER" || selectedPayment === "BANK_TRANSFER" ? (
-                                            <>
-                                                <h3 className={styles["heading"] + " my-4"}>Địa chỉ nhận hàng</h3>
-                                                <Form layout="horizontal" className={styles["form"]} form={addressForm}
-                                                      action="#">
+                                            {selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key || selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key ? (
+                                                <>
+                                                    <h3 className={styles["heading"] + " my-4"}>Địa chỉ nhận hàng</h3>
                                                     <Row gutter={16} className="mb-3">
                                                         <Col span={8}>
                                                             <Form.Item
@@ -354,7 +425,7 @@ const Checkout: React.FC = () => {
                                                                 <SelectSearchOptionLabel
                                                                     value={shippingAddress?.cityCode}
                                                                     placeholder="Tỉnh / Thành Phố"
-                                                                    style={{width: "100%", height: "48px"}}
+                                                                    style={{ width: "100%", height: "48px" }}
                                                                     data={provincesData?.dataOptionProvinces}
                                                                     isLoading={provincesData?.isLoading}
                                                                     onChange={onChangeSelectedProvince}
@@ -372,7 +443,7 @@ const Checkout: React.FC = () => {
                                                                 <SelectSearchOptionLabel
                                                                     value={shippingAddress?.districtCode}
                                                                     placeholder="Quận / Huyện"
-                                                                    style={{width: "100%", height: "48px"}}
+                                                                    style={{ width: "100%", height: "48px" }}
                                                                     data={districtsData?.dataOptionDistricts}
                                                                     isLoading={districtsData?.isLoading}
                                                                     onChange={onChangeSelectedDistrict}
@@ -390,7 +461,7 @@ const Checkout: React.FC = () => {
                                                                 <SelectSearchOptionLabel
                                                                     value={shippingAddress?.communeCode}
                                                                     placeholder="Phường / Xã"
-                                                                    style={{width: "100%", height: "48px"}}
+                                                                    style={{ width: "100%", height: "48px" }}
                                                                     data={wardsData?.dataOptionWards}
                                                                     isLoading={wardsData?.isLoading}
                                                                     onChange={onChangeSelectedWard}
@@ -399,26 +470,67 @@ const Checkout: React.FC = () => {
                                                         </Col>
                                                     </Row>
 
-                                                    <Form.Item name="addressName" style={{marginTop: -10}}>
+                                                    <Form.Item
+                                                        name="addressName"
+                                                        style={{ marginTop: -10 }}
+                                                        rules={[
+                                                            {
+                                                                validator: (_, value) => {
+                                                                    if (value && value.trim() !== "") {
+                                                                        return Promise.resolve();
+                                                                    }
+                                                                    return Promise.reject(new Error("Vui lòng nhập địa chỉ!"));
+                                                                },
+                                                            },
+                                                        ]}
+                                                    >
                                                         <TextArea
                                                             placeholder="Nhập địa chỉ chi tiết"
                                                             className="p-2"
                                                             rows={4}
-                                                            style={{resize: 'none'}}
+                                                            style={{ resize: 'none' }}
                                                             maxLength={250}
                                                         />
                                                     </Form.Item>
-                                                </Form>
-                                            </>
-                                        ) : (
-                                            <Alert
-                                                message="Thử nghiệm"
-                                                description="Tính năng này đang trong giai đoạn thử nghiệm, có thể hoạt động chưa ổn định."
-                                                type="warning"
-                                                className="mt-7"
-                                                showIcon
-                                            />
-                                        )}
+                                                </>
+                                            ) : (
+                                                <Alert
+                                                    message="Thử nghiệm"
+                                                    description="Tính năng này đang trong giai đoạn thử nghiệm, có thể hoạt động chưa ổn định."
+                                                    type="warning"
+                                                    className="mt-7"
+                                                    showIcon
+                                                />
+                                            )}
+                                            <div>
+                                                {addresses && addresses.length > 0 ? (
+                                                    <Radio.Group
+                                                        onChange={(e) => setSelectedAddress(e.target.value)}
+                                                        value={selectedAddress}
+                                                        style={{ width: "100%" }}
+                                                    >
+                                                        {addresses.map((address: any) => (
+                                                            <div
+                                                                key={address.id}
+                                                                className="border-b pb-4 mb-4 flex justify-between items-center hover:bg-gray-50 transition-all cursor-pointer"
+                                                                onClick={() => setSelectedAddress(address.id)}
+                                                            >
+                                                                <div>
+                                                                    {/* <p className="font-bold">{address.receiverName}</p> */}
+                                                                    <p>
+                                                                        {address.addressName}, {address.commune}, {address.district}, {address.city}
+                                                                    </p>
+                                                                    <p>{address.phoneNumber}</p>
+                                                                </div>
+                                                                <Radio value={address.id} />
+                                                            </div>
+                                                        ))}
+                                                    </Radio.Group>
+                                                ) : (
+                                                    <div>Bạn chưa có địa chỉ nào.</div>
+                                                )}
+                                            </div>
+                                        </Form>
                                     </div>
                                 </div>
                                 <div className="col-lg-4 col-12">
@@ -427,7 +539,6 @@ const Checkout: React.FC = () => {
                                         shippingFee={shippingFee}
                                         selectedPayment={selectedPayment}
                                         userForm={userForm}
-                                        addressForm={addressForm}
                                         cartsProp={cartItems}
                                     />
                                 </div>
@@ -437,7 +548,7 @@ const Checkout: React.FC = () => {
                 </>
             ) : (
                 <div>
-                    <UserLoader/>
+                    <UserLoader />
                 </div>
             )}
         </>

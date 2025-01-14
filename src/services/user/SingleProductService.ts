@@ -17,6 +17,7 @@ interface ProductVariant {
     brandName: string | null;
     quantityInStock: number | 0;
     images: [];
+    image?: string | null;
 }
 
 interface ProductImage {

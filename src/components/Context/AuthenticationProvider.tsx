@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import { IAuthResponse } from "@/types/IAuth";
+import { removeAllCartItems } from "@/services/user/ShoppingCartService";
 
 interface AuthContextType {
     authentication: IAuthResponse | null;
@@ -23,6 +24,7 @@ const AuthenticationProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const logout = () => {
         setAuthentication(null);
         localStorage.removeItem("authentication");
+        removeAllCartItems();
     };
 
     return (

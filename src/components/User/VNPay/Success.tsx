@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, Result } from 'antd';
+import { getAccountInfo } from '@/utils/AppUtil';
 
 const SuccessPage: React.FC = () => {
     const router = useRouter();
@@ -10,7 +11,12 @@ const SuccessPage: React.FC = () => {
     const orderTrackingNumber = searchParams.get('tracking_number');
 
     const handleViewOrder = () => {
-        router.push('/order-lookup'); // Redirect đến trang quản lý đơn hàng
+        // Redirect đến trang quản lý đơn hàng
+        if (getAccountInfo()) {
+            router.push('/user-profile');
+        } else {
+            router.push('/order-lookup');
+        }
     };
 
     return (

@@ -1,7 +1,7 @@
 "use client"
-import React, {memo, useState} from "react";
+import React, {memo, useRef, useState} from "react";
 import {IOrderDetail} from "@/types/IOrder";
-import {Badge, Button, Descriptions, DescriptionsProps, Typography} from "antd";
+import {Badge, Button, Descriptions, DescriptionsProps, Flex, Typography} from "antd";
 import dayjs from "dayjs";
 import {ORDER_STATUS} from "@/constants/OrderStatus";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
@@ -12,6 +12,7 @@ import {formatAddress} from "@/utils/AppUtil";
 import {ORDER_CHANEL} from "@/constants/OrderChanel";
 import {PresetStatusColorType} from "antd/es/_util/colors";
 import {DISCOUNT_TYPE} from "@/constants/DiscountType";
+import InvoiceComponent from "@/components/User/Invoice/TestPDF";
 
 const {Text} = Typography;
 
@@ -34,6 +35,13 @@ interface IProps {
 const OrderDetailInfoTable: React.FC<IProps> = (props) => {
     const {orderDetail} = props;
     const [isShippingInfoModalOpen, setIsShippingInfoModalOpen] = useState<boolean>(false);
+
+    const invoiceRef = useRef<any>(null);
+    const handlePrintInvoice = () => {
+        if (invoiceRef.current) {
+            invoiceRef.current.printInvoice();
+        }
+    };
 
     const showShippingInfoModal = () => {
         setIsShippingInfoModalOpen(true);
@@ -135,10 +143,10 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
                     {orderDetail?.voucherInfo?.voucherCode} - {orderDetail?.voucherInfo?.voucherName}
                     <br/>
                     Loại giảm giá: {
-                        orderDetail?.voucherInfo?.discountType === DISCOUNT_TYPE.PERCENTAGE.key
-                            ? DISCOUNT_TYPE.PERCENTAGE.description
-                            : DISCOUNT_TYPE.CASH.description
-                    }
+                    orderDetail?.voucherInfo?.discountType === DISCOUNT_TYPE.PERCENTAGE.key
+                        ? DISCOUNT_TYPE.PERCENTAGE.description
+                        : DISCOUNT_TYPE.CASH.description
+                }
                     <br/>
                     Giá trị
                     giảm: {`${orderDetail?.voucherInfo?.discountValue}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
@@ -197,17 +205,27 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
 
     return (
         <>
-            {/*<Flex justify="flex-end">*/}
-            {/*    {*/}
-            {/*        orderDetail?.orderType === ORDER_TYPE.DELIVERY.key &&*/}
-            {/*        orderDetail?.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key &&*/}
-            {/*        <Tooltip title="Cập nhật thông tin giao hàng" placement="topRight">*/}
-            {/*            <Button type="primary" style={{marginBottom: 10}} onClick={() => showShippingInfoModal()}>*/}
-            {/*                Cập nhật*/}
-            {/*            </Button>*/}
-            {/*        </Tooltip>*/}
-            {/*    }*/}
-            {/*</Flex>*/}
+            <Flex justify="flex-end">
+                {/*{*/}
+                {/*    orderDetail?.orderType === ORDER_TYPE.DELIVERY.key &&*/}
+                {/*    orderDetail?.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key &&*/}
+                {/*    <Tooltip title="Cập nhật thông tin giao hàng" placement="topRight">*/}
+                {/*        <Button type="primary" style={{marginBottom: 10}} onClick={() => showShippingInfoModal()}>*/}
+                {/*            Cập nhật*/}
+                {/*        </Button>*/}
+                {/*    </Tooltip>*/}
+                {/*}*/}
+
+                {
+                    !(orderDetail?.orderStatus === ORDER_STATUS.PENDING.key) &&
+                    !(orderDetail?.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key) &&
+                    !(orderDetail?.orderStatus === ORDER_STATUS.CANCELLED.key) &&
+                    !(orderDetail?.orderStatus === ORDER_STATUS.RETURNED.key) &&
+                    <Button type="primary" style={{marginBottom: 10}} onClick={handlePrintInvoice}>
+                        In Hóa Đơn
+                    </Button>
+                }
+            </Flex>
 
             <Descriptions
                 bordered
@@ -219,6 +237,8 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
                 isShippingInfoModalOpen={isShippingInfoModalOpen}
                 setIsShippingInfoModalOpen={setIsShippingInfoModalOpen}
             />
+
+            <InvoiceComponent ref={invoiceRef} id={orderDetail?.id || null}/>
         </>
 
     )

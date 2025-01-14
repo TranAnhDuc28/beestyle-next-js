@@ -21,7 +21,7 @@ export const calculateCartOriginAmount = (dataCart: IOrderItem[]): number => {
  */
 export const calculateUserCartTotalAmount = (dataCart: ICartItem[]): number => {
     if (dataCart && dataCart.length > 0) {
-        return dataCart.reduce((total, item) => total + (item?.sale_price ?? 0) * item?.quantity, 0);
+        return dataCart.reduce((total, item) => total + (item?.salePrice ?? 0) * item?.quantity, 0);
     }
     return 0;
 };
@@ -89,8 +89,8 @@ export const calculateShippingFee = async (originalAmount: number | undefined, s
         pick_district: "Huyện Hoài Đức",
         province: shippingAddress?.city,
         district: shippingAddress?.district,
-        weight: 100,
         value: originalAmount,
+        weight: 100,
         transport: "road",
     };
 

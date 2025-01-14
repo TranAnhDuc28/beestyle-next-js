@@ -79,23 +79,23 @@ export interface IOrderCreateOrUpdate {
 export interface IOrderOnlineCreateOrUpdate {
     id?: number;
     customerId?: number;
-    voucherId?: number;
-    receiverName?: string;
-    phoneNumber?: string;
-    email?: string;
+    voucherId: number;
+    receiverName: string;
+    phoneNumber: string;
+    email: string;
     shippingAddressId?: number;
     shippingAddress?: string;
-    shippingFee?: number;
-    originalAmount?: number;
-    discountAmount?: number;
-    totalAmount?: number;
+    shippingFee: number;
+    originalAmount: number;
+    discountAmount: number;
+    totalAmount: number;
     amountPaid?: number;
     paymentDate?: Date;
-    paymentMethod?: string;
-    isPrepaid?: boolean;
-    orderChannel?: string;
-    orderType?: string;
-    orderStatus?: string;
+    paymentMethod: string;
+    isPrepaid: boolean;
+    orderChannel: string;
+    orderType: string;
+    orderStatus: string;
     note?: string;
     orderItems: ICreateOrUpdateOrderItem[];
 }

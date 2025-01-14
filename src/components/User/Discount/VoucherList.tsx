@@ -1,7 +1,8 @@
 import React from 'react';
-import { Card } from 'antd';
+import { Card, message } from 'antd';
 import { IVoucherUser } from '@/types/IVoucher';
 import { TagOutlined } from '@ant-design/icons';
+import { getAccountInfo } from '@/utils/AppUtil';
 
 interface VoucherListProps {
     vouchers: IVoucherUser[];
@@ -11,7 +12,12 @@ interface VoucherListProps {
 const VoucherList: React.FC<VoucherListProps> = ({ vouchers, onApply }) => {
     // Áp dụng voucher
     const handleApplyVoucher = (voucher: IVoucherUser) => {
-        onApply(voucher);
+        if (getAccountInfo() && voucher) {
+            onApply(voucher);
+            message.success("Đã áp dụng voucher " + voucher.voucherCode);
+        } else {
+            message.error(`Voucher ${voucher.voucherCode} không tồn tại`);
+        }
     };
 
     return (
@@ -22,12 +28,11 @@ const VoucherList: React.FC<VoucherListProps> = ({ vouchers, onApply }) => {
                         return (
                             <Card
                                 key={voucher.id}
-                                // className={
-                                //     voucher.status === "ACTIVE" || voucher.status === "EXPIRED" ?
-                                //         "relative rounded-md overflow-hidden flex flex-col h-full shadow-md" :
-                                //         "d-none"
-                                // }
-                                className="relative rounded-md overflow-hidden flex flex-col h-full shadow-md"
+                                className={
+                                    voucher.status === "ACTIVE" ?
+                                        "relative rounded-md overflow-hidden flex flex-col h-full shadow-md" :
+                                        "d-none"
+                                }
                                 style={{ border: '1px solid #f0f0f0' }}
                                 styles={{ body: { padding: 15 } }}
                             >

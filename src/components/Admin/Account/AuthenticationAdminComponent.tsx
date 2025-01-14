@@ -6,7 +6,7 @@ import {IAuthResponse, ISignIn} from "@/types/IAuth";
 import {signIn} from "@/services/AuthService";
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
 import Link from "next/link";
-import React, {useContext} from "react";
+import React from "react";
 
 const {Text} = Typography;
 
