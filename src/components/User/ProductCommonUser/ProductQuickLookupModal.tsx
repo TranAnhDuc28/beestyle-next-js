@@ -54,10 +54,11 @@ const ProductQuickLookupModal: React.FC<IProps> = ({ visible, onClose, product }
         setQuantity((prev) => Math.min(prev + 1, isNaN(maxQuantity) ? Infinity : maxQuantity));
     };
 
-    const handleAddToCart = (product: any, quantity: number) => {
+    const handleAddToCart = async (product: any, quantity: number) => {
         if (selectedColor && selectedSize && product) {
-            if (quantity >= 1 && quantity <= productData?.quantityInStock) {
-                addToCart(product, quantity);
+            const imageUrl = product.images.find((image: { isDefault: boolean; }) => image.isDefault).imageUrl;
+            if (quantity > 0 && product.quantityInStock > 0) {
+                await addToCart(product, quantity, imageUrl);
             } else {
                 message.warning(
                     {

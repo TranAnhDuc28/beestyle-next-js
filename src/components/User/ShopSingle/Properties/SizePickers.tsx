@@ -85,7 +85,9 @@ const SizePicker: React.FC<SizePickerProps> = ({
                     </li>
                 ))}
             </ul>
-            <SizeGuide visible={visible} onClose={() => setVisible(false)} />
+            {visible && (
+                <SizeGuide visible={visible} onClose={() => setVisible(false)} />
+            )}
         </>
     );
 };

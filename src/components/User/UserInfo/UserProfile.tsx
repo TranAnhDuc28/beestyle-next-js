@@ -11,19 +11,26 @@ import PurchasedProduct from './PurchasedProduct';
 import useSWR from 'swr';
 import { getDetailCustomer, URL_API_CUSTOMER } from '@/services/CustomerService';
 import useAppNotifications from '@/hooks/useAppNotifications';
+import { useRouter } from 'next/navigation';
+import { getAccountInfo } from '@/utils/AppUtil';
+import UserLoader from '@/components/Loader/UserLoader';
 
 const UserProfile = () => {
     const [selectedMenu, setSelectedMenu] = useState('accountInfo');
-    const {showNotification} = useAppNotifications();
-    const [idCustomer,setIdCustomer] = useState<String|null>(null)
+    const { showNotification } = useAppNotifications();
+    const [idCustomer, setIdCustomer] = useState<string | null>(null);
+    const router = useRouter();
 
 
-     // Lấy id từ localStorage
-     useEffect(() => {
+    // Lấy id từ localStorage
+    useEffect(() => {
+        if (!getAccountInfo()) {
+            router.push("/not-found");
+        }
         const idString = localStorage.getItem("id");
         setIdCustomer(idString ? JSON.parse(idString) : 4);
-    }, []);
-    const {data, error, isLoading, mutate} = useSWR(
+    }, [router]);
+    const { data, error, isLoading, mutate } = useSWR(
         `${URL_API_CUSTOMER.get}/${idCustomer}`,
         getDetailCustomer,
         {
@@ -85,7 +92,7 @@ const UserProfile = () => {
                     <>
                         <Title level={3} className="text-center mb-6">Thông tin địa chỉ</Title>
                         <div className='w-[40px] bg-black mx-auto h-1'></div>
-                        <AddressCard idCustomer={idCustomer} phoneNumber={result.phoneNumber}/>
+                        <AddressCard idCustomer={idCustomer} phoneNumber={result.phoneNumber} />
                     </>
                 );
             default:
@@ -98,23 +105,29 @@ const UserProfile = () => {
     };
 
     return (
-        <div className="container mx-auto my-10">
-            <div className="grid grid-cols-4 gap-4">
-                {/* Menu */}
-                <Menu
-                    mode="vertical"
-                    className="col-span-1 border-0 mt-16"
-                    onClick={handleMenuClick}
-                    selectedKeys={[selectedMenu]}
-                    items={[
-                        { label: 'Thông tin tài khoản', key: 'accountInfo', icon: <LuFileUser size={15} /> },
-                        { label: 'Danh sách địa chỉ', key: 'addressList', icon: <MdOutlineEditLocationAlt size={15} /> },
-                    ]}
-                />
-                {/* Content */}
-                <div className="col-span-3 pt-4 px-5 pb-5">{renderContent()}</div>
-            </div>
-        </div>
+        <>
+            {getAccountInfo() ? (
+                <div className="container mx-auto my-10">
+                    <div className="grid grid-cols-4 gap-4">
+                        {/* Menu */}
+                        <Menu
+                            mode="vertical"
+                            className="col-span-1 border-0 mt-16"
+                            onClick={handleMenuClick}
+                            selectedKeys={[selectedMenu]}
+                            items={[
+                                { label: 'Thông tin tài khoản', key: 'accountInfo', icon: <LuFileUser size={15} /> },
+                                { label: 'Danh sách địa chỉ', key: 'addressList', icon: <MdOutlineEditLocationAlt size={15} /> },
+                            ]}
+                        />
+                        {/* Content */}
+                        <div className="col-span-3 pt-4 px-5 pb-5">{renderContent()}</div>
+                    </div>
+                </div>
+            ) : (
+                <UserLoader />
+            )}
+        </>
     );
 };
 

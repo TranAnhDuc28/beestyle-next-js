@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Form, Input, Radio, Row, Col, Alert, FormInstance } from "antd";
 import {
     MailOutlined,
@@ -14,6 +14,7 @@ import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel
 import { AiOutlineHome } from "react-icons/ai";
 import { RiStore2Line } from "react-icons/ri";
 import { PAYMENT_METHOD } from "@/constants/PaymentMethod";
+import { getAccountInfo } from "@/utils/AppUtil";
 
 interface IProps {
     addressForm: FormInstance;
@@ -39,6 +40,27 @@ interface IProps {
     detailAddress: string | null;
     onDetailAddressChange: (address: string | null) => void;
 }
+
+const addressList = [
+    {
+        id: 1,
+        name: 'John Doe',
+        phone: '0123 456 789',
+        address: '123 Main St, District 1, HCMC',
+    },
+    {
+        id: 2,
+        name: 'Jane Smith',
+        phone: '0987 654 321',
+        address: '456 High St, District 3, HCMC',
+    },
+    {
+        id: 3,
+        name: 'Alice Brown',
+        phone: '0123 987 654',
+        address: '789 Low St, District 5, HCMC',
+    },
+];
 
 const CheckoutForm = (props: IProps) => {
     const {
@@ -166,14 +188,36 @@ const CheckoutForm = (props: IProps) => {
         onDetailAddressChange(value);
     };
 
+    const [selectedAddress, setSelectedAddress] = useState<number | null>(null);
+
+    const handleAddressChange = (e: any) => {
+        setSelectedAddress(e.target.value);
+    };
+
     return (
-        <Form layout="horizontal" className={styles["form"]} form={userForm} action="#">
+        <Form
+            layout="horizontal"
+            className={styles["form"]}
+            form={userForm} action="#"
+            initialValues={{
+                customerName: getAccountInfo()?.fullName || "",
+                phone: getAccountInfo()?.phoneNumber || "",
+            }}
+        >
             <div className={styles["checkout-form"]}>
                 <h3 className={styles["heading"]}>Thông tin người nhận</h3>
-
                 <Form.Item
                     name="customerName"
-                    rules={[{ required: true, message: "Vui lòng nhập tên khách hàng!" }]}
+                    rules={[
+                        {
+                            validator: (_, value) => {
+                                if (value && value.trim() !== "") {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject(new Error("Vui lòng nhập tên khách hàng!"));
+                            },
+                        },
+                    ]}
                 >
                     <Input
                         placeholder="Tên khách hàng"
@@ -199,13 +243,24 @@ const CheckoutForm = (props: IProps) => {
                     />
                 </Form.Item>
 
-                <Form.Item name="email">
-                    <Input
-                        placeholder="Địa chỉ email (Không bắt buộc)"
-                        prefix={<MailOutlined className="pr-2" />}
-                        className={styles["input-checkout"]}
-                    />
-                </Form.Item>
+                {!getAccountInfo() && (
+                    <Form.Item
+                        name="email"
+                        rules={[
+                            { required: true, message: "Vui lòng nhập địa chỉ email!" },
+                            {
+                                pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                message: "Email không đúng định dạng!",
+                            },
+                        ]}
+                    >
+                        <Input
+                            placeholder="Địa chỉ email"
+                            prefix={<MailOutlined className="pr-2" />}
+                            className={styles["input-checkout"]}
+                        />
+                    </Form.Item>
+                )}
 
                 <div className={`${styles["delivery-method"]} my-4`}>
                     <h3 className={styles["heading"]}>Hình thức thanh toán</h3>
@@ -216,9 +271,8 @@ const CheckoutForm = (props: IProps) => {
                     >
                         <div>
                             <Radio.Button
-                                value="CASH_AND_BANK_TRANSFER"
-                                className={`${styles["delivery-option"]} ${selectedPayment === "CASH_AND_BANK_TRANSFER" ? styles["selected"] : ""
-                                    }`}
+                                value={PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key}
+                                className={`${styles["delivery-option"]} ${selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key ? styles["selected"] : ""}`}
                                 style={{ padding: '25px 5px', width: '190px' }}
                             >
                                 <div
@@ -233,9 +287,8 @@ const CheckoutForm = (props: IProps) => {
 
                         <div>
                             <Radio.Button
-                                value="BANK_TRANSFER"
-                                className={`${styles["delivery-option"]} ${selectedPayment === "BANK_TRANSFER" ? styles["selected"] : ""
-                                    }`}
+                                value={PAYMENT_METHOD.BANK_TRANSFER.key}
+                                className={`${styles["delivery-option"]} ${selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key ? styles["selected"] : ""}`}
                                 style={{ padding: '25px 0', width: '190px' }}
                             >
                                 <div
@@ -267,9 +320,12 @@ const CheckoutForm = (props: IProps) => {
                     </Radio.Group>
                 </div>
 
-                {selectedPayment === "CASH_AND_BANK_TRANSFER" || selectedPayment === "BANK_TRANSFER" ? (
+                {selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key || selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key ? (
                     <>
-                        <h3 className={styles["heading"] + " my-4"}>Địa chỉ nhận hàng</h3>
+                        <div className="flex justify-between items-center">
+                            <h3 className={styles["heading"] + " my-4"}>Địa chỉ nhận hàng</h3>
+                            <span>Nhập địa chỉ</span>
+                        </div>
                         <Row gutter={16} className="mb-3">
                             <Col span={8}>
                                 <Form.Item
@@ -326,7 +382,16 @@ const CheckoutForm = (props: IProps) => {
                         <Form.Item
                             name="addressDetail"
                             style={{ marginTop: -10 }}
-                            rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
+                            rules={[
+                                {
+                                    validator: (_, value) => {
+                                        if (value && value.trim() !== "") {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject(new Error("Vui lòng nhập địa chỉ!"));
+                                    },
+                                },
+                            ]}
                         >
                             <TextArea
                                 onChange={(e) => handleDetailAddressChange(e.target.value)}
@@ -337,6 +402,22 @@ const CheckoutForm = (props: IProps) => {
                                 maxLength={250}
                             />
                         </Form.Item>
+
+                        <Radio.Group
+                            onChange={handleAddressChange}
+                            value={selectedAddress}
+                            className="w-full"
+                        >
+                            {addressList.map((address) => (
+                                <>
+                                    <Radio value={address.id} className="w-full py-2">
+                                        <div className="flex flex-col">
+                                            <span className="font-medium text-gray-7">{address.address}</span>
+                                        </div>
+                                    </Radio>
+                                </>
+                            ))}
+                        </Radio.Group>
                     </>
                 ) : (
                     <Alert

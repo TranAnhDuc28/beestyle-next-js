@@ -4,7 +4,8 @@ import React, { useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import useOrder from '@/components/Admin/Order/hooks/useOrder';
 import UserLoader from '@/components/Loader/UserLoader';
-import { removeAllCartItems } from '@/services/user/ShoppingCartService';
+import { deleteAllCartItems, removeAllCartItems } from '@/services/user/ShoppingCartService';
+import { getAccountInfo } from '@/utils/AppUtil';
 
 const VNPayConfirmPage: React.FC = () => {
     const router = useRouter();
@@ -27,7 +28,13 @@ const VNPayConfirmPage: React.FC = () => {
                         }
 
                         localStorage.removeItem('pendingOrderData');
-                        removeAllCartItems(); // Xoá data Cart
+
+                        // Xoá data Cart
+                        if (getAccountInfo()) {
+                            deleteAllCartItems();
+                        } else {
+                            removeAllCartItems();
+                        }
 
                         const trackingNumber = result.orderTrackingNumber;
                         router.push(`/order/success?tracking_number=${trackingNumber}`);

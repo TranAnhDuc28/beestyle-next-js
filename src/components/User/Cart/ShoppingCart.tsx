@@ -3,40 +3,43 @@
 import React, { useEffect, useState } from 'react';
 import CartTable from "@/components/User/Cart/CartTable";
 import TotalAmount from "@/components/User/Cart/OrderSummary";
-import { CART_KEY, checkShoppingCartData, ICartItem } from "@/services/user/ShoppingCartService";
+import { CART_KEY, checkShoppingCartData, ICartItem, updateCartQuantity, useShoppingCart } from "@/services/user/ShoppingCartService";
 import { Typography } from 'antd';
 import BreadcrumbSection from '@/components/Breadcrumb/BreadCrumb';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getAccountInfo } from '@/utils/AppUtil';
 
 const { Title, Paragraph } = Typography;
 
 const ShoppingCart = () => {
-
-    const [cartItems, setCartItems] = useState(() => {
-        try {
-            return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-        } catch (error) {
-            localStorage.removeItem(CART_KEY);
-            console.error("Sai định dạng dữ liệu trong giỏ hàng:", error);
-            return [];
-        }
-    });
+    const { cartData, isLoading, error } = useShoppingCart();
+    const [cartItems, setCartItems] = useState(cartData);
 
     useEffect(() => {
-        checkShoppingCartData();
-        const handleCartUpdate = () => {
-            setCartItems(JSON.parse(localStorage.getItem(CART_KEY) || '[]'));
-        };
-        window.addEventListener('cartUpdated', handleCartUpdate);
+        if (!getAccountInfo()) {
+            // checkShoppingCartData();
+            const handleCartUpdate = () => {
+                setCartItems(JSON.parse(localStorage.getItem(CART_KEY) || '[]'));
+            };
+            window.addEventListener('cartUpdated', handleCartUpdate);
 
-        return () => {
-            window.removeEventListener('cartUpdated', handleCartUpdate);
-        };
-    }, []);
+            return () => {
+                window.removeEventListener('cartUpdated', handleCartUpdate);
+            };
+        }
+        setCartItems(cartData);
+    }, [cartData]);
 
-    const updateCartItems = (newCartItems: ICartItem[]) => {
+    const updateCartItems = (newCartItems: ICartItem[], index: number) => {
+        const cartId = newCartItems[index] && newCartItems[index].id;
+        const quantity = newCartItems[index] && newCartItems[index].quantity;
         setCartItems(newCartItems);
+
+        if (getAccountInfo()) {
+            updateCartQuantity({ id: cartId, quantity: quantity });
+        }
+
         localStorage.setItem(CART_KEY, JSON.stringify(newCartItems));
         window.dispatchEvent(new Event('cartUpdated'));
     };

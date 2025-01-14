@@ -7,35 +7,36 @@ import { ICartItem, removeItemFromCart } from "@/services/user/ShoppingCartServi
 import useAppNotifications from "@/hooks/useAppNotifications";
 import Link from "next/link";
 import { FREE_SHIPPING_THRESHOLD } from "@/constants/AppConstants";
+import { calculateUserCartTotalAmount } from "@/utils/AppUtil";
 
 const { Title, Text } = Typography;
 
 const CartTable = ({ cartItems, updateCartItems }: {
     cartItems: ICartItem[];
-    updateCartItems: (newCartItems: ICartItem[]) => void
+    updateCartItems: (newCartItems: ICartItem[], index: number) => void
 }) => {
     const condition = FREE_SHIPPING_THRESHOLD;
-    const totalAmount = cartItems.reduce((total: number, item: { total_price: number; }) => total + item.total_price, 0);
-    const promotionPrice = 0; // cartItems.reduce((total: number, item: { sale_price: number; discounted_price: number; quantity: number; }) => total + (item.sale_price - item.discounted_price) * item.quantity, 0);
+    const totalAmount = calculateUserCartTotalAmount(cartItems);
+    const promotionPrice = 0;
     const { showNotification, showModal } = useAppNotifications();
 
     const handleQuantityChange = (index: number, operation: 'increment' | 'decrement') => {
         const newCartItems = [...cartItems];
-        const item = newCartItems[index];
+        const item: ICartItem = newCartItems[index];
 
         if (operation === 'increment') {
-            item.quantity = Math.min(item.quantity + 1, item.product_quantity);
+            item.quantity = Math.min(item.quantity + 1, item.quantityInStock);
         } else if (operation === 'decrement') {
             item.quantity = Math.max(item.quantity - 1, 1);
         }
 
-        item.total_price = item.quantity * item.discounted_price;
+        item.totalPrice = item.quantity * item.discountedPrice;
         newCartItems[index] = item;
 
-        updateCartItems(newCartItems);
+        updateCartItems(newCartItems, index);
     };
 
-    const handleRemoveCartItem = (cartId: string) => {
+    const handleRemoveCartItem = (params: { id: number, cartCode: string }) => {
         showModal('confirm', {
             title: 'Xoá sản phẩm',
             content: 'Bạn chắc chắn muốn xoá sản phẩm này?',
@@ -44,7 +45,7 @@ const CartTable = ({ cartItems, updateCartItems }: {
             okText: 'Xoá',
             cancelText: 'Không',
             onOk() {
-                removeItemFromCart(cartId);
+                removeItemFromCart({ id: params.id, cartCode: params.cartCode });
                 showNotification('success', {
                     message: (<span className="fw-semibold fs-6">Đã gỡ sản phẩm khỏi giỏ hảng</span>),
                     placement: 'topRight',
@@ -80,18 +81,18 @@ const CartTable = ({ cartItems, updateCartItems }: {
                         <div className="float-end">
                             <Button
                                 type="text"
-                                onClick={() => handleRemoveCartItem(item.shopping_cart_id)}
+                                onClick={() => handleRemoveCartItem({ id: item.id, cartCode: item.cartCode })}
                                 icon={<CloseOutlined />}
                                 className="ml-5"
                             />
                         </div>
                         <div className="flex items-center mb-4">
-                            <Link href={`/product/${item.product_id}/variant`} passHref>
+                            <Link href={`/product/${item.productId}/variant`} passHref>
                                 <Image
                                     width={160}
                                     height={"auto"}
-                                    src={item.image ? item.image.imageUrl : ''}
-                                    alt={item.product_name}
+                                    src={item.imageUrl}
+                                    alt={item.productName}
                                     className="rounded-lg"
                                     preview={false}
                                 />
@@ -99,34 +100,43 @@ const CartTable = ({ cartItems, updateCartItems }: {
                             <div className="ms-4">
                                 <Title level={4} style={{ fontWeight: 500 }}>
                                     <Link
-                                        href={`/product/${item.product_id}/variant`}
+                                        href={`/product/${item.productId}/variant`}
                                         passHref
                                         className="text-black hover:!text-orange-400"
                                     >
-                                        {item.product_name}
+                                        {item.productName}
                                     </Link>
                                 </Title>
                                 <Text className="text-red-500 text-xl font-bold">
-                                    {item.discounted_price.toLocaleString()} đ
+                                    {item.salePrice.toLocaleString()} đ
                                 </Text>
-                                <div style={item.sale_price > item.discounted_price ? {} : { visibility: 'hidden' }}>
+                                {/* <div style={item.salePrice > item.discountedPrice ? {} : { visibility: 'hidden' }}>
                                     <p className="line-through text-gray-500">
-                                        {item.sale_price.toLocaleString()} đ
+                                        {item.salePrice.toLocaleString()} đ
                                     </p>
                                     <p className="text-red-500">
                                         <span
                                             style={{ color: "#333" }}
                                         >
                                             Đã tiết kiệm
-                                        </span> -{(item.sale_price - item.discounted_price).toLocaleString()} đ
+                                        </span> -{(item.salePrice - item.discountedPrice).toLocaleString()} đ
+                                    </p>
+                                </div> */}
+                                <div style={(item.salePrice * item.quantity) > item.salePrice ? {} : { visibility: 'hidden' }}>
+                                    <p className="text-red-500 mt-4">
+                                        <span
+                                            style={{ color: "#333" }}
+                                        >
+                                            Tổng giá:
+                                        </span> {(item.salePrice * item.quantity).toLocaleString()} đ
                                     </p>
                                 </div>
                                 <div className="flex flex-col justify-center">
-                                    <p>{item.color} / {item.size}</p>
+                                    <p>{item.colorName} / {item.sizeName}</p>
                                     <div className="justify-self-end">
                                         <QuantityControl
                                             quantity={item.quantity}
-                                            quantityInStock={item.product_quantity}
+                                            quantityInStock={item.quantityInStock}
                                             onIncrement={() => handleQuantityChange(index, 'increment')}
                                             onDecrement={() => handleQuantityChange(index, 'decrement')}
                                         />

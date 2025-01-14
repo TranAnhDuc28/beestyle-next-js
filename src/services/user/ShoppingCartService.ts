@@ -1,87 +1,183 @@
 import { message } from "antd";
 import { ProductVariant } from "./SingleProductService";
+import httpInstance from "@/utils/HttpInstance";
+import { getAccountInfo } from "@/utils/AppUtil";
+import useSWR, { mutate } from "swr";
 
 export const CART_KEY = 'shopping_cart';
 
+export const URL_API_SHOPPING_CART = {
+    get: '/cart',
+    update: '/cart/update',
+    checking: '/cart/check',
+    updateQuantity: '/cart/update/quantity',
+};
+
 export interface ICartItem {
-    shopping_cart_id: string;
-    product_variant_id: string;
-    product_id: string;
-    product_name: string;
-    sku: string;
-    color: string;
-    size: string;
-    product_quantity: number;
+    id: number;
+    productVariantId: string;
+    productId: string;
+    cartCode: string;
+    customerId: number;
+    productName: string;
+    sizeName: string;
+    colorName: string;
+    quantityInStock: number;
     quantity: number;
-    sale_price: number;
-    discounted_price: number;
-    total_price: number;
+    salePrice: number;
+    discountedPrice: number;
+    totalPrice: number;
     description: string;
-    image?: {
-        id: string;
-        imageUrl: string;
-        isDefault: boolean;
-    };
+    imageUrl: string;
 }
 
-const getCart = () => {
-    if (typeof window !== 'undefined') {
+export const getCartFromLocalStorage = () => {
+    if (typeof window !== 'undefined' && !getAccountInfo()) {
         const cart = localStorage.getItem(CART_KEY);
         return cart ? JSON.parse(cart) : [];
     }
     return [];
 };
 
-const saveCart = (cart: ICartItem[]) => {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+const getCartFromServer = async (customerId: number) => {
+    const response = await httpInstance.post(URL_API_SHOPPING_CART.get, customerId);
+    return response.data.data;
 };
 
-export const addToCart = (product: ProductVariant, quantity: number) => {
-    const cart = getCart();
+const saveCart = (cart: ICartItem[]) => {
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    window.dispatchEvent(new Event("cartUpdated"));
+};
 
-    try {
-        if (product && quantity) {
-            const existingIndex = cart.findIndex((item: ICartItem) =>
-                item.product_id === product.productId &&
-                item.color === product.colorName &&
-                item.size === product.sizeName
-            );
+export const useShoppingCart = () => {
+    const customerId = getAccountInfo()?.id; // Lấy customerId từ LocalStorage
 
-            if (existingIndex !== -1) {
-                cart[existingIndex].quantity += quantity;
-                cart[existingIndex].total_price = cart[existingIndex].quantity * cart[existingIndex].discounted_price;
-            } else {
-                const newItem = {
-                    shopping_cart_id: Date.now(),
-                    product_variant_id: product.id,
-                    product_id: product.productId,
-                    product_name: product.productName,
-                    sku: product.sku,
-                    color: product.colorName,
-                    size: product.sizeName,
-                    product_quantity: product.quantityInStock,
-                    quantity: quantity,
-                    sale_price: product.salePrice,
-                    discounted_price: product.discountPrice,
-                    total_price: quantity * product.discountPrice,
-                    image: product.images.find((image: { isDefault: boolean; }) => image.isDefault)
-                };
-                cart.push(newItem);
+    const {
+        data: cartDataFromServer,
+        error,
+        isLoading,
+    } = useSWR(
+        customerId ? [customerId] : null, // Chỉ fetch từ server nếu có customerId
+        () => getCartFromServer(customerId)
+    );
+
+    const cartData = customerId ? cartDataFromServer || [] : getCartFromLocalStorage();
+
+    return {
+        cartData,
+        isLoading,
+        error,
+    };
+};
+
+export const createCartItems = async (cartData: ICartItem) => {
+    const response = await httpInstance.post(URL_API_SHOPPING_CART.update, cartData);
+    return response.data;
+}
+
+export const updateCartQuantity = async (params: Record<string, number>) => {
+    const response = await httpInstance.post(URL_API_SHOPPING_CART.updateQuantity, params);
+    return response.data;
+}
+
+export const deleteCartItem = async (cartId: number) => {
+    const response = await httpInstance.get(`${URL_API_SHOPPING_CART.get}/${cartId}/delete`);
+    return response.data;
+}
+
+export const deleteAllCartItems = async () => {
+    const response = await httpInstance.get(`${URL_API_SHOPPING_CART.get}/deleteAll`);
+    return response.data;
+}
+
+const checkDataCartItem = async (data: ICartItem) => {
+    const response = await httpInstance.post(URL_API_SHOPPING_CART.checking, data);
+    return response.data;
+}
+
+export const addToCart = async (product: ProductVariant, quantity: number, imageUrl?: string) => {
+    if (getAccountInfo()) {
+        const productData: any = [
+            {
+                customerId: getAccountInfo().id,
+                cartCode: "SC-" + Date.now(),
+                productVariantId: product.id,
+                salePrice: product.salePrice,
+                discountedPrice: 0,
+                quantity: quantity,
             }
-            saveCart(cart);
-            message.success("Đã thêm sản phẩm vào giỏ hàng")
-            window.dispatchEvent(new Event('cartUpdated'));
+        ];
+
+        try {
+            if (product.quantityInStock >= quantity && quantity > 0) {
+                await createCartItems(productData);
+                mutate(getAccountInfo().id ? [getAccountInfo().id] : null);
+                message.success("Đã thêm sản phẩm vào giỏ hàng");
+            } else {
+                message.warning("Số lượng sản phẩm trong của hàng không còn đủ");
+            }
+        } catch (err) {
+            message.warning("Số lượng sản phẩm trong cửa hàng không còn đủ");
+            console.error("Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng:", err);
         }
-    } catch (error) {
-        console.error("Đã xảy ra lỗi khi thêm mới sản phẩm vào giỏ:", error);
+    } else {
+        const cart = getCartFromLocalStorage();
+
+        try {
+            if (product && quantity) {
+                const existingIndex = cart.findIndex((item: ICartItem) =>
+                    item.productId === product.productId &&
+                    item.colorName === product.colorName &&
+                    item.sizeName === product.sizeName
+                );
+
+                if (existingIndex !== -1) {
+                    cart[existingIndex].quantity += quantity;
+                    cart[existingIndex].totalPrice = cart[existingIndex].quantity * cart[existingIndex].discounted_price;
+                } else {
+                    const newItem = {
+                        cartCode: "SC-" + Date.now(),
+                        productVariantId: product.id,
+                        productId: product.productId,
+                        productName: product.productName,
+                        colorName: product.colorName,
+                        sizeName: product.sizeName,
+                        quantityInStock: product.quantityInStock,
+                        quantity: quantity,
+                        salePrice: product.salePrice,
+                        discountedPrice: product.discountPrice,
+                        totalPrice: quantity * product.discountPrice,
+                        imageUrl: imageUrl
+                    };
+                    cart.push(newItem);
+                }
+                if (product.quantityInStock >= quantity && quantity > 0) {
+                    saveCart(cart);
+                    message.success("Đã thêm sản phẩm vào giỏ hàng");
+                } else {
+                    message.warning("Số lượng sản phẩm trong cửa hàng không còn đủ");
+                }
+            }
+        } catch (error) {
+            console.error("Đã xảy ra lỗi khi thêm mới sản phẩm vào giỏ:", error);
+        }
     }
 };
 
-export const removeItemFromCart = (shoppingCartId: string) => {
-    const cartItems = getCart();
-    const updatedCart = cartItems.filter((item: { shopping_cart_id: string; }) => item.shopping_cart_id !== shoppingCartId);
-    localStorage.setItem(CART_KEY, JSON.stringify(updatedCart));
-    window.dispatchEvent(new Event('cartUpdated'));
+export const removeItemFromCart = async (params: { id: number, cartCode: string }) => {
+    if (getAccountInfo()) {
+        try {
+            await deleteCartItem(params.id);
+            mutate(getAccountInfo().id ? [getAccountInfo().id] : null);
+        } catch (err) {
+            console.error("Đã xảy ra lỗi khi xoá sản phẩm khỏi giỏ hàng:", err);
+        }
+    } else {
+        const cartItems = getCartFromLocalStorage();
+        const updatedCart = cartItems.filter((item: ICartItem) => item.cartCode !== params.cartCode);
+        localStorage.setItem(CART_KEY, JSON.stringify(updatedCart));
+        window.dispatchEvent(new Event('cartUpdated'));
+    }
 };
 
 export const removeAllCartItems = () => {
@@ -89,112 +185,99 @@ export const removeAllCartItems = () => {
     window.dispatchEvent(new Event('cartUpdated'));
 }
 
+export const fetchCartFromLocalToServer = async () => {
+    const cart = localStorage.getItem(CART_KEY);
+    const cartItems = cart ? JSON.parse(cart) : [];
+    const productData: ICartItem = cartItems.map((item: ICartItem) => {
+        return {
+            customerId: getAccountInfo().id,
+            cartCode: "SC-" + Date.now(),
+            productVariantId: item.productVariantId,
+            salePrice: item.salePrice,
+            discountedPrice: 0,
+            quantity: item.quantity,
+        }
+    })
+
+    try {
+        removeAllCartItems();
+        await createCartItems(productData);
+        mutate(getAccountInfo().id ? [getAccountInfo().id] : null);
+    } catch (err) {
+        console.error("Đã xảy ra lỗi khi đồng bộ sản phẩm vào giỏ hàng:", err);
+    }
+}
+
 export const checkShoppingCartData = async () => {
-    const cartItems = getCart();
+    const cartItems = getCartFromLocalStorage();
 
-    if (cartItems && cartItems.length > 0) {
-        const cartDataToCheck = cartItems.map((
-            item: {
-                product_variant_id: string;
-                quantity: number;
-            }
-        ) => ({
-            productVariantId: item.product_variant_id,
-            quantity: item.quantity
-        }));
+    if (!cartItems?.length) return;
 
-        try {
-            const response = await fetch('http://localhost:8080/api/v1/cart/check', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(cartDataToCheck),
-            });
+    const cartRequests = cartItems.map(({ productVariantId, quantity }: ICartItem) => ({
+        productVariantId,
+        quantity
+    }));
 
-            if (!response.ok) {
-                throw new Error(`Lỗi HTTP! Trạng thái: ${response.status}`);
-            }
-
-            const updatedCartDataFromBE = await response.json();
+    try {
+        if (!getAccountInfo()) {
+            const updatedCartDataFromServer = await checkDataCartItem(cartRequests);
 
             const updatedCartItems = cartItems.map((item: ICartItem) => {
-                const matchingItemFromBE = updatedCartDataFromBE.find((beItem: { id: string; }) =>
-                    beItem.id === item.product_variant_id
+                const matchingItemFromServer = updatedCartDataFromServer.find(
+                    (beItem: { id: string }) => beItem.id === item.productVariantId
                 );
-                if (matchingItemFromBE) {
-                    const updatedItem: ICartItem = { ...item };
-                    if (matchingItemFromBE.salePrice !== item.sale_price) {
-                        updatedItem.sale_price = matchingItemFromBE.salePrice;
-                    }
 
-                    if (matchingItemFromBE.discountPrice !== item.discounted_price) {
-                        updatedItem.discounted_price = matchingItemFromBE.discountPrice;
-                    }
-
-                    if (matchingItemFromBE.quantityInStock !== item.product_quantity) {
-                        updatedItem.product_quantity = matchingItemFromBE.quantityInStock;
-                    }
-
-                    if (matchingItemFromBE.productName !== item.product_name) {
-                        updatedItem.product_name = matchingItemFromBE.productName;
-                    }
-
-                    if (matchingItemFromBE.colorName !== item.color) {
-                        updatedItem.color = matchingItemFromBE.colorName;
-                    }
-
-                    if (matchingItemFromBE.sizeName !== item.size) {
-                        updatedItem.size = matchingItemFromBE.sizeName;
-                    }
-
-                    if (matchingItemFromBE.discountPrice !== item.discounted_price) {
-                        updatedItem.total_price = matchingItemFromBE.totalPrice;
-                    }
-
-                    if (matchingItemFromBE.productId !== item.product_id) {
-                        updatedItem.product_id = matchingItemFromBE.productId;
-                    }
-
-                    if (matchingItemFromBE.quantityInStock < item.quantity && matchingItemFromBE.quantityInStock > 0) {
-                        updatedItem.quantity = 1;
-                    } else if (matchingItemFromBE.quantityInStock === 0) {
-                        message.warning(
-                            {
-                                content: `Sản phẩm ${matchingItemFromBE.productName} đã hết hàng!`,
-                                duration: 5,
-                            }
-                        );
-                        return null;
-                    }
-
-                    if (matchingItemFromBE.sku !== item.sku) {
-                        updatedItem.sku = matchingItemFromBE.sku;
-                    }
-
-                    if (matchingItemFromBE.imageUrl !== item.image) {
-                        updatedItem.image = {
-                            id: '',
-                            imageUrl: matchingItemFromBE.imageUrl,
-                            isDefault: true
-                        };
-
-                    }
-                    return updatedItem;
-                } else {
+                if (!matchingItemFromServer) {
                     console.warn("Không tìm thấy sản phẩm");
                     return null;
                 }
-            }).filter((item: unknown) => item !== null);
 
-            if (updatedCartItems && updatedCartItems.length > 0) {
+                const updatedItem: ICartItem = { ...item };
+
+                // Cập nhật các thuộc tính nếu có thay đổi
+                const propertiesToUpdate: (keyof ICartItem)[] = [
+                    "salePrice",
+                    "discountedPrice",
+                    "quantityInStock",
+                    "productName",
+                    "colorName",
+                    "sizeName",
+                    "totalPrice",
+                    "productId",
+                    "imageUrl",
+                ];
+
+                for (const prop of propertiesToUpdate) {
+                    if (matchingItemFromServer[prop] !== item[prop]) {
+                        updatedItem[prop] = matchingItemFromServer[prop];
+                    }
+                }
+
+                // Xử lý quantity và thông báo hết hàng
+                if (
+                    matchingItemFromServer.quantityInStock < item.quantity &&
+                    matchingItemFromServer.quantityInStock > 0
+                ) {
+                    updatedItem.quantity = 1;
+                } else if (matchingItemFromServer.quantityInStock === 0) {
+                    message.warning({
+                        content: `Sản phẩm ${matchingItemFromServer.productName} đã hết hàng!`,
+                        duration: 5,
+                    });
+                    return null;
+                }
+
+                return updatedItem;
+            }).filter(Boolean); // Loại bỏ các phần tử null
+
+            if (updatedCartItems.length) {
                 saveCart(updatedCartItems);
+                window.dispatchEvent(new Event("cartUpdated"));
             } else {
                 localStorage.removeItem(CART_KEY);
             }
-            window.dispatchEvent(new Event('cartUpdated'));
-        } catch (error) {
-            console.error('Đã xảy ra lỗi trong quá trình đồng bộ dữ liệu', error);
         }
+    } catch (error) {
+        console.error("Đã xảy ra lỗi trong quá trình đồng bộ dữ liệu", error);
     }
-}
+};

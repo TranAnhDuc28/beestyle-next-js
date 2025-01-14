@@ -37,14 +37,15 @@ const ProductDescription: React.FC<ProductDescriptionProps> = ({
         setQuantity(prevQuantity => Math.min(prevQuantity + 1, 1000));
     };
 
-    const handleAddToCart = (product: any, quantity: number, redirect: boolean) => {
+    const handleAddToCart = async (product: any, quantity: number, redirect: boolean) => {
         if (selectedColor && selectedSize && product) {
-            if (quantity >= 1 && quantity <= product?.quantityInStock) {
+            const imageUrl = product.images.find((image: { isDefault: boolean; }) => image.isDefault).imageUrl;
+            if (quantity > 0 && product.quantityInStock > 0) {
                 if (redirect) {
-                    addToCart(product, quantity);
+                    await addToCart(product, quantity, imageUrl);
                     router.push('/cart');
                 }
-                else addToCart(product, quantity);
+                else await addToCart(product, quantity, imageUrl);
             } else {
                 message.warning(
                     {

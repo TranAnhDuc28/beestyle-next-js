@@ -6,7 +6,7 @@ import CheckoutForm from "./CheckoutForm";
 import OrderDetail from "./OrderDetail";
 import { Form } from "antd";
 import { createVNPayPayment } from "@/services/VNPayService";
-import { CART_KEY, checkShoppingCartData, ICartItem, removeAllCartItems } from "@/services/user/ShoppingCartService";
+import { CART_KEY, checkShoppingCartData, deleteAllCartItems, ICartItem, removeAllCartItems, useShoppingCart } from "@/services/user/ShoppingCartService";
 import BreadcrumbSection from "@/components/Breadcrumb/BreadCrumb";
 import { ORDER_CHANEL } from "@/constants/OrderChanel";
 import { ORDER_TYPE } from "@/constants/OrderType";
@@ -15,8 +15,8 @@ import { PAYMENT_METHOD } from "@/constants/PaymentMethod";
 import { IOrderOnlineCreateOrUpdate } from "@/types/IOrder";
 import { ICreateOrUpdateOrderItem } from "@/types/IOrderItem";
 import useOrder from "@/components/Admin/Order/hooks/useOrder";
-import { calculateCartTotalAmount, calculateUserCartTotalAmount } from "@/utils/AppUtil";
 import UserLoader from "@/components/Loader/UserLoader";
+import { getAccountInfo } from "@/utils/AppUtil";
 
 const Checkout = () => {
     const router = useRouter();
@@ -25,7 +25,9 @@ const Checkout = () => {
     const { handleCreateOrderOnline } = useOrder();
 
     const [orderId] = useState("");
-    const [cartItems] = useState(JSON.parse(localStorage.getItem(CART_KEY) || '[]'));
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { cartData, isLoading, error } = useShoppingCart();
+    const [cartItems] = useState(cartData);
     const [shippingFee, setShippingFee] = useState(0);
     const [selectedPayment, setSelectedPayment] = useState("CASH_AND_BANK_TRANSFER");
     const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | null>(null);
@@ -71,9 +73,6 @@ const Checkout = () => {
         }
     };
 
-    console.log(JSON.stringify(cartItems, null, 2));
-
-
     // Xử lý đơn hàng và gửi request tói server
     const handleSubmit = async (payment: any) => {
         try {
@@ -87,18 +86,19 @@ const Checkout = () => {
             // Map dữ liệu Order Item
             const cartFiltereds: ICreateOrUpdateOrderItem[] = cartItems && cartItems.length > 0 ? (cartItems.map((item: ICartItem) => {
                 return {
-                    productVariantId: item.product_variant_id,
+                    productVariantId: item.productVariantId,
                     quantity: item.quantity,
-                    salePrice: item.sale_price,
-                    discountedPrice: item.sale_price === item.discounted_price ? 0 : item.discounted_price,
+                    salePrice: item.salePrice,
+                    discountedPrice: 0,
                 };
             })) : [];
 
             // Map dữ liệu Order + Order Item
+            const email = getAccountInfo() ? getAccountInfo().email : userData.email;
             const pendingOrderData: IOrderOnlineCreateOrUpdate = {
                 receiverName: userData.customerName,
                 phoneNumber: userData.phone,
-                email: userData.email,
+                email,
                 originalAmount,
                 discountAmount,
                 shippingFee,
@@ -118,8 +118,10 @@ const Checkout = () => {
                     commune: selectedWardName,
                     addressName: detailAddress
                 }),
-                orderItems: cartFiltereds
+                orderItems: cartFiltereds,
             };
+
+            if (pendingOrderData.totalAmount < 0) return;
 
             if (selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key) {
                 // Xử lý đặt hàng với method COD
@@ -128,7 +130,12 @@ const Checkout = () => {
                         // Xử lý kết quả thành công và chuyển hướng
                         if (orderData) {
                             const trackingNumber: string = orderData.orderTrackingNumber;
-                            removeAllCartItems(); // Xoá data Cart
+                            // Xoá data Cart
+                            if (getAccountInfo()) {
+                                deleteAllCartItems();
+                            } else {
+                                removeAllCartItems();
+                            }
                             router.push('/order/success?tracking_number=' + trackingNumber);
                         }
 
@@ -159,7 +166,6 @@ const Checkout = () => {
         if (cartItems.length === 0) {
             router.push('/cart');
         }
-        checkShoppingCartData();
     }, [cartItems, router]);
 
     const breadcrumbItems = [
