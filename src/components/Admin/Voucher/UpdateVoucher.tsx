@@ -278,7 +278,19 @@ const UpdateVoucher = (props: IProps) => {
                             <Form.Item
                                 name="minOrderValue"
                                 label="Giá trị đơn hàng tối thiểu"
-                                rules={[{required: true, message: "Vui lòng nhập giá trị đơn hàng tối thiểu!"}]}
+                                rules={[{required: true, message: "Vui lòng nhập giá trị đơn hàng tối thiểu!"},
+                                    ({ getFieldValue }) => ({
+                                        validator(_, value) {
+                                            const discountType = getFieldValue('discountType');
+                                            const discountValue = getFieldValue('discountValue') || 0;
+
+                                            if (discountType === "CASH" && value <= discountValue) {
+                                                return Promise.reject(new Error("Giá trị đơn hàng tối thiểu phải lớn hơn giá trị giảm!"));
+                                            }
+                                            return Promise.resolve();
+                                        },
+                                    }),
+                                ]}
                             >
                                 <InputNumber style={{width: '100%'}}/>
                             </Form.Item>

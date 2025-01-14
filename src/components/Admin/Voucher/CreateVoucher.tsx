@@ -1,6 +1,6 @@
 "use client";
 import React, {memo, useState} from 'react';
-import {Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, Col, Radio, Space} from 'antd';
+import {Form, Input, Modal, notification, Select, DatePicker, InputNumber, Row, Col, Radio, Space, message} from 'antd';
 import {createVoucher} from '@/services/VoucherService';
 import {EuroOutlined, PercentageOutlined} from '@ant-design/icons';
 import useAppNotifications from "../../../hooks/useAppNotifications";
@@ -231,7 +231,19 @@ const CreateVoucher = (props: IProps) => {
                             <Form.Item
                                 name="minOrderValue"
                                 label="Giá trị đơn hàng tối thiểu"
-                                rules={[{required: true, message: "Vui lòng nhập giá trị đơn hàng tối thiểu!"}]}
+                                rules={[{required: true, message: "Vui lòng nhập giá trị đơn hàng tối thiểu!"},
+                                    ({ getFieldValue }) => ({
+                                        validator(_, value) {
+                                            const discountType = getFieldValue('discountType');
+                                            const discountValue = getFieldValue('discountValue') || 0;
+
+                                            if (discountType === "CASH" && value <= discountValue) {
+                                                return Promise.reject(new Error("Giá trị đơn hàng tối thiểu phải lớn hơn giá trị giảm!"));
+                                            }
+                                            return Promise.resolve();
+                                        },
+                                    }),
+                                ]}
                             >
                                 <InputNumber style={{width: '100%'}}/>
                             </Form.Item>
