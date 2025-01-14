@@ -12,23 +12,25 @@ import useSWR from 'swr';
 import { getDetailCustomer, URL_API_CUSTOMER } from '@/services/CustomerService';
 import useAppNotifications from '@/hooks/useAppNotifications';
 import { useAuthentication } from '@/components/Context/AuthenticationProvider';
+import { getAccountInfo } from '@/utils/AppUtil';
+import UserLoader from '@/components/Loader/UserLoader';
 
 const UserProfile = () => {
     const [selectedMenu, setSelectedMenu] = useState('accountInfo');
-    const {showNotification} = useAppNotifications();
-    const [idCustomer,setIdCustomer] = useState<any|null>(null)
+    const { showNotification } = useAppNotifications();
+    const [idCustomer, setIdCustomer] = useState<any | null>(null)
     const authentication = useAuthentication();
 
 
-     // Lấy id từ localStorage
-     useEffect(() => {
-        console.log("",authentication?.authentication ? authentication.authentication.user.id:"Không có user");
-        
-        const idString = authentication?.authentication ? authentication.authentication.user.id:null;
+    // Lấy id từ localStorage
+    useEffect(() => {
+        console.log("", authentication?.authentication ? authentication.authentication.user.id : "Không có user");
+
+        const idString = authentication?.authentication ? authentication.authentication.user.id : null;
         setIdCustomer(idString);
     }, []);
-    const {data, error, isLoading, mutate} = useSWR(
-        idCustomer?`${URL_API_CUSTOMER.get}/${idCustomer}`:null,
+    const { data, error, isLoading, mutate } = useSWR(
+        idCustomer ? `${URL_API_CUSTOMER.get}/${idCustomer}` : null,
         getDetailCustomer,
         {
             revalidateOnFocus: false,
@@ -90,7 +92,7 @@ const UserProfile = () => {
                     <>
                         <Title level={3} className="text-center mb-6">Thông tin địa chỉ</Title>
                         <div className='w-[40px] bg-black mx-auto h-1'></div>
-                        <AddressCard idCustomer={idCustomer}/>
+                        <AddressCard idCustomer={idCustomer} />
                     </>
                 );
             default:
@@ -103,23 +105,29 @@ const UserProfile = () => {
     };
 
     return (
-        <div className="container mx-auto my-10">
-            <div className="grid grid-cols-4 gap-4">
-                {/* Menu */}
-                <Menu
-                    mode="vertical"
-                    className="col-span-1 border-0 mt-16"
-                    onClick={handleMenuClick}
-                    selectedKeys={[selectedMenu]}
-                    items={[
-                        { label: 'Thông tin tài khoản', key: 'accountInfo', icon: <LuFileUser size={15} /> },
-                        { label: 'Danh sách địa chỉ', key: 'addressList', icon: <MdOutlineEditLocationAlt size={15} /> },
-                    ]}
-                />
-                {/* Content */}
-                <div className="col-span-3 pt-4 px-5 pb-5">{renderContent()}</div>
-            </div>
-        </div>
+        <>
+            {getAccountInfo() ? (
+                <div className="container mx-auto my-10">
+                    <div className="grid grid-cols-4 gap-4">
+                        {/* Menu */}
+                        <Menu
+                            mode="vertical"
+                            className="col-span-1 border-0 mt-16"
+                            onClick={handleMenuClick}
+                            selectedKeys={[selectedMenu]}
+                            items={[
+                                { label: 'Thông tin tài khoản', key: 'accountInfo', icon: <LuFileUser size={15} /> },
+                                { label: 'Danh sách địa chỉ', key: 'addressList', icon: <MdOutlineEditLocationAlt size={15} /> },
+                            ]}
+                        />
+                        {/* Content */}
+                        <div className="col-span-3 pt-4 px-5 pb-5">{renderContent()}</div>
+                    </div>
+                </div>
+            ) : (
+                <UserLoader />
+            )}
+        </>
     );
 };
 

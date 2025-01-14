@@ -21,7 +21,7 @@ export const calculateCartOriginAmount = (dataCart: IOrderItem[]): number => {
  */
 export const calculateUserCartTotalAmount = (dataCart: ICartItem[]): number => {
     if (dataCart && dataCart.length > 0) {
-        return dataCart.reduce((total, item) => total + (item?.sale_price ?? 0) * item?.quantity, 0);
+        return dataCart.reduce((total, item) => total + (item?.salePrice ?? 0) * item?.quantity, 0);
     }
     return 0;
 };
@@ -138,4 +138,11 @@ export const formatAddress = (address: IAddress | undefined): string | undefined
 
     // Kết hợp các phần với dấu " - " để tạo chuỗi địa chỉ
     return addressParts.join(', ');
+}
+
+export const getAccountInfo = () => {
+    const userAuthentication: any = localStorage.getItem('authentication');
+    const userParse = userAuthentication && JSON.parse(userAuthentication);
+    const user = userParse && userParse.user || undefined;
+    return user;
 }

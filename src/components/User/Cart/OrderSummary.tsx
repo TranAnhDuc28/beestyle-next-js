@@ -1,6 +1,7 @@
 import React from 'react';
-import { Alert, Card, Divider, Tooltip, Typography } from "antd";
+import { Alert, Card, Divider, Typography } from "antd";
 import Link from "next/link";
+import { calculateUserCartTotalAmount } from '@/utils/AppUtil';
 
 const { Title } = Typography;
 
@@ -8,7 +9,7 @@ const OrderSummary = ({ cartItems }: any) => {
 
     const { Text } = Typography;
 
-    const totalAmount = cartItems.reduce((total: any, item: any) => total + item.total_price, 0);
+    const totalAmount = calculateUserCartTotalAmount(cartItems);
 
     return (
         <>

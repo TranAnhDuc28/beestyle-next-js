@@ -1,6 +1,6 @@
 'use client';
 
-import {Tabs, theme, TabsProps, Flex, Row, Col, Typography, Layout} from 'antd';
+import {Tabs, TabsProps, Flex, Typography, Layout} from 'antd';
 import {useState} from 'react';
 import LoginFormOwner from "@/components/User/Account/LoginFormOwner";
 import RegisterFormOwner from "@/components/User/Account/RegisterFormOwner";

@@ -1,18 +1,19 @@
 'use client';
-import {Button, Flex, Form, Input, Typography} from "antd";
-import {LockOutlined, UserOutlined} from "@ant-design/icons";
+import { Button, Flex, Form, Input, Typography } from "antd";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import useAppNotifications from "@/hooks/useAppNotifications";
-import {IAuthResponse, ISignIn} from "@/types/IAuth";
-import {signIn} from "@/services/AuthService";
-import {useRouter} from "next/navigation";
+import { IAuthResponse, ISignIn } from "@/types/IAuth";
+import { signIn } from "@/services/AuthService";
+import { useRouter } from "next/navigation";
 import React from "react";
-import {useAuthentication} from "@/components/Context/AuthenticationProvider";
+import { useAuthentication } from "@/components/Context/AuthenticationProvider";
+import { fetchCartFromLocalToServer } from "@/services/user/ShoppingCartService";
 
-const {Text} = Typography;
+const { Text } = Typography;
 
 const LoginFormOwner: React.FC = () => {
-    const {showNotification} = useAppNotifications();
+    const { showNotification } = useAppNotifications();
     const authentication = useAuthentication();
     const router = useRouter();
     const [form] = Form.useForm();
@@ -24,16 +25,17 @@ const LoginFormOwner: React.FC = () => {
             if (result) {
                 authentication?.login(result);
                 form.resetFields();
+                fetchCartFromLocalToServer();
                 router.push("/");
             }
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {
                 Object.entries(errorMessage).forEach(([field, message]) => {
-                    showNotification("error", {message: String(message)});
+                    showNotification("error", { message: String(message) });
                 });
             } else {
-                showNotification("error", {message: error?.message, description: errorMessage,});
+                showNotification("error", { message: error?.message, description: errorMessage, });
             }
         }
     };
@@ -43,22 +45,22 @@ const LoginFormOwner: React.FC = () => {
             <Form
                 form={form}
                 name="login"
-                initialValues={{remember: true}}
+                initialValues={{ remember: true }}
                 onFinish={onFinish}
-                style={{width: "90%"}}
+                style={{ width: "90%" }}
             >
                 <Form.Item<ISignIn>
                     name="username"
                     rules={[
-                        {required: true, message: 'Vui lòng nhập Email!'},
+                        { required: true, message: 'Vui lòng nhập Email!' },
                         {
                             pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
                             message: 'Email không đúng định dạng!',
                         },
                     ]}
-                    style={{width: "100%", marginTop: 10}}
+                    style={{ width: "100%", marginTop: 10 }}
                 >
-                    <Input size="large" placeholder="Email" prefix={<UserOutlined/>}/>
+                    <Input size="large" placeholder="Email" prefix={<UserOutlined />} />
                 </Form.Item>
 
                 <Form.Item<ISignIn>
@@ -74,9 +76,9 @@ const LoginFormOwner: React.FC = () => {
                         }
 
                     ]}
-                    style={{width: "100%"}}
+                    style={{ width: "100%" }}
                 >
-                    <Input size="large" prefix={<LockOutlined/>} type="password" placeholder="Mật khẩu"/>
+                    <Input size="large" prefix={<LockOutlined />} type="password" placeholder="Mật khẩu" />
                 </Form.Item>
 
                 <Form.Item label={null}>
@@ -102,7 +104,7 @@ const LoginFormOwner: React.FC = () => {
                     <Flex justify="center" align="center">
                         <Text>
                             Bạn quên mật khẩu?
-                            <Link href="/" style={{marginInlineStart: 4, textDecoration: 'none', color: '#F7941D'}}>
+                            <Link href="/" style={{ marginInlineStart: 4, textDecoration: 'none', color: '#F7941D' }}>
                                 Quên mật khẩu?
                             </Link>
                         </Text>
