@@ -189,6 +189,7 @@ const Checkout: React.FC = () => {
                     .then((orderData) => {
                         // Xử lý kết quả thành công và chuyển hướng
                         if (orderData) {
+                            
                             const trackingNumber: string = orderData.orderTrackingNumber;
                             removeAllCartItems(); // Xoá data Cart
                             router.push('/order/success?tracking_number=' + trackingNumber);

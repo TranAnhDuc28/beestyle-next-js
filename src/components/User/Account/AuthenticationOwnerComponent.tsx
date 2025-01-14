@@ -4,12 +4,18 @@ import {Tabs, theme, TabsProps, Flex, Row, Col, Typography, Layout} from 'antd';
 import {useState} from 'react';
 import LoginFormOwner from "@/components/User/Account/LoginFormOwner";
 import RegisterFormOwner from "@/components/User/Account/RegisterFormOwner";
+import RegisterForm from '@/components/User/Account/RegisterFormOwner';
 
 const {Text} = Typography;
 const {Content} = Layout;
 
 const AuthenticationOwnerComponent = () => {
     const [tabAuthKey, setTabAuthKey] = useState<string>('login');
+
+    const handleRegisterSuccess = () => {
+        // Chuyển tab sang "Đăng nhập" khi đăng ký thành công
+        setTabAuthKey('login');
+    };
 
     const items: TabsProps['items'] = [
         {
@@ -39,7 +45,10 @@ const AuthenticationOwnerComponent = () => {
                 </Text>
 
             ),
-            children: <RegisterFormOwner/>,
+
+            children: <RegisterForm handleRegisterSuccess={handleRegisterSuccess}/>,
+
+            // children: <RegisterFormOwner/>,
         },
     ];
 

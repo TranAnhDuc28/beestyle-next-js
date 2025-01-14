@@ -23,11 +23,10 @@ import useAddress from "@/components/Admin/Address/hook/useAddress";
 
 interface IProps {
   idCustomer: any;
-  phoneNumber: string;
 }
 
 const AddressCard = (props: IProps) => {
-  const { idCustomer, phoneNumber } = props;
+  const { idCustomer } = props;
   const [form] = Form.useForm();
   const [formUpdate] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
@@ -35,8 +34,8 @@ const AddressCard = (props: IProps) => {
   const [showNewAddressForm, setShowNewAddressForm] = useState(false);
   const [editingAddressIndex, setEditingAddressIndex] = useState(-1);
   const { showModal, showNotification } = useAppNotifications();
-  const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | null>(null);
-  const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | null>(null);
+  const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | undefined>("");
+  const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | undefined>("");
   const [selectedWardCode, setSelectedWardsCode] = useState<string | null>(null);
   const [selectedProvinceName, setSelectedProvinceName] = useState<string | null>(null);
   const [selectedDistrictName, setSelectedDistrictName] = useState<string | null>(null);
@@ -59,6 +58,8 @@ const AddressCard = (props: IProps) => {
   );
 
   const addresses = data?.data?.items || [];
+  console.log(addresses);
+  
   useEffect(() => {
     if (error) {
       showNotification("error", {
@@ -83,18 +84,21 @@ const AddressCard = (props: IProps) => {
         province: provinceCode, // Cập nhật tỉnh
         district: undefined, // Reset huyện
         ward: undefined, // Reset xã
+        detail:undefined
       });
       formUpdate.setFieldsValue({
         province: provinceCode, // Cập nhật tỉnh
         districtName: undefined, // Reset huyện
         ward: undefined, // Reset xã
+        detail:undefined
       });
 
       setSelectedProvinceName(province?.label);
-      setSelectedDistrictCode(null);
+      setSelectedDistrictCode("");
       setSelectedWardsCode(null);
       setSelectedDistrictName(null);
       setSelectedWardName(null);
+      setDetailAddress(null)
       // console.log(provinceCode);
     },
     [provincesData]
@@ -108,10 +112,12 @@ const AddressCard = (props: IProps) => {
       form.setFieldsValue({
         district: districtCode, // Cập nhật huyện trong Form
         ward: undefined, // Reset xã
+        detail:undefined
       });
       formUpdate.setFieldsValue({
         districtName: districtCode, // Cập nhật huyện trong Form
         ward: undefined, // Reset xã
+        detail:undefined
       });
       setSelectedDistrictName(district?.label);
       // console.log(selectedDistrictName);
@@ -119,6 +125,7 @@ const AddressCard = (props: IProps) => {
 
       setSelectedWardsCode(null);
       setSelectedWardName(null);
+      setDetailAddress(null)
       // console.log(districtCode);
     },
     [districtsData]
@@ -129,7 +136,14 @@ const AddressCard = (props: IProps) => {
       const ward = wardsData.dataOptionWards.find(
         (prev) => prev.key === wardCode
       );
+      form.setFieldsValue({
+        detail:undefined
+      });
+      formUpdate.setFieldsValue({
+        detail:undefined
+      });
       setSelectedWardName(ward?.label);
+      setDetailAddress(null)
       // console.log(selectedWardName);
       // console.log(wardCode);
     },
@@ -233,11 +247,9 @@ const AddressCard = (props: IProps) => {
       communeCode: Number(selectedWardCode), 
       commune: selectedWardName, 
       isDefault: false,
-      customer: {
-        id: idCustomer, 
-      },
+      customerId: idCustomer, 
     };
-    // console.log("Success:", address);
+    console.log("Success:", address);
     try {
       const result = await createAddress(address);
       if (result.data) {
@@ -270,9 +282,10 @@ const AddressCard = (props: IProps) => {
   const handleClearAddress = () => {
     form.resetFields();
     formUpdate.resetFields();
-    setSelectedProvinceCode(null);
-    setSelectedDistrictCode(null);
+    setSelectedProvinceCode("");
+    setSelectedDistrictCode("");
     setSelectedWardsCode(null);
+    setDetailAddress("")
   };
 
 
@@ -357,7 +370,7 @@ const AddressCard = (props: IProps) => {
                 className="flex justify-between font-bold"
                 style={{ backgroundColor: "#D9EDF7", padding: "9px 10px" }}
               >
-                {address.addressName}
+                {`#${index+1}`}
                 {address.isDefault ? " (Địa chỉ mặc định)" : ""}
                 <div className="space-x-4">
                   <EditOutlined
@@ -486,7 +499,6 @@ const AddressCard = (props: IProps) => {
               {(!isEditing || editingAddressIndex !== index) && (
                 <div className="p-4" style={{ backgroundColor: "#FBFBFB" }}>
                   <p>Địa chỉ: {formatAddress(address)}</p>
-                  <p>Số điện thoại: {phoneNumber}</p>
                 </div>
               )}
             </div>

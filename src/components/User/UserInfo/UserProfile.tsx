@@ -11,20 +11,24 @@ import PurchasedProduct from './PurchasedProduct';
 import useSWR from 'swr';
 import { getDetailCustomer, URL_API_CUSTOMER } from '@/services/CustomerService';
 import useAppNotifications from '@/hooks/useAppNotifications';
+import { useAuthentication } from '@/components/Context/AuthenticationProvider';
 
 const UserProfile = () => {
     const [selectedMenu, setSelectedMenu] = useState('accountInfo');
     const {showNotification} = useAppNotifications();
-    const [idCustomer,setIdCustomer] = useState<String|null>(null)
+    const [idCustomer,setIdCustomer] = useState<any|null>(null)
+    const authentication = useAuthentication();
 
 
      // Lấy id từ localStorage
      useEffect(() => {
-        const idString = localStorage.getItem("id");
-        setIdCustomer(idString ? JSON.parse(idString) : 4);
+        console.log("",authentication?.authentication ? authentication.authentication.user.id:"Không có user");
+        
+        const idString = authentication?.authentication ? authentication.authentication.user.id:null;
+        setIdCustomer(idString);
     }, []);
     const {data, error, isLoading, mutate} = useSWR(
-        `${URL_API_CUSTOMER.get}/${idCustomer}`,
+        idCustomer?`${URL_API_CUSTOMER.get}/${idCustomer}`:null,
         getDetailCustomer,
         {
             revalidateOnFocus: false,
@@ -46,6 +50,7 @@ const UserProfile = () => {
         result = data?.data || {};
     }
     const renderContent = () => {
+        if (!idCustomer) return <p>Vui lòng đăng nhập để xem thông tin.</p>;
         if (isLoading) return <p>Đang tải dữ liệu...</p>;
         if (error) return <p>Có lỗi xảy ra khi tải dữ liệu.</p>;
         if (!data) return <p>Không tìm thấy thông tin khách hàng.</p>;
@@ -85,7 +90,7 @@ const UserProfile = () => {
                     <>
                         <Title level={3} className="text-center mb-6">Thông tin địa chỉ</Title>
                         <div className='w-[40px] bg-black mx-auto h-1'></div>
-                        <AddressCard idCustomer={idCustomer} phoneNumber={result.phoneNumber}/>
+                        <AddressCard idCustomer={idCustomer}/>
                     </>
                 );
             default:
