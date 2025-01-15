@@ -1,7 +1,9 @@
-import {Metadata} from "next";
+import { Metadata } from "next";
 import Dashboard from "@/components/Dashboard/Dashboard";
-import {Suspense} from "react";
+import { Suspense } from "react";
 import AdminLoader from "@/components/Loader/AdminLoader";
+import { getAdminAccountInfo } from "@/utils/AppUtil";
+import Unauthorized from "@/app/unauthorized/page";
 
 export const metadata: Metadata = {
     title: "Dashboard",
@@ -10,8 +12,12 @@ export const metadata: Metadata = {
 
 export default function HomeAdmin() {
     return (
-        <Suspense fallback={<AdminLoader/>}>
-            <Dashboard/>
-        </Suspense>
+        <>
+            {getAdminAccountInfo() && getAdminAccountInfo()?.role === 'ADMIN' ? (
+                <Suspense fallback={<AdminLoader />}>
+                    <Dashboard />
+                </Suspense>
+            ) : (<Unauthorized />)}
+        </>
     );
 }

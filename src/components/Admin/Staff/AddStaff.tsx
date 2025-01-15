@@ -29,7 +29,7 @@ const AddStaff = (props: IProps) => {
 
   const handleSubmit = async (value: any) => {
     console.log(value);
-    setLoading(true);
+    setLoading(true)
 
     try {
       const data = {
@@ -60,7 +60,7 @@ const AddStaff = (props: IProps) => {
       }
     }
     finally{
-      setLoading(false);
+      setLoading(false)
     }
   };
   return (

@@ -5,34 +5,34 @@ import {
     Tabs, TabsProps, Tooltip, TreeSelect, Typography, UploadFile
 } from "antd";
 import useAppNotifications from "@/hooks/useAppNotifications";
-import React, {memo, useCallback, useEffect, useLayoutEffect, useState} from "react";
-import {IProductCreate} from "@/types/IProduct";
+import React, { memo, useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { IProductCreate } from "@/types/IProduct";
 import UploadImage from "@/components/Upload/UploadImage";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import useMaterial from "@/components/Admin/Material/hooks/useMaterial";
 import useBrand from "@/components/Admin/Brand/hooks/useBrand";
-import {GENDER_PRODUCT} from "@/constants/GenderProduct";
+import { GENDER_PRODUCT } from "@/constants/GenderProduct";
 import useCategory from "@/components/Admin/Category/hooks/useCategory";
 import TableEditRows from "@/components/Admin/Product/CreateProductVariantTable";
 import ColorOptionSelect from "@/components/Select/ColorOptionSelect";
-import {IProductImageCreate} from "@/types/IProductImage";
-import {IProductVariantCreate, IProductVariantRows} from "@/types/IProductVariant";
+import { IProductImageCreate } from "@/types/IProductImage";
+import { IProductVariantCreate, IProductVariantRows } from "@/types/IProductVariant";
 import SizeOptionSelect from "@/components/Select/SizeOptionSelect";
 import TextArea from "antd/es/input/TextArea";
-import {useDebounce} from "use-debounce";
+import { useDebounce } from "use-debounce";
 import useOptionColor from "@/components/Admin/Color/hooks/useOptionColor";
 import useOptionSize from "@/components/Admin/Size/hooks/useOptionSize";
-import {PlusOutlined} from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import CreateCategory from "@/components/Admin/Category/CreateCategory";
 import CreateBrand from "@/components/Admin/Brand/CreateBrand";
 import CreateMaterial from "@/components/Admin/Material/CreateMaterial";
 import CreateColor from "@/components/Admin/Color/CreateColor";
 import CreateSize from "@/components/Admin/Size/CreateSize";
-import {createProduct} from "@/services/ProductService";
-import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
-import {RcFile} from "antd/es/upload/interface";
+import { createProduct } from "@/services/ProductService";
+import { FORMAT_NUMBER_WITH_COMMAS } from "@/constants/AppConstants";
+import { RcFile } from "antd/es/upload/interface";
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 type CreateFastModalType = "category" | "material" | "brand" | "color" | "size";
 
@@ -76,8 +76,8 @@ interface IProps {
 
 const CreateProduct = (props: IProps) => {
     const [form] = Form.useForm();
-    const {showNotification} = useAppNotifications();
-    const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
+    const { showNotification } = useAppNotifications();
+    const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
 
     const [filesUploadCloudinary, setFilesUploadCloudinary] = useState<RcFile[]>([]);
     const [activeKeyCollapse, setActiveKeyCollapse] = useState<string[]>([]);
@@ -92,16 +92,15 @@ const CreateProduct = (props: IProps) => {
         category: false, material: false, brand: false, color: false, size: false,
     });
     const [confirmLoading, setConfirmLoading] = useState(false);
-
-    const {dataOptionBrand, error: errorDataOptionBrand, isLoading: isLoadingDataOptionBrand}
+    const { dataOptionBrand, error: errorDataOptionBrand, isLoading: isLoadingDataOptionBrand }
         = useBrand(isCreateModalOpen);
-    const {dataTreeSelectCategory, error: errorDataTreeSelectCategory, isLoading: isLoadingDataTreeSelectCategory}
+    const { dataTreeSelectCategory, error: errorDataTreeSelectCategory, isLoading: isLoadingDataTreeSelectCategory }
         = useCategory(isCreateModalOpen);
-    const {dataOptionMaterial, error: errorDataOptionMaterial, isLoading: isLoadingDataOptionMaterial}
+    const { dataOptionMaterial, error: errorDataOptionMaterial, isLoading: isLoadingDataOptionMaterial }
         = useMaterial(isCreateModalOpen);
-    const {dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor}
+    const { dataOptionColor, error: errorDataOptionColor, isLoading: isLoadingDataOptionColor }
         = useOptionColor(isCreateModalOpen);
-    const {dataOptionSize, error: errorDataOptionSize, isLoading: isLoadingDataOptionSize}
+    const { dataOptionSize, error: errorDataOptionSize, isLoading: isLoadingDataOptionSize }
         = useOptionSize(isCreateModalOpen);
 
     const handleCloseCreateModal = () => {
@@ -111,12 +110,12 @@ const CreateProduct = (props: IProps) => {
         setSelectedColors([]);
         setSelectedSizes([]);
         setFilesUploadCloudinary([]);
-        setProductPricingAndStock({originalPrice: null, salePrice: null, quantityInStock: null,});
+        setProductPricingAndStock({ originalPrice: null, salePrice: null, quantityInStock: null, });
         setIsCreateModalOpen(false);
     };
 
     const toggleCreateFastModal = useCallback((modalType: CreateFastModalType, isOpen: boolean) => {
-        setModalOpen((prevModals) => ({...prevModals, [modalType]: isOpen}));
+        setModalOpen((prevModals) => ({ ...prevModals, [modalType]: isOpen }));
     }, []);
 
 
@@ -129,7 +128,7 @@ const CreateProduct = (props: IProps) => {
     }
 
     const handleInputChangePricingAndStock = (field: 'originalPrice' | 'salePrice' | 'quantityInStock',
-                                              value: number | null = 0) => {
+        value: number | null = 0) => {
         setProductPricingAndStock((prevValues) => ({
             ...prevValues,
             [field]: value,
@@ -176,7 +175,7 @@ const CreateProduct = (props: IProps) => {
                 formData.append("file", file);
                 formData.append("upload_preset", "beestyle_images");
 
-                const response = await fetch(URL_UPLOAD_IMAGE, {method: "POST", body: formData});
+                const response = await fetch(URL_UPLOAD_IMAGE, { method: "POST", body: formData });
 
                 if (response.ok) {
                     const data = await response.json();
@@ -191,7 +190,7 @@ const CreateProduct = (props: IProps) => {
                 }
             });
 
-            const urls = (await Promise.all(uploadPromises)).filter((url): url is  string => url !== null);
+            const urls = (await Promise.all(uploadPromises)).filter((url): url is string => url !== null);
 
             console.log("urls", urls);
 
@@ -200,7 +199,7 @@ const CreateProduct = (props: IProps) => {
                 isDefault: index === 0,
             }));
         } catch (error) {
-            showNotification("error", {message: "Lỗi khi upload ảnh!"});
+            showNotification("error", { message: "Lỗi khi upload ảnh!" });
             return [];
         }
     }
@@ -231,10 +230,10 @@ const CreateProduct = (props: IProps) => {
     const onFinish = async (value: IProductCreate) => {
         // map các biến thể của sản phẩm
         const productVariants: IProductVariantCreate[] = productVariantRows.map(({
-                                                                                     key,
-                                                                                     productVariantName,
-                                                                                     ...rest
-                                                                                 }) => rest);
+            key,
+            productVariantName,
+            ...rest
+        }) => rest);
 
 
         setConfirmLoading(true);
@@ -254,17 +253,17 @@ const CreateProduct = (props: IProps) => {
             if (result.data) {
                 handleCloseCreateModal();
                 setConfirmLoading(false);
-                showNotification("success", {message: result.message});
+                showNotification("success", { message: result.message });
             }
         } catch (error: any) {
             setConfirmLoading(false);
             const errorMessage = error?.response?.data?.message;
             if (errorMessage && typeof errorMessage === 'object') {
                 Object.entries(errorMessage).forEach(([field, message]) => {
-                    showNotification("error", {message: String(message)});
+                    showNotification("error", { message: String(message) });
                 });
             } else {
-                showNotification("error", {message: error?.message, description: errorMessage,});
+                showNotification("error", { message: error?.message, description: errorMessage, });
             }
         }
     }
@@ -275,22 +274,22 @@ const CreateProduct = (props: IProps) => {
             label: "Thông tin",
             children: (
                 <>
-                    <Row gutter={[32, 0]} style={{margin: "10px 0px"}}>
+                    <Row gutter={[32, 0]} style={{ margin: "10px 0px" }}>
                         <Col span={12}>
                             <Form.Item
                                 name="productCode"
                                 label="Mã sản phẩm"
                                 tooltip="Mã sản phẩm sẽ tự động tạo nếu không nhập."
                             >
-                                <Input placeholder="Mã tự động"/>
+                                <Input placeholder="Mã tự động" />
                             </Form.Item>
                             <Form.Item
                                 name="productName"
                                 label="Tên sản phẩm"
                                 validateTrigger="onBlur"
-                                rules={[{required: true, message: "Vui lòng nhập tên sản phẩm!"}]}
+                                rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm!" }]}
                             >
-                                <Input/>
+                                <Input />
                             </Form.Item>
                             <Form.Item name="genderProduct" label="Giới tính" initialValue="UNISEX">
                                 <Select
@@ -306,14 +305,14 @@ const CreateProduct = (props: IProps) => {
                         <Col span={12}>
                             <Flex justify="space-between" align="flex-end" gap={5}>
                                 <Form.Item
-                                    name="categoryId" label="Danh mục" style={{width: "100%"}}
+                                    name="categoryId" label="Danh mục" style={{ width: "100%" }}
                                     validateStatus={errorDataTreeSelectCategory ? "error" : "success"}
                                     help={errorDataTreeSelectCategory ? "Error fetching categories" : ""}
                                 >
                                     <TreeSelect
                                         allowClear showSearch placement="bottomLeft"
                                         placeholder={isLoadingDataTreeSelectCategory ? "Đang tải..." : "---Lựa chọn---"}
-                                        dropdownStyle={{maxHeight: 400, overflow: 'auto'}}
+                                        dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                                         treeData={dataTreeSelectCategory}
                                         loading={isLoadingDataTreeSelectCategory}
                                         filterTreeNode={(search, item) => {
@@ -325,7 +324,7 @@ const CreateProduct = (props: IProps) => {
                                 <Form.Item>
                                     <Tooltip placement="top" title="Thêm nhanh danh mục">
                                         <Button
-                                            icon={<PlusOutlined/>}
+                                            icon={<PlusOutlined />}
                                             type="text"
                                             shape="circle"
                                             onClick={() => toggleCreateFastModal("category", true)}
@@ -343,11 +342,11 @@ const CreateProduct = (props: IProps) => {
                                         data={dataOptionBrand}
                                         error={errorDataOptionBrand}
                                         isLoading={isLoadingDataOptionBrand}
-                                        onChange={(value) => form.setFieldsValue({brandId: value})}
+                                        onChange={(value) => form.setFieldsValue({ brandId: value })}
                                     />
                                     <Tooltip placement="top" title="Thêm nhanh thương hiệu">
                                         <Button
-                                            icon={<PlusOutlined/>}
+                                            icon={<PlusOutlined />}
                                             type="text"
                                             shape="circle"
                                             onClick={() => toggleCreateFastModal("brand", true)}
@@ -365,11 +364,11 @@ const CreateProduct = (props: IProps) => {
                                         data={dataOptionMaterial}
                                         error={errorDataOptionMaterial}
                                         isLoading={isLoadingDataOptionMaterial}
-                                        onChange={(value) => form.setFieldsValue({materialId: value})}
+                                        onChange={(value) => form.setFieldsValue({ materialId: value })}
                                     />
                                     <Tooltip placement="top" title="Thêm nhanh chất liệu">
                                         <Button
-                                            icon={<PlusOutlined/>}
+                                            icon={<PlusOutlined />}
                                             type="text"
                                             shape="circle"
                                             onClick={() => toggleCreateFastModal("material", true)}
@@ -379,12 +378,12 @@ const CreateProduct = (props: IProps) => {
                             </Form.Item>
                         </Col>
                     </Row>
-                    <Row style={{margin: "0px 20px"}}>
+                    <Row style={{ margin: "0px 20px" }}>
                         <Col span={24}>
                             <Flex align="center" gap={70}>
                                 <Form.Item label="Giá vốn" initialValue={0} layout="horizontal">
                                     <InputNumber<number>
-                                        style={{width: '100%'}} min={0} placeholder={"0"}
+                                        style={{ width: '100%' }} min={0} placeholder={"0"}
                                         formatter={(value) => `${value}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                                         parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as unknown as number}
                                         value={productPricingAndStock.originalPrice}
@@ -393,7 +392,7 @@ const CreateProduct = (props: IProps) => {
                                 </Form.Item>
                                 <Form.Item label="Giá bán" initialValue={0} layout="horizontal">
                                     <InputNumber<number>
-                                        style={{width: '100%'}} min={0} placeholder={"0"}
+                                        style={{ width: '100%' }} min={0} placeholder={"0"}
                                         formatter={(value) => `${value}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                                         parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as unknown as number}
                                         value={productPricingAndStock.salePrice}
@@ -402,7 +401,7 @@ const CreateProduct = (props: IProps) => {
                                 </Form.Item>
                                 <Form.Item label="Tồn kho" initialValue={0} layout="horizontal">
                                     <InputNumber<number>
-                                        style={{width: '100%'}} min={0} placeholder={"0"}
+                                        style={{ width: '100%' }} min={0} placeholder={"0"}
                                         formatter={(value) => `${value}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                                         parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as unknown as number}
                                         value={productPricingAndStock.quantityInStock}
@@ -413,9 +412,9 @@ const CreateProduct = (props: IProps) => {
                         </Col>
                     </Row>
                     <Row>
-                        <Col span={24} style={{margin: "10px 0px"}}>
+                        <Col span={24} style={{ margin: "10px 0px" }}>
 
-                            <UploadImage countFileImage={6} onChange={handleChangeProductImages}/>
+                            <UploadImage countFileImage={6} onChange={handleChangeProductImages} />
 
                         </Col>
                     </Row>
@@ -428,7 +427,7 @@ const CreateProduct = (props: IProps) => {
                                 size="small" expandIconPosition="end"
                                 items={[{
                                     key: 'thuoc-tinh',
-                                    label: <Title level={5} style={{margin: '0px 10px'}}>Thuộc tính</Title>,
+                                    label: <Title level={5} style={{ margin: '0px 10px' }}>Thuộc tính</Title>,
                                     children: (
                                         <>
                                             <Flex vertical gap={16}>
@@ -454,7 +453,7 @@ const CreateProduct = (props: IProps) => {
                                                         />
                                                         <Tooltip placement="top" title="Thêm nhanh màu sắc">
                                                             <Button
-                                                                icon={<PlusOutlined/>}
+                                                                icon={<PlusOutlined />}
                                                                 type="text"
                                                                 shape="circle"
                                                                 onClick={() => toggleCreateFastModal("color", true)}
@@ -485,7 +484,7 @@ const CreateProduct = (props: IProps) => {
                                                         />
                                                         <Tooltip placement="top" title="Thêm nhanh kích cỡ">
                                                             <Button
-                                                                icon={<PlusOutlined/>}
+                                                                icon={<PlusOutlined />}
                                                                 type="text"
                                                                 shape="circle"
                                                                 onClick={() => toggleCreateFastModal("size", true)}
@@ -500,7 +499,7 @@ const CreateProduct = (props: IProps) => {
                             />
                         </Col>
                     </Row>
-                    <Row style={{margin: "10px 0px"}}>
+                    <Row style={{ margin: "10px 0px" }}>
                         <Col span={24}>
                             <Collapse
                                 size="small" expandIconPosition="end" collapsible="icon"
@@ -509,7 +508,7 @@ const CreateProduct = (props: IProps) => {
                                 items={[{
                                     key: 'danh-sach-san-pham-cung-loai',
                                     label: (
-                                        <Title level={5} style={{margin: '0px 10px'}}>
+                                        <Title level={5} style={{ margin: '0px 10px' }}>
                                             Danh sách sản phẩm cùng loại
                                         </Title>),
                                     children: (
@@ -532,12 +531,12 @@ const CreateProduct = (props: IProps) => {
             label: "Mô tả chi tiết",
             children: (
                 <>
-                    <Row style={{margin: "10px 0px"}}>
+                    <Row style={{ margin: "10px 0px" }}>
                         <Col span={24}>
                             <Form.Item name="description" label="Mô tả sản phẩm"
-                                       tooltip="Mô tả chi tiết sản phẩm"
+                                tooltip="Mô tả chi tiết sản phẩm"
                             >
-                                <TextArea showCount maxLength={1100} style={{height: 120, resize: 'none'}}/>
+                                <TextArea showCount maxLength={1100} style={{ height: 120, resize: 'none' }} />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -549,18 +548,18 @@ const CreateProduct = (props: IProps) => {
     return (
         <>
             <Modal
-                title="Thêm sản phẩm" cancelText="Hủy" okText="Lưu" width={1000} style={{top: 20}}
+                title="Thêm sản phẩm" cancelText="Hủy" okText="Lưu" width={1000} style={{ top: 20 }}
                 maskClosable={false}
                 open={isCreateModalOpen}
                 onOk={() => form.submit()}
                 onCancel={() => handleCloseCreateModal()}
-                okButtonProps={{style: {background: "#00b96b"}}}
+                okButtonProps={{ style: { background: "#00b96b" } }}
                 confirmLoading={confirmLoading}
             >
                 <Form form={form} name="createProduct" onFinish={onFinish}
-                      labelAlign="left" labelWrap layout="vertical"
+                    labelAlign="left" labelWrap layout="vertical"
                 >
-                    <Tabs defaultActiveKey="info" items={itemTabs}/>
+                    <Tabs defaultActiveKey="info" items={itemTabs} />
                 </Form>
             </Modal>
 

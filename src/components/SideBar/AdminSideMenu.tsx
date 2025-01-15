@@ -1,5 +1,5 @@
 import React from 'react';
-import {Menu, MenuProps,} from 'antd';
+import { Menu, MenuProps, } from 'antd';
 import {
     UserOutlined,
     ShoppingCartOutlined,
@@ -9,6 +9,7 @@ import {
 } from '@ant-design/icons';
 import Sider from "antd/es/layout/Sider";
 import Link from "next/link";
+import { getAdminAccountInfo } from '@/utils/AppUtil';
 
 const siderStyle: React.CSSProperties = {
     overflow: 'auto',
@@ -27,38 +28,46 @@ const siderStyle: React.CSSProperties = {
 type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
-    {key: 'tong-quan', label: <Link href={"/admin"}>Tổng quan</Link>, icon: <DashboardOutlined />,},
-    {key: 'ban-hang-tai-quay', label: <Link href={"/admin-counter-sale"}>Bán hàng tại quầy</Link>, icon: <ShoppingCartOutlined/>,},
-    {key: 'don-hang', label: <Link href={"/admin/order"}>Quản lý đơn hàng</Link>, icon: <ShoppingCartOutlined/>,},
+    (
+        getAdminAccountInfo() && getAdminAccountInfo()?.role === 'ADMIN' ? (
+            { key: 'tong-quan', label: <Link href={"/admin"}>Tổng quan</Link>, icon: <DashboardOutlined />, }
+        ) : null
+    ),
+    { key: 'ban-hang-tai-quay', label: <Link href={"/admin-counter-sale"}>Bán hàng tại quầy</Link>, icon: <ShoppingCartOutlined />, },
+    { key: 'don-hang', label: <Link href={"/admin/order"}>Quản lý đơn hàng</Link>, icon: <ShoppingCartOutlined />, },
     {
-        key: 'quan-li-san-pham', label: 'Quản lý sản phẩm', icon: <ProductOutlined/>,
+        key: 'quan-li-san-pham', label: 'Quản lý sản phẩm', icon: <ProductOutlined />,
         children: [
-            {key: 'san-pham', label: <Link href={"/admin/product"}>Sản phẩm</Link>,},
-            {key: 'danh-muc', label: <Link href={"/admin/category"}>Danh mục</Link>},
-            {key: 'thuong-hieu', label: <Link href={"/admin/brand"}>Thương hiệu</Link>},
-            {key: 'chat-lieu', label: <Link href={"/admin/material"}>Chất liệu</Link>},
-            {key: 'mau-sac', label: <Link href={"/admin/color"}>Màu sắc</Link>},
-            {key: 'kich-thuoc', label: <Link href={"/admin/size"}>Kích cỡ</Link>},
+            { key: 'san-pham', label: <Link href={"/admin/product"}>Sản phẩm</Link>, },
+            { key: 'danh-muc', label: <Link href={"/admin/category"}>Danh mục</Link> },
+            { key: 'thuong-hieu', label: <Link href={"/admin/brand"}>Thương hiệu</Link> },
+            { key: 'chat-lieu', label: <Link href={"/admin/material"}>Chất liệu</Link> },
+            { key: 'mau-sac', label: <Link href={"/admin/color"}>Màu sắc</Link> },
+            { key: 'kich-thuoc', label: <Link href={"/admin/size"}>Kích cỡ</Link> },
         ],
     },
     {
-        key: 'giam-gia', label: 'Giảm giá', icon: <GiftOutlined/>,
+        key: 'giam-gia', label: 'Giảm giá', icon: <GiftOutlined />,
         children: [
-            {key: 'voucher', label: <Link href={"/admin/voucher"}>Quản lý voucher</Link>},
-            {key: 'khuyen-mai', label: <Link href={"/admin/promotion"}>Quản lý khuyến mại</Link>},
+            { key: 'voucher', label: <Link href={"/admin/voucher"}>Quản lý voucher</Link> },
+            { key: 'khuyen-mai', label: <Link href={"/admin/promotion"}>Quản lý khuyến mại</Link> },
         ],
     },
     {
-        key: 'tai-khoan', label: 'Tài khoản', icon: <UserOutlined/>,
+        key: 'tai-khoan', label: 'Tài khoản', icon: <UserOutlined />,
         children: [
-            {key: '6.1', label: <Link href={'/admin/customer'}>Khách hàng</Link>},
+            { key: '6.1', label: <Link href={'/admin/customer'}>Khách hàng</Link> },
 
-            {key: '6.2', label: <Link href={'/admin/staff'}>Nhân viên</Link>},
+            (
+                getAdminAccountInfo() && getAdminAccountInfo()?.role === 'ADMIN' ? (
+                    { key: '6.2', label: <Link href={'/admin/staff'}>Nhân viên</Link> }
+                ) : null
+            )
         ],
     }
 ];
 
-const AppSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
+const AppSideMenu: React.FC<{ collapsed: boolean }> = ({ collapsed }) => {
     return (
         <>
             <Sider
@@ -80,7 +89,7 @@ const AppSideMenu: React.FC<{ collapsed: boolean }> = ({collapsed}) => {
                     mode="inline"
                     defaultSelectedKeys={['1']}
                     items={items}
-                    style={{border: 0}}
+                    style={{ border: 0 }}
                 />
             </Sider>
         </>

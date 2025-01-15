@@ -133,9 +133,26 @@ export const formatAddress = (address: IAddress | undefined): string | undefined
     return addressParts.join(', ');
 }
 
+// Lấy thông tin đăng nhập khách hàng
 export const getAccountInfo = () => {
-    const userAuthentication: any = localStorage.getItem('authentication');
-    const userParse = userAuthentication && JSON.parse(userAuthentication);
-    const user = userParse && userParse.user || undefined;
-    return user;
+    try {
+        const userAuthentication: string | null = localStorage.getItem('authentication');
+        const userParse = userAuthentication ? JSON.parse(userAuthentication) : null;
+        const user = userParse?.user || undefined;
+        return user;
+    } catch (error) {
+        return undefined;
+    }
+}
+
+// Lấy thông tin đăng nhập quản lý
+export const getAdminAccountInfo = () => {
+    try {
+        const userAuthentication: string | null = localStorage.getItem('authenticationAdmin');
+        const userParse = userAuthentication ? JSON.parse(userAuthentication) : null;
+        const user = userParse?.user || undefined;
+        return user;
+    } catch (error) {
+        return undefined;
+    }
 }

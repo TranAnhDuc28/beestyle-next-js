@@ -15,7 +15,7 @@ const SuccessPage: React.FC = () => {
         if (getAccountInfo()) {
             router.push('/user-profile');
         } else {
-            router.push(`/order-tracking/${orderTrackingNumber}` );
+            router.push(`/order-tracking` );
         }
     };
 
