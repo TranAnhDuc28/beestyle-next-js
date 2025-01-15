@@ -140,7 +140,6 @@ const Checkout: React.FC = () => {
      * Tính phí vận chuyển
      */
     const fetchShippingFee = async () => {
-
         if (shippingAddress?.city && shippingAddress?.district) {
             try {
                 const shippingFee = await calculateShippingFee(499999, shippingAddress);

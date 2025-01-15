@@ -50,7 +50,7 @@ const CheckoutInfoCardUser: React.FC<IProps> = (props) => {
         if (orderDetail?.orderType === ORDER_TYPE.DELIVERY.key &&
             orderDetail?.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key) {
             try {
-                shippingFee = await calculateShippingFee(originalAmount, orderDetail?.shippingAddress);
+                shippingFee = await calculateShippingFee(499999, orderDetail?.shippingAddress);
             } catch (error: any) {
                 showNotification("error", {message: error.message});
             }
