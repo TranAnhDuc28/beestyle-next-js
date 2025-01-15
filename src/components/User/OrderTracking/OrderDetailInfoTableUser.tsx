@@ -12,7 +12,6 @@ import {formatAddress} from "@/utils/AppUtil";
 import {ORDER_CHANEL} from "@/constants/OrderChanel";
 import {PresetStatusColorType} from "antd/es/_util/colors";
 import {DISCOUNT_TYPE} from "@/constants/DiscountType";
-import InvoiceComponent from "@/components/User/Invoice/TestPDF";
 
 const {Text} = Typography;
 
@@ -35,17 +34,6 @@ interface IProps {
 const OrderDetailInfoTable: React.FC<IProps> = (props) => {
     const {orderDetail} = props;
     const [isShippingInfoModalOpen, setIsShippingInfoModalOpen] = useState<boolean>(false);
-
-    const invoiceRef = useRef<any>(null);
-    const handlePrintInvoice = () => {
-        if (invoiceRef.current) {
-            invoiceRef.current.printInvoice();
-        }
-    };
-
-    const showShippingInfoModal = () => {
-        setIsShippingInfoModalOpen(true);
-    };
 
     const itemDescriptions: DescriptionsProps['items'] = [
         {
@@ -215,8 +203,6 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
                 isShippingInfoModalOpen={isShippingInfoModalOpen}
                 setIsShippingInfoModalOpen={setIsShippingInfoModalOpen}
             />
-
-            <InvoiceComponent ref={invoiceRef} id={orderDetail?.id || null}/>
         </>
 
     )

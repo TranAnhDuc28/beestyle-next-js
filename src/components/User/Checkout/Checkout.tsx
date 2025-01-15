@@ -28,6 +28,7 @@ import useAddress from "@/components/Admin/Address/hook/useAddress";
 import { calculateShippingFee, formatAddress, getAccountInfo } from "@/utils/AppUtil";
 import { getAddressByCustomerId, URL_API_ADDRESS } from "@/services/AddressService";
 import useSWR from "swr";
+import { getSendOrderTrackingNumber } from "@/services/MailService";
 
 const Checkout: React.FC = () => {
     const router = useRouter();
@@ -180,7 +181,7 @@ const Checkout: React.FC = () => {
 
 
             // Map dữ liệu Order + Order Item
-            const email = getAccountInfo() ? getAccountInfo().email : userData.email;
+            const email = getAccountInfo() ? getAccountInfo()?.email : userData.email;
             const pendingOrderData: IOrderOnlineCreateOrUpdate = {
                 receiverName: userData.customerName,
                 phoneNumber: userData.phone,
@@ -213,16 +214,24 @@ const Checkout: React.FC = () => {
             if (selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key) {
                 // Xử lý đặt hàng với method COD
                 await handleCreateOrderOnline(pendingOrderData)
-                    .then((orderData) => {
+                    .then(async (orderData) => {
                         // Xử lý kết quả thành công và chuyển hướng
                         if (orderData) {
                             const trackingNumber: string = orderData.orderTrackingNumber;
+                            const sendMailData = {
+                                orderTrackingNumber: trackingNumber,
+                                recipient: email,
+                                customerName: getAccountInfo() ? getAccountInfo()?.fullName ?? null : userData.customerName,
+                            }
                             // Xoá data Cart
                             if (getAccountInfo()) {
                                 deleteAllCartItems();
                             } else {
                                 removeAllCartItems();
                             }
+
+                            // Gửi mail đơn hàng về cho khách hàng
+                            await getSendOrderTrackingNumber(sendMailData);
                             router.push('/order/success?orderTrackingNumber=' + trackingNumber);
                         }
 
