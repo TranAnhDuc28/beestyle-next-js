@@ -24,7 +24,6 @@ const useOrder = () => {
             {
                 revalidateIfStale: true,
                 revalidateOnReconnect: false,
-                revalidateOnFocus: false
             }
         );
 
@@ -47,7 +46,6 @@ const useOrder = () => {
             {
                 revalidateIfStale: true,
                 revalidateOnReconnect: false,
-                revalidateOnFocus: false
             }
         );
 

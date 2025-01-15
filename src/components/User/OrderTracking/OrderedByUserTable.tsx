@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Button, PaginationProps, Table, TableColumnsType, Tag, Tooltip} from 'antd';
 import {EyeOutlined} from '@ant-design/icons';
 import Title from 'antd/es/typography/Title';
