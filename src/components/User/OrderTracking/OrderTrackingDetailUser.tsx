@@ -1,5 +1,5 @@
 "use client"
-import React, {memo, useState} from "react";
+import React, {memo, useEffect, useState} from "react";
 import {Button, Divider, Form, Input, Modal, StepProps, Steps, Typography} from "antd";
 import {CheckOutlined, DropboxOutlined, LoadingOutlined} from "@ant-design/icons";
 import {ORDER_STATUS} from "@/constants/OrderStatus";
@@ -66,6 +66,10 @@ const OrderTrackingDetailUser: React.FC = () => {
         // refresh order detail
         await mutate();
     }
+
+    useEffect(() => {
+        setCurrent(getOrderDeliverySaleStep(orderDetail?.orderStatus));
+    }, [orderDetail]);
 
 
     // time line cho giao hàng

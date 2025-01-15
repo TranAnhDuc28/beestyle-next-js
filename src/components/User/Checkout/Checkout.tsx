@@ -209,7 +209,7 @@ const Checkout: React.FC = () => {
                             } else {
                                 removeAllCartItems();
                             }
-                            router.push('/order/success?tracking_number=' + trackingNumber);
+                            router.push('/order/success?orderTrackingNumber=' + trackingNumber);
                         }
 
                     })

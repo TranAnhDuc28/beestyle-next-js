@@ -117,7 +117,7 @@ const Navbar: React.FC = () => {
         {
             key: "order-lookup",
             label: accountInfo ? null : (
-                <Link href={"/order-lookup"} className="link-no-decoration">
+                <Link href={"/order-tracking"} className="link-no-decoration">
                     <Text style={{ fontSize: 18 }} strong>Tra cứu đơn hàng</Text>
                 </Link>
             ),

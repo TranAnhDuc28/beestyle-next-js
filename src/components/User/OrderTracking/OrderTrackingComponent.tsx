@@ -6,8 +6,8 @@ import BreadcrumbSection from '@/components/Breadcrumb/BreadCrumb';
 import Paragraph from 'antd/es/typography/Paragraph';
 import Image from 'next/image';
 import { useAuthentication } from "@/components/Context/AuthenticationProvider";
-import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -19,8 +19,7 @@ const breadcrumbItems = [
 
 const OrderTrackingComponent: React.FC = () => {
     const authentication = useAuthentication();
-    const searchParams = useSearchParams();
-    const orderTrackingNumber = searchParams.get('orderTrackingNumber');
+    const { orderTrackingNumber } = useParams();
 
     return (
         authentication?.authentication
