@@ -26,16 +26,9 @@ interface IProps {
 const OrderDetailComponent: React.FC<IProps> = (props) => {
     const { token } = theme.useToken();
     const { id } = useParams();
-    const { handleGetOrderService } = useOrder();
+    const { handleGetOrderDetail } = useOrder();
     const { orderDetail, error, isLoading, mutate } =
-        handleGetOrderService(id && Number(id) ? Number(id) : null);
-
-    const invoiceRef = useRef<any>(null);
-    const handlePrintInvoice = () => {
-        if (invoiceRef.current) {
-            invoiceRef.current.printInvoice();
-        }
-    };
+        handleGetOrderDetail(id && Number(id) ? Number(id) : null);
 
     return (
         <>
@@ -80,15 +73,6 @@ const OrderDetailComponent: React.FC<IProps> = (props) => {
                     }}>
                     <OrderedProductDetails orderDetail={orderDetail} />
                 </Content>
-                {/* Nút in hóa đơn */}
-                <div style={{ marginTop: 20 }}>
-                    <Button type="primary" onClick={handlePrintInvoice}>
-                        In Hóa Đơn
-                    </Button>
-                </div>
-
-                {/* Thêm InvoiceComponent */}
-                <InvoiceComponent ref={invoiceRef} id={orderDetail?.id || null} />
             </OrderDetailProvider>
         </>
     );

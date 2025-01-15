@@ -19,10 +19,17 @@ interface IProps {
     dataCart: IOrderItem[];
 }
 
-const CheckoutInfoCard: React.FC<IProps> = (props) => {
+const CheckoutInfoCardUser: React.FC<IProps> = (props) => {
     const {showNotification} = useAppNotifications();
     const {orderDetail, dataCart} = props
-    const orderDetailContext = useOrderDetailContext();
+    const [paymentInfo, setPaymentInfo] = useState({
+        totalQuantity: 0, // tổng số lượng
+        originalAmount: 0,  // tổng số tiền trong giỏ
+        discountAmount: 0, // tiền giảm giá khi áp voucher
+        shippingFee: 0, // phí vận chuyển
+        finalTotalAmount: 0, // tổng tiền thanh toán sau khi tính giản giá, phí ship
+        amountDue: 0 // tiền khách cần trả
+    });
 
     /**
      * Cập nhật thông tin thanh tóán của đơn hàng
@@ -59,7 +66,7 @@ const CheckoutInfoCard: React.FC<IProps> = (props) => {
         const amountDue: number = finalTotalAmount;
 
         // Cập nhật state `paymentInfo`
-        orderDetailContext?.setPaymentInfo({
+        setPaymentInfo({
             totalQuantity,
             originalAmount,
             discountAmount,
@@ -69,15 +76,12 @@ const CheckoutInfoCard: React.FC<IProps> = (props) => {
         });
     }
 
-    /**
-     * Cập nhật thông tin mỗi khi sản phẩm trong giỏ thay đổi và địa chỉ giao hàng thay đổi
-     */
     useEffect(() => {
         const runUpdatePaymentInfo = async () => {
             await updatePaymentInfo();
         };
         runUpdatePaymentInfo();
-    }, [dataCart, orderDetail, orderDetailContext?.paymentInfo.shippingFee]);
+    }, [dataCart, orderDetail]);
 
     return (
         <Card title="Thông tin thanh toán" style={{width: "100%"}}>
@@ -90,7 +94,7 @@ const CheckoutInfoCard: React.FC<IProps> = (props) => {
                         </Text>
 
                         <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
-                            {`${orderDetailContext?.paymentInfo?.totalQuantity}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                            {`${paymentInfo?.totalQuantity}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                         </Text>
                     </Flex>
 
@@ -101,7 +105,7 @@ const CheckoutInfoCard: React.FC<IProps> = (props) => {
                         </Text>
 
                         <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
-                            {`${orderDetailContext?.paymentInfo?.originalAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                            {`${paymentInfo?.originalAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                         </Text>
                     </Flex>
 
@@ -112,7 +116,7 @@ const CheckoutInfoCard: React.FC<IProps> = (props) => {
                         </Text>
 
                         <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
-                            {`${orderDetailContext?.paymentInfo?.discountAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                            {`${paymentInfo?.discountAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                         </Text>
                     </Flex>
 
@@ -125,7 +129,7 @@ const CheckoutInfoCard: React.FC<IProps> = (props) => {
                         <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
                             {
                                 `${orderDetail?.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key
-                                    ? orderDetailContext?.paymentInfo?.shippingFee
+                                    ? paymentInfo?.shippingFee
                                     : orderDetail?.shippingFee}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')
                             }
                         </Text>
@@ -138,23 +142,12 @@ const CheckoutInfoCard: React.FC<IProps> = (props) => {
                         </Text>
 
                         <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>
-                            {`${orderDetailContext?.paymentInfo?.finalTotalAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
+                            {`${paymentInfo?.finalTotalAmount}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}
                         </Text>
                     </Flex>
-
-                    {/*<Flex justify="space-between" align="center"*/}
-                    {/*      style={{width: "100%", paddingBottom: 4}} wrap>*/}
-                    {/*    <Text style={{fontSize: 16}}>*/}
-                    {/*        <span style={{marginInlineEnd: 30}}>Khách cần trả</span>*/}
-                    {/*    </Text>*/}
-
-                    {/*    <Text style={{fontSize: 16, marginInlineEnd: 10}} strong>*/}
-                    {/*        {`${paymentInfo.amountDue}`.replace(FORMAT_NUMBER_WITH_COMMAS, ',')}*/}
-                    {/*    </Text>*/}
-                    {/*</Flex>*/}
                 </Flex>
             </Flex>
         </Card>
     )
 }
-export default memo(CheckoutInfoCard);
+export default memo(CheckoutInfoCardUser);

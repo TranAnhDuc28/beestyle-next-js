@@ -16,7 +16,6 @@ const useOrderItem = () => {
             useSWR(orderId ? URL_API_ORDER_ITEM.get(orderId) : null,
             getOrderItemsByOrderId,
             {
-                revalidateIfStale: false,
                 revalidateOnReconnect: false
             }
         );
