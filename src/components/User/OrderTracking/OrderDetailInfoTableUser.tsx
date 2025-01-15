@@ -12,7 +12,7 @@ import {formatAddress} from "@/utils/AppUtil";
 import {ORDER_CHANEL} from "@/constants/OrderChanel";
 import {PresetStatusColorType} from "antd/es/_util/colors";
 import {DISCOUNT_TYPE} from "@/constants/DiscountType";
-import InvoiceComponent from "@/components/User/Invoice/TestPDF";
+import InvoiceComponent from "@/components/User/Invoice/InvoiceComponent";
 
 const {Text} = Typography;
 
