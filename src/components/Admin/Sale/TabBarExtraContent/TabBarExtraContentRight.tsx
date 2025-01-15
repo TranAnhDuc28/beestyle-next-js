@@ -27,6 +27,7 @@ const items: MenuProps['items'] = [
         icon: <LoginOutlined />,
         onClick: () => {
             localStorage.removeItem('authenticationAdmin');
+            localStorage.setItem('loggedOut', Date.now().toString());
             window.location.href = '/admin-account';
         },
     },
@@ -35,7 +36,7 @@ const items: MenuProps['items'] = [
 const TabBarExtraContentRight: React.FC = () => {
     return (
         <Flex style={{ margin: "0px 10px 0px 10px" }} gap={10} align="center">
-            <Title level={5} style={{ margin: 0 }}>Admin</Title>
+            <Title level={5} style={{ margin: 0 }}>{getAdminAccountInfo() && getAdminAccountInfo()?.fullName}</Title>
             <Dropdown menu={{ items }} trigger={['click']}>
                 <Button style={{ border: "none" }}>
                     <MenuOutlined />

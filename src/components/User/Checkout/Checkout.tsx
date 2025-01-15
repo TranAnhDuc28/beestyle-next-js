@@ -56,7 +56,7 @@ const Checkout: React.FC = () => {
     const [shippingFee, setShippingFee] = useState(0);
     const [selectedPayment, setSelectedPayment] = useState<string>(PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key);
     const [selectedAddress, setSelectedAddress] = useState<IAddress | null>(null);
-    const [originalAmount, setOriginalAmount] = useState<number>(0);
+    const [originalAmount, setOriginalAmount] = useState<number>(calculateUserCartTotalAmount(cartItems));
 
     const handlePaymentChange = (e: any) => {
         const value = e.target.value;
@@ -114,7 +114,7 @@ const Checkout: React.FC = () => {
             cityCode: Number(address.cityCode),
             city: address.city,
             districtCode: Number(address.districtCode),
-            district: address.addressName,
+            district: address.district,
             communeCode: Number(address.communeCode),
             commune: address.commune
         } as IAddress));
@@ -165,7 +165,7 @@ const Checkout: React.FC = () => {
             const selectedPayment = await payment.selectedPayment; // Phương thức thanh toán
             const originalAmount = await payment.originalAmount; // Tổng tiền sản phẩm trong giỏ hàng (Chưa tính phí ship và voucher)
             const discountAmount = await payment.discountAmount; // Số tiền được giảm giá bởi voucher
-            const totalAmount = await payment.totalAmount // Tổng tiền sản phẩm trong giỏ hàng (Đã tính toán bao gồm phí ship & voucher);
+            const totalAmount = await payment.totalAmount; // Tổng tiền sản phẩm trong giỏ hàng (Đã tính toán bao gồm phí ship & voucher);
 
             // Map dữ liệu Order Item
             const cartFiltereds: ICreateOrUpdateOrderItem[] = cartItems && cartItems.length > 0 ? (cartItems.map((item: ICartItem) => {
@@ -551,7 +551,7 @@ const Checkout: React.FC = () => {
                                 <div className="col-lg-4 col-12">
                                     <OrderDetail
                                         handleSubmit={handleSubmitOrderOnline}
-                                        shippingFee={shippingFee}
+                                        shippingAddress={shippingAddress}
                                         selectedPayment={selectedPayment}
                                         userForm={userForm}
                                         cartsProp={cartItems}

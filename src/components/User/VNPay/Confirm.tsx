@@ -32,7 +32,7 @@ const VNPayConfirmPage: React.FC = () => {
                         const sendMailData = {
                             orderTrackingNumber: trackingNumber,
                             recipient: pendingOrderData.email,
-                            customerName: pendingOrderData.customerName,
+                            customerName: pendingOrderData.receiverName,
                         }
 
                         // Xoá data Cart
@@ -43,9 +43,9 @@ const VNPayConfirmPage: React.FC = () => {
                         }
 
                         // Gửi mail đơn hàng về cho khách hàng
-                        await getSendOrderTrackingNumber(sendMailData);
+                        await getSendOrderTrackingNumber(sendMailData)
                         localStorage.removeItem('pendingOrderData');
-                        router.push(`/order/success?tracking_number=${trackingNumber}`);
+                        router.push(`/order/success?orderTrackingNumber=${trackingNumber}`);
                     } catch (error) {
                         console.error("Lỗi khi tạo đơn hàng sau thanh toán:", error);
                         localStorage.removeItem('pendingOrderData');

@@ -1,36 +1,37 @@
 "use client"
-import React, {createContext, CSSProperties, useEffect, useState} from "react";
-import {Layout, Spin, Tabs, TabsProps, theme} from "antd";
+import React, { createContext, CSSProperties, useEffect, useState } from "react";
+import { Layout, Spin, Tabs, TabsProps, theme } from "antd";
 import ContentTabPanelSale from "@/components/Admin/Sale/ContentTabPanelSale";
 import TabBarExtraContentLeft from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentLeft";
 import TabBarExtraContentRight from "@/components/Admin/Sale/TabBarExtraContent/TabBarExtraContentRight";
-import {IProductVariant} from "@/types/IProductVariant";
-import useSWR, {KeyedMutator, mutate} from "swr";
-import {getOrders, URL_API_ORDER} from "@/services/OrderService";
-import {IOrder, IOrderCreateOrUpdate} from "@/types/IOrder";
+import { IProductVariant } from "@/types/IProductVariant";
+import useSWR, { KeyedMutator, mutate } from "swr";
+import { getOrders, URL_API_ORDER } from "@/services/OrderService";
+import { IOrder, IOrderCreateOrUpdate } from "@/types/IOrder";
 import useAppNotifications from "@/hooks/useAppNotifications";
-import {ICreateOrUpdateOrderItem, IOrderItem} from "@/types/IOrderItem";
+import { ICreateOrUpdateOrderItem, IOrderItem } from "@/types/IOrderItem";
 import useOrder from "@/components/Admin/Order/hooks/useOrder";
 import useOrderItem from "@/components/Admin/Order/hooks/useOrderItem";
-import {URL_API_PRODUCT_VARIANT} from "@/services/ProductVariantService";
-import {URL_API_ORDER_ITEM} from "@/services/OrderItemService";
-import {calculateCartOriginAmount, calculateCartTotalQuantity} from "@/utils/AppUtil";
-import {PAYMENT_METHOD} from "@/constants/PaymentMethod";
-import {ORDER_TYPE} from "@/constants/OrderType";
-import {ORDER_CHANEL} from "@/constants/OrderChanel";
-import {ORDER_STATUS} from "@/constants/OrderStatus";
+import { URL_API_PRODUCT_VARIANT } from "@/services/ProductVariantService";
+import { URL_API_ORDER_ITEM } from "@/services/OrderItemService";
+import { calculateCartOriginAmount, calculateCartTotalQuantity, getAdminAccountInfo } from "@/utils/AppUtil";
+import { PAYMENT_METHOD } from "@/constants/PaymentMethod";
+import { ORDER_TYPE } from "@/constants/OrderType";
+import { ORDER_CHANEL } from "@/constants/OrderChanel";
+import { ORDER_STATUS } from "@/constants/OrderStatus";
+import AdminLoader from "@/components/Loader/AdminLoader";
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 type PositionType = 'left' | 'right';
-const {Content} = Layout;
+const { Content } = Layout;
 
 const tabBarStyle: CSSProperties = {
     height: 45,
 };
 
 const OperationsSlot: Record<PositionType, React.ReactNode> = {
-    left: <TabBarExtraContentLeft/>,
-    right: <TabBarExtraContentRight/>,
+    left: <TabBarExtraContentLeft />,
+    right: <TabBarExtraContentRight />,
 };
 
 const defaultOrderCreateOrUpdate: IOrderCreateOrUpdate = {
@@ -62,9 +63,9 @@ interface HandleCartContextType {
 export const HandleSale = createContext<HandleCartContextType | null>(null);
 
 const SaleComponent: React.FC = () => {
-    const {token: {colorBgContainer, borderRadiusLG},} = theme.useToken();
-    const {showNotification, showMessage} = useAppNotifications();
-    const {data, error, isLoading, mutate: mutateOrderPending} =
+    const { token: { colorBgContainer, borderRadiusLG }, } = theme.useToken();
+    const { showNotification, showMessage } = useAppNotifications();
+    const { data, error, isLoading, mutate: mutateOrderPending } =
         useSWR(`${URL_API_ORDER.getOrderPending}`,
             getOrders,
             {
@@ -73,14 +74,18 @@ const SaleComponent: React.FC = () => {
             }
         );
 
-    const {loading, handleCreateOrder, handleUpdateOrder} = useOrder();
-    const {handleCreateOrderItems} = useOrderItem();
+    const { loading, handleCreateOrder, handleUpdateOrder } = useOrder();
+    const { handleCreateOrderItems } = useOrderItem();
     const [orderCreateOrUpdate, setOrderCreateOrUpdate] = useState<IOrderCreateOrUpdate>(defaultOrderCreateOrUpdate);
     const [totalQuantityCart, setTotalQuantityCart] = useState<number>(0);
     const [totalAmountCart, setTotalAmountCart] = useState<number>(0);
     const [dataCart, setDataCart] = useState<IOrderItem[]>([]);
     const [orderActiveTabKey, setOrderActiveTabKey] = useState<string>('');
     const [itemTabs, setItemTabs] = useState<TabsProps['items']>([]);
+
+    if (!getAdminAccountInfo()) {
+        window.location.href = '/admin-account';
+    }
 
     useEffect(() => {
         if (error) {
@@ -97,7 +102,7 @@ const SaleComponent: React.FC = () => {
             const newTabsItems = result?.map((item: IOrder) => {
                 return {
                     label: item.orderTrackingNumber,
-                    children: <ContentTabPanelSale/>,
+                    children: <ContentTabPanelSale />,
                     key: item.id.toString(),
                     closable: false,
                 }
@@ -238,9 +243,9 @@ const SaleComponent: React.FC = () => {
             if (productVariantSelected.length > 0) {
                 const productId = productVariantSelected[0].productId;
                 await mutate((key: any) => typeof key === 'string' && productId &&
-                        key.startsWith(`${URL_API_PRODUCT_VARIANT.filter(productId?.toString())}`),
+                    key.startsWith(`${URL_API_PRODUCT_VARIANT.filter(productId?.toString())}`),
                     undefined,
-                    {revalidate: true}
+                    { revalidate: true }
                 );
             }
 
@@ -249,7 +254,7 @@ const SaleComponent: React.FC = () => {
 
             await mutate((key: any) => typeof key === 'string' && key.startsWith(`${URL_API_ORDER_ITEM.get(Number(orderActiveTabKey))}`),
                 undefined,
-                {revalidate: true}
+                { revalidate: true }
             );
         } catch (error: any) {
             // Rollback giỏ hàng về trạng thái trước khi thay đổi
@@ -283,16 +288,16 @@ const SaleComponent: React.FC = () => {
             .then((result) => {
                 const newActiveKey = `${result.id}`;
                 const newPanes = [...itemTabs ?? []];
-                newPanes.push({label: result.orderTrackingNumber, children: <ContentTabPanelSale/>, key: newActiveKey, closable: false});
+                newPanes.push({ label: result.orderTrackingNumber, children: <ContentTabPanelSale />, key: newActiveKey, closable: false });
                 setItemTabs(newPanes);
                 console.log(result.id)
                 setOrderActiveTabKey(newActiveKey);
                 setOrderCreateOrUpdate((prevValue) => {
-                   return {
-                       ...prevValue,
-                       id: result.id,
-                       orderTrackingNumber: result.orderTrackingNumber
-                   }
+                    return {
+                        ...prevValue,
+                        id: result.id,
+                        orderTrackingNumber: result.orderTrackingNumber
+                    }
                 });
             })
             .catch(() => {
@@ -320,7 +325,7 @@ const SaleComponent: React.FC = () => {
         }
         setItemTabs(newPanes);
         setOrderActiveTabKey(newActiveKey);
-        setOrderCreateOrUpdate((prevValue) => ({...prevValue, id: Number(newActiveKey)}));
+        setOrderCreateOrUpdate((prevValue) => ({ ...prevValue, id: Number(newActiveKey) }));
     };
 
     const onEdit = (targetKey: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') => {
@@ -332,37 +337,43 @@ const SaleComponent: React.FC = () => {
     };
 
     return (
-        <Layout style={{background: colorBgContainer}}>
-            <HandleSale.Provider
-                value={{
-                    totalQuantityCart,
-                    setTotalQuantityCart,
-                    totalAmountCart,
-                    setTotalAmountCart,
-                    orderCreateOrUpdate,
-                    setOrderCreateOrUpdate,
-                    orderActiveTabKey,
-                    dataCart,
-                    setDataCart,
-                    handleAddOrderItemCart,
-                    mutateOrderPending
-                }}
-            >
-                <Content style={{background: colorBgContainer}}>
-                    <Spin size="default" spinning={loading}>
-                        <Tabs
-                            type="editable-card"
-                            onChange={onChange}
-                            activeKey={orderActiveTabKey}
-                            onEdit={onEdit}
-                            tabBarExtraContent={OperationsSlot}
-                            tabBarStyle={tabBarStyle}
-                            items={itemTabs}
-                        />
-                    </Spin>
-                </Content>
-            </HandleSale.Provider>
-        </Layout>
+        <>
+            {getAdminAccountInfo() ? (
+                <>
+                    <Layout style={{ background: colorBgContainer }}>
+                        <HandleSale.Provider
+                            value={{
+                                totalQuantityCart,
+                                setTotalQuantityCart,
+                                totalAmountCart,
+                                setTotalAmountCart,
+                                orderCreateOrUpdate,
+                                setOrderCreateOrUpdate,
+                                orderActiveTabKey,
+                                dataCart,
+                                setDataCart,
+                                handleAddOrderItemCart,
+                                mutateOrderPending
+                            }}
+                        >
+                            <Content style={{ background: colorBgContainer }}>
+                                <Spin size="default" spinning={loading}>
+                                    <Tabs
+                                        type="editable-card"
+                                        onChange={onChange}
+                                        activeKey={orderActiveTabKey}
+                                        onEdit={onEdit}
+                                        tabBarExtraContent={OperationsSlot}
+                                        tabBarStyle={tabBarStyle}
+                                        items={itemTabs}
+                                    />
+                                </Spin>
+                            </Content>
+                        </HandleSale.Provider>
+                    </Layout>
+                </>
+            ) : (<AdminLoader />)}
+        </>
     );
 }
 export default SaleComponent;
