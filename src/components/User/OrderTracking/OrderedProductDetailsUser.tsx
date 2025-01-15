@@ -17,6 +17,7 @@ import AddProductToOrderModal from "@/components/Admin/Order/Detail/ModalAddProd
 import {IProductVariant} from "@/types/IProductVariant";
 import CheckoutInfoCard from "@/components/Admin/Order/Detail/CheckoutInfoCard";
 import {isEqual} from "lodash";
+import CheckoutInfoCardUser from "@/components/User/OrderTracking/CheckoutInfoCardUser";
 
 const {Text} = Typography;
 
@@ -95,11 +96,11 @@ const OrderedProductDetailsUser: React.FC<IProps> = (props) => {
                         columns={columns}
                         dataSource={dataCart}
                         pagination={false}
-                        scroll={{y: 'calc(100vh - 350px)', scrollToFirstRowOnChange: true}}
+                        scroll={{scrollToFirstRowOnChange: true}}
                     />
                 </Col>
                 <Col xs={24} sm={24} md={24} lg={24} xl={6}>
-                    <CheckoutInfoCard
+                    <CheckoutInfoCardUser
                         orderDetail={orderDetail}
                         dataCart={dataCart}
                     />

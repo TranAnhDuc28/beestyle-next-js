@@ -1,4 +1,4 @@
-import React, {useImperativeHandle, forwardRef, useState, useEffect} from "react";
+import React, {useImperativeHandle, forwardRef, useState, useEffect, memo} from "react";
 import {previewInvoicePdf} from "@/services/InvoiceService";
 import {getSendThankMail} from "@/services/MailService";
 
@@ -34,6 +34,7 @@ const InvoiceComponent = forwardRef(({id}: InvoiceComponentProps, ref) => {
                     id: id,
                     files: pdfFile
                 };
+
                 console.log(dataMail);
                 const mail = await getSendThankMail(dataMail);
                 console.log('Mail sent successfully: ', mail);
@@ -75,4 +76,7 @@ const InvoiceComponent = forwardRef(({id}: InvoiceComponentProps, ref) => {
     );
 });
 
-export default InvoiceComponent;
+
+export default memo(InvoiceComponent);
+
+

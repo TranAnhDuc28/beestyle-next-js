@@ -10,7 +10,7 @@ import {
 import TextArea from "antd/es/input/TextArea";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import useSWR from "swr";
-import {IAddress} from "@/types/IAddress";
+
 
 interface IProps {
     mutate: () => Promise<void>;
@@ -35,9 +35,9 @@ const UpdateAddress = (props: IProps) => {
 
     const address = data?.data || {};
 
-    const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | null>(null);
-    const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | null>(null);
-    const [selectedWardCode, setSelectedWardsCode] = useState<string | null>(null);
+    const [selectedProvinceCode, setSelectedProvinceCode] = useState<string | undefined>(undefined);
+    const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | undefined>(undefined);
+    const [selectedWardCode, setSelectedWardsCode] = useState<string | undefined>(undefined);
 
     const [selectedProvinceName, setSelectedProvinceName] = useState<string | null>(null);
     const [selectedDistrictName, setSelectedDistrictName] = useState<string | null>(null);
@@ -82,8 +82,8 @@ const UpdateAddress = (props: IProps) => {
         });
 
         setSelectedProvinceName(province?.label);
-        setSelectedDistrictCode(null);
-        setSelectedWardsCode(null);
+        setSelectedDistrictCode(undefined);
+        setSelectedWardsCode(undefined);
         setSelectedDistrictName(null);
         setSelectedWardName(null);
     }, []);
@@ -102,7 +102,7 @@ const UpdateAddress = (props: IProps) => {
             });
 
             setSelectedDistrictName(district?.label);
-            setSelectedWardsCode(null);
+            setSelectedWardsCode(undefined);
             setSelectedWardName(null);
         },
         [districtsData]
@@ -130,9 +130,9 @@ const UpdateAddress = (props: IProps) => {
 
     const hanldeClose = () => {
         form.resetFields();
-        setSelectedProvinceCode(null);
-        setSelectedDistrictCode(null);
-        setSelectedWardsCode(null);
+        setSelectedProvinceCode(undefined);
+        setSelectedDistrictCode(undefined);
+        setSelectedWardsCode(undefined);
         setIsUpdateModalOpen(false);
     }
 
