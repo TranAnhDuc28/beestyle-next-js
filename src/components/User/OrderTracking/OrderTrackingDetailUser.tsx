@@ -1,6 +1,6 @@
 "use client"
 import React, {memo, useEffect, useState} from "react";
-import {Button, Divider, Form, Input, Modal, StepProps, Steps, Typography} from "antd";
+import {Button, Divider, Form, Input, Layout, Modal, StepProps, Steps, theme, Typography} from "antd";
 import {CheckOutlined, DropboxOutlined, LoadingOutlined} from "@ant-design/icons";
 import {ORDER_STATUS} from "@/constants/OrderStatus";
 import {LiaBoxSolid} from "react-icons/lia";
@@ -11,7 +11,8 @@ import {useParams} from "next/navigation";
 import OrderDetailInfoTableUser from "@/components/User/OrderTracking/OrderDetailInfoTableUser";
 import OrderedProductDetailsUser from "@/components/User/OrderTracking/OrderedProductDetailsUser";
 
-const {Text} = Typography;
+const {Content} = Layout;
+const {Title, Text} = Typography;
 
 const getOrderDeliverySaleStep = (orderStatus: string | undefined): number => {
     switch (orderStatus) {
@@ -32,6 +33,22 @@ const getOrderDeliverySaleStep = (orderStatus: string | undefined): number => {
     }
 }
 
+/**
+ * Đơn hàng bán trực tiếp
+ * @param orderStatus truyền trạng thái đơn hàng
+ * @return vị trí step timeline icon của component cho hóa đơn tại quầy
+ */
+const getCounterBillStep = (orderStatus: string | undefined): number => {
+    switch (orderStatus) {
+        case ORDER_STATUS.PAID.key:
+            return 1; // Đã thanh toán
+        case ORDER_STATUS.PENDING.key:
+            return 0; // Chờ thanh toán
+        default:
+            return 0; // Chờ thanh toán
+    }
+};
+
 const getStepStatus = (stepKey: number, current: number) => {
     if (current === -1) return "error"; // Trạng thái hủy
     if (stepKey === current) return "process"; // Đang thực hiện
@@ -42,6 +59,7 @@ const getStepStatus = (stepKey: number, current: number) => {
 
 const OrderTrackingDetailUser: React.FC = () => {
     const [form] = Form.useForm();
+    const {token} = theme.useToken();
     const {orderTrackingNumber} = useParams();
     const {handleGetOrderDetailByOrderTrackingNumber} = useOrder();
     const [current, setCurrent] = useState(0);
@@ -55,7 +73,7 @@ const OrderTrackingDetailUser: React.FC = () => {
         form.resetFields();
     }
 
-    const handleSubmitReasonCancelled= async () => {
+    const handleSubmitReasonCancelled = async () => {
         // await handleConfirmStepOrderStatus(orderDetail?.id, {
         //     orderStatus: ORDER_STATUS.CANCELLED.key,
         //     note: form.getFieldValue('note')
@@ -68,7 +86,11 @@ const OrderTrackingDetailUser: React.FC = () => {
     }
 
     useEffect(() => {
-        setCurrent(getOrderDeliverySaleStep(orderDetail?.orderStatus));
+        // dựa vào loại hóa đơn để hiển thị time line theo dõi trạng thái hóa đơn
+        const step: number = orderDetail?.orderType === ORDER_TYPE.IN_STORE_PURCHASE.key
+            ? getCounterBillStep(orderDetail?.orderStatus)
+            : getOrderDeliverySaleStep(orderDetail?.orderStatus);
+        setCurrent(step);
     }, [orderDetail]);
 
 
@@ -117,37 +139,71 @@ const OrderTrackingDetailUser: React.FC = () => {
 
     return (
         <>
-            <Steps
-                current={current}
-                items={
-                    orderDetail?.orderType === ORDER_TYPE.IN_STORE_PURCHASE.key
-                        ? itemTrackingCounterBillSteps
-                        : itemTrackingOrderDeliverySaleSteps
-                }
-                style={{margin: "20px 0px 30px 0px"}}
-            />
-            {
-                orderDetail?.orderType === ORDER_TYPE.DELIVERY.key &&
-                <div>
-                    {/* Hủy đơn hàng trong trước khi hoàn thành thanh toán */}
+            <Layout style={{padding: "40px 50px"}}>
+                <Title level={3} className="text-center mb-6">Chi tiết đơn hàng</Title>
+                <div className='w-[40px] bg-black mx-auto h-1'></div>
+
+                <Title level={5} style={{margin: '20px 10px 10px 10px'}}>
+                    Mã đơn hàng
+                    <Text type="secondary" style={{marginInlineStart: 10, fontSize: 18}}>
+                        {orderDetail?.orderTrackingNumber}
+                    </Text>
+                </Title>
+                <Content
+                    style={{
+                        backgroundColor: token.colorBgContainer,
+                        borderRadius: token.borderRadiusLG,
+                        padding: 30
+                    }}
+                >
+                    <Steps
+                        current={current}
+                        items={
+                            orderDetail?.orderType === ORDER_TYPE.IN_STORE_PURCHASE.key
+                                ? itemTrackingCounterBillSteps
+                                : itemTrackingOrderDeliverySaleSteps
+                        }
+                        style={{margin: "20px 0px 30px 0px"}}
+                    />
                     {
-                        orderDetail?.orderStatus && orderDetail.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key ||
-                        orderDetail.orderStatus === ORDER_STATUS.CONFIRMED.key ||
-                        orderDetail.orderStatus === ORDER_STATUS.AWAITING_SHIPMENT.key
-                            ? (
-                                <Button style={{margin: '0 8px'}} onClick={() => setIsOpenReasonModal(true)}>
-                                    Hủy
-                                </Button>
-                            )
-                            :
-                            <></>
+                        orderDetail?.orderType === ORDER_TYPE.DELIVERY.key &&
+                        <div>
+                            {/* Hủy đơn hàng trong trước khi hoàn thành thanh toán */}
+                            {
+                                orderDetail?.orderStatus && orderDetail.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key ||
+                                orderDetail.orderStatus === ORDER_STATUS.CONFIRMED.key ||
+                                orderDetail.orderStatus === ORDER_STATUS.AWAITING_SHIPMENT.key
+                                    ? (
+                                        <Button style={{margin: '0 8px'}} onClick={() => setIsOpenReasonModal(true)}>
+                                            Hủy
+                                        </Button>
+                                    )
+                                    :
+                                    <></>
+                            }
+                        </div>
                     }
-                </div>
-            }
+                </Content>
 
-            <OrderDetailInfoTableUser orderDetail={orderDetail}/>
+                <Title level={5} style={{margin: '20px 10px 10px 10px'}}>
+                    Thông tin đơn hàng
+                </Title>
+                <Content style={{backgroundColor: token.colorBgContainer, borderRadius: token.borderRadiusLG, padding: 20}}>
+                    <OrderDetailInfoTableUser orderDetail={orderDetail}/>
+                </Content>
 
-            <OrderedProductDetailsUser  orderDetail={orderDetail}/>
+                <Title level={5} style={{margin: '20px 10px 10px 10px'}}>
+                    Danh sách sản phẩm đã đặt mua
+                </Title>
+                <Content
+                    style={{
+                        backgroundColor: token.colorBgContainer,
+                        borderRadius: token.borderRadiusLG,
+                        padding: 20
+                    }}>
+                    <OrderedProductDetailsUser orderDetail={orderDetail}/>
+                </Content>
+            </Layout>
 
             <Modal cancelText="Hủy" okText="Xác nhận lý do"
                    title={'Lý do hủy đơn hàng'}

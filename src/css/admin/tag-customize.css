@@ -1,15 +1,1 @@
-.custom-tag-select {
-    line-height: 30px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    padding: 0 8px;
-    margin-inline-end: 4px;
-    white-space: nowrap;
-}
 
-.custom-tag {
-    height: 20px;
-    width: 20px;
-    border-radius: 50%;
-}

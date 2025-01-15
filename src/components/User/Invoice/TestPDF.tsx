@@ -1,4 +1,4 @@
-import React, {useImperativeHandle, forwardRef, useState, useEffect} from "react";
+import React, {useImperativeHandle, forwardRef, useState, useEffect, memo} from "react";
 import {previewInvoicePdf} from "@/services/InvoiceService";
 import {getSendThankMail} from "@/services/MailService";
 
@@ -75,6 +75,6 @@ const InvoiceComponent = forwardRef(({id}: InvoiceComponentProps, ref) => {
     );
 });
 
-export default InvoiceComponent;
+export default memo(InvoiceComponent);
 
 

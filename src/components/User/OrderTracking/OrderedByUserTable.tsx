@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {Button, PaginationProps, Table, TableColumnsType, Tag, Tooltip} from 'antd';
 import {EyeOutlined} from '@ant-design/icons';
 import Title from 'antd/es/typography/Title';
-import useAppNotifications from '@/hooks/useAppNotifications';
 import {IOrderedByUser} from "@/types/IOrder";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 import {ORDER_CHANEL} from "@/constants/OrderChanel";
@@ -17,7 +16,6 @@ interface IProps {
 
 const OrderedByUserTable = (props: IProps) => {
     const {idCustomer} = props;
-    const {showNotification} = useAppNotifications();
     const [page, setPage] = useState<number>(1);
     const {handleGetOrderByCustomer} = useOrder();
 

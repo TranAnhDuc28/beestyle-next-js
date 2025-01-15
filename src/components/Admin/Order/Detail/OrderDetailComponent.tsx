@@ -62,6 +62,7 @@ const OrderDetailComponent: React.FC<IProps> = (props) => {
                 <Content style={{ backgroundColor: token.colorBgContainer, padding: 20 }}>
                     <OrderDetailInfoTable orderDetail={orderDetail} />
                 </Content>
+
                 <Title level={4} style={{ margin: '20px 10px 10px 10px' }}>
                     Danh sách sản phẩm đã đặt mua
                 </Title>
