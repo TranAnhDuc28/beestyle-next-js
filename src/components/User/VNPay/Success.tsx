@@ -8,14 +8,14 @@ import { getAccountInfo } from '@/utils/AppUtil';
 const SuccessPage: React.FC = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const orderTrackingNumber = searchParams.get('tracking_number');
+    const orderTrackingNumber = searchParams.get('orderTrackingNumber');
 
     const handleViewOrder = () => {
         // Redirect đến trang quản lý đơn hàng
         if (getAccountInfo()) {
             router.push('/user-profile');
         } else {
-            router.push('/order-lookup');
+            router.push(`/order-tracking/${orderTrackingNumber}` );
         }
     };
 

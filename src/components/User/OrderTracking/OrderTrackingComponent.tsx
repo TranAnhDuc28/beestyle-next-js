@@ -6,6 +6,8 @@ import BreadcrumbSection from '@/components/Breadcrumb/BreadCrumb';
 import Paragraph from 'antd/es/typography/Paragraph';
 import Image from 'next/image';
 import {useAuthentication} from "@/components/Context/AuthenticationProvider";
+import Link from "next/link";
+import {useParams} from "next/navigation";
 
 const {Content} = Layout;
 const {Title, Text} = Typography;
@@ -17,6 +19,7 @@ const breadcrumbItems = [
 
 const OrderTrackingComponent: React.FC = () => {
     const authentication = useAuthentication();
+    const {orderTrackingNumber} = useParams();
 
     return (
         authentication?.authentication
@@ -40,13 +43,15 @@ const OrderTrackingComponent: React.FC = () => {
                                         size='large'
                                         className='p-3'
                                     />
-                                    <Button
-                                        type='default'
-                                        className='bg-orange-500 text-white hover:!bg-orange-400 fs-6 border-none w-full mt-4'
-                                        style={{padding: '20px 0'}}
-                                    >
-                                        Tra cứu
-                                    </Button>
+                                    <Link href={`/order-tracking/${orderTrackingNumber}`}>
+                                        <Button
+                                            type='default'
+                                            className='bg-orange-500 text-white hover:!bg-orange-400 fs-6 border-none w-full mt-4'
+                                            style={{padding: '20px 0'}}
+                                        >
+                                            Tra cứu
+                                        </Button>
+                                    </Link>
                                 </div>
                                 <div className='ms-5'>
                                     <Image
