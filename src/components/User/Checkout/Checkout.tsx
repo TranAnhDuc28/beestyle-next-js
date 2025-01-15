@@ -170,6 +170,7 @@ const Checkout: React.FC = () => {
             const pendingOrderData: IOrderOnlineCreateOrUpdate = {
                 receiverName: userData.customerName,
                 phoneNumber: userData.phone,
+                customerId: customerId,
                 email: email,
                 originalAmount: originalAmount,
                 discountAmount: discountAmount,
