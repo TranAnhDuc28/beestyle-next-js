@@ -108,6 +108,18 @@ const Checkout: React.FC = () => {
         } as IAddress));
     }
 
+    const onChangeSelectedAddress = (address: IAddress) => {
+        setShippingAddress((prevState) => ({
+            ...prevState,
+            cityCode: Number(address.cityCode),
+            city: address.city,
+            districtCode: Number(address.districtCode),
+            district: address.addressName,
+            communeCode: Number(address.communeCode),
+            commune: address.commune
+        } as IAddress));
+    }
+
     // Xử lý tạo thanh toán VNPay
     const processVNPayPayment = async (payment: any) => {
         const ipAddress = "127.0.0.1";
@@ -148,7 +160,7 @@ const Checkout: React.FC = () => {
     const handleSubmitOrderOnline = async (payment: any) => {
         try {
             const userData = await userForm.validateFields(); // Dữ liệu từ form thông tin khách hàng
-            const shippingFee = await payment.shippingFee; // Phí ship
+            //const shippingFeeFromSelect = await payment.shippingFee; // Phí ship
             const voucherId = await payment.voucherId;
             const selectedPayment = await payment.selectedPayment; // Phương thức thanh toán
             const originalAmount = await payment.originalAmount; // Tổng tiền sản phẩm trong giỏ hàng (Chưa tính phí ship và voucher)
@@ -164,6 +176,8 @@ const Checkout: React.FC = () => {
                     discountedPrice: 0,
                 };
             })) : [];
+            console.log(calculateShippingFee(originalAmount, userData.shippingAddress));
+
 
             // Map dữ liệu Order + Order Item
             const email = getAccountInfo() ? getAccountInfo().email : userData.email;
@@ -398,7 +412,9 @@ const Checkout: React.FC = () => {
                                                             >
                                                                 {addresses && addresses.length > 0 ? (
                                                                     <Radio.Group
-                                                                        onChange={(e) => setSelectedAddress(e.target.value)}
+                                                                        onChange={(e) => {
+                                                                            setSelectedAddress(e.target.value)
+                                                                        }}
                                                                         value={selectedAddress}
                                                                         style={{ width: "100%" }}
                                                                     >
@@ -406,7 +422,10 @@ const Checkout: React.FC = () => {
                                                                             <div
                                                                                 key={address.id}
                                                                                 className="border-b pb-4 mb-4 transition-all cursor-pointer"
-                                                                                onClick={() => setSelectedAddress(address)}
+                                                                                onClick={() => {
+                                                                                    setSelectedAddress(address);
+                                                                                    onChangeSelectedAddress(address);
+                                                                                }}
                                                                             >
                                                                                 <div>
                                                                                     <Radio value={address}>

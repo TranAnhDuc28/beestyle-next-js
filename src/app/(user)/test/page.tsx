@@ -29,7 +29,7 @@ export default function UploadImg() {
     return (
         <div className="d-flex justify-content-center p-5">
             <ImageUpload />
-            <TestPDFComponent invoiceData={invoiceData} />
+            {/* <TestPDFComponent invoiceData={invoiceData} /> */}
         </div>
     );
 }

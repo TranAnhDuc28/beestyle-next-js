@@ -56,6 +56,7 @@ const ImageUpload = () => {
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log(data);
                     return data.secure_url;
                 } else {
                     console.error("Upload failed:", await response.json());
