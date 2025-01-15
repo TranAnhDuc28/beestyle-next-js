@@ -125,7 +125,7 @@ const UpdateProduct: React.FC<IProps> = (props) => {
                    confirmLoading={confirmLoading}
             >
                 <Form form={form} name="updateProduct" layout="vertical" onFinish={onFinish}>
-                    <Row gutter={[32, 0]} style={{margin: "20px 0px"}}>
+                    <Row gutter={[32, 0]} style={{marginTop: 20}}>
                         <Col span={12}>
                             <Form.Item name="productCode" label="Mã sản phẩm"
                                        tooltip="Mã sản phẩm sẽ tự động tạo nếu không nhập."
@@ -180,7 +180,7 @@ const UpdateProduct: React.FC<IProps> = (props) => {
                                 <Form.Item>
                                     <Tooltip placement="top" title="Thêm nhanh danh mục">
                                         <Button icon={<PlusOutlined/>} type="text" shape="circle"
-                                                onClick={() => toggleCreateFastModal("category",true)}
+                                                onClick={() => toggleCreateFastModal("category", true)}
                                         />
                                     </Tooltip>
                                 </Form.Item>
@@ -201,7 +201,7 @@ const UpdateProduct: React.FC<IProps> = (props) => {
                                 <Form.Item>
                                     <Tooltip placement="top" title="Thêm nhanh thương hiệu">
                                         <Button icon={<PlusOutlined/>} type="text" shape="circle"
-                                                onClick={() => toggleCreateFastModal("brand",true)}
+                                                onClick={() => toggleCreateFastModal("brand", true)}
                                         />
                                     </Tooltip>
                                 </Form.Item>
@@ -233,11 +233,11 @@ const UpdateProduct: React.FC<IProps> = (props) => {
                             </Form.Item>
                         </Col>
                     </Row>
-                    <Row style={{margin: "10px 0px"}}>
+                    <Row style={{marginBottom: 10}}>
                         <Col span={24}>
-                            <Form.Item name="productImages">
-                                <UploadImage countFileImage={6} onChange={handleProductImages}/>
-                            </Form.Item>
+
+                            <UploadImage countFileImage={6} onChange={handleProductImages}/>
+
                         </Col>
                     </Row>
                 </Form>

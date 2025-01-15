@@ -30,10 +30,21 @@ import CreateColor from "@/components/Admin/Color/CreateColor";
 import CreateSize from "@/components/Admin/Size/CreateSize";
 import {createProduct} from "@/services/ProductService";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
+import {RcFile} from "antd/es/upload/interface";
 
 const {Title} = Typography;
 
 type CreateFastModalType = "category" | "material" | "brand" | "color" | "size";
+
+const URL_UPLOAD_IMAGE = 'https://api.cloudinary.com/v1_1/du7lpbqc2/image/upload';
+
+// Các định dạng ảnh được phép upload
+const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/jpg",
+    "image/webp",
+];
 
 const generateProductVariants = (
     colors: { value: number; label: string }[],
@@ -68,6 +79,7 @@ const CreateProduct = (props: IProps) => {
     const {showNotification} = useAppNotifications();
     const {isCreateModalOpen, setIsCreateModalOpen, mutate} = props;
 
+    const [filesUploadCloudinary, setFilesUploadCloudinary] = useState<RcFile[]>([]);
     const [activeKeyCollapse, setActiveKeyCollapse] = useState<string[]>([]);
     const [productVariantRows, setProductVariantRows] = useState<IProductVariantRows[]>([]);
     const [selectedColors, setSelectedColors] = useState<{ value: number; label: any }[]>([]);
@@ -98,6 +110,7 @@ const CreateProduct = (props: IProps) => {
         setProductVariantRows([]);
         setSelectedColors([]);
         setSelectedSizes([]);
+        setFilesUploadCloudinary([]);
         setProductPricingAndStock({originalPrice: null, salePrice: null, quantityInStock: null,});
         setIsCreateModalOpen(false);
     };
@@ -106,24 +119,14 @@ const CreateProduct = (props: IProps) => {
         setModalOpen((prevModals) => ({...prevModals, [modalType]: isOpen}));
     }, []);
 
-    const handleProductImages = useCallback((fileList: UploadFile[]) => {
-        const images: IProductImageCreate[] = fileList.map((file, index) => (
-            {
-                imageUrl: `/${file.url || file.name || file.originFileObj?.name || 'no-img550x750.png'}`,
-                isDefault: index === 0,
-            }
-        )).filter(Boolean);
-        form.setFieldsValue({productImages: images});
-    }, []);
 
-    const handleSelectChange = useCallback(
-        (type: 'colors' | 'sizes', selectedOptions: { value: number; label: string }[]) => {
-            if (type === 'colors') {
-                setSelectedColors(selectedOptions);
-            } else {
-                setSelectedSizes(selectedOptions);
-            }
-        }, []);
+    const handleSelectChange = (type: 'colors' | 'sizes', selectedOptions: { value: number; label: string }[]) => {
+        if (type === 'colors') {
+            setSelectedColors(selectedOptions);
+        } else {
+            setSelectedSizes(selectedOptions);
+        }
+    }
 
     const handleInputChangePricingAndStock = (field: 'originalPrice' | 'salePrice' | 'quantityInStock',
                                               value: number | null = 0) => {
@@ -140,6 +143,67 @@ const CreateProduct = (props: IProps) => {
             setActiveKeyCollapse(key as string[]);
         }
     };
+
+    /**
+     * xử lý thêm ảnh
+     */
+    const handleChangeProductImages = async (fileList: UploadFile[]) => {
+        if (fileList.length === 0) return;
+
+        // validate phải là file ảnh
+        const validUploadFiles: RcFile[] = fileList
+            .filter((file) => file.originFileObj && allowedTypes.includes(file.originFileObj.type))
+            .map((file) => file.originFileObj)
+            .filter((file): file is RcFile => file !== undefined);
+
+        // k có file nào thỏa mãn thì không hiển thị
+        if (validUploadFiles.length === 0) return;
+
+        console.log(validUploadFiles);
+        setFilesUploadCloudinary(validUploadFiles);
+    }
+
+    /**
+     * upload ảnh lên cloudinary
+     * @param fileUpLoad
+     */
+    const uploadImagesCloudinary = async (fileUpLoad: RcFile[]): Promise<IProductImageCreate[]> => {
+        try {
+
+            // upload image lên cloudinary
+            const uploadPromises = fileUpLoad.map(async (file) => {
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("upload_preset", "beestyle_images");
+
+                const response = await fetch(URL_UPLOAD_IMAGE, {method: "POST", body: formData});
+
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.secure_url;
+                } else {
+                    const errorData = await response.json();
+                    showNotification("error", {
+                        message: "Upload ảnh thất bại!",
+                        description: errorData.error?.message || "Lỗi khi tải hình ảnh."
+                    });
+                    return null;
+                }
+            });
+
+            const urls = (await Promise.all(uploadPromises)).filter((url): url is  string => url !== null);
+
+            console.log("urls", urls);
+
+            return urls.map((url: string, index: number) => ({
+                imageUrl: url,
+                isDefault: index === 0,
+            }));
+        } catch (error) {
+            showNotification("error", {message: "Lỗi khi upload ảnh!"});
+            return [];
+        }
+    }
 
     useEffect(() => {
         if (selectedColors.length > 0 || selectedSizes.length > 0) {
@@ -160,13 +224,31 @@ const CreateProduct = (props: IProps) => {
         }
     }, [isCreateModalOpen]);
 
+    /**
+     * thêm sản phẩm vào db
+     * @param value
+     */
     const onFinish = async (value: IProductCreate) => {
-        const productVariants: IProductVariantCreate[] =
-            productVariantRows.map(({key, productVariantName, ...rest}) => rest);
-        const product: IProductCreate = {...value, productVariants};
-        console.log('Success json:', JSON.stringify(product, null, 2));
+        // map các biến thể của sản phẩm
+        const productVariants: IProductVariantCreate[] = productVariantRows.map(({
+                                                                                     key,
+                                                                                     productVariantName,
+                                                                                     ...rest
+                                                                                 }) => rest);
+
+
         setConfirmLoading(true);
         try {
+            const uploadedImages: IProductImageCreate[] = await uploadImagesCloudinary(filesUploadCloudinary);
+
+            const product: IProductCreate = {
+                ...value,
+                productImages: uploadedImages,
+                productVariants
+            };
+
+            console.log('Success json:', JSON.stringify(product, null, 2));
+
             const result = await createProduct(product);
             mutate();
             if (result.data) {
@@ -246,7 +328,7 @@ const CreateProduct = (props: IProps) => {
                                             icon={<PlusOutlined/>}
                                             type="text"
                                             shape="circle"
-                                            onClick={() => toggleCreateFastModal("category",true)}
+                                            onClick={() => toggleCreateFastModal("category", true)}
                                         />
                                     </Tooltip>
                                 </Form.Item>
@@ -268,7 +350,7 @@ const CreateProduct = (props: IProps) => {
                                             icon={<PlusOutlined/>}
                                             type="text"
                                             shape="circle"
-                                            onClick={() => toggleCreateFastModal("brand",true)}
+                                            onClick={() => toggleCreateFastModal("brand", true)}
                                         />
                                     </Tooltip>
                                 </Flex>
@@ -331,10 +413,10 @@ const CreateProduct = (props: IProps) => {
                         </Col>
                     </Row>
                     <Row>
-                        <Col span={24}>
-                            <Form.Item name="productImages">
-                                <UploadImage countFileImage={6} onChange={handleProductImages}/>
-                            </Form.Item>
+                        <Col span={24} style={{margin: "10px 0px"}}>
+
+                            <UploadImage countFileImage={6} onChange={handleChangeProductImages}/>
+
                         </Col>
                     </Row>
                     <Row>

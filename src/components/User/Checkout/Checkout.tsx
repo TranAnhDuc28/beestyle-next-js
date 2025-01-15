@@ -50,7 +50,6 @@ const Checkout: React.FC = () => {
 
     const [orderId] = useState("");
     const addresses = data?.data?.items || [];
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { cartData, isLoading, error } = useShoppingCart();
     const [cartItems] = useState(cartData);
     const [shippingFee, setShippingFee] = useState(0);
@@ -174,7 +173,7 @@ const Checkout: React.FC = () => {
                 email: email,
                 originalAmount: originalAmount,
                 discountAmount: discountAmount,
-                shippingFee: shippingFee,
+                shippingFee: getAccountInfo() ? calculateShippingFee(originalAmount, userData.shippingAddress) : shippingFee,
                 totalAmount: totalAmount,
                 voucherId: voucherId,
                 paymentMethod: selectedPayment,
