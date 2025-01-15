@@ -30,10 +30,21 @@ import CreateColor from "@/components/Admin/Color/CreateColor";
 import CreateSize from "@/components/Admin/Size/CreateSize";
 import { createProduct } from "@/services/ProductService";
 import { FORMAT_NUMBER_WITH_COMMAS } from "@/constants/AppConstants";
+import { RcFile } from "antd/es/upload/interface";
 
 const { Title } = Typography;
 
 type CreateFastModalType = "category" | "material" | "brand" | "color" | "size";
+
+const URL_UPLOAD_IMAGE = 'https://api.cloudinary.com/v1_1/du7lpbqc2/image/upload';
+
+// Các định dạng ảnh được phép upload
+const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/jpg",
+    "image/webp",
+];
 
 const generateProductVariants = (
     colors: { value: number; label: string }[],
@@ -68,6 +79,7 @@ const CreateProduct = (props: IProps) => {
     const { showNotification } = useAppNotifications();
     const { isCreateModalOpen, setIsCreateModalOpen, mutate } = props;
 
+    const [filesUploadCloudinary, setFilesUploadCloudinary] = useState<RcFile[]>([]);
     const [activeKeyCollapse, setActiveKeyCollapse] = useState<string[]>([]);
     const [productVariantRows, setProductVariantRows] = useState<IProductVariantRows[]>([]);
     const [selectedColors, setSelectedColors] = useState<{ value: number; label: any }[]>([]);
@@ -80,16 +92,6 @@ const CreateProduct = (props: IProps) => {
         category: false, material: false, brand: false, color: false, size: false,
     });
     const [confirmLoading, setConfirmLoading] = useState(false);
-    const URL_UPLOAD_IMAGE = 'https://api.cloudinary.com/v1_1/du7lpbqc2/image/upload';
-    // Các định dạng ảnh được phép upload
-    const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/gif",
-        "image/jpg",
-        "image/webp",
-    ];
-
     const { dataOptionBrand, error: errorDataOptionBrand, isLoading: isLoadingDataOptionBrand }
         = useBrand(isCreateModalOpen);
     const { dataTreeSelectCategory, error: errorDataTreeSelectCategory, isLoading: isLoadingDataTreeSelectCategory }
@@ -107,6 +109,7 @@ const CreateProduct = (props: IProps) => {
         setProductVariantRows([]);
         setSelectedColors([]);
         setSelectedSizes([]);
+        setFilesUploadCloudinary([]);
         setProductPricingAndStock({ originalPrice: null, salePrice: null, quantityInStock: null, });
         setIsCreateModalOpen(false);
     };
@@ -115,69 +118,14 @@ const CreateProduct = (props: IProps) => {
         setModalOpen((prevModals) => ({ ...prevModals, [modalType]: isOpen }));
     }, []);
 
-    // Xử lý upload ảnh
-    const handleProductImages = useCallback(async (fileList: UploadFile[]) => {
-        if (fileList.length === 0) {
-            form.setFieldsValue({ productImages: [] });
-            return;
+
+    const handleSelectChange = (type: 'colors' | 'sizes', selectedOptions: { value: number; label: string }[]) => {
+        if (type === 'colors') {
+            setSelectedColors(selectedOptions);
+        } else {
+            setSelectedSizes(selectedOptions);
         }
-
-        const validFiles = fileList
-            .filter((file) => file.originFileObj && allowedTypes.includes(file.originFileObj.type))
-            .map((file) => file.originFileObj);
-
-        if (validFiles.length !== fileList.length) {
-            showNotification("error", {
-                message: "Chỉ được phép tải lên các tệp hình ảnh (JPG, PNG, GIF, WEBP)."
-            });
-        }
-
-        try {
-            const uploadPromises = validFiles.map(async (file) => {
-                const formData = new FormData();
-                formData.append("file", file as File);
-                formData.append("upload_preset", "beestyle_images");
-
-                const response = await fetch(URL_UPLOAD_IMAGE, { method: "POST", body: formData, });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    return data.secure_url;
-                } else {
-                    const errorData = await response.json();
-                    console.error("Upload failed:", errorData);
-                    showNotification("error", {
-                        message: "Upload ảnh thất bại!",
-                        description: errorData.error?.message || "Lỗi khi tải hình ảnh."
-                    });
-                    return null;
-                }
-            });
-
-            const urls = (await Promise.all(uploadPromises)).filter((url): url is string => url !== null);
-            // Cập nhật giá trị của form với các image URLs và đánh dấu ảnh đầu tiên là ảnh mặc định
-            const images: IProductImageCreate[] = urls.map((url, index) => ({
-                imageUrl: url,
-                isDefault: index === 0,
-            }));
-
-            form.setFieldsValue({ productImages: images });
-        } catch (error) {
-            console.error("Đã xảy ra lỗi khi upload hình ảnh:", error);
-            showNotification("error", { message: "Lỗi khi upload ảnh!" });
-        } finally {
-            setUploading(false);
-        }
-    }, []);
-
-    const handleSelectChange = useCallback(
-        (type: 'colors' | 'sizes', selectedOptions: { value: number; label: string }[]) => {
-            if (type === 'colors') {
-                setSelectedColors(selectedOptions);
-            } else {
-                setSelectedSizes(selectedOptions);
-            }
-        }, []);
+    }
 
     const handleInputChangePricingAndStock = (field: 'originalPrice' | 'salePrice' | 'quantityInStock',
         value: number | null = 0) => {
@@ -194,6 +142,67 @@ const CreateProduct = (props: IProps) => {
             setActiveKeyCollapse(key as string[]);
         }
     };
+
+    /**
+     * xử lý thêm ảnh
+     */
+    const handleChangeProductImages = async (fileList: UploadFile[]) => {
+        if (fileList.length === 0) return;
+
+        // validate phải là file ảnh
+        const validUploadFiles: RcFile[] = fileList
+            .filter((file) => file.originFileObj && allowedTypes.includes(file.originFileObj.type))
+            .map((file) => file.originFileObj)
+            .filter((file): file is RcFile => file !== undefined);
+
+        // k có file nào thỏa mãn thì không hiển thị
+        if (validUploadFiles.length === 0) return;
+
+        console.log(validUploadFiles);
+        setFilesUploadCloudinary(validUploadFiles);
+    }
+
+    /**
+     * upload ảnh lên cloudinary
+     * @param fileUpLoad
+     */
+    const uploadImagesCloudinary = async (fileUpLoad: RcFile[]): Promise<IProductImageCreate[]> => {
+        try {
+
+            // upload image lên cloudinary
+            const uploadPromises = fileUpLoad.map(async (file) => {
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("upload_preset", "beestyle_images");
+
+                const response = await fetch(URL_UPLOAD_IMAGE, { method: "POST", body: formData });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.secure_url;
+                } else {
+                    const errorData = await response.json();
+                    showNotification("error", {
+                        message: "Upload ảnh thất bại!",
+                        description: errorData.error?.message || "Lỗi khi tải hình ảnh."
+                    });
+                    return null;
+                }
+            });
+
+            const urls = (await Promise.all(uploadPromises)).filter((url): url is string => url !== null);
+
+            console.log("urls", urls);
+
+            return urls.map((url: string, index: number) => ({
+                imageUrl: url,
+                isDefault: index === 0,
+            }));
+        } catch (error) {
+            showNotification("error", { message: "Lỗi khi upload ảnh!" });
+            return [];
+        }
+    }
 
     useEffect(() => {
         if (selectedColors.length > 0 || selectedSizes.length > 0) {
@@ -214,15 +223,31 @@ const CreateProduct = (props: IProps) => {
         }
     }, [isCreateModalOpen]);
 
+    /**
+     * thêm sản phẩm vào db
+     * @param value
+     */
     const onFinish = async (value: IProductCreate) => {
-        const productVariants: IProductVariantCreate[] =
-            productVariantRows.map(({ key, productVariantName, ...rest }) => rest);
-        // Gán image URLs vào productImages
-        const product: IProductCreate = { ...value, productVariants };
+        // map các biến thể của sản phẩm
+        const productVariants: IProductVariantCreate[] = productVariantRows.map(({
+            key,
+            productVariantName,
+            ...rest
+        }) => rest);
 
-        console.log('Success json:', JSON.stringify(product, null, 2));
+
         setConfirmLoading(true);
         try {
+            const uploadedImages: IProductImageCreate[] = await uploadImagesCloudinary(filesUploadCloudinary);
+
+            const product: IProductCreate = {
+                ...value,
+                productImages: uploadedImages,
+                productVariants
+            };
+
+            console.log('Success json:', JSON.stringify(product, null, 2));
+
             const result = await createProduct(product);
             mutate();
             if (result.data) {
@@ -387,14 +412,10 @@ const CreateProduct = (props: IProps) => {
                         </Col>
                     </Row>
                     <Row>
-                        <Col span={24}>
-                            {/* Thay đổi component UploadImage để sử dụng logic upload ảnh mới */}
-                            <Form.Item name="productImages">
-                                <UploadImage
-                                    countFileImage={6}
-                                    onChange={handleProductImages}
-                                />
-                            </Form.Item>
+                        <Col span={24} style={{ margin: "10px 0px" }}>
+
+                            <UploadImage countFileImage={6} onChange={handleChangeProductImages} />
+
                         </Col>
                     </Row>
                     <Row>

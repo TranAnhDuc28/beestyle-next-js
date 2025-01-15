@@ -17,15 +17,20 @@ const AuthenticationAdminComponent: React.FC = () => {
     const onFinish = async (value: ISignIn) => {
         try {
             const result: IAuthResponse = await signIn(value);
-
+            console.log(result);
             if (result) {
-                // authenticationAdmin?.login(result);
+                localStorage.setItem("authenticationAdmin", JSON.stringify(result));
                 form.resetFields();
-                router.push("/admin");
+
+                if (result?.user?.role === "ADMIN") {
+                    router.push("/admin");
+                } else {
+                    router.push("/admin-counter-sale");
+                }
             }
         } catch (error: any) {
             const errorMessage = error?.response?.message;
-            console.log(error)
+            console.log(error);
             if (errorMessage && typeof errorMessage === 'object') {
                 Object.entries(errorMessage).forEach(([field, message]) => {
                     showNotification("error", { message: String(message) });

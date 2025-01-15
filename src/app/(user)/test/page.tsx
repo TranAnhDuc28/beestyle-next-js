@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import ImageUpload from "@/components/Upload/ImageUpload";
-import TestPDFComponent from "@/components/User/Invoice/TestPDF";
+import TestPDFComponent from "@/components/User/Invoice/InvoiceComponent";
 
 export default function UploadImg() {
     const formatDate = (date: Date) => {
