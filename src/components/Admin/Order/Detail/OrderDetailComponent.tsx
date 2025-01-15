@@ -1,14 +1,14 @@
 "use client"
-import React, {useRef} from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
-import {HomeOutlined} from "@ant-design/icons";
+import { HomeOutlined } from "@ant-design/icons";
 import {
     Breadcrumb, Button,
     Layout,
     theme,
     Typography
 } from "antd";
-import {useParams} from "next/navigation";
+import { useParams } from "next/navigation";
 import OrderedProductDetails from "@/components/Admin/Order/Detail/OrderedProductDetails";
 import TimeLineOrderTrackingComponent from "@/components/Admin/Order/Detail/TimeLineOrderTrackingComponent";
 import useOrder from "@/components/Admin/Order/hooks/useOrder";
@@ -16,18 +16,18 @@ import OrderDetailInfoTable from "@/components/Admin/Order/Detail/OrderDetailInf
 import InvoiceComponent from "../../../User/Invoice/TestPDF";
 import OrderDetailProvider from "@/components/Admin/Order/Detail/Context/OrderDetailProvider";
 
-const {Content} = Layout;
-const {Title, Text} = Typography;
+const { Content } = Layout;
+const { Title, Text } = Typography;
 
 interface IProps {
 
 }
 
 const OrderDetailComponent: React.FC<IProps> = (props) => {
-    const {token} = theme.useToken();
-    const {id} = useParams();
-    const {handleGetOrderService} = useOrder();
-    const {orderDetail, error, isLoading, mutate} =
+    const { token } = theme.useToken();
+    const { id } = useParams();
+    const { handleGetOrderService } = useOrder();
+    const { orderDetail, error, isLoading, mutate } =
         handleGetOrderService(id && Number(id) ? Number(id) : null);
 
     const invoiceRef = useRef<any>(null);
@@ -42,15 +42,15 @@ const OrderDetailComponent: React.FC<IProps> = (props) => {
             <OrderDetailProvider>
                 <Breadcrumb
                     items={[
-                        {title: <Link href={"/admin"}><HomeOutlined/></Link>,},
-                        {title: <Link href={"/admin/order"}>Hóa đơn</Link>,},
-                        {title: 'Chi tiết'},
+                        { title: <Link href={"/admin"}><HomeOutlined /></Link>, },
+                        { title: <Link href={"/admin/order"}>Hóa đơn</Link>, },
+                        { title: 'Chi tiết' },
                     ]}
                 />
 
-                <Title level={4} style={{margin: '20px 10px 10px 10px'}}>
+                <Title level={4} style={{ margin: '20px 10px 10px 10px' }}>
                     Mã đơn hàng
-                    <Text type="secondary" style={{marginInlineStart: 10, fontSize: 20}}>
+                    <Text type="secondary" style={{ marginInlineStart: 10, fontSize: 20 }}>
                         {orderDetail?.orderTrackingNumber}
                     </Text>
                 </Title>
@@ -60,36 +60,36 @@ const OrderDetailComponent: React.FC<IProps> = (props) => {
                         padding: 30
                     }}
                 >
-                    <TimeLineOrderTrackingComponent orderDetail={orderDetail} mutate={mutate}/>
+                    <TimeLineOrderTrackingComponent orderDetail={orderDetail} mutate={mutate} />
                 </Content>
 
-                <Title level={4} style={{margin: '20px 10px 10px 10px'}}>
+                <Title level={4} style={{ margin: '20px 10px 10px 10px' }}>
                     Thông tin đơn hàng
                 </Title>
-                <Content style={{backgroundColor: token.colorBgContainer, padding: 20}}>
-                    <OrderDetailInfoTable orderDetail={orderDetail}/>
+                <Content style={{ backgroundColor: token.colorBgContainer, padding: 20 }}>
+                    <OrderDetailInfoTable orderDetail={orderDetail} />
                 </Content>
-            <Title level={4} style={{margin: '20px 10px 10px 10px'}}>
-                Danh sách sản phẩm đã đặt mua
-            </Title>
-            <Content
-                style={{
-                    backgroundColor: token.colorBgContainer,
-                    borderRadius: token.borderRadiusLG,
-                    padding: 20
-                }}>
-                <OrderedProductDetails orderDetail={orderDetail}/>
-            </Content>
-            {/* Nút in hóa đơn */}
-            <div style={{ marginTop: 20 }}>
-                <Button type="primary" onClick={handlePrintInvoice}>
-                    In Hóa Đơn
-                </Button>
-            </div>
+                <Title level={4} style={{ margin: '20px 10px 10px 10px' }}>
+                    Danh sách sản phẩm đã đặt mua
+                </Title>
+                <Content
+                    style={{
+                        backgroundColor: token.colorBgContainer,
+                        borderRadius: token.borderRadiusLG,
+                        padding: 20
+                    }}>
+                    <OrderedProductDetails orderDetail={orderDetail} />
+                </Content>
+                {/* Nút in hóa đơn */}
+                <div style={{ marginTop: 20 }}>
+                    <Button type="primary" onClick={handlePrintInvoice}>
+                        In Hóa Đơn
+                    </Button>
+                </div>
 
-            {/* Thêm InvoiceComponent */}
-            <InvoiceComponent ref={invoiceRef} id={orderDetail?.id || null} />
-
+                {/* Thêm InvoiceComponent */}
+                <InvoiceComponent ref={invoiceRef} id={orderDetail?.id || null} />
+            </OrderDetailProvider>
         </>
     );
 }

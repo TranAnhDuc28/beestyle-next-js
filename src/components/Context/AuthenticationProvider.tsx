@@ -24,7 +24,9 @@ const AuthenticationProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const logout = () => {
         setAuthentication(null);
         localStorage.removeItem("authentication");
+        localStorage.removeItem('pendingOrderData');
         removeAllCartItems();
+        window.location.assign('/');
     };
 
     return (

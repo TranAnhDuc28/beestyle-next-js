@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import OrderDetail from "./OrderDetail";
-import { Alert, Button, Col, Form, Input, Radio, Row } from "antd";
+import { Alert, Col, Form, Input, Radio, Row } from "antd";
 import { createVNPayPayment } from "@/services/VNPayService";
 import { checkShoppingCartData, deleteAllCartItems, ICartItem, removeAllCartItems, useShoppingCart } from "@/services/user/ShoppingCartService";
 import BreadcrumbSection from "@/components/Breadcrumb/BreadCrumb";
@@ -25,34 +25,13 @@ import { RiStore2Line } from "react-icons/ri";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import TextArea from "antd/es/input/TextArea";
 import useAddress from "@/components/Admin/Address/hook/useAddress";
-import { calculateShippingFee, getAccountInfo } from "@/utils/AppUtil";
+import { calculateShippingFee, formatAddress, getAccountInfo } from "@/utils/AppUtil";
 import { getAddressByCustomerId, URL_API_ADDRESS } from "@/services/AddressService";
 import useSWR from "swr";
 
-const dataTest = [
-    {
-        id: 1,
-        name: 'Anh Vũ',
-        address: 'Phuong Canh',
-        city: 'Thành phố Hà Nội, Nam Từ Liêm 10000',
-        country: 'Việt Nam',
-        phone: '931386154',
-        isDefault: 0,
-    },
-    {
-        id: 2,
-        name: 'Đức Anh Vũ',
-        address: '123',
-        city: 'Thành phố Hà Nội, Nam Từ Liêm 10000',
-        country: 'Việt Nam',
-        phone: '931386154',
-        isDefault: 1,
-    },
-];
-
 const Checkout: React.FC = () => {
     const router = useRouter();
-    const customerId = getAccountInfo().id;
+    const customerId = getAccountInfo()?.id ?? null;
     const [userForm] = Form.useForm();
     const { handleCreateOrderOnline } = useOrder();
     const [shippingAddress, setShippingAddress] = useState<IAddress | undefined>(undefined);
@@ -60,8 +39,7 @@ const Checkout: React.FC = () => {
     const provincesData = handleGetProvinces();
     const districtsData = handleGetDistricts(`${shippingAddress?.cityCode}`);
     const wardsData = handleGetWards(`${shippingAddress?.districtCode}`);
-    const [selectedAddress, setSelectedAddress] = useState<number>(0);
-    const { data: addressData, error: errorAddress, mutate } = useSWR(
+    const { data } = useSWR(
         `${URL_API_ADDRESS.get}?id=${customerId}`,
         getAddressByCustomerId,
         {
@@ -69,17 +47,16 @@ const Checkout: React.FC = () => {
             revalidateOnReconnect: false,
         }
     );
-    const addresses = addressData?.data?.items || [];
-
-    console.log(addresses);
-
 
     const [orderId] = useState("");
+    const addresses = data?.data?.items || [];
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { cartData, isLoading, error } = useShoppingCart();
     const [cartItems] = useState(cartData);
     const [shippingFee, setShippingFee] = useState(0);
     const [selectedPayment, setSelectedPayment] = useState<string>(PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key);
+    const defaultAddress = addresses ? addresses.find((item: IAddress) => item.isDefault) : null;
+    const [selectedAddress, setSelectedAddress] = useState<IAddress | null>(defaultAddress);
 
     const handlePaymentChange = (e: any) => {
         const value = e.target.value;
@@ -164,12 +141,8 @@ const Checkout: React.FC = () => {
 
     useEffect(() => {
         fetchShippingFee();
-        console.log(shippingFee)
-    }, [shippingAddress?.city, shippingAddress?.district]);
-
-    useEffect(() => {
-        console.log(shippingAddress)
-    }, [shippingAddress]);
+        console.log(shippingFee);
+    }, [shippingAddress?.city, shippingAddress?.district, shippingFee]);
 
     // Xử lý đơn hàng và gửi request tói server
     const handleSubmitOrderOnline = async (payment: any) => {
@@ -209,13 +182,13 @@ const Checkout: React.FC = () => {
                 orderStatus: ORDER_STATUS.AWAITING_CONFIRMATION.key,
                 isPrepaid: selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key,
                 shippingAddress: JSON.stringify({
-                    addressName: userForm.getFieldValue("addressName"),
-                    cityCode: shippingAddress?.cityCode,
-                    city: shippingAddress?.city,
-                    districtCode: shippingAddress?.districtCode,
-                    district: shippingAddress?.district,
-                    communeCode: shippingAddress?.communeCode,
-                    commune: shippingAddress?.commune
+                    addressName: getAccountInfo() ? userData.shippingAddress.addressName : userData.addressName,
+                    cityCode: getAccountInfo() ? userData.shippingAddress.cityCode : shippingAddress?.cityCode,
+                    city: getAccountInfo() ? userData.shippingAddress.city : shippingAddress?.city,
+                    districtCode: getAccountInfo() ? userData.shippingAddress.districtCode : shippingAddress?.districtCode,
+                    district: getAccountInfo() ? userData.shippingAddress.district : shippingAddress?.district,
+                    communeCode: getAccountInfo() ? userData.shippingAddress.communeCode : shippingAddress?.communeCode,
+                    commune: getAccountInfo() ? userData.shippingAddress.commune : shippingAddress?.commune
                 }),
                 orderItems: cartFiltereds,
             };
@@ -228,7 +201,6 @@ const Checkout: React.FC = () => {
                     .then((orderData) => {
                         // Xử lý kết quả thành công và chuyển hướng
                         if (orderData) {
-                            
                             const trackingNumber: string = orderData.orderTrackingNumber;
                             // Xoá data Cart
                             if (getAccountInfo()) {
@@ -411,87 +383,131 @@ const Checkout: React.FC = () => {
                                             {selectedPayment === PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key || selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key ? (
                                                 <>
                                                     <h3 className={styles["heading"] + " my-4"}>Địa chỉ nhận hàng</h3>
-                                                    <Row gutter={16} className="mb-3">
-                                                        <Col span={8}>
+                                                    {getAccountInfo() ? (
+                                                        <>
                                                             <Form.Item
-                                                                name="province"
+                                                                name="shippingAddress"
+                                                                className="mt-2"
                                                                 rules={[
                                                                     {
                                                                         required: true,
-                                                                        message: "Vui lòng chọn Tỉnh / Thành Phố!",
+                                                                        message: "Vui lòng chọn địa chỉ giao hàng!",
                                                                     },
                                                                 ]}
                                                             >
-                                                                <SelectSearchOptionLabel
-                                                                    value={shippingAddress?.cityCode}
-                                                                    placeholder="Tỉnh / Thành Phố"
-                                                                    style={{ width: "100%", height: "48px" }}
-                                                                    data={provincesData?.dataOptionProvinces}
-                                                                    isLoading={provincesData?.isLoading}
-                                                                    onChange={onChangeSelectedProvince}
-                                                                />
+                                                                {addresses && addresses.length > 0 ? (
+                                                                    <Radio.Group
+                                                                        onChange={(e) => setSelectedAddress(e.target.value)}
+                                                                        value={selectedAddress}
+                                                                        style={{ width: "100%" }}
+                                                                    >
+                                                                        {addresses.map((address: IAddress, index: number) => (
+                                                                            <div
+                                                                                key={address.id}
+                                                                                className="border-b pb-4 mb-4 transition-all cursor-pointer"
+                                                                                onClick={() => setSelectedAddress(address)}
+                                                                            >
+                                                                                <div>
+                                                                                    <Radio value={address}>
+                                                                                        <div className="ms-4">
+                                                                                            <p className="font-bold">Địa chỉ {index + 1}</p>
+                                                                                            <p>{formatAddress(address)}</p>
+                                                                                        </div>
+                                                                                    </Radio>
+                                                                                </div>
+                                                                            </div>
+                                                                        ))}
+                                                                    </Radio.Group>
+                                                                ) : (
+                                                                    <div className="text-center py-4">Bạn chưa có địa chỉ nào.</div>
+                                                                )}
                                                             </Form.Item>
-                                                        </Col>
-                                                        <Col span={8}>
-                                                            <Form.Item
-                                                                name="district"
-                                                                rules={[{
-                                                                    required: true,
-                                                                    message: "Vui lòng chọn Quận / Huyện!"
-                                                                }]}
-                                                            >
-                                                                <SelectSearchOptionLabel
-                                                                    value={shippingAddress?.districtCode}
-                                                                    placeholder="Quận / Huyện"
-                                                                    style={{ width: "100%", height: "48px" }}
-                                                                    data={districtsData?.dataOptionDistricts}
-                                                                    isLoading={districtsData?.isLoading}
-                                                                    onChange={onChangeSelectedDistrict}
-                                                                />
-                                                            </Form.Item>
-                                                        </Col>
-                                                        <Col span={8}>
-                                                            <Form.Item
-                                                                name="ward"
-                                                                rules={[{
-                                                                    required: true,
-                                                                    message: "Vui lòng chọn Phường/ Xã!"
-                                                                }]}
-                                                            >
-                                                                <SelectSearchOptionLabel
-                                                                    value={shippingAddress?.communeCode}
-                                                                    placeholder="Phường / Xã"
-                                                                    style={{ width: "100%", height: "48px" }}
-                                                                    data={wardsData?.dataOptionWards}
-                                                                    isLoading={wardsData?.isLoading}
-                                                                    onChange={onChangeSelectedWard}
-                                                                />
-                                                            </Form.Item>
-                                                        </Col>
-                                                    </Row>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Row gutter={16} className="mb-3">
+                                                                <Col span={8}>
+                                                                    <Form.Item
+                                                                        name="province"
+                                                                        rules={[
+                                                                            {
+                                                                                required: true,
+                                                                                message: "Vui lòng chọn Tỉnh / Thành Phố!",
+                                                                            },
+                                                                        ]}
+                                                                    >
+                                                                        <SelectSearchOptionLabel
+                                                                            value={shippingAddress?.cityCode}
+                                                                            placeholder="Tỉnh / Thành Phố"
+                                                                            style={{ width: "100%", height: "48px" }}
+                                                                            data={provincesData?.dataOptionProvinces}
+                                                                            isLoading={provincesData?.isLoading}
+                                                                            onChange={onChangeSelectedProvince}
+                                                                        />
+                                                                    </Form.Item>
+                                                                </Col>
+                                                                <Col span={8}>
+                                                                    <Form.Item
+                                                                        name="district"
+                                                                        rules={[{
+                                                                            required: true,
+                                                                            message: "Vui lòng chọn Quận / Huyện!"
+                                                                        }]}
+                                                                    >
+                                                                        <SelectSearchOptionLabel
+                                                                            value={shippingAddress?.districtCode}
+                                                                            placeholder="Quận / Huyện"
+                                                                            style={{ width: "100%", height: "48px" }}
+                                                                            data={districtsData?.dataOptionDistricts}
+                                                                            isLoading={districtsData?.isLoading}
+                                                                            onChange={onChangeSelectedDistrict}
+                                                                        />
+                                                                    </Form.Item>
+                                                                </Col>
+                                                                <Col span={8}>
+                                                                    <Form.Item
+                                                                        name="ward"
+                                                                        rules={[{
+                                                                            required: true,
+                                                                            message: "Vui lòng chọn Phường/ Xã!"
+                                                                        }]}
+                                                                    >
+                                                                        <SelectSearchOptionLabel
+                                                                            value={shippingAddress?.communeCode}
+                                                                            placeholder="Phường / Xã"
+                                                                            style={{ width: "100%", height: "48px" }}
+                                                                            data={wardsData?.dataOptionWards}
+                                                                            isLoading={wardsData?.isLoading}
+                                                                            onChange={onChangeSelectedWard}
+                                                                        />
+                                                                    </Form.Item>
+                                                                </Col>
+                                                            </Row>
 
-                                                    <Form.Item
-                                                        name="addressName"
-                                                        style={{ marginTop: -10 }}
-                                                        rules={[
-                                                            {
-                                                                validator: (_, value) => {
-                                                                    if (value && value.trim() !== "") {
-                                                                        return Promise.resolve();
-                                                                    }
-                                                                    return Promise.reject(new Error("Vui lòng nhập địa chỉ!"));
-                                                                },
-                                                            },
-                                                        ]}
-                                                    >
-                                                        <TextArea
-                                                            placeholder="Nhập địa chỉ chi tiết"
-                                                            className="p-2"
-                                                            rows={4}
-                                                            style={{ resize: 'none' }}
-                                                            maxLength={250}
-                                                        />
-                                                    </Form.Item>
+                                                            <Form.Item
+                                                                name="addressName"
+                                                                style={{ marginTop: -10 }}
+                                                                rules={[
+                                                                    {
+                                                                        validator: (_, value) => {
+                                                                            if (value && value.trim() !== "") {
+                                                                                return Promise.resolve();
+                                                                            }
+                                                                            return Promise.reject(new Error("Vui lòng nhập địa chỉ!"));
+                                                                        },
+                                                                    },
+                                                                ]}
+                                                            >
+                                                                <TextArea
+                                                                    placeholder="Nhập địa chỉ chi tiết"
+                                                                    className="p-2"
+                                                                    rows={4}
+                                                                    style={{ resize: 'none' }}
+                                                                    maxLength={250}
+                                                                />
+                                                            </Form.Item>
+                                                        </>
+                                                    )}
                                                 </>
                                             ) : (
                                                 <Alert
@@ -502,34 +518,6 @@ const Checkout: React.FC = () => {
                                                     showIcon
                                                 />
                                             )}
-                                            <div>
-                                                {addresses && addresses.length > 0 ? (
-                                                    <Radio.Group
-                                                        onChange={(e) => setSelectedAddress(e.target.value)}
-                                                        value={selectedAddress}
-                                                        style={{ width: "100%" }}
-                                                    >
-                                                        {addresses.map((address: any) => (
-                                                            <div
-                                                                key={address.id}
-                                                                className="border-b pb-4 mb-4 flex justify-between items-center hover:bg-gray-50 transition-all cursor-pointer"
-                                                                onClick={() => setSelectedAddress(address.id)}
-                                                            >
-                                                                <div>
-                                                                    {/* <p className="font-bold">{address.receiverName}</p> */}
-                                                                    <p>
-                                                                        {address.addressName}, {address.commune}, {address.district}, {address.city}
-                                                                    </p>
-                                                                    <p>{address.phoneNumber}</p>
-                                                                </div>
-                                                                <Radio value={address.id} />
-                                                            </div>
-                                                        ))}
-                                                    </Radio.Group>
-                                                ) : (
-                                                    <div>Bạn chưa có địa chỉ nào.</div>
-                                                )}
-                                            </div>
                                         </Form>
                                     </div>
                                 </div>
