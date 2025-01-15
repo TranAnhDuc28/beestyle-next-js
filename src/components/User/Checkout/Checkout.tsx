@@ -25,7 +25,7 @@ import { RiStore2Line } from "react-icons/ri";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import TextArea from "antd/es/input/TextArea";
 import useAddress from "@/components/Admin/Address/hook/useAddress";
-import { calculateShippingFee, formatAddress, getAccountInfo } from "@/utils/AppUtil";
+import { calculateShippingFee, calculateUserCartTotalAmount, formatAddress, getAccountInfo } from "@/utils/AppUtil";
 import { getAddressByCustomerId, URL_API_ADDRESS } from "@/services/AddressService";
 import useSWR from "swr";
 import { getSendOrderTrackingNumber } from "@/services/MailService";
@@ -56,6 +56,7 @@ const Checkout: React.FC = () => {
     const [shippingFee, setShippingFee] = useState(0);
     const [selectedPayment, setSelectedPayment] = useState<string>(PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key);
     const [selectedAddress, setSelectedAddress] = useState<IAddress | null>(null);
+    const [originalAmount, setOriginalAmount] = useState<number>(0);
 
     const handlePaymentChange = (e: any) => {
         const value = e.target.value;
@@ -142,7 +143,7 @@ const Checkout: React.FC = () => {
 
         if (shippingAddress?.city && shippingAddress?.district) {
             try {
-                const shippingFee = await calculateShippingFee(499999, shippingAddress);
+                const shippingFee = await calculateShippingFee(originalAmount, shippingAddress);
                 setShippingFee(shippingFee);
             } catch (error) {
                 console.error("Error calculating shipping fee:", error);
@@ -152,8 +153,8 @@ const Checkout: React.FC = () => {
 
     useEffect(() => {
         fetchShippingFee();
-        console.log(shippingFee);
-    }, [shippingAddress?.city, shippingAddress?.district, shippingFee]);
+        setOriginalAmount(calculateUserCartTotalAmount(cartItems));
+    }, [shippingAddress?.city, shippingAddress?.district, shippingFee, cartItems]);
 
     // Xử lý đơn hàng và gửi request tói server
     const handleSubmitOrderOnline = async (payment: any) => {
