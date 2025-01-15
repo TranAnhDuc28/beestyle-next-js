@@ -267,10 +267,10 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
                     <Divider/>
                     {/* Xác nhận thay đổi trạng thái */}
                     {orderDetail?.orderStatus &&
-                        orderDetail.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key ||
+                        (orderDetail.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key ||
                         orderDetail.orderStatus === ORDER_STATUS.CONFIRMED.key ||
                         orderDetail.orderStatus === ORDER_STATUS.AWAITING_SHIPMENT.key ||
-                        orderDetail.orderStatus === ORDER_STATUS.OUT_FOR_DELIVERY.key && (
+                        orderDetail.orderStatus === ORDER_STATUS.OUT_FOR_DELIVERY.key) && (
                         <Button type="primary" onClick={modalConfirmChangeOrderStatus}>
                             Xác nhận
                         </Button>
@@ -294,9 +294,9 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
                             )
                             :
                             orderDetail?.orderStatus &&
-                            orderDetail.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key ||
+                            (orderDetail.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key ||
                             orderDetail.orderStatus === ORDER_STATUS.CONFIRMED.key ||
-                            orderDetail.orderStatus === ORDER_STATUS.AWAITING_SHIPMENT.key
+                            orderDetail.orderStatus === ORDER_STATUS.AWAITING_SHIPMENT.key)
                                 ? (
                                     <Button style={{margin: '0 8px'}}
                                             onClick={() => showModalCancelledOrReturned("cancel")}>
