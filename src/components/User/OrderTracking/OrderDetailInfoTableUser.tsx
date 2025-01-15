@@ -7,12 +7,11 @@ import {ORDER_STATUS} from "@/constants/OrderStatus";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
 import {ORDER_TYPE} from "@/constants/OrderType";
 import {PAYMENT_METHOD} from "@/constants/PaymentMethod";
-import UpdateShippingInfoModal from "@/components/Admin/Order/Detail/UpdateShippingInfoModal";
 import {formatAddress} from "@/utils/AppUtil";
 import {ORDER_CHANEL} from "@/constants/OrderChanel";
 import {PresetStatusColorType} from "antd/es/_util/colors";
 import {DISCOUNT_TYPE} from "@/constants/DiscountType";
-import InvoiceComponent from "@/components/User/Invoice/InvoiceComponent";
+
 
 const {Text} = Typography;
 
@@ -34,18 +33,6 @@ interface IProps {
 
 const OrderDetailInfoTable: React.FC<IProps> = (props) => {
     const {orderDetail} = props;
-    const [isShippingInfoModalOpen, setIsShippingInfoModalOpen] = useState<boolean>(false);
-
-    const invoiceRef = useRef<any>(null);
-    const handlePrintInvoice = () => {
-        if (invoiceRef.current) {
-            invoiceRef.current.printInvoice();
-        }
-    };
-
-    const showShippingInfoModal = () => {
-        setIsShippingInfoModalOpen(true);
-    };
 
     const itemDescriptions: DescriptionsProps['items'] = [
         {
@@ -210,13 +197,6 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
                 column={{xs: 3, sm: 3, md: 3, lg: 3, xl: 3, xxl: 3}}
                 items={itemDescriptions}
             />
-
-            <UpdateShippingInfoModal
-                isShippingInfoModalOpen={isShippingInfoModalOpen}
-                setIsShippingInfoModalOpen={setIsShippingInfoModalOpen}
-            />
-
-            <InvoiceComponent ref={invoiceRef} id={orderDetail?.id || null}/>
         </>
 
     )
