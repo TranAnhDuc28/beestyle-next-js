@@ -1,6 +1,6 @@
 import React, {memo, useContext, useEffect, useMemo, useRef, useState} from "react";
-import {Button, InputNumber, Popover, Table, TableProps, Tag, Tooltip, Typography} from "antd";
-import {DeleteOutlined} from "@ant-design/icons";
+import {Button, InputNumber, Popconfirm, Popover, Table, TableProps, Tag, Tooltip, Typography} from "antd";
+import {DeleteOutlined, QuestionCircleOutlined} from "@ant-design/icons";
 import {HandleSale} from "@/components/Admin/Sale/SaleComponent";
 import {FORMAT_NUMBER_WITH_COMMAS, PARSER_NUMBER_WITH_COMMAS_TO_NUMBER} from "@/constants/AppConstants";
 import {IOrderItem} from "@/types/IOrderItem";
@@ -236,12 +236,18 @@ const AdminCart: React.FC = () => {
             render:
                 (_, record) => (
                     <Tooltip title="Xóa sản phẩm">
-                        <Button
-                            type="text"
-                            shape="circle"
-                            icon={<DeleteOutlined/>}
-                            onClick={() => handleDeleteOrderItemCart(record.id, record.productId)}
-                        />
+                        <Popconfirm
+                            title="Xóa sản phẩm"
+                            description="Xác nhận xóa sản phẩm khỏi giỏ?"
+                            icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
+                            onConfirm={() => handleDeleteOrderItemCart(record.id, record.productId)}
+                        >
+                            <Button
+                                type="text"
+                                shape="circle"
+                                icon={<DeleteOutlined/>}
+                            />
+                        </Popconfirm>
                     </Tooltip>
                 ),
         },

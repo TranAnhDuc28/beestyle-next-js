@@ -1,7 +1,7 @@
 "use client"
-import React, {memo, useRef, useState} from "react";
+import React, {memo} from "react";
 import {IOrderDetail} from "@/types/IOrder";
-import {Badge, Button, Descriptions, DescriptionsProps, Flex, Typography} from "antd";
+import {Badge, Descriptions, DescriptionsProps, Typography} from "antd";
 import dayjs from "dayjs";
 import {ORDER_STATUS} from "@/constants/OrderStatus";
 import {FORMAT_NUMBER_WITH_COMMAS} from "@/constants/AppConstants";
