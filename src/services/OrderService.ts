@@ -1,5 +1,5 @@
 import httpInstance from "@/utils/HttpInstance";
-import {IOrder, IOrderCreateOrUpdate, IOrderOnlineCreateOrUpdate} from "@/types/IOrder";
+import {IOrderCreateOrUpdate, IOrderOnlineCreateOrUpdate} from "@/types/IOrder";
 
 export const URL_API_ORDER = {
     getOrderPending: '/admin/order/order-pending',
@@ -8,7 +8,9 @@ export const URL_API_ORDER = {
     create: '/admin/order/create',
     checkout: '/checkout',
     update: (id: number) => `/admin/order/update/${id}`,
-    updateOrderStatus: (id: number) => `/admin/order/${id}/update-status`
+    updateOrderStatus: (id: number) => `/admin/order/${id}/update-status`,
+    orderByCustomer: `/orders-by-customer`,
+    getOrderDetailByOrderTrackingNumber: (orderTrackingNumber: string) => `/order-by-customer/${orderTrackingNumber}`,
 };
 
 export const getOrders = async (url: string) => {

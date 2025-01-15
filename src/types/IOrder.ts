@@ -1,5 +1,5 @@
-import { IVoucher } from "@/types/IVoucher";
-import { IAddress } from "@/types/IAddress";
+import {IVoucher} from "@/types/IVoucher";
+import {IAddress} from "@/types/IAddress";
 import {ICreateOrUpdateOrderItem} from "@/types/IOrderItem";
 
 
@@ -98,4 +98,14 @@ export interface IOrderOnlineCreateOrUpdate {
     orderStatus: string;
     note?: string;
     orderItems: ICreateOrUpdateOrderItem[];
+}
+
+export interface IOrderedByUser {
+    id?: number;
+    orderTrackingNumber?: string;
+    orderStatus?: string;
+    orderChannel: string;
+    orderType: string;
+    totalAmount?: number;
+    createdAt?: Date;
 }

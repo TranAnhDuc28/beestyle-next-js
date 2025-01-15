@@ -1,5 +1,5 @@
 import useAppNotifications from "@/hooks/useAppNotifications";
-import {IOrder, IOrderCreateOrUpdate, IOrderDetail, IOrderOnlineCreateOrUpdate} from "@/types/IOrder";
+import {IOrder, IOrderCreateOrUpdate, IOrderDetail, IOrderedByUser, IOrderOnlineCreateOrUpdate} from "@/types/IOrder";
 import {
     createOrder,
     createOrderOnline,
@@ -39,6 +39,52 @@ const useOrder = () => {
 
         return {orderDetail, isLoading, error, mutate};
     }
+
+    const handleGetOrderDetailByOrderTrackingNumber = (orderTrackingNumber: string | null) => {
+        const {data, isLoading, error, mutate} = useSWR(
+            orderTrackingNumber ? URL_API_ORDER.getOrderDetailByOrderTrackingNumber(orderTrackingNumber) : null,
+            getOrders,
+            {
+                revalidateIfStale: true,
+                revalidateOnReconnect: false,
+                revalidateOnFocus: false
+            }
+        );
+
+        if (error) {
+            showNotification("error", {
+                message: error?.message,
+                description: error?.response?.data?.message || "Error fetching order detail",
+            });
+        }
+
+        const orderDetail: IOrderDetail = data?.data ? data.data : undefined;
+
+        return {orderDetail, isLoading, error, mutate};
+    }
+
+    const handleGetOrderByCustomer = (customerId: number, size: number, page: number) => {
+        const {data, isLoading, error, mutate} = useSWR(
+            `${URL_API_ORDER.orderByCustomer}?customerId=${customerId}&page=${page}&size=${size}`,
+            getOrders,
+            {
+                revalidateOnReconnect: false,
+                revalidateOnFocus: false
+            }
+        );
+
+        if (error) {
+            showNotification("error", {
+                message: error?.message,
+                description: error?.response?.data?.message || "Error fetching order tracking by customer",
+            });
+        }
+
+        const orderedByUser = data?.data ? data.data : undefined;
+
+        return {orderedByUser, isLoading, error, mutate};
+    }
+
 
     const handleCreateOrder = async (value: IOrderCreateOrUpdate) => {
         setLoading(true);
@@ -134,7 +180,9 @@ const useOrder = () => {
         handleCreateOrderOnline,
         handleUpdateOrderStatusDelivery,
         handleUpdateOrder,
-        handleGetOrderService: handleGetOrderDetail
+        handleGetOrderDetail,
+        handleGetOrderByCustomer,
+        handleGetOrderDetailByOrderTrackingNumber
     };
 }
 export default useOrder;

@@ -7,7 +7,7 @@ import { MdOutlineEditLocationAlt } from 'react-icons/md';
 import Title from 'antd/es/typography/Title';
 import Link from 'next/link';
 import AddressCard from './AddressCard';
-import PurchasedProduct from './PurchasedProduct';
+import OrderedByUserTable from '../OrderTracking/OrderedByUserTable';
 import useSWR from 'swr';
 import { getDetailCustomer, URL_API_CUSTOMER } from '@/services/CustomerService';
 import useAppNotifications from '@/hooks/useAppNotifications';
@@ -21,7 +21,6 @@ const UserProfile = () => {
     const [idCustomer, setIdCustomer] = useState<any | null>(null)
     const authentication = useAuthentication();
 
-
     // Lấy id từ localStorage
     useEffect(() => {
         console.log("", authentication?.authentication ? authentication.authentication.user.id : "Không có user");
@@ -29,6 +28,7 @@ const UserProfile = () => {
         const idString = authentication?.authentication ? authentication.authentication.user.id : null;
         setIdCustomer(idString);
     }, []);
+
     const { data, error, isLoading, mutate } = useSWR(
         idCustomer ? `${URL_API_CUSTOMER.get}/${idCustomer}` : null,
         getDetailCustomer,
@@ -51,6 +51,7 @@ const UserProfile = () => {
     if (!isLoading && data) {
         result = data?.data || {};
     }
+
     const renderContent = () => {
         if (!idCustomer) return <p>Vui lòng đăng nhập để xem thông tin.</p>;
         if (isLoading) return <p>Đang tải dữ liệu...</p>;
@@ -82,7 +83,7 @@ const UserProfile = () => {
                                 Xem địa chỉ
                             </Link>
 
-                            <PurchasedProduct idCustomer={idCustomer} />
+                            <OrderedByUserTable idCustomer={idCustomer} />
                         </div>
                     </>
                 );

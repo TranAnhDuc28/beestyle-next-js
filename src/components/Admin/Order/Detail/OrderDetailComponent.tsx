@@ -26,9 +26,9 @@ interface IProps {
 const OrderDetailComponent: React.FC<IProps> = (props) => {
     const {token} = theme.useToken();
     const {id} = useParams();
-    const {handleGetOrderService} = useOrder();
+    const {handleGetOrderDetail} = useOrder();
     const {orderDetail, error, isLoading, mutate} =
-        handleGetOrderService(id && Number(id) ? Number(id) : null);
+        handleGetOrderDetail(id && Number(id) ? Number(id) : null);
 
     return (
         <>

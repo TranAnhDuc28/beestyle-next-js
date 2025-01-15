@@ -132,3 +132,10 @@ export const formatAddress = (address: IAddress | undefined): string | undefined
     // Kết hợp các phần với dấu " - " để tạo chuỗi địa chỉ
     return addressParts.join(', ');
 }
+
+export const getAccountInfo = () => {
+    const userAuthentication: any = localStorage.getItem('authentication');
+    const userParse = userAuthentication && JSON.parse(userAuthentication);
+    const user = userParse && userParse.user || undefined;
+    return user;
+}
