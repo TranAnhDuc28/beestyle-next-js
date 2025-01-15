@@ -33,7 +33,7 @@ const InvoiceComponent = forwardRef(({id}: InvoiceComponentProps, ref) => {
                 const dataMail = {
                     id: id,
                     files: pdfFile
-                }
+                };
                 console.log(dataMail);
                 const mail = await getSendThankMail(dataMail);
                 console.log('Mail sent successfully: ', mail);
@@ -76,5 +76,3 @@ const InvoiceComponent = forwardRef(({id}: InvoiceComponentProps, ref) => {
 });
 
 export default InvoiceComponent;
-
-

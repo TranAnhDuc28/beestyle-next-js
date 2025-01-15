@@ -13,7 +13,7 @@ import OrderedProductDetails from "@/components/Admin/Order/Detail/OrderedProduc
 import TimeLineOrderTrackingComponent from "@/components/Admin/Order/Detail/TimeLineOrderTrackingComponent";
 import useOrder from "@/components/Admin/Order/hooks/useOrder";
 import OrderDetailInfoTable from "@/components/Admin/Order/Detail/OrderDetailInfoTable";
-import InvoiceComponent from "../../../User/Invoice/TestPDF";
+import InvoiceComponent from "../../../User/Invoice/InvoiceComponent";
 import OrderDetailProvider from "@/components/Admin/Order/Detail/Context/OrderDetailProvider";
 
 const { Content } = Layout;
