@@ -4,8 +4,8 @@ import { Suspense } from "react";
 import OrderTrackingComponent from "@/components/User/OrderTracking/OrderTrackingComponent";
 
 export const metadata: Metadata = {
-    title: "Tra cứu đơn hàng",
-    description: "order-lookup"
+    title: "Theo dõi đơn hàng",
+    description: "order tracking"
 };
 
 export default function OrderLookupPage() {

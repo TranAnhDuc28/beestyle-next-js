@@ -1,12 +1,12 @@
 'use client';
 import { Button, Flex, Form, Input, Typography } from "antd";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import {EyeInvisibleOutlined, EyeOutlined, LockOutlined, UserOutlined} from "@ant-design/icons";
 import Link from "next/link";
 import useAppNotifications from "@/hooks/useAppNotifications";
 import { IAuthResponse, ISignIn } from "@/types/IAuth";
 import { signIn } from "@/services/AuthService";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, {useState} from "react";
 import { useAuthentication } from "@/components/Context/AuthenticationProvider";
 import { fetchCartFromLocalToServer } from "@/services/user/ShoppingCartService";
 
@@ -17,6 +17,17 @@ const LoginFormOwner: React.FC = () => {
     const authentication = useAuthentication();
     const router = useRouter();
     const [form] = Form.useForm();
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    }
+
+    const togglePasswordConfirmVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    }
 
     const onFinish = async (value: ISignIn) => {
         try {
@@ -78,7 +89,19 @@ const LoginFormOwner: React.FC = () => {
                     ]}
                     style={{ width: "100%" }}
                 >
-                    <Input size="large" prefix={<LockOutlined />} type="password" placeholder="Mật khẩu" />
+                    <Input
+                        size="large"
+                        prefix={<LockOutlined/>}
+                        suffix={
+                            showPassword ? (
+                                <EyeOutlined onClick={togglePasswordVisibility}/>
+                            ) : (
+                                <EyeInvisibleOutlined onClick={togglePasswordVisibility}/>
+                            )
+                        }
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Mật khẩu"
+                    />
                 </Form.Item>
 
                 <Form.Item label={null}>

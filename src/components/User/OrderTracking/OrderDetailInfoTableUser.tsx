@@ -205,28 +205,6 @@ const OrderDetailInfoTable: React.FC<IProps> = (props) => {
 
     return (
         <>
-            <Flex justify="flex-end">
-                {/*{*/}
-                {/*    orderDetail?.orderType === ORDER_TYPE.DELIVERY.key &&*/}
-                {/*    orderDetail?.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key &&*/}
-                {/*    <Tooltip title="Cập nhật thông tin giao hàng" placement="topRight">*/}
-                {/*        <Button type="primary" style={{marginBottom: 10}} onClick={() => showShippingInfoModal()}>*/}
-                {/*            Cập nhật*/}
-                {/*        </Button>*/}
-                {/*    </Tooltip>*/}
-                {/*}*/}
-
-                {
-                    !(orderDetail?.orderStatus === ORDER_STATUS.PENDING.key) &&
-                    !(orderDetail?.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key) &&
-                    !(orderDetail?.orderStatus === ORDER_STATUS.CANCELLED.key) &&
-                    !(orderDetail?.orderStatus === ORDER_STATUS.RETURNED.key) &&
-                    <Button type="primary" style={{marginBottom: 10}} onClick={handlePrintInvoice}>
-                        In Hóa Đơn
-                    </Button>
-                }
-            </Flex>
-
             <Descriptions
                 bordered
                 column={{xs: 3, sm: 3, md: 3, lg: 3, xl: 3, xxl: 3}}

@@ -1,181 +1,78 @@
-// import React, { useEffect, useState } from "react";
-// import {
-//   downloadInvoicePdf,
-//   previewInvoicePdf,
-// } from "@/services/InvoiceService";
-//
-// interface InvoiceComponent {
-//   id: number | null;
-// }
-// const InvoiceComponent = () => {
-//   const [invoiceId, setInvoiceId] = useState<number>(49); // ID của hóa đơn
-//   const [invoiceDetails, setInvoiceDetails] = useState<any>(null); // Lưu trữ thông tin hóa đơn
-//   const [pdfUrl, setPdfUrl] = useState<string | null>(null); // URL PDF
-//
-//   // Hàm gọi API để tải PDF
-//   const handleDownloadPdf = () => {
-//     downloadInvoicePdf(49);
-//   };
-//
-//   useEffect(() => {
-//     if (pdfUrl) {
-//       const iframe = document.getElementById("pdf-iframe") as HTMLIFrameElement;
-//       if (iframe) {
-//         iframe.onload = () => {
-//           // Gọi trực tiếp lệnh in từ iframe khi PDF đã được tải
-//           iframe.contentWindow?.print();
-//         };
-//       }
-//     }
-//   }, [pdfUrl]);
-//   // Hàm gọi API để lấy thông tin hóa đơn
-//   // const handleGetInvoiceDetails = async () => {
-//   //     const data = await downloadInvoicePdf(invoiceId);
-//   //     setInvoiceDetails(data);
-//   // };
-//
-//   const handlePreviewAndPrint = async () => {
-//     try {
-//       console.log("Đang gửi yêu cầu xem trước PDF...");
-//       const base64Pdf = await previewInvoicePdf(49);
-//
-//       if (base64Pdf) {
-//         // Kiểm tra Base64 và thêm prefix nếu thiếu
-//         const validBase64 = base64Pdf.startsWith("data:application/pdf;base64,")
-//           ? base64Pdf
-//           : `data:application/pdf;base64,${base64Pdf}`;
-//
-//         // Chuyển Base64 thành Blob
-//         const byteCharacters = atob(validBase64.split(",")[1]);
-//         const byteNumbers = Array.from(byteCharacters, (char) =>
-//           char.charCodeAt(0)
-//         );
-//         const byteArray = new Uint8Array(byteNumbers);
-//         const blob = new Blob([byteArray], { type: "application/pdf" });
-//
-//         // Tạo URL từ Blob
-//         const pdfBlobUrl = URL.createObjectURL(blob);
-//         setPdfUrl(pdfBlobUrl); // Lưu URL vào state
-//
-//         // Tự động in từ iframe
-//         const iframe = document.getElementById(
-//           "pdf-iframe"
-//         ) as HTMLIFrameElement;
-//         if (iframe) {
-//           iframe.onload = () => {
-//             iframe.contentWindow?.print(); // Gọi phương thức print từ iframe
-//           };
-//         }
-//       } else {
-//         console.error("Không thể tạo xem trước PDF.");
-//       }
-//     } catch (error) {
-//       console.error("Lỗi khi tạo xem trước PDF:", error);
-//     }
-//
-//
-//   };
-//
-//   return (
-//     <div>
-//       <h1>Hóa đơn #{invoiceId}</h1>
-//       <button onClick={handleDownloadPdf}>Tải PDF</button>
-//       <button onClick={handlePreviewAndPrint}>Lấy Thông Tin Hóa Đơn</button>
-//
-//       {invoiceDetails && (
-//         <div>
-//           <h2>Thông tin hóa đơn</h2>
-//           <pre>{JSON.stringify(invoiceDetails, null, 2)}</pre>
-//         </div>
-//       )}
-//
-//       {/* iframe ẩn để tải PDF và in */}
-//       {pdfUrl && (
-//         <iframe
-//           id="pdf-iframe"
-//           src={pdfUrl}
-//           style={{ display: "none" }} // Ẩn iframe khỏi người dùng
-//           title="Hóa Đơn"
-//         />
-//       )}
-//     </div>
-//   );
-// };
-
-import React, { useImperativeHandle, forwardRef, useState, useEffect } from "react";
-import { downloadInvoicePdf, previewInvoicePdf } from "@/services/InvoiceService";
-import { getSendThankMail } from "@/services/MailService";
+import React, {useImperativeHandle, forwardRef, useState, useEffect} from "react";
+import {previewInvoicePdf} from "@/services/InvoiceService";
+import {getSendThankMail} from "@/services/MailService";
 
 interface InvoiceComponentProps {
-  id: number | null;
+    id: number | null;
 }
 
-const InvoiceComponent = forwardRef(({ id }: InvoiceComponentProps, ref) => {
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+const InvoiceComponent = forwardRef(({id}: InvoiceComponentProps, ref) => {
+    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
-  // Hàm để tải và hiển thị PDF
-  const handlePreviewAndPrint = async () => {
-    if (!id) {
-      console.error("ID hóa đơn không hợp lệ");
-      return;
-    }
-    try {
-      const base64Pdf = await previewInvoicePdf(id);
-      if (base64Pdf) {
-        const validBase64 = base64Pdf.startsWith("data:application/pdf;base64,")
-            ? base64Pdf
-            : `data:application/pdf;base64,${base64Pdf}`;
-        const byteCharacters = atob(validBase64.split(",")[1]);
-        const byteNumbers = Array.from(byteCharacters, (char) => char.charCodeAt(0));
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: "application/pdf" });
-        const pdfBlobUrl = URL.createObjectURL(blob);
-        setPdfUrl(pdfBlobUrl);
+    // Hàm để tải và hiển thị PDF
+    const handlePreviewAndPrint = async () => {
+        if (!id) {
+            console.error("ID hóa đơn không hợp lệ");
+            return;
+        }
+        try {
+            const base64Pdf = await previewInvoicePdf(id);
+            if (base64Pdf) {
+                const validBase64 = base64Pdf.startsWith("data:application/pdf;base64,")
+                    ? base64Pdf
+                    : `data:application/pdf;base64,${base64Pdf}`;
+                const byteCharacters = atob(validBase64.split(",")[1]);
+                const byteNumbers = Array.from(byteCharacters, (char) => char.charCodeAt(0));
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], {type: "application/pdf"});
+                const pdfBlobUrl = URL.createObjectURL(blob);
+                setPdfUrl(pdfBlobUrl);
 
-        const fileName = `Invoice_${id || "Unknown"}.pdf`;
-        const pdfFile = new File([blob], fileName, { type: "application/pdf" });
-        const dataMail = {
-          id: id,
-          files: pdfFile}
-          console.log(dataMail);
-          const mail = await getSendThankMail(dataMail);
-          console.log('Mail sent successfully: ',mail);
-      } else {
-        console.error("Không thể tạo xem trước PDF.");
-      }
-    } catch (error) {
-      console.error("Lỗi khi tạo xem trước PDF:", error);
-    }
-  };
+                const fileName = `Invoice_${id || "Unknown"}.pdf`;
+                const pdfFile = new File([blob], fileName, {type: "application/pdf"});
+                const dataMail = {
+                    id: id,
+                    files: pdfFile
+                }
+                console.log(dataMail);
+                const mail = await getSendThankMail(dataMail);
+                console.log('Mail sent successfully: ', mail);
+            } else {
+                console.error("Không thể tạo xem trước PDF.");
+            }
+        } catch (error) {
+            console.error("Lỗi khi tạo xem trước PDF:", error);
+        }
+    };
 
-  // Expose method to parent via ref
-  useImperativeHandle(ref, () => ({
-    printInvoice: handlePreviewAndPrint,
-  }));
+    // Expose method to parent via ref
+    useImperativeHandle(ref, () => ({
+        printInvoice: handlePreviewAndPrint,
+    }));
 
-  useEffect(() => {
-    if (pdfUrl) {
-      const iframe = document.getElementById("pdf-iframe") as HTMLIFrameElement;
-      if (iframe) {
-        iframe.onload = () => {
-          iframe.contentWindow?.print();
-        };
-      }
-    }
-  }, [pdfUrl]);
+    useEffect(() => {
+        if (pdfUrl) {
+            const iframe = document.getElementById("pdf-iframe") as HTMLIFrameElement;
+            if (iframe) {
+                iframe.onload = () => {
+                    iframe.contentWindow?.print();
+                };
+            }
+        }
+    }, [pdfUrl]);
 
-  return (
-      <>
-        {pdfUrl && (
-            <iframe
-                id="pdf-iframe"
-                src={pdfUrl}
-                style={{ display: "none" }}
-                title="Hóa Đơn"
-            />
-        )}
-      </>
-  );
+    return (
+        <>
+            {pdfUrl && (
+                <iframe
+                    id="pdf-iframe"
+                    src={pdfUrl}
+                    style={{display: "none"}}
+                    title="Hóa Đơn"
+                />
+            )}
+        </>
+    );
 });
 
 export default InvoiceComponent;

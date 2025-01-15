@@ -92,7 +92,6 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
     const [current, setCurrent] = useState<number>(getOrderDeliverySaleStep(orderDetail?.orderStatus));
     const [isOpenReasonModal, setIsOpenReasonModal] = useState(false);
     const [actionType, setActionType] = useState<'cancel' | 'return' | null>(null);
-    const [nextStatus, setNextStatus] = useState<string | null>(null);
 
     useEffect(() => {
         // dựa vào loại hóa đơn để hiển thị time line theo dõi trạng thái hóa đơn
@@ -288,11 +287,18 @@ const TimeLineOrderTrackingComponent: React.FC<IProps> = (props) => {
                                     Hủy giao hàng
                                 </Button>
                             )
-                            : (
-                                <Button style={{margin: '0 8px'}} onClick={() => showModalCancelledOrReturned("cancel")}>
-                                    Hủy
-                                </Button>
-                            )
+                            :
+                            orderDetail?.orderStatus && orderDetail.orderStatus === ORDER_STATUS.AWAITING_CONFIRMATION.key ||
+                            orderDetail.orderStatus === ORDER_STATUS.CONFIRMED.key ||
+                            orderDetail.orderStatus === ORDER_STATUS.AWAITING_SHIPMENT.key
+                                ? (
+                                    <Button style={{margin: '0 8px'}}
+                                            onClick={() => showModalCancelledOrReturned("cancel")}>
+                                        Hủy
+                                    </Button>
+                                )
+                                :
+                                <></>
                     }
                 </div>
             }
