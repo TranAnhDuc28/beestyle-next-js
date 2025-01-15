@@ -50,7 +50,7 @@ const saveCart = (cart: ICartItem[]) => {
 };
 
 export const useShoppingCart = () => {
-    const customerId = getAccountInfo()?.id; // Lấy customerId từ LocalStorage
+    const customerId = getAccountInfo()?.id ?? null; // Lấy customerId từ LocalStorage
 
     const {
         data: cartDataFromServer,
@@ -61,7 +61,7 @@ export const useShoppingCart = () => {
         () => getCartFromServer(customerId)
     );
 
-    const cartData = customerId ? cartDataFromServer || [] : getCartFromLocalStorage();
+    const cartData = customerId ? cartDataFromServer || [] : getCartFromLocalStorage() || [];
 
     return {
         cartData,

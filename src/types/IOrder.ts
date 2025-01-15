@@ -84,7 +84,7 @@ export interface IOrderOnlineCreateOrUpdate {
     phoneNumber: string;
     email: string;
     shippingAddressId?: number;
-    shippingAddress?: string;
+    shippingAddress: string;
     shippingFee: number;
     originalAmount: number;
     discountAmount: number;

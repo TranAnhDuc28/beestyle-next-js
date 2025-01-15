@@ -1,4 +1,4 @@
-import {IProductImage} from "@/types/IProductImage";
+import {IProductImage, IProductImageCreate} from "@/types/IProductImage";
 import {IProductVariantCreate} from "@/types/IProductVariant";
 
 export interface IProduct {
@@ -32,7 +32,7 @@ export interface IProductCreate {
     materialId?: number;
     description?: string;
     status?: string;
-    productImages?: IProductImage[];
+    productImages?: IProductImageCreate[];
     productVariants?: IProductVariantCreate[];
     createdBy?: number;
     updatedBy?: number;

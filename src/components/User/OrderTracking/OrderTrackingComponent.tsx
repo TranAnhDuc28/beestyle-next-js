@@ -7,10 +7,10 @@ import Paragraph from 'antd/es/typography/Paragraph';
 import Image from 'next/image';
 import {useAuthentication} from "@/components/Context/AuthenticationProvider";
 import Link from "next/link";
-import {useParams, useSearchParams} from "next/navigation";
+import {useSearchParams} from "next/navigation";
 
-const {Content} = Layout;
-const {Title, Text} = Typography;
+const { Content } = Layout;
+const { Title, Text } = Typography;
 
 const breadcrumbItems = [
     {title: 'Trang chủ', path: '/'},

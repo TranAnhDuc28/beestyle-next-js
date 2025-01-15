@@ -19,7 +19,6 @@ interface IProps {
 
 const UploadImage = (props: IProps) => {
     const {countFileImage, onChange} = props;
-    // console.log(fileListProp)
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [fileList, setFileList] = useState<UploadFile[]>([]);
