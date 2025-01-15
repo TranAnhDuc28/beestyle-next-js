@@ -1,13 +1,5 @@
-import React, {Suspense} from "react";
-import AdminLoader from "@/components/Loader/AdminLoader";
-import {Metadata} from "next";
-import SaleComponent from "@/components/Admin/Sale/SaleComponent";
-import {Flex, Result} from "antd";
-
-export const metadata: Metadata = {
-    title: "Unauthorized",
-    description: "Unauthorized",
-};
+import React from "react";
+import { Flex, Result } from "antd";
 
 const Unauthorized = () => {
     return (
