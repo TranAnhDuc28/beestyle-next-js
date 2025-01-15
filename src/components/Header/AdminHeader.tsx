@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Avatar, Button, Dropdown, Menu } from 'antd';
+import React from 'react';
+import { Avatar, Button, MenuProps } from 'antd';
 import { LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Header } from "antd/es/layout/layout";
+import { getAdminAccountInfo } from '@/utils/AppUtil';
 
 const headerStyle: React.CSSProperties = {
     position: 'sticky',
@@ -21,18 +22,12 @@ interface IProps {
 }
 
 const AdminHeader: React.FC<IProps> = ({ collapsed, onToggle }) => {
+
     const handleLogout = () => {
         localStorage.removeItem('authenticationAdmin');
+        localStorage.setItem('loggedOut', Date.now().toString());
         window.location.href = '/admin-account';
     };
-
-    const menu = (
-        <Menu>
-            <Menu.Item key="logout" onClick={handleLogout}>
-                <LogoutOutlined className='me-2' /> Đăng xuất
-            </Menu.Item>
-        </Menu>
-    );
 
     return (
         <Header style={headerStyle} >
@@ -41,20 +36,17 @@ const AdminHeader: React.FC<IProps> = ({ collapsed, onToggle }) => {
                 icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                 style={{ fontSize: '16px', width: 64, height: 64, }}
             />
-            <div className="absolute right-5">
-                <Dropdown
-                    overlay={menu}
-                    trigger={['click']}
-                >
-                    <Avatar
-                        size="default"
-                        src="https://api.dicebear.com/7.x/miniavs/svg?seed=1"
-                        style={{
-                            backgroundColor: '#f5f5f5',
-                            cursor: 'pointer',
-                        }}
-                    />
-                </Dropdown>
+            <div className="absolute right-5 cursor-pointer">
+                <Avatar
+                    size="default"
+                    src="https://api.dicebear.com/7.x/miniavs/svg?seed=1"
+                    style={{ backgroundColor: '#f5f5f5', }}
+                />
+                <span className='ms-2'>{getAdminAccountInfo() ? getAdminAccountInfo()?.fullName : ''}</span>
+                <button className='ms-5' onClick={handleLogout}>
+                    <LogoutOutlined className='me-1' />
+                    Đăng xuất
+                </button>
             </div>
         </Header>
     );

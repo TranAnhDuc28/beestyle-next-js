@@ -6,6 +6,7 @@ import useOrder from '@/components/Admin/Order/hooks/useOrder';
 import UserLoader from '@/components/Loader/UserLoader';
 import { deleteAllCartItems, removeAllCartItems } from '@/services/user/ShoppingCartService';
 import { getAccountInfo } from '@/utils/AppUtil';
+import { getSendOrderTrackingNumber } from '@/services/MailService';
 
 const VNPayConfirmPage: React.FC = () => {
     const router = useRouter();
@@ -27,7 +28,12 @@ const VNPayConfirmPage: React.FC = () => {
                             throw new Error(result.message);
                         }
 
-                        localStorage.removeItem('pendingOrderData');
+                        const trackingNumber = result.orderTrackingNumber;
+                        const sendMailData = {
+                            orderTrackingNumber: trackingNumber,
+                            recipient: pendingOrderData.email,
+                            customerName: pendingOrderData.customerName,
+                        }
 
                         // Xoá data Cart
                         if (getAccountInfo()) {
@@ -36,7 +42,9 @@ const VNPayConfirmPage: React.FC = () => {
                             removeAllCartItems();
                         }
 
-                        const trackingNumber = result.orderTrackingNumber;
+                        // Gửi mail đơn hàng về cho khách hàng
+                        await getSendOrderTrackingNumber(sendMailData);
+                        localStorage.removeItem('pendingOrderData');
                         router.push(`/order/success?tracking_number=${trackingNumber}`);
                     } catch (error) {
                         console.error("Lỗi khi tạo đơn hàng sau thanh toán:", error);

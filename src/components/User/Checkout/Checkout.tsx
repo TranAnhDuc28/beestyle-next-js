@@ -55,8 +55,7 @@ const Checkout: React.FC = () => {
     const [cartItems] = useState(cartData);
     const [shippingFee, setShippingFee] = useState(0);
     const [selectedPayment, setSelectedPayment] = useState<string>(PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key);
-    const defaultAddress = addresses ? addresses.find((item: IAddress) => item.isDefault) : null;
-    const [selectedAddress, setSelectedAddress] = useState<IAddress | null>(defaultAddress);
+    const [selectedAddress, setSelectedAddress] = useState<IAddress | null>(null);
 
     const handlePaymentChange = (e: any) => {
         const value = e.target.value;
@@ -176,8 +175,6 @@ const Checkout: React.FC = () => {
                     discountedPrice: 0,
                 };
             })) : [];
-            console.log(calculateShippingFee(originalAmount, userData.shippingAddress));
-
 
             // Map dữ liệu Order + Order Item
             const email = getAccountInfo() ? getAccountInfo()?.email : userData.email;
@@ -188,7 +185,7 @@ const Checkout: React.FC = () => {
                 email: email,
                 originalAmount: originalAmount,
                 discountAmount: discountAmount,
-                shippingFee: getAccountInfo() ? calculateShippingFee(originalAmount, userData.shippingAddress) : shippingFee,
+                shippingFee: shippingFee,
                 totalAmount: totalAmount,
                 voucherId: voucherId,
                 paymentMethod: selectedPayment,
@@ -196,15 +193,16 @@ const Checkout: React.FC = () => {
                 orderType: ORDER_TYPE.DELIVERY.key,
                 orderStatus: ORDER_STATUS.AWAITING_CONFIRMATION.key,
                 isPrepaid: selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key,
-                shippingAddress: JSON.stringify({
-                    addressName: getAccountInfo() ? userData.shippingAddress.addressName : userData.addressName,
-                    cityCode: getAccountInfo() ? userData.shippingAddress.cityCode : shippingAddress?.cityCode,
-                    city: getAccountInfo() ? userData.shippingAddress.city : shippingAddress?.city,
-                    districtCode: getAccountInfo() ? userData.shippingAddress.districtCode : shippingAddress?.districtCode,
-                    district: getAccountInfo() ? userData.shippingAddress.district : shippingAddress?.district,
-                    communeCode: getAccountInfo() ? userData.shippingAddress.communeCode : shippingAddress?.communeCode,
-                    commune: getAccountInfo() ? userData.shippingAddress.commune : shippingAddress?.commune
-                }),
+                shippingAddress: !getAccountInfo() ? JSON.stringify({
+                    addressName: userData.addressName,
+                    cityCode: shippingAddress?.cityCode,
+                    city: shippingAddress?.city,
+                    districtCode: shippingAddress?.districtCode,
+                    district: shippingAddress?.district,
+                    communeCode: shippingAddress?.communeCode,
+                    commune: shippingAddress?.commune
+                }) : '',
+                shippingAddressId: getAccountInfo() && userData.shippingAddress.id || null,
                 orderItems: cartFiltereds,
             };
 
