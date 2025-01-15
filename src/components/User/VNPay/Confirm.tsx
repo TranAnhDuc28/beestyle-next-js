@@ -40,6 +40,7 @@ const VNPayConfirmPage: React.FC = () => {
                         router.push(`/order/success?tracking_number=${trackingNumber}`);
                     } catch (error) {
                         console.error("Lỗi khi tạo đơn hàng sau thanh toán:", error);
+                        localStorage.removeItem('pendingOrderData');
                         router.push('/order/error');
                     }
                 } else {
@@ -49,8 +50,10 @@ const VNPayConfirmPage: React.FC = () => {
             };
             handlePaymentResult();
         } else if (paymentStatus === '24') {
+            localStorage.removeItem('pendingOrderData');
             router.push('/order/cancel');
         } else if (paymentStatus && paymentStatus !== '00') {
+            localStorage.removeItem('pendingOrderData');
             router.push('/order/error');
         }
     }, [paymentStatus, router, handleCreateOrderOnline]);
