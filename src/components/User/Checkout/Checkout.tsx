@@ -116,7 +116,8 @@ const Checkout: React.FC = () => {
             districtCode: Number(address.districtCode),
             district: address.district,
             communeCode: Number(address.communeCode),
-            commune: address.commune
+            commune: address.commune,
+            addressName: address.addressName
         } as IAddress));
     }
 
@@ -175,6 +176,8 @@ const Checkout: React.FC = () => {
                     discountedPrice: 0,
                 };
             })) : [];
+            console.log(shippingAddress);
+
 
             // Map dữ liệu Order + Order Item
             const email = getAccountInfo() ? getAccountInfo()?.email : userData.email;
@@ -193,16 +196,15 @@ const Checkout: React.FC = () => {
                 orderType: ORDER_TYPE.DELIVERY.key,
                 orderStatus: ORDER_STATUS.AWAITING_CONFIRMATION.key,
                 isPrepaid: selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key,
-                shippingAddress: !getAccountInfo() ? JSON.stringify({
-                    addressName: userData.addressName,
+                shippingAddress: JSON.stringify({
+                    addressName: shippingAddress?.addressName,
                     cityCode: shippingAddress?.cityCode,
                     city: shippingAddress?.city,
                     districtCode: shippingAddress?.districtCode,
                     district: shippingAddress?.district,
                     communeCode: shippingAddress?.communeCode,
                     commune: shippingAddress?.commune
-                }) : '',
-                shippingAddressId: getAccountInfo() && userData.shippingAddress.id || null,
+                }),
                 orderItems: cartFiltereds,
             };
 
