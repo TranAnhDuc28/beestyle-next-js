@@ -14,7 +14,7 @@ import { IAddress } from "@/types/IAddress";
 
 interface IProps {
     handleSubmit: (payment: any) => Promise<void>;
-    shippingAddress: IAddress;
+    shippingAddress: IAddress | undefined;
     selectedPayment: string;
     userForm: FormInstance;
     cartsProp: ICartItem[];
