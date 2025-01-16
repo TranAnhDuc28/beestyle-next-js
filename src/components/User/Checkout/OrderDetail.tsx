@@ -9,11 +9,12 @@ import { QuestionCircleOutlined } from "@ant-design/icons";
 import { PAYMENT_METHOD } from "@/constants/PaymentMethod";
 import { IVoucherUser } from "@/types/IVoucher";
 import { MdOutlineDiscount } from "react-icons/md";
-import { calculateInvoiceDiscount, calculateUserCartTotalAmount, calculateUserCartTotalAmountWithVoucherAndShippingFee, getAccountInfo } from "@/utils/AppUtil";
+import { calculateInvoiceDiscount, calculateShippingFee, calculateUserCartTotalAmount, calculateUserCartTotalAmountWithVoucherAndShippingFee, getAccountInfo } from "@/utils/AppUtil";
+import { IAddress } from "@/types/IAddress";
 
 interface IProps {
     handleSubmit: (payment: any) => Promise<void>;
-    shippingFee: number;
+    shippingAddress: IAddress;
     selectedPayment: string;
     userForm: FormInstance;
     cartsProp: ICartItem[];
@@ -22,7 +23,7 @@ interface IProps {
 const OrderDetail = (props: IProps) => {
     const {
         handleSubmit,
-        shippingFee,
+        shippingAddress,
         selectedPayment,
         userForm,
         cartsProp,
@@ -33,6 +34,7 @@ const OrderDetail = (props: IProps) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [cartItems, setCartItems] = useState(cartsProp);
     const [appliedVoucher, setAppliedVoucher] = useState<IVoucherUser | null>(null);
+    const [shippingFee, setShippingFee] = useState<number>(0);
 
     const openModal = () => setIsModalVisible(true);
     const closeModal = () => setIsModalVisible(false);
@@ -53,7 +55,16 @@ const OrderDetail = (props: IProps) => {
     }, []);
 
     const originalAmount = calculateUserCartTotalAmount(cartItems); // Tính tổng giá của toàn bộ sản phẩm trong giỏ
-    const discountAmount = calculateInvoiceDiscount(appliedVoucher, originalAmount); // Số tiền được giảm giá bởi voucher
+    const shippingFeePromise = calculateShippingFee(originalAmount, shippingAddress);
+
+    shippingFeePromise
+        .then((shippingFee) => {
+            setShippingFee(shippingFee);
+        })
+        .catch((error) => {
+            console.error("Lỗi khi tính phí ship:", error);
+        });
+    const discountAmount = calculateInvoiceDiscount(appliedVoucher, originalAmount);
     const totalAmount = calculateUserCartTotalAmountWithVoucherAndShippingFee(originalAmount, discountAmount, shippingFee); // Tính tổng giá của toàn bộ sản phẩm trong giỏ (Đã tính phí ship + voucher)
     const voucherId = appliedVoucher?.id;
 

@@ -15,28 +15,30 @@ const SuccessPage: React.FC = () => {
         if (getAccountInfo()) {
             router.push('/user-profile');
         } else {
-            router.push(`/order-tracking` );
+            router.push(`/order-tracking`);
         }
     };
 
     return (
-        <div className='my-[150px]'>
-            <Result
-                status="success"
-                title="Giao dịch thành công"
-                subTitle={
-                    <div>
-                        <p>Mã đơn hàng: {orderTrackingNumber}</p>
-                        Cảm ơn bạn đã mua hàng! Đơn hàng của bạn đã được ghi nhận.
-                    </div>
-                }
-                extra={
-                    <Button type="primary" onClick={handleViewOrder}>
-                        Xem đơn hàng
-                    </Button>
-                }
-            />
-        </div>
+        <>
+            <div className='my-[150px]'>
+                <Result
+                    status="success"
+                    title="Giao dịch thành công"
+                    subTitle={
+                        <div>
+                            <p>Mã đơn hàng: {orderTrackingNumber}</p>
+                            Cảm ơn bạn đã mua hàng! Đơn hàng của bạn đã được ghi nhận.
+                        </div>
+                    }
+                    extra={
+                        <Button type="primary" onClick={handleViewOrder}>
+                            Xem đơn hàng
+                        </Button>
+                    }
+                />
+            </div>
+        </>
     );
 };
 

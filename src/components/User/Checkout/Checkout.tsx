@@ -25,7 +25,7 @@ import { RiStore2Line } from "react-icons/ri";
 import SelectSearchOptionLabel from "@/components/Select/SelectSearchOptionLabel";
 import TextArea from "antd/es/input/TextArea";
 import useAddress from "@/components/Admin/Address/hook/useAddress";
-import { calculateShippingFee, formatAddress, getAccountInfo } from "@/utils/AppUtil";
+import { calculateShippingFee, calculateUserCartTotalAmount, formatAddress, getAccountInfo } from "@/utils/AppUtil";
 import { getAddressByCustomerId, URL_API_ADDRESS } from "@/services/AddressService";
 import useSWR from "swr";
 import { getSendOrderTrackingNumber } from "@/services/MailService";
@@ -55,8 +55,8 @@ const Checkout: React.FC = () => {
     const [cartItems] = useState(cartData);
     const [shippingFee, setShippingFee] = useState(0);
     const [selectedPayment, setSelectedPayment] = useState<string>(PAYMENT_METHOD.CASH_AND_BANK_TRANSFER.key);
-    const defaultAddress = addresses ? addresses.find((item: IAddress) => item.isDefault) : null;
-    const [selectedAddress, setSelectedAddress] = useState<IAddress | null>(defaultAddress);
+    const [selectedAddress, setSelectedAddress] = useState<IAddress | null>(null);
+    const [originalAmount, setOriginalAmount] = useState<number>(calculateUserCartTotalAmount(cartItems));
 
     const handlePaymentChange = (e: any) => {
         const value = e.target.value;
@@ -114,7 +114,7 @@ const Checkout: React.FC = () => {
             cityCode: Number(address.cityCode),
             city: address.city,
             districtCode: Number(address.districtCode),
-            district: address.addressName,
+            district: address.district,
             communeCode: Number(address.communeCode),
             commune: address.commune
         } as IAddress));
@@ -142,7 +142,7 @@ const Checkout: React.FC = () => {
     const fetchShippingFee = async () => {
         if (shippingAddress?.city && shippingAddress?.district) {
             try {
-                const shippingFee = await calculateShippingFee(499999, shippingAddress);
+                const shippingFee = await calculateShippingFee(originalAmount, shippingAddress);
                 setShippingFee(shippingFee);
             } catch (error) {
                 console.error("Error calculating shipping fee:", error);
@@ -152,8 +152,8 @@ const Checkout: React.FC = () => {
 
     useEffect(() => {
         fetchShippingFee();
-        console.log(shippingFee);
-    }, [shippingAddress?.city, shippingAddress?.district, shippingFee]);
+        setOriginalAmount(calculateUserCartTotalAmount(cartItems));
+    }, [shippingAddress?.city, shippingAddress?.district, shippingFee, cartItems]);
 
     // Xử lý đơn hàng và gửi request tói server
     const handleSubmitOrderOnline = async (payment: any) => {
@@ -164,7 +164,7 @@ const Checkout: React.FC = () => {
             const selectedPayment = await payment.selectedPayment; // Phương thức thanh toán
             const originalAmount = await payment.originalAmount; // Tổng tiền sản phẩm trong giỏ hàng (Chưa tính phí ship và voucher)
             const discountAmount = await payment.discountAmount; // Số tiền được giảm giá bởi voucher
-            const totalAmount = await payment.totalAmount // Tổng tiền sản phẩm trong giỏ hàng (Đã tính toán bao gồm phí ship & voucher);
+            const totalAmount = await payment.totalAmount; // Tổng tiền sản phẩm trong giỏ hàng (Đã tính toán bao gồm phí ship & voucher);
 
             // Map dữ liệu Order Item
             const cartFiltereds: ICreateOrUpdateOrderItem[] = cartItems && cartItems.length > 0 ? (cartItems.map((item: ICartItem) => {
@@ -175,8 +175,6 @@ const Checkout: React.FC = () => {
                     discountedPrice: 0,
                 };
             })) : [];
-            console.log(calculateShippingFee(originalAmount, userData.shippingAddress));
-
 
             // Map dữ liệu Order + Order Item
             const email = getAccountInfo() ? getAccountInfo()?.email : userData.email;
@@ -187,7 +185,7 @@ const Checkout: React.FC = () => {
                 email: email,
                 originalAmount: originalAmount,
                 discountAmount: discountAmount,
-                shippingFee: getAccountInfo() ? calculateShippingFee(originalAmount, userData.shippingAddress) : shippingFee,
+                shippingFee: shippingFee,
                 totalAmount: totalAmount,
                 voucherId: voucherId,
                 paymentMethod: selectedPayment,
@@ -195,15 +193,16 @@ const Checkout: React.FC = () => {
                 orderType: ORDER_TYPE.DELIVERY.key,
                 orderStatus: ORDER_STATUS.AWAITING_CONFIRMATION.key,
                 isPrepaid: selectedPayment === PAYMENT_METHOD.BANK_TRANSFER.key,
-                shippingAddress: JSON.stringify({
-                    addressName: getAccountInfo() ? userData.shippingAddress.addressName : userData.addressName,
-                    cityCode: getAccountInfo() ? userData.shippingAddress.cityCode : shippingAddress?.cityCode,
-                    city: getAccountInfo() ? userData.shippingAddress.city : shippingAddress?.city,
-                    districtCode: getAccountInfo() ? userData.shippingAddress.districtCode : shippingAddress?.districtCode,
-                    district: getAccountInfo() ? userData.shippingAddress.district : shippingAddress?.district,
-                    communeCode: getAccountInfo() ? userData.shippingAddress.communeCode : shippingAddress?.communeCode,
-                    commune: getAccountInfo() ? userData.shippingAddress.commune : shippingAddress?.commune
-                }),
+                shippingAddress: !getAccountInfo() ? JSON.stringify({
+                    addressName: userData.addressName,
+                    cityCode: shippingAddress?.cityCode,
+                    city: shippingAddress?.city,
+                    districtCode: shippingAddress?.districtCode,
+                    district: shippingAddress?.district,
+                    communeCode: shippingAddress?.communeCode,
+                    commune: shippingAddress?.commune
+                }) : '',
+                shippingAddressId: getAccountInfo() && userData.shippingAddress.id || null,
                 orderItems: cartFiltereds,
             };
 
@@ -551,7 +550,7 @@ const Checkout: React.FC = () => {
                                 <div className="col-lg-4 col-12">
                                     <OrderDetail
                                         handleSubmit={handleSubmitOrderOnline}
-                                        shippingFee={shippingFee}
+                                        shippingAddress={shippingAddress}
                                         selectedPayment={selectedPayment}
                                         userForm={userForm}
                                         cartsProp={cartItems}
